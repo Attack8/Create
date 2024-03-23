@@ -2,13 +2,13 @@ package com.simibubi.create.content.kinetics.press;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRecipeTypes;
-import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
+import com.simibubi.create.compat.jei.category.sequencedAssembly.JeiSequencedAssemblySubCategory;
+import com.simibubi.create.compat.recipeViewerCommon.SequencedAssemblySubCategoryType;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
@@ -55,15 +55,15 @@ public class PressingRecipe extends ProcessingRecipe<RecipeWrapper> implements I
 	public Component getDescriptionForAssembly() {
 		return Lang.translateDirect("recipe.assembly.pressing");
 	}
-	
+
 	@Override
 	public void addRequiredMachines(Set<ItemLike> list) {
 		list.add(AllBlocks.MECHANICAL_PRESS.get());
 	}
-	
+
 	@Override
-	public Supplier<Supplier<SequencedAssemblySubCategory>> getJEISubCategory() {
-		return () -> SequencedAssemblySubCategory.AssemblyPressing::new;
+	public SequencedAssemblySubCategoryType getJEISubCategory() {
+		return SequencedAssemblySubCategoryType.PRESSING;
 	}
 
 }

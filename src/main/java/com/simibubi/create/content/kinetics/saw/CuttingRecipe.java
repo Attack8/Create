@@ -2,13 +2,13 @@ package com.simibubi.create.content.kinetics.saw;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRecipeTypes;
-import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
+import com.simibubi.create.compat.jei.category.sequencedAssembly.JeiSequencedAssemblySubCategory;
+import com.simibubi.create.compat.recipeViewerCommon.SequencedAssemblySubCategoryType;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
@@ -60,15 +60,15 @@ public class CuttingRecipe extends ProcessingRecipe<RecipeWrapper> implements IA
 	public Component getDescriptionForAssembly() {
 		return Lang.translateDirect("recipe.assembly.cutting");
 	}
-	
+
 	@Override
 	public void addRequiredMachines(Set<ItemLike> list) {
 		list.add(AllBlocks.MECHANICAL_SAW.get());
 	}
-	
+
 	@Override
-	public Supplier<Supplier<SequencedAssemblySubCategory>> getJEISubCategory() {
-		return () -> SequencedAssemblySubCategory.AssemblyCutting::new;
+	public SequencedAssemblySubCategoryType getJEISubCategory() {
+		return SequencedAssemblySubCategoryType.CUTTING;
 	}
 
 }

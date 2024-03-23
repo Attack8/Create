@@ -159,6 +159,12 @@ repositories {
         }
     }
 
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+
+
     mavenLocal()
     flatDir {
         dirs 'libs'
@@ -183,9 +189,7 @@ dependencies {
         implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}")
     }
 
-    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge:${jei_version}")
+
 
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_minecraft_version}-${curios_version}:api")
     runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_minecraft_version}-${curios_version}")
@@ -194,6 +198,16 @@ dependencies {
         compileOnly fg.deobf("org.squiddev:cc-tweaked-${cc_tweaked_minecraft_version}:${cc_tweaked_version}:api")
         runtimeOnly fg.deobf("org.squiddev:cc-tweaked-${cc_tweaked_minecraft_version}:${cc_tweaked_version}")
 	}
+    compileOnly("dev.emi:emi-forge:${emi_version}+${emi_minecraft_version}") { transitive = false }
+    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
+
+    if (use_emi.toBoolean()) {
+        runtimeOnly("dev.emi:emi-forge:${emi_version}+${emi_minecraft_version}")
+    } else {
+        runtimeOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge:${jei_version}")
+    }
+
 
     // implementation fg.deobf("curse.maven:druidcraft-340991:3101903")
     // implementation fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-1.16.5:0.10.0-Beta25")

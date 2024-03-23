@@ -18,11 +18,11 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.ChatFormatting;
 
-public abstract class SequencedAssemblySubCategory {
+public abstract class JeiSequencedAssemblySubCategory {
 
 	private final int width;
 
-	public SequencedAssemblySubCategory(int width) {
+	public JeiSequencedAssemblySubCategory(int width) {
 		this.width = width;
 	}
 
@@ -34,7 +34,7 @@ public abstract class SequencedAssemblySubCategory {
 
 	public abstract void draw(SequencedRecipe<?> recipe, PoseStack ms, double mouseX, double mouseY, int index);
 
-	public static class AssemblyPressing extends SequencedAssemblySubCategory {
+	public static class AssemblyPressing extends JeiSequencedAssemblySubCategory {
 
 		AnimatedPress press;
 
@@ -55,7 +55,7 @@ public abstract class SequencedAssemblySubCategory {
 
 	}
 
-	public static class AssemblySpouting extends SequencedAssemblySubCategory {
+	public static class AssemblySpouting extends JeiSequencedAssemblySubCategory {
 
 		AnimatedSpout spout;
 
@@ -93,7 +93,7 @@ public abstract class SequencedAssemblySubCategory {
 
 	}
 
-	public static class AssemblyDeploying extends SequencedAssemblySubCategory {
+	public static class AssemblyDeploying extends JeiSequencedAssemblySubCategory {
 
 		AnimatedDeployer deployer;
 
@@ -128,7 +128,7 @@ public abstract class SequencedAssemblySubCategory {
 
 	}
 
-	public static class AssemblyCutting extends SequencedAssemblySubCategory {
+	public static class AssemblyCutting extends JeiSequencedAssemblySubCategory {
 
 		AnimatedSaw saw;
 

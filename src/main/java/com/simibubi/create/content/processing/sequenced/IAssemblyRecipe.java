@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
+import com.simibubi.create.compat.jei.category.sequencedAssembly.JeiSequencedAssemblySubCategory;
+import com.simibubi.create.compat.recipeViewerCommon.SequencedAssemblySubCategoryType;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
 
 import net.minecraft.network.chat.Component;
@@ -23,11 +24,11 @@ public interface IAssemblyRecipe {
 	public Component getDescriptionForAssembly();
 
 	public void addRequiredMachines(Set<ItemLike> list);
-	
+
 	public void addAssemblyIngredients(List<Ingredient> list);
 
 	default void addAssemblyFluidIngredients(List<FluidIngredient> list) {}
-	
-	public Supplier<Supplier<SequencedAssemblySubCategory>> getJEISubCategory();
+
+	public SequencedAssemblySubCategoryType getJEISubCategory();
 
 }

@@ -2,11 +2,11 @@ package com.simibubi.create.content.fluids.transfer;
 
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRecipeTypes;
-import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
+import com.simibubi.create.compat.jei.category.sequencedAssembly.JeiSequencedAssemblySubCategory;
+import com.simibubi.create.compat.recipeViewerCommon.SequencedAssemblySubCategoryType;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
@@ -58,7 +58,7 @@ public class FillingRecipe extends ProcessingRecipe<RecipeWrapper> implements IA
 
 	@Override
 	public void addAssemblyIngredients(List<Ingredient> list) {}
-	
+
 	@Override
 	public void addAssemblyFluidIngredients(List<FluidIngredient> list) {
 		list.add(getRequiredFluid());
@@ -79,10 +79,10 @@ public class FillingRecipe extends ProcessingRecipe<RecipeWrapper> implements IA
 	public void addRequiredMachines(Set<ItemLike> list) {
 		list.add(AllBlocks.SPOUT.get());
 	}
-	
+
 	@Override
-	public Supplier<Supplier<SequencedAssemblySubCategory>> getJEISubCategory() {
-		return () -> SequencedAssemblySubCategory.AssemblySpouting::new;
+	public SequencedAssemblySubCategoryType getJEISubCategory() {
+		return SequencedAssemblySubCategoryType.SPOUTING;
 	}
 
 }
