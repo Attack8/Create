@@ -1,11 +1,30 @@
 {
   "variants": {
-    "axis=x": {
+    "facing=down": {
       "model": "create:block/rotation_speed_controller/block",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "create:block/rotation_speed_controller/block",
+      "x": 90,
       "y": 90
     },
-    "axis=z": {
+    "facing=north": {
+      "model": "create:block/rotation_speed_controller/block",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "create:block/rotation_speed_controller/block",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
       "model": "create:block/rotation_speed_controller/block"
+    },
+    "facing=west": {
+      "model": "create:block/rotation_speed_controller/block",
+      "x": 90,
+      "y": 270
     }
   }
 }

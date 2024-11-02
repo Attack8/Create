@@ -160,7 +160,7 @@ public class SpeedControllerBlockEntity extends KineticBlockEntity {
 			if (direction.getAxis()
 				.isVertical())
 				return false;
-			return state.getValue(SpeedControllerBlock.HORIZONTAL_AXIS) != direction.getAxis();
+			return state.getValue(SpeedControllerBlock.FACING).getAxis() != direction.getAxis();
 		}
 
 		@Override

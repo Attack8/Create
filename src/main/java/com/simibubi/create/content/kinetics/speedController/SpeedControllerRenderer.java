@@ -41,7 +41,7 @@ public class SpeedControllerRenderer extends SmartBlockEntityRenderer<SpeedContr
 		BlockPos pos = blockEntity.getBlockPos();
 		Level world = blockEntity.getLevel();
 		BlockState blockState = blockEntity.getBlockState();
-		boolean alongX = blockState.getValue(SpeedControllerBlock.HORIZONTAL_AXIS) == Axis.X;
+		boolean alongX = blockState.getValue(SpeedControllerBlock.FACING).getAxis() == Axis.X;
 
 		SuperByteBuffer bracket = CachedBufferer.partial(AllPartialModels.SPEED_CONTROLLER_BRACKET, blockState);
 		bracket.translate(0, 1, 0);

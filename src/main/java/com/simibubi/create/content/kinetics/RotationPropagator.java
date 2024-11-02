@@ -194,7 +194,7 @@ public class RotationPropagator {
 		Axis axis = from.getValue(CogWheelBlock.AXIS);
 		if (axis.isVertical())
 			return false;
-		if (to.getValue(SpeedControllerBlock.HORIZONTAL_AXIS) == axis)
+		if (to.getValue(SpeedControllerBlock.FACING).getAxis() == axis)
 			return false;
 		return true;
 	}

@@ -1501,7 +1501,7 @@ public class AllBlocks {
 			.transform(axeOrPickaxe())
 			.tag(AllBlockTags.SAFE_NBT.tag)
 			.transform(BlockStressDefaults.setNoImpact())
-			.blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
+			.blockstate(BlockStateGen.directionalBlockProvider(true))
 			.item()
 			.transform(customItemModel())
 			.register();

@@ -7,7 +7,9 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllShapes;
+import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
 import com.simibubi.create.content.kinetics.base.HorizontalAxisKineticBlock;
+import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.CogWheelBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.foundation.block.IBE;
@@ -17,6 +19,7 @@ import com.simibubi.create.foundation.placement.PlacementOffset;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -35,7 +38,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class SpeedControllerBlock extends HorizontalAxisKineticBlock implements IBE<SpeedControllerBlockEntity> {
+public class SpeedControllerBlock extends DirectionalKineticBlock implements IBE<SpeedControllerBlockEntity> {
 
 	private static final int placementHelperId = PlacementHelpers.register(new PlacementHelper());
 
@@ -50,7 +53,8 @@ public class SpeedControllerBlock extends HorizontalAxisKineticBlock implements 
 				.above());
 		if (ICogWheel.isLargeCog(above) && above.getValue(CogWheelBlock.AXIS)
 			.isHorizontal())
-			return defaultBlockState().setValue(HORIZONTAL_AXIS, above.getValue(CogWheelBlock.AXIS) == Axis.X ? Axis.Z : Axis.X);
+			// return defaultBlockState().setValue(, above.getValue(CogWheelBlock.AXIS) == Axis.X ? Axis.Z : Axis.X);
+			return defaultBlockState().setValue(FACING, Direction.UP);
 		return super.getStateForPlacement(context);
 	}
 
@@ -78,6 +82,11 @@ public class SpeedControllerBlock extends HorizontalAxisKineticBlock implements 
 		return AllShapes.SPEED_CONTROLLER;
 	}
 
+	@Override
+	public Axis getRotationAxis(BlockState state) {
+		return null;
+	}
+
 	@MethodsReturnNonnullByDefault
 	private static class PlacementHelper implements IPlacementHelper {
 		@Override
@@ -97,7 +106,7 @@ public class SpeedControllerBlock extends HorizontalAxisKineticBlock implements 
 				.canBeReplaced())
 				return PlacementOffset.fail();
 
-			Axis newAxis = state.getValue(HORIZONTAL_AXIS) == Axis.X ? Axis.Z : Axis.X;
+			Axis newAxis = state.getValue(FACING).getAxis() == Axis.X ? Axis.Z : Axis.X;
 
 			if (!CogWheelBlock.isValidCogwheelPosition(true, world, newPos, newAxis))
 				return PlacementOffset.fail();
@@ -110,7 +119,7 @@ public class SpeedControllerBlock extends HorizontalAxisKineticBlock implements 
 	public Class<SpeedControllerBlockEntity> getBlockEntityClass() {
 		return SpeedControllerBlockEntity.class;
 	}
-	
+
 	@Override
 	public BlockEntityType<? extends SpeedControllerBlockEntity> getBlockEntityType() {
 		return AllBlockEntityTypes.ROTATION_SPEED_CONTROLLER.get();

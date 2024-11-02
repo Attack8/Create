@@ -155,7 +155,7 @@ public class CogWheelBlock extends AbstractSimpleShaftBlock implements ICogWheel
 			.below());
 
 		if (AllBlocks.ROTATION_SPEED_CONTROLLER.has(stateBelow) && isLargeCog())
-			return stateBelow.getValue(SpeedControllerBlock.HORIZONTAL_AXIS) == Axis.X ? Axis.Z : Axis.X;
+			return stateBelow.getValue(SpeedControllerBlock.FACING).getAxis() == Axis.X ? Axis.Z : Axis.X;
 
 		BlockPos placedOnPos = context.getClickedPos()
 			.relative(context.getClickedFace()
