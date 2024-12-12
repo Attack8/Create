@@ -719,8 +719,7 @@ public class MillingRecipeGen extends ProcessingRecipeGen {
 
 		RU_YELLOW_SNOWBELLE = ruFlower("yellow_snowbelle", List.of(1f),
 				List.of(Items.YELLOW_DYE), List.of(2))
-
-	;
+		;
 
 	protected GeneratedRecipe metalOre(String name, ItemEntry<? extends Item> crushed, int duration) {
 		return create(name + "_ore", b -> b.duration(duration)
@@ -845,6 +844,36 @@ public class MillingRecipeGen extends ProcessingRecipeGen {
 		} else {
 			return null;
 		}
+	}
+
+	protected GeneratedRecipe modFlower(Mods mod, String input, List<Float> chances,
+										 List<Item> dyes, List<Integer> amounts){
+		return switch (chances.size()) {
+			// Milling recipe has a max of 4 outputs
+			case 1 -> create(mod.recipeId(input), b -> b.duration(50)
+					.require(mod, input)
+					.output(chances.get(0), dyes.get(0), amounts.get(0))
+					.whenModLoaded(mod.getId()));
+			case 2 -> create(mod.recipeId(input), b -> b.duration(50)
+					.require(mod, input)
+					.output(chances.get(0), dyes.get(0), amounts.get(0))
+					.output(chances.get(1), dyes.get(1), amounts.get(1))
+					.whenModLoaded(mod.getId()));
+			case 3 -> create(mod.recipeId(input), b -> b.duration(50)
+					.require(mod, input)
+					.output(chances.get(0), dyes.get(0), amounts.get(0))
+					.output(chances.get(1), dyes.get(1), amounts.get(1))
+					.output(chances.get(2), dyes.get(2), amounts.get(2))
+					.whenModLoaded(mod.getId()));
+			case 4 -> create(mod.recipeId(input), b -> b.duration(50)
+					.require(mod, input)
+					.output(chances.get(0), dyes.get(0), amounts.get(0))
+					.output(chances.get(1), dyes.get(1), amounts.get(1))
+					.output(chances.get(2), dyes.get(2), amounts.get(2))
+					.output(chances.get(3), dyes.get(3), amounts.get(3))
+					.whenModLoaded(mod.getId()));
+            default -> null;
+        };
 	}
 
 	public MillingRecipeGen(PackOutput output) {
