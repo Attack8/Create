@@ -32,10 +32,9 @@ public class CuttingRecipeGen extends ProcessingRecipeGen {
 		// Regions Unexplored
 		RU_14 = stripOnlyDiffModId(Mods.RU, "silver_birch_log", Mods.MC, "stripped_birch_log"),
 		RU_15 = stripOnlyDiffModId(Mods.RU, "silver_birch_wood", Mods.MC, "stripped_birch_wood"),
-		
+
 		// IE
-		IE_WIRES = ieWires("copper", "electrum", "aluminum", "steel", "lead")
-		;
+		IE_WIRES = ieWires("copper", "electrum", "aluminum", "steel", "lead");
 
 	GeneratedRecipe stripAndMakePlanks(Block wood, Block stripped, Block planks) {
 		return stripAndMakePlanks(wood, stripped, planks, 6);

@@ -9,6 +9,26 @@
     "minecraft:splash_potion",
     "minecraft:lingering_potion",
     "minecraft:honey_bottle",
-    "minecraft:cake"
+    "minecraft:cake",
+    {
+      "id": "undergarden:virulent_mix_bucket",
+      "required": false
+    },
+    {
+      "id": "unusualend:warped_potion",
+      "required": false
+    },
+    {
+      "id": "unusualend:warped_infusion",
+      "required": false
+    },
+    {
+      "id": "unusualend:chorus_juice",
+      "required": false
+    },
+    {
+      "id": "unusualend:chorus_tea",
+      "required": false
+    }
   ]
 }

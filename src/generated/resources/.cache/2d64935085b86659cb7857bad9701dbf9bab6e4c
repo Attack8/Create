@@ -642,8 +642,13 @@ b0d8f08968763a5f74e5cd5644377a76a9f39753 assets/create/blockstates/yellow_toolbo
 fe8c497aacc641c2f01cec90bba9f19e59cc2ed2 assets/create/blockstates/yellow_valve_handle.json
 e819e93fdcbe9fd9c050a052d2718ff3b3539365 assets/create/blockstates/zinc_block.json
 64121dcb216381c83b4fe28aa361ea07c24c9ad0 assets/create/blockstates/zinc_ore.json
+<<<<<<< HEAD
 148ea6cb1f12ff9fa4b882c75ee5509aef00cf37 assets/create/lang/en_ud.json
 9f810a52200ffba1a507fe7180df392bf2ddb0f9 assets/create/lang/en_us.json
+=======
+5f729ba3f0557eb1c1923a091e06eee5ddf25c59 assets/create/lang/en_ud.json
+bdd95ac05db0717d02e4dc34b6054e73d4eee640 assets/create/lang/en_us.json
+>>>>>>> ae0dea2d9 (feat: data compat for gardens_of_the_dead, undergarden, unusualend and deeperdarker)
 a97e1060e00ae701a02e39cd4ef8054cf345fac4 assets/create/models/block/acacia_window.json
 103e032c0b1a0a6a27c67da8c91179a564bd281c assets/create/models/block/acacia_window_pane_noside.json
 fb00b627abda76ad4fea867ca57dbfadd24fffa3 assets/create/models/block/acacia_window_pane_noside_alt.json
@@ -4692,7 +4697,7 @@ f675c20350ed60da4878b5d6301f02c8c05624bd data/create/tags/blocks/fan_processing_
 0592b99f657415f6546564ed8efa1fcbef07ba15 data/create/tags/blocks/fan_processing_catalysts/haunting.json
 9386dd9a1d234813f9b8ae4ec88866d396aa1d37 data/create/tags/blocks/fan_processing_catalysts/smoking.json
 35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/create/tags/blocks/fan_processing_catalysts/splashing.json
-6858173c670bb593664ac3c62ded726d57d581f1 data/create/tags/blocks/fan_transparent.json
+6b484960ce220fb5bb50ba082280c8b0dab0158e data/create/tags/blocks/fan_transparent.json
 2589b135c0e96ad29076569e144528fe32ea5b39 data/create/tags/blocks/girdable_tracks.json
 02c0a018f2b8540dc2f1fb420172cc716552f321 data/create/tags/blocks/movable_empty_collider.json
 35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/create/tags/blocks/non_breakable.json
@@ -4709,7 +4714,7 @@ f02fc9781e8f0ae33ed3b98cf4f46ba6927c7ff8 data/create/tags/blocks/sugar_cane_vari
 8a6ad3c63fb0c436ec8109f39358213930effd5a data/create/tags/blocks/table_cloths.json
 5def5088f7fd31b80e6f28c1c4ea146aa9d7d15b data/create/tags/blocks/toolboxes.json
 2589b135c0e96ad29076569e144528fe32ea5b39 data/create/tags/blocks/tracks.json
-1b6977d9a399cf6ee042e3f8f5e64e4d3cda5489 data/create/tags/blocks/tree_attachments.json
+815833ec209dd0e5e65af471e8a80067d0b68e79 data/create/tags/blocks/tree_attachments.json
 da739ad2160e7df4e0e5cc89587670ce5e9450c3 data/create/tags/blocks/valve_handles.json
 72143286fb5cb372a0696550e2eac76ca50e6fbc data/create/tags/blocks/windmill_sails.json
 a109dab3eeeae64b2eb909ae1b5027716c5dd271 data/create/tags/blocks/wrench_pickup.json
@@ -4729,6 +4734,7 @@ f43cac8216e2a9347e48cf93a43de95dd810ca20 data/create/tags/items/contraption_cont
 d371dfd35e49a7bef19f59c03e7f4ae20992f03d data/create/tags/items/create_ingots.json
 910d0f5ccbc4c84b224eca1f1588b1695f41447b data/create/tags/items/crushed_raw_materials.json
 0fa526e7e742573b603ad26b09526cf724efa1dc data/create/tags/items/deployable_drink.json
+<<<<<<< HEAD
 35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/create/tags/items/dispense_behavior_wrap_blacklist.json
 ebd7b09daf2f64c0c04d821696b0e145683d8693 data/create/tags/items/dyed_table_cloths.json
 d2bb65d893d71d2d9871f81f430c233a93adb4bb data/create/tags/items/invalid_for_track_paving.json
@@ -4736,6 +4742,10 @@ d2bb65d893d71d2d9871f81f430c233a93adb4bb data/create/tags/items/invalid_for_trac
 586f8fc5a8b8559c9dc0017e13c78ad918688fae data/create/tags/items/modded_stripped_wood.json
 cebf5fd98eddf5c14befdd47052be678eea79542 data/create/tags/items/packages.json
 f400870b8dbcd14238be3ec99c419093073ba3a6 data/create/tags/items/postboxes.json
+=======
+e500b3c8bc0b12bb3e93b05897aaaec393ce946f data/create/tags/items/modded_stripped_logs.json
+664381f463cdb49baf65270cf52f1d8ea96bad5f data/create/tags/items/modded_stripped_wood.json
+>>>>>>> ae0dea2d9 (feat: data compat for gardens_of_the_dead, undergarden, unusualend and deeperdarker)
 695d75b352fd190b303c724d1aaee9bb786a903b data/create/tags/items/pressurized_air_sources.json
 22c4d4e033a61942b170aa309ed46a89a0ba0c65 data/create/tags/items/pulpifiable.json
 2cd3adffd8b151354df137a990dcb97996a665bb data/create/tags/items/sandpaper.json
@@ -4762,7 +4772,7 @@ e22493305e0cebfb7ededae122e19ee9dd24fc9d data/create/tags/items/stone_types/scor
 5def5088f7fd31b80e6f28c1c4ea146aa9d7d15b data/create/tags/items/toolboxes.json
 2589b135c0e96ad29076569e144528fe32ea5b39 data/create/tags/items/tracks.json
 a5b5711d1798473a9b25db5b7f749570ed0a2769 data/create/tags/items/upgrade_aquatic/coral.json
-22c744a157399a21492bcd8b211578f8f504e653 data/create/tags/items/upright_on_belt.json
+5a766e52ff42e36e52379f3d0ef787b9766e562b data/create/tags/items/upright_on_belt.json
 da739ad2160e7df4e0e5cc89587670ce5e9450c3 data/create/tags/items/valve_handles.json
 c59c9fc0cdd45de659aa8023d36f9decb90f708c data/create/tags/items/vanilla_stripped_logs.json
 64441ac1daa64c81601b94b82b21c0ee862b6344 data/create/tags/items/vanilla_stripped_wood.json
