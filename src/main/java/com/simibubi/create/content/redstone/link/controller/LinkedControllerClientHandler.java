@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
+
+import net.createmod.catnip.platform.CatnipServices;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -12,7 +13,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.redstone.link.LinkBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -24,21 +24,21 @@ import net.createmod.catnip.CatnipClient;
 import net.createmod.catnip.utility.FontHelper.Palette;
 import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
 public class LinkedControllerClientHandler {
 
-	public static final IGuiOverlay OVERLAY = LinkedControllerClientHandler::renderOverlay;
+	public static final LayeredDraw.Layer OVERLAY = LinkedControllerClientHandler::renderOverlay;
 
 	public static Mode MODE = Mode.IDLE;
 	public static int PACKET_RATE = 5;
@@ -92,11 +92,11 @@ public class LinkedControllerClientHandler {
 		selectedLocation = BlockPos.ZERO;
 
 		if (inLectern())
-			AllPackets.getChannel().sendToServer(new LinkedControllerStopLecternPacket(lecternPos));
+			CatnipServices.NETWORK.sendToServer(new LinkedControllerStopLecternPacket(lecternPos));
 		lecternPos = null;
 
 		if (!currentlyPressed.isEmpty())
-			AllPackets.getChannel().sendToServer(new LinkedControllerInputPacket(currentlyPressed, false));
+			CatnipServices.NETWORK.sendToServer(new LinkedControllerInputPacket(currentlyPressed, false));
 		currentlyPressed.clear();
 
 		LinkedControllerItemRenderer.resetButtons();
@@ -150,7 +150,7 @@ public class LinkedControllerClientHandler {
 			return;
 		}
 
-		Vector<KeyMapping> controls = ControlsUtil.getControls();
+		List<KeyMapping> controls = ControlsUtil.getControls();
 		Collection<Integer> pressedKeys = new HashSet<>();
 		for (int i = 0; i < controls.size(); i++) {
 			if (ControlsUtil.isActuallyPressed(controls.get(i)))
@@ -165,13 +165,13 @@ public class LinkedControllerClientHandler {
 		if (MODE == Mode.ACTIVE) {
 			// Released Keys
 			if (!releasedKeys.isEmpty()) {
-				AllPackets.getChannel().sendToServer(new LinkedControllerInputPacket(releasedKeys, false, lecternPos));
+				CatnipServices.NETWORK.sendToServer(new LinkedControllerInputPacket(releasedKeys, false, lecternPos));
 				AllSoundEvents.CONTROLLER_CLICK.playAt(player.level(), player.blockPosition(), 1f, .5f, true);
 			}
 
 			// Newly Pressed Keys
 			if (!newKeys.isEmpty()) {
-				AllPackets.getChannel().sendToServer(new LinkedControllerInputPacket(newKeys, true, lecternPos));
+				CatnipServices.NETWORK.sendToServer(new LinkedControllerInputPacket(newKeys, true, lecternPos));
 				packetCooldown = PACKET_RATE;
 				AllSoundEvents.CONTROLLER_CLICK.playAt(player.level(), player.blockPosition(), 1f, .75f, true);
 			}
@@ -179,7 +179,7 @@ public class LinkedControllerClientHandler {
 			// Keepalive Pressed Keys
 			if (packetCooldown == 0) {
 				if (!pressedKeys.isEmpty()) {
-					AllPackets.getChannel().sendToServer(new LinkedControllerInputPacket(pressedKeys, true, lecternPos));
+					CatnipServices.NETWORK.sendToServer(new LinkedControllerInputPacket(pressedKeys, true, lecternPos));
 					packetCooldown = PACKET_RATE;
 				}
 			}
@@ -197,7 +197,7 @@ public class LinkedControllerClientHandler {
 			for (Integer integer : newKeys) {
 				LinkBehaviour linkBehaviour = BlockEntityBehaviour.get(mc.level, selectedLocation, LinkBehaviour.TYPE);
 				if (linkBehaviour != null) {
-					AllPackets.getChannel().sendToServer(new LinkedControllerBindPacket(integer, selectedLocation));
+					CatnipServices.NETWORK.sendToServer(new LinkedControllerBindPacket(integer, selectedLocation));
 					CreateLang.translate("linked_controller.key_bound", controls.get(integer)
 						.getTranslatedKeyMessage()
 						.getString())
@@ -212,8 +212,10 @@ public class LinkedControllerClientHandler {
 		controls.forEach(kb -> kb.setDown(false));
 	}
 
-	public static void renderOverlay(ForgeGui gui, GuiGraphics graphics, float partialTicks, int width1,
-		int height1) {
+	public static void renderOverlay(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+		int width1 = guiGraphics.guiWidth();
+		int height1 = guiGraphics.guiHeight();
+
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.options.hideGui)
 			return;
@@ -221,14 +223,14 @@ public class LinkedControllerClientHandler {
 		if (MODE != Mode.BIND)
 			return;
 
-		PoseStack poseStack = graphics.pose();
+		PoseStack poseStack = guiGraphics.pose();
 		poseStack.pushPose();
 		Screen tooltipScreen = new Screen(Components.immutableEmpty()) {
 		};
 		tooltipScreen.init(mc, width1, height1);
 
 		Object[] keys = new Object[6];
-		Vector<KeyMapping> controls = ControlsUtil.getControls();
+		List<KeyMapping> controls = ControlsUtil.getControls();
 		for (int i = 0; i < controls.size(); i++) {
 			KeyMapping keyBinding = controls.get(i);
 			keys[i] = keyBinding.getTranslatedKeyMessage()
@@ -249,7 +251,7 @@ public class LinkedControllerClientHandler {
 		int y = height1 - height - 24;
 
 		// TODO
-		graphics.renderComponentTooltip(Minecraft.getInstance().font, list, x, y);
+		guiGraphics.renderComponentTooltip(Minecraft.getInstance().font, list, x, y);
 
 		poseStack.popPose();
 	}

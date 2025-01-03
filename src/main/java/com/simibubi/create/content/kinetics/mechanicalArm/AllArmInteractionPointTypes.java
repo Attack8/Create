@@ -1,18 +1,13 @@
 package com.simibubi.create.content.kinetics.mechanicalArm;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
-
-import com.simibubi.create.AllRegistries;
-
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllRegistries;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.belt.BeltBlock;
@@ -42,14 +37,15 @@ import net.createmod.catnip.utility.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CampfireBlock;
@@ -62,9 +58,12 @@ import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.SidedInvWrapper;
+
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class AllArmInteractionPointTypes {
 	private static final DeferredRegister<ArmInteractionPointType> REGISTER = DeferredRegister.create(AllRegistries.Keys.ARM_INTERACTION_POINT_TYPES, Create.ID);
@@ -501,8 +500,7 @@ public class AllArmInteractionPointTypes {
 			ItemStack insert = inserter.insert(stack);
 			if (!simulate && insert.getCount() != stack.getCount()) {
 				BlockEntity blockEntity = level.getBlockEntity(pos);
-				if (blockEntity instanceof FunnelBlockEntity) {
-					FunnelBlockEntity funnelBlockEntity = (FunnelBlockEntity) blockEntity;
+				if (blockEntity instanceof FunnelBlockEntity funnelBlockEntity) {
 					funnelBlockEntity.onTransfer(stack);
 					if (funnelBlockEntity.hasFlap())
 						funnelBlockEntity.flap(true);
@@ -522,7 +520,7 @@ public class AllArmInteractionPointTypes {
 			BlockEntity blockEntity = level.getBlockEntity(pos);
 			if (!(blockEntity instanceof CampfireBlockEntity campfireBE))
 				return stack;
-			Optional<CampfireCookingRecipe> recipe = campfireBE.getCookableRecipe(stack);
+			Optional<RecipeHolder<CampfireCookingRecipe>> recipe = campfireBE.getCookableRecipe(stack);
 			if (recipe.isEmpty())
 				return stack;
 			if (simulate) {
@@ -540,7 +538,7 @@ public class AllArmInteractionPointTypes {
 				return remainder;
 			}
 			ItemStack remainder = stack.copy();
-			campfireBE.placeFood(null, remainder, recipe.get()
+			campfireBE.placeFood(null, remainder, recipe.get().value()
 				.getCookingTime());
 			return remainder;
 		}
@@ -562,7 +560,7 @@ public class AllArmInteractionPointTypes {
 			BlockState oldState = cachedState;
 			super.updateCachedState();
 			if (oldState != cachedState)
-				cachedHandler.invalidate();
+				level.invalidateCapabilities(cachedHandler.pos());
 		}
 
 		@Nullable
@@ -607,7 +605,7 @@ public class AllArmInteractionPointTypes {
 		@Override
 		public ItemStack insert(ItemStack stack, boolean simulate) {
 			Item item = stack.getItem();
-			if (!(item instanceof RecordItem))
+			if (stack.get(DataComponents.JUKEBOX_PLAYABLE) == null)
 				return stack;
 			if (cachedState.getOptionalValue(JukeboxBlock.HAS_RECORD)
 				.orElse(true))
@@ -615,13 +613,13 @@ public class AllArmInteractionPointTypes {
 			BlockEntity blockEntity = level.getBlockEntity(pos);
 			if (!(blockEntity instanceof JukeboxBlockEntity jukeboxBE))
 				return stack;
-			if (!jukeboxBE.getFirstItem()
+			if (!jukeboxBE.getTheItem()
 				.isEmpty())
 				return stack;
 			ItemStack remainder = stack.copy();
 			ItemStack toInsert = remainder.split(1);
 			if (!simulate) {
-				jukeboxBE.setFirstItem(toInsert);
+				jukeboxBE.setTheItem(toInsert);
 				level.setBlock(pos, cachedState.setValue(JukeboxBlock.HAS_RECORD, true), 2);
 				level.levelEvent(null, 1010, pos, Item.getId(item));
 			}
@@ -636,7 +634,7 @@ public class AllArmInteractionPointTypes {
 			BlockEntity blockEntity = level.getBlockEntity(pos);
 			if (!(blockEntity instanceof JukeboxBlockEntity jukeboxBE))
 				return ItemStack.EMPTY;
-			ItemStack record = jukeboxBE.getFirstItem();
+			ItemStack record = jukeboxBE.getTheItem();
 			if (record.isEmpty())
 				return ItemStack.EMPTY;
 			if (!simulate) {

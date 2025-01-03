@@ -21,19 +21,22 @@ import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 @GameTestGroup(path = "items")
 public class TestItems {
@@ -78,12 +81,15 @@ public class TestItems {
 	public static void attributeFilters(CreateGameTestHelper helper) {
 		BlockPos lever = new BlockPos(2, 3, 1);
 		BlockPos end = new BlockPos(11, 2, 2);
+		Holder<Enchantment> PROTECTION_ENCHANT = helper.getLevel().registryAccess()
+				.registryOrThrow(Registries.ENCHANTMENT)
+				.getHolderOrThrow(Enchantments.PROTECTION);
 		Map<BlockPos, ItemStack> outputs = Map.of(
 				new BlockPos(3, 2, 1), new ItemStack(AllBlocks.BRASS_BLOCK.get()),
 				new BlockPos(4, 2, 1), new ItemStack(Items.APPLE),
 				new BlockPos(5, 2, 1), new ItemStack(Items.WATER_BUCKET),
 				new BlockPos(6, 2, 1), EnchantedBookItem.createForEnchantment(
-						new EnchantmentInstance(Enchantments.ALL_DAMAGE_PROTECTION, 1)
+						new EnchantmentInstance(PROTECTION_ENCHANT, 1)
 				),
 				new BlockPos(7, 2, 1), Util.make(
 						new ItemStack(Items.NETHERITE_SWORD),
@@ -322,7 +328,7 @@ public class TestItems {
 
 				DepotBlockEntity depot = depots.get(i);
 				ItemStack item = depot.getHeldItem();
-				String name = ForgeRegistries.ITEMS.getKey(item.getItem()).getPath();
+				String name = BuiltInRegistries.ITEM.getKey(item.getItem()).getPath();
 
 				if (!name.equals(text))
 					helper.fail("Text mismatch: wanted [" + name + "], got: " + text);

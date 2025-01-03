@@ -1,10 +1,12 @@
 package com.simibubi.create.foundation.data.recipe;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRecipeTypes;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -235,8 +237,8 @@ public class CuttingRecipeGen extends ProcessingRecipeGen {
 		return null;
 	}
 
-	public CuttingRecipeGen(PackOutput output) {
-		super(output);
+	public CuttingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries);
 	}
 
 	@Override

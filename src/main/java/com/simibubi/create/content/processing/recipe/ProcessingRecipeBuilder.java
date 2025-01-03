@@ -2,10 +2,7 @@ package com.simibubi.create.content.processing.recipe;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.simibubi.create.foundation.data.SimpleDatagenIngredient;
 import com.simibubi.create.foundation.data.recipe.Mods;
 import com.simibubi.create.foundation.fluid.FluidHelper;
@@ -15,20 +12,18 @@ import com.tterrag.registrate.util.DataIngredient;
 
 import net.createmod.catnip.utility.Pair;
 import net.minecraft.core.NonNullList;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
-import net.minecraftforge.common.crafting.conditions.NotCondition;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.NotCondition;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class ProcessingRecipeBuilder<T extends ProcessingRecipe<?>> {
 
@@ -100,8 +95,18 @@ public class ProcessingRecipeBuilder<T extends ProcessingRecipe<?>> {
 		return factory.create(params);
 	}
 
-	public void build(Consumer<FinishedRecipe> consumer) {
-		consumer.accept(new DataGenResult<>(build(), recipeConditions));
+	public void build(RecipeOutput consumer) {
+		T recipe = build();
+		IRecipeTypeInfo recipeType = recipe.getTypeInfo();
+		ResourceLocation typeId = recipeType.getId();
+
+		if (!(recipeType.getSerializer() instanceof ProcessingRecipeSerializer))
+			throw new IllegalStateException("Cannot datagen ProcessingRecipe of type: " + typeId);
+
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(recipe.id.getNamespace(),
+				typeId.getPath() + "/" + recipe.id.getPath());
+
+		consumer.accept(id, recipe, null, recipeConditions.toArray(new ICondition[0]));
 	}
 
 	// Datagen shortcuts
@@ -120,12 +125,12 @@ public class ProcessingRecipeBuilder<T extends ProcessingRecipe<?>> {
 	}
 
 	public ProcessingRecipeBuilder<T> require(Mods mod, String id) {
-		params.ingredients.add(new SimpleDatagenIngredient(mod, id));
+		params.ingredients.add(new SimpleDatagenIngredient(mod, id).toVanilla());
 		return this;
 	}
 
 	public ProcessingRecipeBuilder<T> require(ResourceLocation ingredient) {
-		params.ingredients.add(DataIngredient.ingredient(null, ingredient));
+		params.ingredients.add(DataIngredient.ingredient(null, ingredient).toVanilla());
 		return this;
 	}
 
@@ -242,60 +247,4 @@ public class ProcessingRecipeBuilder<T extends ProcessingRecipe<?>> {
 		}
 
 	}
-
-	public static class DataGenResult<S extends ProcessingRecipe<?>> implements FinishedRecipe {
-
-		private List<ICondition> recipeConditions;
-		private ProcessingRecipeSerializer<S> serializer;
-		private ResourceLocation id;
-		private S recipe;
-
-		@SuppressWarnings("unchecked")
-		public DataGenResult(S recipe, List<ICondition> recipeConditions) {
-			this.recipe = recipe;
-			this.recipeConditions = recipeConditions;
-			IRecipeTypeInfo recipeType = this.recipe.getTypeInfo();
-			ResourceLocation typeId = recipeType.getId();
-
-			if (!(recipeType.getSerializer() instanceof ProcessingRecipeSerializer))
-				throw new IllegalStateException("Cannot datagen ProcessingRecipe of type: " + typeId);
-
-			this.id = new ResourceLocation(recipe.getId().getNamespace(),
-					typeId.getPath() + "/" + recipe.getId().getPath());
-			this.serializer = (ProcessingRecipeSerializer<S>) recipe.getSerializer();
-		}
-
-		@Override
-		public void serializeRecipeData(JsonObject json) {
-			serializer.write(json, recipe);
-			if (recipeConditions.isEmpty())
-				return;
-
-			JsonArray conds = new JsonArray();
-			recipeConditions.forEach(c -> conds.add(CraftingHelper.serialize(c)));
-			json.add("conditions", conds);
-		}
-
-		@Override
-		public ResourceLocation getId() {
-			return id;
-		}
-
-		@Override
-		public RecipeSerializer<?> getType() {
-			return serializer;
-		}
-
-		@Override
-		public JsonObject serializeAdvancement() {
-			return null;
-		}
-
-		@Override
-		public ResourceLocation getAdvancementId() {
-			return null;
-		}
-
-	}
-
 }

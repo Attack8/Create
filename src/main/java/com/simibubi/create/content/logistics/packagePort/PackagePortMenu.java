@@ -9,18 +9,18 @@ import com.simibubi.create.foundation.item.SmartInventory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class PackagePortMenu extends MenuBase<PackagePortBlockEntity> {
 
-	public PackagePortMenu(MenuType<?> type, int id, Inventory inv, FriendlyByteBuf extraData) {
+	public PackagePortMenu(MenuType<?> type, int id, Inventory inv, RegistryFriendlyByteBuf extraData) {
 		super(type, id, inv, extraData);
 	}
 
@@ -35,7 +35,7 @@ public class PackagePortMenu extends MenuBase<PackagePortBlockEntity> {
 	}
 
 	@Override
-	protected PackagePortBlockEntity createOnClient(FriendlyByteBuf extraData) {
+	protected PackagePortBlockEntity createOnClient(RegistryFriendlyByteBuf extraData) {
 		BlockPos readBlockPos = extraData.readBlockPos();
 		ClientLevel world = Minecraft.getInstance().level;
 		BlockEntity blockEntity = world.getBlockEntity(readBlockPos);

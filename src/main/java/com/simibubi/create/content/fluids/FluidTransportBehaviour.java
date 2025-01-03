@@ -19,12 +19,13 @@ import net.createmod.catnip.utility.Iterate;
 import net.createmod.catnip.utility.WorldAttached;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public abstract class FluidTransportBehaviour extends BlockEntityBehaviour {
 
@@ -110,7 +111,7 @@ public abstract class FluidTransportBehaviour extends BlockEntityBehaviour {
 					availableFlow = fluidInFlow;
 					continue;
 				}
-				if (availableFlow.isFluidEqual(fluidInFlow)) {
+				if (FluidStack.isSameFluidSameComponents(availableFlow, fluidInFlow)) {
 					singleSource = null;
 					availableFlow = fluidInFlow;
 					continue;
@@ -141,8 +142,8 @@ public abstract class FluidTransportBehaviour extends BlockEntityBehaviour {
 	}
 
 	@Override
-	public void read(CompoundTag nbt, boolean clientPacket) {
-		super.read(nbt, clientPacket);
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(nbt, registries, clientPacket);
 		if (interfaces == null)
 			interfaces = new IdentityHashMap<>();
 		for (Direction face : Iterate.directions)
@@ -156,19 +157,19 @@ public abstract class FluidTransportBehaviour extends BlockEntityBehaviour {
 		}
 
 		interfaces.values()
-			.forEach(connection -> connection.deserializeNBT(nbt, blockEntity.getBlockPos(), clientPacket));
+			.forEach(connection -> connection.deserializeNBT(nbt, registries, blockEntity.getBlockPos(), clientPacket));
 	}
 
 	@Override
-	public void write(CompoundTag nbt, boolean clientPacket) {
-		super.write(nbt, clientPacket);
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(nbt, registries, clientPacket);
 		if (clientPacket)
 			createConnectionData();
 		if (interfaces == null)
 			return;
 
 		interfaces.values()
-			.forEach(connection -> connection.serializeNBT(nbt, clientPacket));
+			.forEach(connection -> connection.serializeNBT(nbt, registries, clientPacket));
 	}
 
 	public FluidStack getProvidedOutwardFluid(Direction side) {

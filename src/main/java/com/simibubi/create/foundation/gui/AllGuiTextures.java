@@ -8,8 +8,8 @@ import net.createmod.catnip.gui.element.ScreenElement;
 import net.createmod.catnip.utility.theme.Color;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public enum AllGuiTextures implements ScreenElement, TextureSheetSegment {
 
@@ -56,8 +56,8 @@ public enum AllGuiTextures implements ScreenElement, TextureSheetSegment {
 	FROGPORT_BG("frogport_and_mailbox", 0, 47, 220, 82),
 
 	TOOLBOX("toolbox", 188, 171),
-	TOOLBELT_SLOT("minecraft", "widgets", 24, 23, 22, 22),
-	TOOLBELT_SLOT_HIGHLIGHT("minecraft", "widgets", 0, 22, 24, 24),
+	TOOLBELT_SLOT("widgets", 0, 68, 22, 22),
+	TOOLBELT_SLOT_HIGHLIGHT("widgets", 27, 67, 24, 24),
 	TOOLBELT_MAIN_SLOT("widgets", 0, 97, 24, 24),
 	TOOLBELT_EMPTY_SLOT("widgets", 27, 98, 22, 22),
 	TOOLBELT_INACTIVE_SLOT("widgets", 52, 98, 22, 22),
@@ -151,12 +151,11 @@ public enum AllGuiTextures implements ScreenElement, TextureSheetSegment {
 	VALUE_SETTINGS_CURSOR_RIGHT("value_settings", 61, 9, 3, 14),
 	VALUE_SETTINGS_CURSOR_ICON("value_settings", 0, 44, 22, 20),
 	VALUE_SETTINGS_LABEL_BG("value_settings", 0, 31, 81, 11),
-
-	// HILO
+// HILO
 	FACTORY_GAUGE_RECIPE("factory_gauge", 32, 0, 192, 96),
 	FACTORY_GAUGE_RESTOCK("factory_gauge", 32, 112, 192, 40),
 	FACTORY_GAUGE_BOTTOM("factory_gauge", 32, 176, 200, 64),
-	
+
 	STOCK_KEEPER_REQUEST_HEADER("stock_keeper", 0, 0, 256, 36),
 	STOCK_KEEPER_REQUEST_BODY("stock_keeper", 0, 48, 256, 20),
 	STOCK_KEEPER_REQUEST_FOOTER("stock_keeper", 0, 80, 256, 80),
@@ -190,9 +189,8 @@ public enum AllGuiTextures implements ScreenElement, TextureSheetSegment {
 	STOCK_KEEPER_CATEGORY_ENTRY("stock_keeper_categories", 38, 159, 171, 18),
 	STOCK_KEEPER_CATEGORY_UP("stock_keeper_categories", 211, 160, 8, 8),
 	STOCK_KEEPER_CATEGORY_DOWN("stock_keeper_categories", 211, 169, 8, 8),
-	
-	REDSTONE_REQUESTER("requester", 16, 16, 232, 120),
 
+	REDSTONE_REQUESTER("requester", 16, 16, 232, 120),
 	// JEI
 	JEI_SLOT("jei/widgets", 18, 18),
 	JEI_CHANCE_SLOT("jei/widgets", 20, 156, 18, 18),
@@ -259,7 +257,7 @@ public enum AllGuiTextures implements ScreenElement, TextureSheetSegment {
 	COMPUTER("computer", 200, 102);
 
 	;
-	
+
 	public static final int FONT_COLOR = 0x575F7A;
 
 	public final ResourceLocation location;
@@ -277,7 +275,7 @@ public enum AllGuiTextures implements ScreenElement, TextureSheetSegment {
 	}
 
 	AllGuiTextures(String namespace, String location, int startX, int startY, int width, int height) {
-		this.location = new ResourceLocation(namespace, "textures/gui/" + location + ".png");
+		this.location = ResourceLocation.fromNamespaceAndPath(namespace, "textures/gui/" + location + ".png");
 		this.width = width;
 		this.height = height;
 		this.startX = startX;

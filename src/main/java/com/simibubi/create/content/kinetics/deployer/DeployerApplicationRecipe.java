@@ -20,9 +20,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class DeployerApplicationRecipe extends ItemApplicationRecipe implements IAssemblyRecipe {
 
@@ -35,16 +36,19 @@ public class DeployerApplicationRecipe extends ItemApplicationRecipe implements 
 		return 4;
 	}
 
-	public static DeployerApplicationRecipe convert(Recipe<?> sandpaperRecipe) {
-		return new ProcessingRecipeBuilder<>(DeployerApplicationRecipe::new,
-			new ResourceLocation(sandpaperRecipe.getId()
-				.getNamespace(),
-				sandpaperRecipe.getId()
-					.getPath() + "_using_deployer")).require(sandpaperRecipe.getIngredients()
+	public static RecipeHolder<DeployerApplicationRecipe> convert(RecipeHolder<?> sandpaperRecipe) {
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(
+				sandpaperRecipe.id().getNamespace(),
+				sandpaperRecipe.id().getPath() + "_using_deployer"
+		);
+		DeployerApplicationRecipe recipe = new ProcessingRecipeBuilder<>(DeployerApplicationRecipe::new, id)
+				.require(sandpaperRecipe.value().getIngredients()
 						.get(0))
 						.require(AllItemTags.SANDPAPER.tag)
-						.output(sandpaperRecipe.getResultItem(Minecraft.getInstance().level.registryAccess()))
+						.output(sandpaperRecipe.value().getResultItem(Minecraft.getInstance().level.registryAccess()))
 						.build();
+
+		return new RecipeHolder<>(id, recipe);
 	}
 
 	@Override

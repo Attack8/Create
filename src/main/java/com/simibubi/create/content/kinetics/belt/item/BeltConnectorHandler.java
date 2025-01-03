@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import com.simibubi.create.AllDataComponents;
+
 import org.joml.Vector3f;
 
 import com.simibubi.create.AllItems;
@@ -27,7 +29,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class BeltConnectorHandler {
 
-	private static Random r = new Random();
+	private static final Random r = new Random();
 
 	public static void tick() {
 		Player player = Minecraft.getInstance().player;
@@ -43,14 +45,11 @@ public class BeltConnectorHandler {
 
 			if (!AllItems.BELT_CONNECTOR.isIn(heldItem))
 				continue;
-			if (!heldItem.hasTag())
+
+			if (!heldItem.has(AllDataComponents.BELT_FIRST_SHAFT))
 				continue;
 
-			CompoundTag tag = heldItem.getTag();
-			if (!tag.contains("FirstPulley"))
-				continue;
-
-			BlockPos first = NbtUtils.readBlockPos(tag.getCompound("FirstPulley"));
+			BlockPos first = heldItem.get(AllDataComponents.BELT_FIRST_SHAFT);
 
 			if (!world.getBlockState(first)
 				.hasProperty(BlockStateProperties.AXIS))

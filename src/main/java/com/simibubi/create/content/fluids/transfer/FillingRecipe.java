@@ -16,21 +16,21 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.fluids.FluidStack;
 
-public class FillingRecipe extends ProcessingRecipe<RecipeWrapper> implements IAssemblyRecipe {
+public class FillingRecipe extends ProcessingRecipe<SingleRecipeInput> implements IAssemblyRecipe {
 
 	public FillingRecipe(ProcessingRecipeParams params) {
 		super(AllRecipeTypes.FILLING, params);
 	}
 
 	@Override
-	public boolean matches(RecipeWrapper inv, Level p_77569_2_) {
+	public boolean matches(SingleRecipeInput inv, Level p_77569_2_) {
 		return ingredients.get(0)
 			.test(inv.getItem(0));
 	}
@@ -72,7 +72,7 @@ public class FillingRecipe extends ProcessingRecipe<RecipeWrapper> implements IA
 		if (matchingFluidStacks.size() == 0)
 			return Components.literal("Invalid");
 		return CreateLang.translateDirect("recipe.assembly.spout_filling_fluid",
-			matchingFluidStacks.get(0).getDisplayName().getString());
+			matchingFluidStacks.get(0).getHoverName().getString());
 	}
 
 	@Override

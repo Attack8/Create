@@ -2,7 +2,7 @@ package com.simibubi.create.content.contraptions.minecart;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
-import com.simibubi.create.content.contraptions.minecart.capability.CapabilityMinecartController;
+import com.simibubi.create.AllAttachmentTypes;
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartController;
 import net.createmod.catnip.utility.VecHelper;
 import net.minecraft.Util;
@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.Map;
 
@@ -50,14 +49,14 @@ public class MinecartSim2020 {
 	}
 
 	public static boolean canAddMotion(AbstractMinecart c) {
-		if (c instanceof MinecartFurnace)
-			return Mth.equal(((MinecartFurnace) c).xPush, 0)
-				&& Mth.equal(((MinecartFurnace) c).zPush, 0);
-		LazyOptional<MinecartController> capability =
-			c.getCapability(CapabilityMinecartController.MINECART_CONTROLLER_CAPABILITY);
-		if (capability.isPresent() && capability.orElse(null)
-			.isStalled())
-			return false;
+		if (c instanceof MinecartFurnace furnace)
+			return Mth.equal(furnace.xPush, 0)
+				&& Mth.equal(furnace.zPush, 0);
+
+		if (c.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
+			MinecartController controller = c.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+			return !controller.isStalled();
+		}
 		return true;
 	}
 

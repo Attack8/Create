@@ -5,27 +5,27 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.serialization.MapCodec;
 import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttributeTypes;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.level.Level;
 
-public class BookCopyAttribute implements ItemAttribute {
-	private int generation;
-
-	public BookCopyAttribute(int generation) {
-		this.generation = generation;
-	}
+public record BookCopyAttribute(int generation) implements ItemAttribute {
+	public static final MapCodec<BookCopyAttribute> CODEC = ExtraCodecs.NON_NEGATIVE_INT
+			.xmap(BookCopyAttribute::new, BookCopyAttribute::generation)
+			.fieldOf("value");
 
 	private static int extractGeneration(ItemStack stack) {
-		CompoundTag nbt = stack.getTag();
-		if (nbt != null && stack.getItem() instanceof WrittenBookItem) {
-			return nbt.getInt("generation");
+		if (stack.has(DataComponents.WRITTEN_BOOK_CONTENT)) {
+			return stack.get(DataComponents.WRITTEN_BOOK_CONTENT).generation();
 		}
+
 		return -1;
 	}
 
@@ -46,17 +46,7 @@ public class BookCopyAttribute implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.BOOK_COPY.get();
-	}
-
-	@Override
-	public void save(CompoundTag nbt) {
-		nbt.putInt("generation", generation);
-	}
-
-	@Override
-	public void load(CompoundTag nbt) {
-		generation = nbt.getInt("generation");
+		return AllItemAttributeTypes.BOOK_COPY.value();
 	}
 
 	public static class Type implements ItemAttributeType {
@@ -75,6 +65,11 @@ public class BookCopyAttribute implements ItemAttribute {
 			}
 
 			return list;
+		}
+
+		@Override
+		public MapCodec<? extends ItemAttribute> codec() {
+			return CODEC;
 		}
 	}
 }

@@ -39,7 +39,7 @@ public class CreateMainMenuScreen extends AbstractSimiScreen {
 	public static final CubeMap PANORAMA_RESOURCES =
 		new CubeMap(Create.asResource("textures/gui/title/background/panorama"));
 	public static final ResourceLocation PANORAMA_OVERLAY_TEXTURES =
-		new ResourceLocation("textures/gui/title/background/panorama_overlay.png");
+		ResourceLocation.withDefaultNamespace("textures/gui/title/background/panorama_overlay.png");
 	public static final PanoramaRenderer PANORAMA = new PanoramaRenderer(PANORAMA_RESOURCES);
 
 	private static final Component CURSEFORGE_TOOLTIP = Components.literal("CurseForge").withStyle(s -> s.withColor(0xFC785C).withBold(true));
@@ -60,8 +60,8 @@ public class CreateMainMenuScreen extends AbstractSimiScreen {
 	public CreateMainMenuScreen(Screen parent) {
 		this.parent = parent;
 		returnOnClose = true;
-		if (parent instanceof TitleScreen titleScreen)
-			vanillaPanorama = titleScreen.panorama;
+		if (parent instanceof TitleScreen)
+			vanillaPanorama = Screen.PANORAMA;
 		else
 			vanillaPanorama = new PanoramaRenderer(TitleScreen.CUBE_MAP);
 	}
@@ -77,12 +77,12 @@ public class CreateMainMenuScreen extends AbstractSimiScreen {
 	protected void renderWindow(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 		float f = (float) (Util.getMillis() - this.firstRenderTime) / 1000.0F;
 		float alpha = Mth.clamp(f, 0.0F, 1.0F);
-		float elapsedPartials = minecraft.getDeltaFrameTime();
+		float elapsedPartials = minecraft.getTimer().getGameTimeDeltaPartialTick(false);
 
 		if (parent instanceof TitleScreen) {
 			if (alpha < 1)
-				vanillaPanorama.render(elapsedPartials, 1);
-			PANORAMA.render(elapsedPartials, alpha);
+				vanillaPanorama.render(graphics, this.width, this.height, 1, elapsedPartials);
+			PANORAMA.render(graphics, this.width, this.height, 1, elapsedPartials);
 
 			RenderSystem.enableBlend();
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,

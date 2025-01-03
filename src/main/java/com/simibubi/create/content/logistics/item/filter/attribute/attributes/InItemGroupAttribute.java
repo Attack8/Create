@@ -2,23 +2,27 @@ package com.simibubi.create.content.logistics.item.filter.attribute.attributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.serialization.MapCodec;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttributeTypes;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.CreativeModeTabRegistry;
 
 public class InItemGroupAttribute implements ItemAttribute {
+	public static final MapCodec<InItemGroupAttribute> CODEC = BuiltInRegistries.CREATIVE_MODE_TAB.byNameCodec()
+			.xmap(InItemGroupAttribute::new, i -> i.group)
+			.fieldOf("value");
+
 	private CreativeModeTab group;
 
 	public InItemGroupAttribute(CreativeModeTab group) {
@@ -65,26 +69,21 @@ public class InItemGroupAttribute implements ItemAttribute {
 	}
 
 	@Override
+	public final boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof InItemGroupAttribute that)) return false;
+
+		return Objects.equals(group, that.group);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(group);
+	}
+
+	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.IN_ITEM_GROUP.get();
-	}
-
-	@Override
-	public void save(CompoundTag nbt) {
-		if (group != null) {
-			ResourceLocation groupId = CreativeModeTabRegistry.getName(group);
-
-			if (groupId != null) {
-				nbt.putString("group", groupId.toString());
-			}
-		}
-	}
-
-	@Override
-	public void load(CompoundTag nbt) {
-		if (nbt.contains("group")) {
-			group = CreativeModeTabRegistry.getTab(new ResourceLocation(nbt.getString("group")));
-		}
+		return AllItemAttributeTypes.IN_ITEM_GROUP.value();
 	}
 
 	public static class Type implements ItemAttributeType {
@@ -104,6 +103,11 @@ public class InItemGroupAttribute implements ItemAttribute {
 			}
 
 			return list;
+		}
+
+		@Override
+		public MapCodec<? extends ItemAttribute> codec() {
+			return CODEC;
 		}
 	}
 }

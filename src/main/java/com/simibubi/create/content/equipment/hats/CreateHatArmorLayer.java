@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.trains.schedule.hat.TrainHatInfo;
 import com.simibubi.create.content.trains.schedule.hat.TrainHatInfoReloadListener;
 import com.simibubi.create.foundation.mixin.accessor.AgeableListModelAccessor;
+import com.simibubi.create.foundation.mixin.accessor.EntityRenderDispatcherAccessor;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
@@ -93,7 +94,7 @@ public class CreateHatArmorLayer<T extends LivingEntity, M extends EntityModel<T
 				for (EntityRenderer<? extends Player> renderer : renderManager.getSkinMap()
 					.values())
 					registerOn(renderer);
-				for (EntityRenderer<?> renderer : renderManager.renderers.values())
+				for (EntityRenderer<?> renderer : ((EntityRenderDispatcherAccessor) renderManager).create$getRenderers().values())
 					registerOn(renderer);
 			}
 

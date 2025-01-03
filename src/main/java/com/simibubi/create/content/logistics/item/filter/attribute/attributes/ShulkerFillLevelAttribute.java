@@ -5,29 +5,30 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.annotation.Nullable;
-
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttributeTypes;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.utility.lang.Lang;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.ContainerHelper;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 
-public class ShulkerFillLevelAttribute implements ItemAttribute {
-	private ShulkerLevels levels;
-
-	public ShulkerFillLevelAttribute(ShulkerLevels levels) {
-		this.levels = levels;
-	}
+public record ShulkerFillLevelAttribute(ShulkerLevels levels) implements ItemAttribute {
+	public static final MapCodec<ShulkerFillLevelAttribute> CODEC = ShulkerLevels.CODEC
+			.xmap(ShulkerFillLevelAttribute::new, ShulkerFillLevelAttribute::levels)
+			.fieldOf("value");
 
 	@Override
 	public boolean appliesTo(ItemStack stack, Level level) {
@@ -49,26 +50,15 @@ public class ShulkerFillLevelAttribute implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.SHULKER_FILL_LEVEL.get();
+		return AllItemAttributeTypes.SHULKER_FILL_LEVEL.value();
 	}
 
-	@Override
-	public void save(CompoundTag nbt) {
-		if (levels != null)
-			nbt.putString("id", levels.key);
-	}
-
-	@Override
-	public void load(CompoundTag nbt) {
-		if (nbt.contains("id")) {
-			levels = ShulkerLevels.fromKey(nbt.getString("id"));
-		}
-	}
-
-	enum ShulkerLevels {
+	enum ShulkerLevels implements StringRepresentable {
 		EMPTY("empty", amount -> amount == 0),
 		PARTIAL("partial", amount -> amount > 0 && amount < Integer.MAX_VALUE),
 		FULL("full", amount -> amount == Integer.MAX_VALUE);
+
+		public static final Codec<ShulkerLevels> CODEC = StringRepresentable.fromValues(ShulkerLevels::values);
 
 		private final Predicate<Integer> requiredSize;
 		private final String key;
@@ -87,22 +77,27 @@ public class ShulkerFillLevelAttribute implements ItemAttribute {
 			return Block.byItem(stack.getItem()) instanceof ShulkerBoxBlock;
 		}
 
+		@Override
+		public String getSerializedName() {
+			return Lang.asId(name());
+		}
+
 		public boolean canApply(ItemStack testStack) {
 			if (!isShulker(testStack))
 				return false;
-			CompoundTag compoundnbt = testStack.getTagElement("BlockEntityTag");
-			if (compoundnbt == null)
+			ItemContainerContents contents = testStack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
+			if (contents == ItemContainerContents.EMPTY)
 				return requiredSize.test(0);
-			if (compoundnbt.contains("LootTable", 8))
+			if (testStack.has(DataComponents.CONTAINER_LOOT))
 				return false;
-			if (compoundnbt.contains("Items", 9)) {
-				int rawSize = compoundnbt.getList("Items", 10).size();
+			if (contents.getSlots() > 0) {
+				int rawSize = contents.getSlots();
 				if (rawSize < 27)
 					return requiredSize.test(rawSize);
 
 				NonNullList<ItemStack> inventory = NonNullList.withSize(27, ItemStack.EMPTY);
-				ContainerHelper.loadAllItems(compoundnbt, inventory);
-				boolean isFull = inventory.stream().allMatch(itemStack -> !itemStack.isEmpty() && itemStack.getCount() == itemStack.getMaxStackSize());
+				contents.copyInto(inventory);
+				boolean isFull = inventory.stream().allMatch(itemStack -> !itemStack.isEmpty() && itemStack.getCount() == itemStack.getOrDefault(DataComponents.MAX_STACK_SIZE, 64));
 				return requiredSize.test(isFull ? Integer.MAX_VALUE : rawSize);
 			}
 			return requiredSize.test(0);
@@ -126,6 +121,11 @@ public class ShulkerFillLevelAttribute implements ItemAttribute {
 			}
 
 			return list;
+		}
+
+		@Override
+		public MapCodec<? extends ItemAttribute> codec() {
+			return CODEC;
 		}
 	}
 }

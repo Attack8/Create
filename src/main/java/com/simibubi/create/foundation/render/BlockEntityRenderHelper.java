@@ -15,9 +15,9 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import dev.engine_room.flywheel.lib.visualization.VisualizationHelper;
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.createmod.catnip.utility.AnimationTickHolder;
+import net.createmod.catnip.utility.RegisteredObjectsHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -80,7 +80,7 @@ public class BlockEntityRenderHelper {
 			} catch (Exception e) {
 				iterator.remove();
 
-				String message = "BlockEntity " + CatnipServices.REGISTRIES.getKeyOrThrow(blockEntity.getType())
+				String message = "BlockEntity " + RegisteredObjectsHelper.getKeyOrThrow(blockEntity.getType())
 					.toString() + " could not be rendered virtually.";
 				if (AllConfigs.client().explainRenderErrors.get())
 					Create.LOGGER.error(message, e);

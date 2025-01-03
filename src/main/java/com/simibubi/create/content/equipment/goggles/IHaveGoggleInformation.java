@@ -9,9 +9,8 @@ import net.createmod.catnip.utility.lang.LangBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 /**
  * Implement this interface on the {@link BlockEntity} that wants to add info to the goggle overlay
@@ -28,13 +27,11 @@ public non-sealed interface IHaveGoggleInformation extends IHaveCustomOverlayIco
 	}
 
 	default boolean containedFluidTooltip(List<Component> tooltip, boolean isPlayerSneaking,
-		LazyOptional<IFluidHandler> handler) {
-		Optional<IFluidHandler> resolve = handler.resolve();
-		if (!resolve.isPresent())
+		IFluidHandler handler) {
+		if (handler == null)
 			return false;
 
-		IFluidHandler tank = resolve.get();
-		if (tank.getTanks() == 0)
+		if (handler.getTanks() == 0)
 			return false;
 
 		LangBuilder mb = CreateLang.translate("generic.unit.millibuckets");
@@ -42,8 +39,8 @@ public non-sealed interface IHaveGoggleInformation extends IHaveCustomOverlayIco
 			.forGoggles(tooltip);
 
 		boolean isEmpty = true;
-		for (int i = 0; i < tank.getTanks(); i++) {
-			FluidStack fluidStack = tank.getFluidInTank(i);
+		for (int i = 0; i < handler.getTanks(); i++) {
+			FluidStack fluidStack = handler.getFluidInTank(i);
 			if (fluidStack.isEmpty())
 				continue;
 
@@ -56,7 +53,7 @@ public non-sealed interface IHaveGoggleInformation extends IHaveCustomOverlayIco
 					.add(mb)
 					.style(ChatFormatting.GOLD))
 				.text(ChatFormatting.GRAY, " / ")
-				.add(CreateLang.number(tank.getTankCapacity(i))
+				.add(CreateLang.number(handler.getTankCapacity(i))
 					.add(mb)
 					.style(ChatFormatting.DARK_GRAY))
 				.forGoggles(tooltip, 1);
@@ -64,7 +61,7 @@ public non-sealed interface IHaveGoggleInformation extends IHaveCustomOverlayIco
 			isEmpty = false;
 		}
 
-		if (tank.getTanks() > 1) {
+		if (handler.getTanks() > 1) {
 			if (isEmpty)
 				tooltip.remove(tooltip.size() - 1);
 			return true;
@@ -74,7 +71,7 @@ public non-sealed interface IHaveGoggleInformation extends IHaveCustomOverlayIco
 			return true;
 
 		CreateLang.translate("gui.goggles.fluid_container.capacity")
-			.add(CreateLang.number(tank.getTankCapacity(0))
+			.add(CreateLang.number(handler.getTankCapacity(0))
 				.add(mb)
 				.style(ChatFormatting.GOLD))
 			.style(ChatFormatting.GRAY)

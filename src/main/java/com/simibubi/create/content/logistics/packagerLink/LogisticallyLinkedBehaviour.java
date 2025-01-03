@@ -28,10 +28,11 @@ import com.simibubi.create.foundation.utility.TickBasedCache;
 import net.createmod.catnip.utility.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.GlobalPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class LogisticallyLinkedBehaviour extends BlockEntityBehaviour {
 
@@ -213,23 +214,23 @@ public class LogisticallyLinkedBehaviour extends BlockEntityBehaviour {
 	public boolean isSafeNBT() {
 		return true;
 	}
-	
+
 	@Override
-	public void writeSafe(CompoundTag tag) {
+	public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
 		tag.putUUID("Freq", freqId);
 	}
-	
+
 	@Override
-	public void write(CompoundTag tag, boolean clientPacket) {
-		super.write(tag, clientPacket);
+	public void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(tag, registries, clientPacket);
 		tag.putUUID("Freq", freqId);
 		tag.putInt("Power", redstonePower);
 		tag.putBoolean("Added", addedGlobally);
 	}
 
 	@Override
-	public void read(CompoundTag tag, boolean clientPacket) {
-		super.read(tag, clientPacket);
+	public void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(tag, registries, clientPacket);
 		if (tag.hasUUID("Freq"))
 			freqId = tag.getUUID("Freq");
 		redstonePower = tag.getInt("Power");

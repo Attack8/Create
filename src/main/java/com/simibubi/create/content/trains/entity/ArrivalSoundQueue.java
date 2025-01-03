@@ -101,7 +101,7 @@ public class ArrivalSoundQueue {
 		CompoundTag tag = tagIn.getCompound("SoundQueue");
 		offset = tag.getInt("Offset");
 		NBTHelper.iterateCompoundList(tag.getList("Sources", Tag.TAG_COMPOUND),
-			c -> add(c.getInt("Tick"), NbtUtils.readBlockPos(c.getCompound("Pos"))));
+			c -> add(c.getInt("Tick"), NbtUtils.readBlockPos(c, "Pos").orElseThrow()));
 	}
 
 	public void add(int offset, BlockPos localPos) {
@@ -136,7 +136,7 @@ public class ArrivalSoundQueue {
 			float f = (float) Math.pow(2, (state.getValue(NoteBlock.NOTE) - 12) / 12.0);
 			playSimple(entity, state.getValue(NoteBlock.INSTRUMENT)
 				.getSoundEvent()
-				.get(), 1, f);
+				.value(), 1, f);
 		}
 
 		if (state.getBlock() instanceof WhistleBlock && info.nbt() != null) {

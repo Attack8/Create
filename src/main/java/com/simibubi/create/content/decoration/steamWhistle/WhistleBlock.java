@@ -20,6 +20,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -112,18 +113,16 @@ public class WhistleBlock extends Block implements IBE<WhistleBlockEntity>, IWre
 	}
 
 	@Override
-	public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
-		BlockHitResult pHit) {
-		if (pPlayer == null)
-			return InteractionResult.PASS;
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		if (player == null)
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-		ItemStack heldItem = pPlayer.getItemInHand(pHand);
-		if (AllBlocks.STEAM_WHISTLE.isIn(heldItem)) {
-			incrementSize(pLevel, pPos);
-			return InteractionResult.SUCCESS;
+		if (AllBlocks.STEAM_WHISTLE.isIn(stack)) {
+			incrementSize(level, pos);
+			return ItemInteractionResult.SUCCESS;
 		}
 
-		return InteractionResult.PASS;
+		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 	}
 
 	public static void incrementSize(LevelAccessor pLevel, BlockPos pPos) {
@@ -137,7 +136,7 @@ public class WhistleBlock extends Block implements IBE<WhistleBlockEntity>, IWre
 		for (int i = 1; i <= 6; i++) {
 			BlockState blockState = pLevel.getBlockState(currentPos);
 			float pVolume = (soundtype.getVolume() + 1.0F) / 2.0F;
-			SoundEvent growSound = SoundEvents.NOTE_BLOCK_XYLOPHONE.get();
+			SoundEvent growSound = SoundEvents.NOTE_BLOCK_XYLOPHONE.value();
 			SoundEvent hitSound = soundtype.getHitSound();
 
 			if (AllBlocks.STEAM_WHISTLE_EXTENSION.has(blockState)) {
@@ -223,7 +222,7 @@ public class WhistleBlock extends Block implements IBE<WhistleBlockEntity>, IWre
 	}
 
 	@Override
-	public boolean isPathfindable(BlockState state, BlockGetter reader, BlockPos pos, PathComputationType type) {
+	protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
 		return false;
 	}
 

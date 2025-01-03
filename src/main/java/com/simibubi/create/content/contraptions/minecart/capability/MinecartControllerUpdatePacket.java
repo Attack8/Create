@@ -1,55 +1,58 @@
 package com.simibubi.create.content.contraptions.minecart.capability;
 
-import com.simibubi.create.foundation.networking.SimplePacketBase;
+import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import com.simibubi.create.AllAttachmentTypes;
+import com.simibubi.create.AllPackets;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
+
+import io.netty.buffer.ByteBuf;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class MinecartControllerUpdatePacket extends SimplePacketBase {
+public record MinecartControllerUpdatePacket(int entityId, @Nullable CompoundTag nbt) implements ClientboundPacketPayload {
+	public static final StreamCodec<ByteBuf, MinecartControllerUpdatePacket> STREAM_CODEC = StreamCodec.composite(
+			ByteBufCodecs.INT, MinecartControllerUpdatePacket::entityId,
+			CatnipStreamCodecBuilders.nullable(ByteBufCodecs.COMPOUND_TAG), MinecartControllerUpdatePacket::nbt,
+			MinecartControllerUpdatePacket::new
+	);
 
-	int entityID;
-	CompoundTag nbt;
-
-	public MinecartControllerUpdatePacket(MinecartController controller) {
-		entityID = controller.cart()
-			.getId();
-		nbt = controller.serializeNBT();
-	}
-
-	public MinecartControllerUpdatePacket(FriendlyByteBuf buffer) {
-		entityID = buffer.readInt();
-		nbt = buffer.readNbt();
+	public MinecartControllerUpdatePacket(MinecartController controller, @NotNull HolderLookup.Provider registries) {
+		this(controller.cart().getId(), controller.isEmpty() ? null : controller.serializeNBT(registries));
 	}
 
 	@Override
-	public void write(FriendlyByteBuf buffer) {
- 		buffer.writeInt(entityID);
-		buffer.writeNbt(nbt);
-	}
-
-	@Override
-	public boolean handle(Context context) {
-		context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::handleCL));
-		return true;
-	}
-
 	@OnlyIn(Dist.CLIENT)
-	private void handleCL() {
-		ClientLevel world = Minecraft.getInstance().level;
-		if (world == null)
-			return;
-		Entity entityByID = world.getEntity(entityID);
+	public void handle(LocalPlayer player) {
+		Entity entityByID = player.clientLevel.getEntity(entityId);
 		if (entityByID == null)
 			return;
-		entityByID.getCapability(CapabilityMinecartController.MINECART_CONTROLLER_CAPABILITY)
-			.ifPresent(mc -> mc.deserializeNBT(nbt));
+		if (entityByID.hasData(AllAttachmentTypes.MINECART_CONTROLLER) && entityByID instanceof AbstractMinecart cart) {
+			if (nbt == null) {
+				entityByID.setData(AllAttachmentTypes.MINECART_CONTROLLER, MinecartController.EMPTY);
+			} else {
+				MinecartController controller = new MinecartController(cart);
+				controller.deserializeNBT(player.registryAccess(), nbt);
+				cart.setData(AllAttachmentTypes.MINECART_CONTROLLER, controller);
+			}
+		}
 	}
 
+	@Override
+	public PacketTypeProvider getTypeProvider() {
+		return AllPackets.MINECART_CONTROLLER;
+	}
 }

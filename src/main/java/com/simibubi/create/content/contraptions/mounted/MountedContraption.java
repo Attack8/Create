@@ -4,6 +4,8 @@ import static com.simibubi.create.content.contraptions.mounted.CartAssemblerBloc
 
 import java.util.Queue;
 
+import net.minecraft.core.HolderLookup;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.simibubi.create.AllBlocks;
@@ -30,7 +32,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 public class MountedContraption extends Contraption {
 
@@ -124,8 +126,8 @@ public class MountedContraption extends Contraption {
 	}
 
 	@Override
-	public CompoundTag writeNBT(boolean spawnPacket) {
-		CompoundTag tag = super.writeNBT(spawnPacket);
+	public CompoundTag writeNBT(HolderLookup.Provider registries, boolean spawnPacket) {
+		CompoundTag tag = super.writeNBT(registries, spawnPacket);
 		NBTHelper.writeEnum(tag, "RotationMode", rotationMode);
 		return tag;
 	}
@@ -155,5 +157,6 @@ public class MountedContraption extends Contraption {
 		if (cart instanceof Container container)
 			storage.attachExternal(new ContraptionInvWrapper(true, new InvWrapper(container)));
 	}
+
 
 }

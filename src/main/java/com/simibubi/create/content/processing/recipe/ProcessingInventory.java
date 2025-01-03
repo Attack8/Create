@@ -2,9 +2,12 @@ package com.simibubi.create.content.processing.recipe;
 
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class ProcessingInventory extends ItemStackHandler {
 	public float remainingTime;
@@ -17,12 +20,12 @@ public class ProcessingInventory extends ItemStackHandler {
 		super(16);
 		this.callback = callback;
 	}
-	
+
 	public ProcessingInventory withSlotLimit(boolean limit) {
 		this.limit = limit;
 		return this;
 	}
-	
+
 	@Override
 	public int getSlotLimit(int slot) {
 		return !limit ? super.getSlotLimit(slot) : 1;
@@ -46,14 +49,14 @@ public class ProcessingInventory extends ItemStackHandler {
 	@Override
 	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
 		ItemStack insertItem = super.insertItem(slot, stack, simulate);
-		if (slot == 0 && !insertItem.equals(stack, true))
+		if (slot == 0 && !ItemStack.isSameItem(insertItem, stack))
 			callback.accept(getStackInSlot(slot));
 		return insertItem;
 	}
 
 	@Override
-	public CompoundTag serializeNBT() {
-		CompoundTag nbt = super.serializeNBT();
+	public @NotNull CompoundTag serializeNBT(@NotNull HolderLookup.Provider registries) {
+		CompoundTag nbt = super.serializeNBT(registries);
 		nbt.putFloat("ProcessingTime", remainingTime);
 		nbt.putFloat("RecipeTime", recipeDuration);
 		nbt.putBoolean("AppliedRecipe", appliedRecipe);
@@ -61,11 +64,11 @@ public class ProcessingInventory extends ItemStackHandler {
 	}
 
 	@Override
-	public void deserializeNBT(CompoundTag nbt) {
+	public void deserializeNBT(@NotNull HolderLookup.Provider registries, CompoundTag nbt) {
 		remainingTime = nbt.getFloat("ProcessingTime");
 		recipeDuration = nbt.getFloat("RecipeTime");
 		appliedRecipe = nbt.getBoolean("AppliedRecipe");
-		super.deserializeNBT(nbt);
+		super.deserializeNBT(registries, nbt);
 		if(isEmpty())
 			appliedRecipe = false;
 	}

@@ -25,6 +25,7 @@ import net.createmod.catnip.utility.Iterate;
 import net.createmod.catnip.utility.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -286,39 +287,38 @@ public class PulleyBlockEntity extends LinearActuatorBlockEntity implements Thre
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
+	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		initialOffset = compound.getInt("InitialOffset");
 		needsContraption = compound.getBoolean("NeedsContraption");
-		super.read(compound, clientPacket);
+		super.read(compound, registries, clientPacket);
 
 		BlockPos prevMirrorParent = mirrorParent;
-		mirrorParent = null;
-		mirrorChildren = null;
+		mirrorParent = NbtUtils.readBlockPos(compound, "MirrorParent").orElse(null);
+		mirrorChildren = NBTHelper.readCompoundList(compound.getList("MirrorChildren", Tag.TAG_COMPOUND), t -> NbtUtils.readBlockPos(t, "Pos").orElseThrow());
 
-		if (compound.contains("MirrorParent")) {
-			mirrorParent = NbtUtils.readBlockPos(compound.getCompound("MirrorParent"));
+		if (mirrorParent != null) {
 			offset = 0;
 			if (prevMirrorParent == null || !prevMirrorParent.equals(mirrorParent))
 				sharedMirrorContraption = null;
 		}
-
-		if (compound.contains("MirrorChildren"))
-			mirrorChildren = NBTHelper.readCompoundList(compound.getList("MirrorChildren", Tag.TAG_COMPOUND),
-				NbtUtils::readBlockPos);
 
 		if (mirrorParent == null)
 			sharedMirrorContraption = null;
 	}
 
 	@Override
-	public void write(CompoundTag compound, boolean clientPacket) {
+	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		compound.putInt("InitialOffset", initialOffset);
-		super.write(compound, clientPacket);
+		super.write(compound, registries, clientPacket);
 
 		if (mirrorParent != null)
 			compound.put("MirrorParent", NbtUtils.writeBlockPos(mirrorParent));
 		if (mirrorChildren != null)
-			compound.put("MirrorChildren", NBTHelper.writeCompoundList(mirrorChildren, NbtUtils::writeBlockPos));
+			compound.put("MirrorChildren", NBTHelper.writeCompoundList(mirrorChildren, p -> {
+				CompoundTag tag = new CompoundTag();
+				tag.put("Pos", NbtUtils.writeBlockPos(p));
+				return tag;
+			}));
 	}
 
 	public void startMirroringOther(BlockPos parent) {

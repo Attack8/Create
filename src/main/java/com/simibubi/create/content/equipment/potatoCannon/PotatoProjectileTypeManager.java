@@ -4,16 +4,20 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.Set;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllPackets;
-import com.simibubi.create.foundation.networking.SimplePacketBase;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
+import net.createmod.catnip.platform.CatnipServices;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -21,8 +25,9 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.network.NetworkEvent.Context;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class PotatoProjectileTypeManager {
 
@@ -48,6 +53,10 @@ public class PotatoProjectileTypeManager {
 		return ITEM_TO_TYPE_MAP.get(item);
 	}
 
+	public static Set<Item> getItems() {
+		return ITEM_TO_TYPE_MAP.keySet();
+	}
+
 	public static Optional<PotatoCannonProjectileType> getTypeForStack(ItemStack item) {
 		if (item.isEmpty())
 			return Optional.empty();
@@ -62,44 +71,25 @@ public class PotatoProjectileTypeManager {
 	public static void fillItemMap() {
 		for (Map.Entry<ResourceLocation, PotatoCannonProjectileType> entry : BUILTIN_TYPE_MAP.entrySet()) {
 			PotatoCannonProjectileType type = entry.getValue();
-			for (Supplier<Item> delegate : type.getItems()) {
-				ITEM_TO_TYPE_MAP.put(delegate.get(), type);
+			for (Item item : type.getItems()) {
+				ITEM_TO_TYPE_MAP.put(item, type);
 			}
 		}
 		for (Map.Entry<ResourceLocation, PotatoCannonProjectileType> entry : CUSTOM_TYPE_MAP.entrySet()) {
 			PotatoCannonProjectileType type = entry.getValue();
-			for (Supplier<Item> delegate : type.getItems()) {
-				ITEM_TO_TYPE_MAP.put(delegate.get(), type);
+			for (Item item : type.getItems()) {
+				ITEM_TO_TYPE_MAP.put(item, type);
 			}
 		}
 		ITEM_TO_TYPE_MAP.remove(AllItems.POTATO_CANNON.get());
 	}
 
-	public static void toBuffer(FriendlyByteBuf buffer) {
-		buffer.writeVarInt(CUSTOM_TYPE_MAP.size());
-		for (Map.Entry<ResourceLocation, PotatoCannonProjectileType> entry : CUSTOM_TYPE_MAP.entrySet()) {
-			buffer.writeResourceLocation(entry.getKey());
-			PotatoCannonProjectileType.toBuffer(entry.getValue(), buffer);
-		}
-	}
-
-	public static void fromBuffer(FriendlyByteBuf buffer) {
-		clear();
-
-		int size = buffer.readVarInt();
-		for (int i = 0; i < size; i++) {
-			CUSTOM_TYPE_MAP.put(buffer.readResourceLocation(), PotatoCannonProjectileType.fromBuffer(buffer));
-		}
-
-		fillItemMap();
-	}
-
 	public static void syncTo(ServerPlayer player) {
-		AllPackets.getChannel().send(PacketDistributor.PLAYER.with(() -> player), new SyncPacket());
+		CatnipServices.NETWORK.sendToClient(player, new SyncPacket(CUSTOM_TYPE_MAP));
 	}
 
 	public static void syncToAll() {
-		AllPackets.getChannel().send(PacketDistributor.ALL.noArg(), new SyncPacket());
+		CatnipServices.NETWORK.sendToAllClients(new SyncPacket(CUSTOM_TYPE_MAP));
 	}
 
 	public static class ReloadListener extends SimpleJsonResourceReloadListener {
@@ -117,13 +107,9 @@ public class PotatoProjectileTypeManager {
 			clear();
 
 			for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
-				JsonElement element = entry.getValue();
-				if (element.isJsonObject()) {
-					ResourceLocation id = entry.getKey();
-					JsonObject object = element.getAsJsonObject();
-					PotatoCannonProjectileType type = PotatoCannonProjectileType.fromJson(object);
-					CUSTOM_TYPE_MAP.put(id, type);
-				}
+				PotatoCannonProjectileType.CODEC.decode(JsonOps.INSTANCE, entry.getValue()).result().ifPresent(p -> {
+					CUSTOM_TYPE_MAP.put(entry.getKey(), p.getFirst());
+				});
 			}
 
 			fillItemMap();
@@ -131,30 +117,30 @@ public class PotatoProjectileTypeManager {
 
 	}
 
-	public static class SyncPacket extends SimplePacketBase {
+	public record SyncPacket(Map<ResourceLocation, PotatoCannonProjectileType> customTypes) implements ClientboundPacketPayload {
+		public static final StreamCodec<RegistryFriendlyByteBuf, SyncPacket> STREAM_CODEC = ByteBufCodecs.map(
+				SyncPacket::newMap, ResourceLocation.STREAM_CODEC, PotatoCannonProjectileType.STREAM_CODEC
+		).map(SyncPacket::new, SyncPacket::customTypes);
 
-		private FriendlyByteBuf buffer;
+		@Override
+		@OnlyIn(Dist.CLIENT)
+		public void handle(LocalPlayer player) {
+			clear();
 
-		public SyncPacket() {
-		}
+			CUSTOM_TYPE_MAP.putAll(customTypes);
 
-		public SyncPacket(FriendlyByteBuf buffer) {
-			this.buffer = buffer;
+			fillItemMap();
 		}
 
 		@Override
-		public void write(FriendlyByteBuf buffer) {
-			toBuffer(buffer);
+		public PacketTypeProvider getTypeProvider() {
+			return AllPackets.SYNC_POTATO_PROJECTILE_TYPES;
 		}
 
-		@Override
-		public boolean handle(Context context) {
-			context.enqueueWork(() -> {
-				fromBuffer(buffer);
-			});
-			return true;
+		// needed for generics
+		private static <K, V> Map<K, V> newMap(int size) {
+			return new HashMap<>(size);
 		}
-
 	}
 
 }

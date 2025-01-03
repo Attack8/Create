@@ -1,56 +1,75 @@
 package com.simibubi.create.content.logistics.redstoneRequester;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.content.logistics.stockTicker.PackageOrder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class AutoRequestData {
+	public static Codec<AutoRequestData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		PackageOrder.CODEC.fieldOf("encoded_request").forGetter(i -> i.encodedRequest),
+		Codec.STRING.fieldOf("encoded_target_address").forGetter(i -> i.encodedTargetAddress),
+		BlockPos.CODEC.fieldOf("target_offset").forGetter(i -> i.targetOffset),
+		Codec.STRING.fieldOf("target_dim").forGetter(i -> i.targetDim),
+		Codec.BOOL.fieldOf("is_valid").forGetter(i -> i.isValid)
+	).apply(instance, AutoRequestData::new));
+
+	public static StreamCodec<RegistryFriendlyByteBuf, AutoRequestData> STREAM_CODEC = StreamCodec.composite(
+	    PackageOrder.STREAM_CODEC, i -> i.encodedRequest,
+		ByteBufCodecs.STRING_UTF8, i -> i.encodedTargetAddress,
+	    BlockPos.STREAM_CODEC, i -> i.targetOffset,
+	    ByteBufCodecs.STRING_UTF8, i -> i.targetDim,
+	    ByteBufCodecs.BOOL, i -> i.isValid,
+	    AutoRequestData::new
+	);
 
 	public PackageOrder encodedRequest = PackageOrder.empty();
-	public String encodedTargetAdress = "";
+	public String encodedTargetAddress = "";
 	public BlockPos targetOffset = BlockPos.ZERO;
-	public String targetDim = "";
+	public String targetDim = "null";
 	public boolean isValid = false;
 
-	public static AutoRequestData read(CompoundTag tag) {
-		AutoRequestData requestData = new AutoRequestData();
-		requestData.targetOffset = NbtUtils.readBlockPos(tag.getCompound("TargetOffset"));
-		requestData.targetDim = tag.getString("TargetDim");
-		requestData.isValid = tag.getBoolean("Valid");
-		requestData.encodedTargetAdress = tag.getString("EncodedAddress");
-		requestData.encodedRequest = PackageOrder.read(tag.getCompound("EncodedRequest"));
-		return requestData;
+	public AutoRequestData() {}
+
+	public AutoRequestData(PackageOrder encodedRequest, String encodedTargetAdress, BlockPos targetOffset, String targetDim, boolean isValid) {
+		this.encodedRequest = encodedRequest;
+		this.encodedTargetAddress = encodedTargetAdress;
+		this.targetOffset = targetOffset;
+		this.targetDim = targetDim;
+		this.isValid = isValid;
 	}
 
-	public void write(CompoundTag tag) {
-		tag.put("TargetOffset", NbtUtils.writeBlockPos(targetOffset));
-		tag.putString("TargetDim", targetDim);
-		tag.putBoolean("Valid", isValid);
-		tag.putString("EncodedAddress", encodedTargetAdress);
-		tag.put("EncodedRequest", encodedRequest.write());
+	public AutoRequestData copy() {
+		AutoRequestData data = new AutoRequestData();
+		data.encodedRequest = encodedRequest;
+		data.encodedTargetAddress = encodedTargetAddress;
+		data.targetOffset = targetOffset;
+		data.targetDim = targetDim;
+		data.isValid = isValid;
+		return data;
 	}
 
 	public void writeToItem(BlockPos position, ItemStack itemStack) {
-		CompoundTag tag = itemStack.getOrCreateTag();
-		write(tag);
-		tag.put("TargetOffset", NbtUtils.writeBlockPos(position.offset(targetOffset)));
-		tag.remove("Valid");
-		itemStack.setTag(tag);
+		AutoRequestData copy = copy();
+		copy.targetOffset = position.offset(targetOffset);
+		itemStack.set(AllDataComponents.AUTO_REQUEST_DATA, copy);
 	}
 
 	public static AutoRequestData readFromItem(Level level, Player player, BlockPos position, ItemStack itemStack) {
-		CompoundTag tag = itemStack.getTag();
-		if (tag == null || !tag.contains("TargetOffset"))
+		AutoRequestData requestData = itemStack.get(AllDataComponents.AUTO_REQUEST_DATA);
+		if (requestData == null)
 			return null;
 
-		AutoRequestData requestData = read(tag);
 		requestData.targetOffset = requestData.targetOffset.subtract(position);
 		requestData.isValid =
 			requestData.targetOffset.closerThan(BlockPos.ZERO, 128) && requestData.targetDim.equals(level.dimension()

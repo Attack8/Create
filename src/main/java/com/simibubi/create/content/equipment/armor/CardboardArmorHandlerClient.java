@@ -15,13 +15,12 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.event.TickEvent.Phase;
-import net.minecraftforge.event.TickEvent.PlayerTickEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderPlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(value = Dist.CLIENT)
 public class CardboardArmorHandlerClient {
@@ -29,10 +28,8 @@ public class CardboardArmorHandlerClient {
 	private static final Cache<UUID, Integer> BOXES_PLAYERS_ARE_HIDING_AS = new TickBasedCache<>(20, true);
 
 	@SubscribeEvent
-	public static void keepCacheAliveDesignDespiteNotRendering(PlayerTickEvent event) {
-		if (event.phase == Phase.START)
-			return;
-		Player player = event.player;
+	public static void keepCacheAliveDesignDespiteNotRendering(PlayerTickEvent.Post event) {
+		Player player = event.getEntity();
 		if (!CardboardArmorHandler.testForStealth(player))
 			return;
 		try {

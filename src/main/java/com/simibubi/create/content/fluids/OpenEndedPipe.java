@@ -5,11 +5,12 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.fluids.pipes.VanillaFluidTargets;
 import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
+import com.simibubi.create.foundation.ICapabilityProvider;
 import com.simibubi.create.foundation.advancement.AdvancementBehaviour;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.fluid.FluidHelper;
@@ -19,6 +20,8 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.createmod.catnip.utility.BlockFace;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -31,7 +34,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractCandleBlock;
 import net.minecraft.world.level.block.CampfireBlock;
@@ -42,11 +45,11 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.common.EffectCures;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 public class OpenEndedPipe extends FlowSource {
 
@@ -69,7 +72,9 @@ public class OpenEndedPipe extends FlowSource {
 	private boolean wasPulling;
 
 	private FluidStack cachedFluid;
-	private List<MobEffectInstance> cachedEffects;
+	private PotionContents cachedEffects;
+
+	private final ICapabilityProvider<IFluidHandler> fluidHandlerProvider = ICapabilityProvider.of(() -> fluidHandler);
 
 	public OpenEndedPipe(BlockFace face) {
 		super(face);
@@ -107,8 +112,9 @@ public class OpenEndedPipe extends FlowSource {
 	}
 
 	@Override
-	public LazyOptional<IFluidHandler> provideHandler() {
-		return LazyOptional.of(() -> fluidHandler);
+	@Nullable
+	public ICapabilityProvider<IFluidHandler> provideHandler() {
+		return fluidHandlerProvider;
 	}
 
 	@Override
@@ -116,18 +122,19 @@ public class OpenEndedPipe extends FlowSource {
 		return true;
 	}
 
-	public CompoundTag serializeNBT() {
+	public CompoundTag serializeNBT(HolderLookup.Provider registries) {
 		CompoundTag compound = new CompoundTag();
-		fluidHandler.writeToNBT(compound);
+		fluidHandler.writeToNBT(registries, compound);
 		compound.putBoolean("Pulling", wasPulling);
 		compound.put("Location", location.serializeNBT());
 		return compound;
 	}
 
-	public static OpenEndedPipe fromNBT(CompoundTag compound, BlockPos blockEntityPos) {
+	public static OpenEndedPipe fromNBT(CompoundTag compound, HolderLookup.Provider registries, BlockPos blockEntityPos) {
 		BlockFace fromNBT = BlockFace.fromNBT(compound.getCompound("Location"));
 		OpenEndedPipe oep = new OpenEndedPipe(new BlockFace(blockEntityPos, fromNBT.getFace()));
-		oep.fluidHandler.readFromNBT(compound);
+
+		oep.fluidHandler.readFromNBT(registries, compound);
 		oep.wasPulling = compound.getBoolean("Pulling");
 		return oep;
 	}
@@ -283,7 +290,7 @@ public class OpenEndedPipe extends FlowSource {
 			FluidStack containedFluidStack = getFluid();
 			boolean hasBlockState = FluidHelper.hasBlockState(containedFluidStack.getFluid());
 
-			if (!containedFluidStack.isEmpty() && !containedFluidStack.isFluidEqual(resource))
+			if (!containedFluidStack.isEmpty() && !FluidStack.isSameFluidSameComponents(containedFluidStack, resource))
 				setFluid(FluidStack.EMPTY);
 			if (wasPulling)
 				wasPulling = false;
@@ -337,14 +344,14 @@ public class OpenEndedPipe extends FlowSource {
 			FluidStack drainedFromWorld = removeFluidFromSpace(action.simulate());
 			if (drainedFromWorld.isEmpty())
 				return FluidStack.EMPTY;
-			if (filterPresent && !drainedFromWorld.isFluidEqual(filter))
+			if (filterPresent && !FluidStack.isSameFluidSameComponents(drainedFromWorld, filter))
 				return FluidStack.EMPTY;
 
 			int remainder = drainedFromWorld.getAmount() - amount;
 			drainedFromWorld.setAmount(amount);
 
 			if (!action.simulate() && remainder > 0) {
-				if (!getFluid().isEmpty() && !getFluid().isFluidEqual(drainedFromWorld))
+				if (!getFluid().isEmpty() && !FluidStack.isSameFluidSameComponents(getFluid(), drainedFromWorld))
 					setFluid(FluidStack.EMPTY);
 				super.fill(FluidHelper.copyStackWithAmount(drainedFromWorld, remainder), FluidAction.EXECUTE);
 			}
@@ -368,27 +375,27 @@ public class OpenEndedPipe extends FlowSource {
 
 		@Override
 		public void applyEffects(OpenEndedPipe pipe, FluidStack fluid) {
-			if (pipe.cachedFluid == null || pipe.cachedEffects == null || !fluid.isFluidEqual(pipe.cachedFluid)) {
+			if (pipe.cachedFluid == null || pipe.cachedEffects == null || !FluidStack.isSameFluidSameComponents(fluid, pipe.cachedFluid)) {
 				FluidStack copy = fluid.copy();
 				copy.setAmount(250);
 				ItemStack bottle = PotionFluidHandler.fillBottle(new ItemStack(Items.GLASS_BOTTLE), fluid);
-				pipe.cachedEffects = PotionUtils.getMobEffects(bottle);
+				pipe.cachedEffects = bottle.get(DataComponents.POTION_CONTENTS);
 			}
 
-			if (pipe.cachedEffects.isEmpty())
+			if (pipe.cachedEffects == null)
 				return;
 
 			List<LivingEntity> entities = pipe.getWorld()
 				.getEntitiesOfClass(LivingEntity.class, pipe.getAOE(), LivingEntity::isAffectedByPotions);
 			for (LivingEntity entity : entities) {
-				for (MobEffectInstance effectInstance : pipe.cachedEffects) {
-					MobEffect effect = effectInstance.getEffect();
+				pipe.cachedEffects.forEachEffect(effectInstance -> {
+					MobEffect effect = effectInstance.getEffect().value();
 					if (effect.isInstantenous()) {
 						effect.applyInstantenousEffect(null, null, entity, effectInstance.getAmplifier(), 0.5D);
 					} else {
 						entity.addEffect(new MobEffectInstance(effectInstance));
 					}
-				}
+				});
 			}
 		}
 	}
@@ -406,9 +413,8 @@ public class OpenEndedPipe extends FlowSource {
 				return;
 			List<LivingEntity> entities =
 				world.getEntitiesOfClass(LivingEntity.class, pipe.getAOE(), LivingEntity::isAffectedByPotions);
-			ItemStack curativeItem = new ItemStack(Items.MILK_BUCKET);
 			for (LivingEntity entity : entities)
-				entity.curePotionEffects(curativeItem);
+				entity.removeEffectsCuredBy(EffectCures.MILK);
 		}
 	}
 
@@ -458,7 +464,7 @@ public class OpenEndedPipe extends FlowSource {
 				return;
 			List<Entity> entities = world.getEntities((Entity) null, pipe.getAOE(), entity -> !entity.fireImmune());
 			for (Entity entity : entities)
-				entity.setSecondsOnFire(3);
+				entity.igniteForSeconds(3);
 		}
 	}
 

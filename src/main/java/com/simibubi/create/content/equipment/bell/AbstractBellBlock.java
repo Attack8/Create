@@ -32,18 +32,12 @@ public abstract class AbstractBellBlock<BE extends AbstractBellBlockEntity> exte
 	@Override
 	public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext selection) {
 		Direction facing = state.getValue(FACING);
-		switch (state.getValue(ATTACHMENT)) {
-		case CEILING:
-			return AllShapes.BELL_CEILING.get(facing);
-		case DOUBLE_WALL:
-			return AllShapes.BELL_DOUBLE_WALL.get(facing);
-		case FLOOR:
-			return AllShapes.BELL_FLOOR.get(facing);
-		case SINGLE_WALL:
-			return AllShapes.BELL_WALL.get(facing);
-		default:
-			return Shapes.block();
-		}
+		return switch (state.getValue(ATTACHMENT)) {
+			case CEILING -> AllShapes.BELL_CEILING.get(facing);
+			case DOUBLE_WALL -> AllShapes.BELL_DOUBLE_WALL.get(facing);
+			case FLOOR -> AllShapes.BELL_FLOOR.get(facing);
+			case SINGLE_WALL -> AllShapes.BELL_WALL.get(facing);
+		};
 	}
 
 	@Override

@@ -7,9 +7,13 @@ import java.util.stream.Collectors;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import com.simibubi.create.AllRecipeTypes;
+
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.item.crafting.RecipeInput;
+
 import org.slf4j.Logger;
 
-import com.google.gson.JsonObject;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
@@ -26,13 +30,13 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
-public abstract class ProcessingRecipe<T extends Container> implements Recipe<T> {
+public abstract class ProcessingRecipe<T extends RecipeInput> implements Recipe<T> {
 
-	protected ResourceLocation id;
+	public ResourceLocation id;
 	protected NonNullList<Ingredient> ingredients;
 	protected NonNullList<ProcessingOutput> results;
 	protected NonNullList<FluidIngredient> fluidIngredients;
@@ -171,8 +175,8 @@ public abstract class ProcessingRecipe<T extends Container> implements Recipe<T>
 	// IRecipe<> paperwork
 
 	@Override
-	public ItemStack assemble(T inv, RegistryAccess registryAccess) {
-		return getResultItem(registryAccess);
+	public ItemStack assemble(T t, HolderLookup.Provider provider) {
+		return getResultItem(provider);
 	}
 
 	@Override
@@ -181,9 +185,9 @@ public abstract class ProcessingRecipe<T extends Container> implements Recipe<T>
 	}
 
 	@Override
-	public ItemStack getResultItem(RegistryAccess registryAccess) {
+	public ItemStack getResultItem(HolderLookup.Provider provider) {
 		return getRollableResults().isEmpty() ? ItemStack.EMPTY
-			: getRollableResults().get(0)
+				: getRollableResults().getFirst()
 				.getStack();
 	}
 
@@ -196,11 +200,6 @@ public abstract class ProcessingRecipe<T extends Container> implements Recipe<T>
 	@Override
 	public String getGroup() {
 		return "processing";
-	}
-
-	@Override
-	public ResourceLocation getId() {
-		return id;
 	}
 
 	@Override
@@ -217,14 +216,13 @@ public abstract class ProcessingRecipe<T extends Container> implements Recipe<T>
 		return typeInfo;
 	}
 
-	// Additional Data added by subtypes
+	public AllRecipeTypes getRecipeType() {
+		return (AllRecipeTypes) typeInfo;
+	}
 
-	public void readAdditional(JsonObject json) {}
+	// Additional Data added by subtypes
 
 	public void readAdditional(FriendlyByteBuf buffer) {}
 
-	public void writeAdditional(JsonObject json) {}
-
 	public void writeAdditional(FriendlyByteBuf buffer) {}
-
 }

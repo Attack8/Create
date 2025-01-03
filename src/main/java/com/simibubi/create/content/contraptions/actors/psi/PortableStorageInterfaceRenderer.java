@@ -16,6 +16,7 @@ import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.createmod.catnip.utility.AnimationTickHolder;
+import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.animation.LerpedFloat;
 import net.createmod.catnip.utility.math.AngleHelper;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -91,7 +92,7 @@ public class PortableStorageInterfaceRenderer extends SafeBlockEntityRenderer<Po
 		if (!context.data.contains(_workingPos_))
 			return null;
 
-		BlockPos pos = NbtUtils.readBlockPos(context.data.getCompound(_workingPos_));
+		BlockPos pos = NbtUtils.readBlockPos(context.data, _workingPos_).orElseThrow();
 		BlockEntity blockEntity = context.world.getBlockEntity(pos);
 		if (!(blockEntity instanceof PortableStorageInterfaceBlockEntity psi))
 			return null;

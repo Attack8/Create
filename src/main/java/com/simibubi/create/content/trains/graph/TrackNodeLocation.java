@@ -7,8 +7,8 @@ import java.util.Set;
 
 import com.simibubi.create.content.trains.track.BezierConnection;
 import com.simibubi.create.content.trains.track.TrackMaterial;
-
 import net.createmod.catnip.utility.Iterate;
+import net.createmod.catnip.utility.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
@@ -73,7 +73,8 @@ public class TrackNodeLocation extends Vec3i {
 	}
 
 	public CompoundTag write(DimensionPalette dimensions) {
-		CompoundTag c = NbtUtils.writeBlockPos(new BlockPos(this));
+		CompoundTag c = new CompoundTag();
+		c.put("Pos", NbtUtils.writeBlockPos(new BlockPos(this)));
 		if (dimensions != null)
 			c.putInt("D", dimensions.encode(dimension));
 		if (yOffsetPixels != 0)
@@ -82,7 +83,7 @@ public class TrackNodeLocation extends Vec3i {
 	}
 
 	public static TrackNodeLocation read(CompoundTag tag, DimensionPalette dimensions) {
-		TrackNodeLocation location = fromPackedPos(NbtUtils.readBlockPos(tag));
+		TrackNodeLocation location = fromPackedPos(NbtUtils.readBlockPos(tag, "Pos").orElseThrow());
 		if (dimensions != null)
 			location.dimension = dimensions.decode(tag.getInt("D"));
 		location.yOffsetPixels = tag.getInt("YO");

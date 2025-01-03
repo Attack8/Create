@@ -16,9 +16,8 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class ContraptionControlsMovement implements MovementBehaviour {
 
@@ -44,14 +43,14 @@ public class ContraptionControlsMovement implements MovementBehaviour {
 	public static boolean isSameFilter(ItemStack stack1, ItemStack stack2) {
 		if (stack1.isEmpty() && stack2.isEmpty())
 			return true;
-		return ItemHandlerHelper.canItemStacksStack(stack1, stack2);
+		return ItemStack.isSameItemSameComponents(stack1, stack2);
 	}
 
 	public static ItemStack getFilter(MovementContext ctx) {
 		CompoundTag blockEntityData = ctx.blockEntityData;
 		if (blockEntityData == null)
 			return null;
-		return ItemStack.of(blockEntityData.getCompound("Filter"));
+		return ItemStack.parseOptional(ctx.world.registryAccess(), blockEntityData.getCompound("Filter"));
 	}
 
 	public static boolean isDisabledInitially(MovementContext ctx) {

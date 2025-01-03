@@ -10,6 +10,7 @@ import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -50,21 +51,21 @@ public class DynamicComponent {
 		return parsedCustomText == null ? Components.empty() : parsedCustomText.copy();
 	}
 
-	public void read(Level level, BlockPos pos, CompoundTag nbt) {
+	public void read(BlockPos pos, CompoundTag nbt, HolderLookup.Provider registries) {
 		rawCustomText = getJsonFromString(nbt.getString("RawCustomText"));
 		try {
-			parsedCustomText = Component.Serializer.fromJson(nbt.getString("CustomText"));
+			parsedCustomText = Component.Serializer.fromJson(nbt.getString("CustomText"), registries);
 		} catch (JsonParseException e) {
 			parsedCustomText = null;
 		}
 	}
 
-	public void write(CompoundTag nbt) {
+	public void write(CompoundTag nbt, HolderLookup.Provider registries) {
 		if (!isValid())
 			return;
 
 		nbt.putString("RawCustomText", rawCustomText.toString());
-		nbt.putString("CustomText", Component.Serializer.toJson(parsedCustomText));
+		nbt.putString("CustomText", Component.Serializer.toJson(parsedCustomText, registries));
 	}
 
 	public static JsonElement getJsonFromString(String string) {
@@ -80,10 +81,19 @@ public class DynamicComponent {
 			return null;
 		try {
 			return ComponentUtils.updateForEntity(getCommandSource(serverLevel, pos),
-				Component.Serializer.fromJson(customText), null, 0);
-		} catch (JsonParseException e) {
+				Component.Serializer.fromJson(customText, level.registryAccess()), null, 0);
+		} catch (JsonParseException | CommandSyntaxException e) {
 			return null;
-		} catch (CommandSyntaxException e) {
+		}
+	}
+
+	// FIXME 1.21: checkover if it's still needed
+	public static Component parseCustomText(Level level, BlockPos pos, Component customText) {
+		if (!(level instanceof ServerLevel serverLevel))
+			return null;
+		try {
+			return ComponentUtils.updateForEntity(getCommandSource(serverLevel, pos), customText, null, 0);
+		} catch (JsonParseException | CommandSyntaxException e) {
 			return null;
 		}
 	}

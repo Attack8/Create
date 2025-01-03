@@ -9,6 +9,7 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPoint.Mode;
+import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.CatnipClient;
@@ -25,10 +26,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 @EventBusSubscriber(value = Dist.CLIENT)
 public class ArmInteractionPointHandler {
@@ -84,7 +85,6 @@ public class ArmInteractionPointHandler {
 		BlockPos pos = event.getPos();
 		if (remove(pos) != null) {
 			event.setCanceled(true);
-			event.setCancellationResult(InteractionResult.SUCCESS);
 		}
 	}
 
@@ -124,7 +124,7 @@ public class ArmInteractionPointHandler {
 					.sendStatus(player);
 		}
 
-		AllPackets.getChannel().sendToServer(new ArmPlacementPacket(currentSelection, pos));
+		CatnipServices.NETWORK.sendToServer(new ArmPlacementPacket(currentSelection, pos));
 		currentSelection.clear();
 		currentItem = null;
 	}

@@ -6,6 +6,7 @@ import com.simibubi.create.AllDamageTypes;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.simibubi.create.foundation.events.custom.EntityLootEnchantmentLevelEvent;
 
 import net.createmod.catnip.utility.Iterate;
 import net.minecraft.core.BlockPos;
@@ -16,10 +17,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LootingLevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 
 @EventBusSubscriber
 public class CrushingWheelBlockEntity extends KineticBlockEntity {
@@ -58,11 +58,12 @@ public class CrushingWheelBlockEntity extends KineticBlockEntity {
 	}
 
 	@SubscribeEvent
-	public static void crushingIsFortunate(LootingLevelEvent event) {
+	public static void crushingIsFortunate(EntityLootEnchantmentLevelEvent event) {
 		DamageSource damageSource = event.getDamageSource();
 		if (damageSource == null || !damageSource.is(AllDamageTypes.CRUSH))
 			return;
-		event.setLootingLevel(2);		//This does not currently increase mob drops. It seems like this only works for damage done by an entity.
+		// TODO 1.21: check if this works now
+		event.setLevel(2);		//This does not currently increase mob drops. It seems like this only works for damage done by an entity.
 	}
 
 	@SubscribeEvent

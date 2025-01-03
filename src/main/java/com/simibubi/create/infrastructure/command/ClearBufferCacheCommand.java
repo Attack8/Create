@@ -4,12 +4,12 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.simibubi.create.CreateClient;
 
 import net.createmod.catnip.CatnipClient;
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class ClearBufferCacheCommand {
 
@@ -17,7 +17,7 @@ public class ClearBufferCacheCommand {
 		return Commands.literal("clearRenderBuffers")
 			.requires(cs -> cs.hasPermission(0))
 			.executes(ctx -> {
-				DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ClearBufferCacheCommand::execute);
+				CatnipServices.PLATFORM.executeOnClientOnly(() -> ClearBufferCacheCommand::execute);
 				ctx.getSource()
 					.sendSuccess(() -> Components.literal("Cleared rendering buffers."), true);
 				return 1;

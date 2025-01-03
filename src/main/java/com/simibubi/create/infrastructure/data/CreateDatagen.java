@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.Create;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
+import com.simibubi.create.foundation.data.CreateDatamapProvider;
 import com.simibubi.create.foundation.data.DamageTypeTagGen;
 import com.simibubi.create.foundation.data.recipe.MechanicalCraftingRecipeGen;
 import com.simibubi.create.foundation.data.recipe.ProcessingRecipeGen;
@@ -17,13 +18,14 @@ import com.simibubi.create.foundation.data.recipe.StandardRecipeGen;
 import com.simibubi.create.foundation.ponder.CreatePonderPlugin;
 import com.simibubi.create.foundation.utility.FilesHelper;
 import com.tterrag.registrate.providers.ProviderType;
+import com.tterrag.registrate.providers.RegistrateDataProvider;
 
 import net.createmod.ponder.foundation.PonderIndex;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 public class CreateDatagen {
 	public static void gatherData(GatherDataEvent event) {
@@ -42,15 +44,18 @@ public class CreateDatagen {
 
 		generator.addProvider(event.includeServer(), new CreateRecipeSerializerTagsProvider(output, lookupProvider, existingFileHelper));
 		generator.addProvider(event.includeServer(), new DamageTypeTagGen(output, lookupProvider, existingFileHelper));
-		generator.addProvider(event.includeServer(), new AllAdvancements(output));
-		generator.addProvider(event.includeServer(), new StandardRecipeGen(output));
-		generator.addProvider(event.includeServer(), new MechanicalCraftingRecipeGen(output));
-		generator.addProvider(event.includeServer(), new SequencedAssemblyRecipeGen(output));
+		generator.addProvider(event.includeServer(), new AllAdvancements(output, lookupProvider));
+		generator.addProvider(event.includeServer(), new StandardRecipeGen(output, lookupProvider));
+		generator.addProvider(event.includeServer(), new MechanicalCraftingRecipeGen(output, lookupProvider));
+		generator.addProvider(event.includeServer(), new SequencedAssemblyRecipeGen(output, lookupProvider));
+			generator.addProvider(true, new CreateDatamapProvider(output, lookupProvider));
 		generator.addProvider(event.includeServer(), new VanillaHatOffsetGenerator(output));
 
 		if (event.includeServer()) {
-			ProcessingRecipeGen.registerAll(generator, output);
+			ProcessingRecipeGen.registerAll(generator, output, lookupProvider);
 		}
+
+		event.getGenerator().addProvider(true, Create.REGISTRATE.setDataProvider(new RegistrateDataProvider(Create.REGISTRATE, Create.ID, event)));
 	}
 
 	private static void addExtraRegistrateData() {

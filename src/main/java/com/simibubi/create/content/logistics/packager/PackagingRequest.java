@@ -5,13 +5,25 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.content.logistics.stockTicker.PackageOrder;
 
-import net.minecraft.nbt.CompoundTag;
+import net.createmod.catnip.codecs.CatnipCodecs;
 import net.minecraft.world.item.ItemStack;
 
 public record PackagingRequest(ItemStack item, MutableInt count, String address, int linkIndex,
 	MutableBoolean finalLink, MutableInt packageCounter, int orderId, @Nullable PackageOrder context) {
+	public static Codec<PackagingRequest> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		ItemStack.CODEC.fieldOf("item").forGetter(PackagingRequest::item),
+		CatnipCodecs.MUTABLE_INT_CODEC.fieldOf("count").forGetter(PackagingRequest::count),
+		Codec.STRING.fieldOf("address").forGetter(PackagingRequest::address),
+		Codec.INT.fieldOf("link_index").forGetter(PackagingRequest::linkIndex),
+		CatnipCodecs.MUTABLE_BOOLEAN_CODEC.fieldOf("final_link").forGetter(PackagingRequest::finalLink),
+		CatnipCodecs.MUTABLE_INT_CODEC.fieldOf("package_counter").forGetter(PackagingRequest::packageCounter),
+		Codec.INT.fieldOf("order_id").forGetter(PackagingRequest::orderId),
+		CatnipCodecs.nullableFieldOf(PackageOrder.CODEC, "context").forGetter(PackagingRequest::context)
+	).apply(instance, PackagingRequest::new));
 
 	public static PackagingRequest create(ItemStack item, int count, String address, int linkIndex,
 		MutableBoolean finalLink, int packageCount, int orderId, @Nullable PackageOrder context) {
@@ -30,30 +42,4 @@ public record PackagingRequest(ItemStack item, MutableInt count, String address,
 	public boolean isEmpty() {
 		return getCount() == 0;
 	}
-
-	public static PackagingRequest fromNBT(CompoundTag tag) {
-		ItemStack item = ItemStack.of(tag.getCompound("Item"));
-		int count = tag.getInt("Count");
-		String address = tag.getString("Address");
-		int linkIndex = tag.getInt("LinkIndex");
-		MutableBoolean finalLink = new MutableBoolean(tag.getBoolean("FinalLink"));
-		int packageCount = tag.getInt("PackageCount");
-		int orderId = tag.getInt("OrderId");
-		PackageOrder orderContext =
-			tag.contains("OrderContext") ? PackageOrder.read(tag.getCompound("OrderContext")) : null;
-		return create(item, count, address, linkIndex, finalLink, packageCount, orderId, orderContext);
-	}
-
-	public CompoundTag toNBT() {
-		CompoundTag tag = new CompoundTag();
-		tag.putInt("Count", count.intValue());
-		tag.put("Item", item.serializeNBT());
-		tag.putString("Address", address);
-		tag.putInt("LinkIndex", linkIndex);
-		tag.putBoolean("FinalLink", finalLink.booleanValue());
-		tag.putInt("PackageCount", packageCounter.intValue());
-		tag.putInt("OrderId", orderId);
-		return tag;
-	}
-
 }

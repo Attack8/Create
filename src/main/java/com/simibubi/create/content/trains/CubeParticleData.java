@@ -1,10 +1,7 @@
 package com.simibubi.create.content.trains;
 
-import java.util.Locale;
-
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllParticleTypes;
 import com.simibubi.create.foundation.particle.ICustomParticleData;
@@ -12,13 +9,15 @@ import com.simibubi.create.foundation.particle.ICustomParticleData;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class CubeParticleData implements ParticleOptions, ICustomParticleData<CubeParticleData> {
 
-	public static final Codec<CubeParticleData> CODEC = RecordCodecBuilder.create(i -> 
+	public static final MapCodec<CubeParticleData> CODEC = RecordCodecBuilder.mapCodec(i ->
 		i.group(
 			Codec.FLOAT.fieldOf("r").forGetter(p -> p.r),
 			Codec.FLOAT.fieldOf("g").forGetter(p -> p.g),
@@ -28,29 +27,15 @@ public class CubeParticleData implements ParticleOptions, ICustomParticleData<Cu
 			Codec.BOOL.fieldOf("hot").forGetter(p -> p.hot))
 		.apply(i, CubeParticleData::new));
 
-	public static final ParticleOptions.Deserializer<CubeParticleData> DESERIALIZER = new ParticleOptions.Deserializer<CubeParticleData>() {
-		@Override
-		public CubeParticleData fromCommand(ParticleType<CubeParticleData> type, StringReader reader) throws CommandSyntaxException {
-			reader.expect(' ');
-			float r = reader.readFloat();
-			reader.expect(' ');
-			float g = reader.readFloat();
-			reader.expect(' ');
-			float b = reader.readFloat();
-			reader.expect(' ');
-			float scale = reader.readFloat();
-			reader.expect(' ');
-			int avgAge = reader.readInt();
-			reader.expect(' ');
-			boolean hot = reader.readBoolean();
-			return new CubeParticleData(r, g, b, scale, avgAge, hot);
-		}
-
-		@Override
-		public CubeParticleData fromNetwork(ParticleType<CubeParticleData> type, FriendlyByteBuf buffer) {
-			return new CubeParticleData(buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readFloat(), buffer.readInt(), buffer.readBoolean());
-		}
-	};
+	public static final StreamCodec<RegistryFriendlyByteBuf, CubeParticleData> STREAM_CODEC = StreamCodec.composite(
+			ByteBufCodecs.FLOAT, p -> p.r,
+			ByteBufCodecs.FLOAT, p -> p.g,
+			ByteBufCodecs.FLOAT, p -> p.b,
+			ByteBufCodecs.FLOAT, p -> p.scale,
+			ByteBufCodecs.INT, p -> p.avgAge,
+			ByteBufCodecs.BOOL, p -> p.hot,
+			CubeParticleData::new
+	);
 
 	final float r;
 	final float g;
@@ -73,12 +58,12 @@ public class CubeParticleData implements ParticleOptions, ICustomParticleData<Cu
 	}
 
 	@Override
-	public Deserializer<CubeParticleData> getDeserializer() {
-		return DESERIALIZER;
+	public StreamCodec<? super RegistryFriendlyByteBuf, CubeParticleData> getStreamCodec() {
+		return STREAM_CODEC;
 	}
 
 	@Override
-	public Codec<CubeParticleData> getCodec(ParticleType<CubeParticleData> type) {
+	public MapCodec<CubeParticleData> getCodec(ParticleType<CubeParticleData> type) {
 		return CODEC;
 	}
 
@@ -91,20 +76,5 @@ public class CubeParticleData implements ParticleOptions, ICustomParticleData<Cu
 	@Override
 	public ParticleType<?> getType() {
 		return AllParticleTypes.CUBE.get();
-	}
-
-	@Override
-	public void writeToNetwork(FriendlyByteBuf buffer) {
-		buffer.writeFloat(r);
-		buffer.writeFloat(g);
-		buffer.writeFloat(b);
-		buffer.writeFloat(scale);
-		buffer.writeInt(avgAge);
-		buffer.writeBoolean(hot);
-	}
-
-	@Override
-	public String writeToString() {
-		return String.format(Locale.ROOT, "%s %f %f %f %f %d %s", AllParticleTypes.CUBE.parameter(), r, g, b, scale, avgAge, hot);
 	}
 }

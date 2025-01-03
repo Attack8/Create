@@ -2,6 +2,13 @@ package com.simibubi.create.content.trains.signal;
 
 import net.createmod.catnip.utility.theme.Color;
 
+import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
+
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import io.netty.buffer.ByteBuf;
+
+import net.minecraft.network.codec.StreamCodec;
+
 public enum EdgeGroupColor {
 
 	YELLOW(0xEBC255),
@@ -17,10 +24,12 @@ public enum EdgeGroupColor {
 
 	;
 
-	private Color color;
-	private int mask;
+	public static final StreamCodec<ByteBuf, EdgeGroupColor> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(EdgeGroupColor.class);
 
-	private EdgeGroupColor(int color) {
+	private final Color color;
+	private final int mask;
+
+	EdgeGroupColor(int color) {
 		this.color = new Color(color);
 		mask = 1 << ordinal();
 	}

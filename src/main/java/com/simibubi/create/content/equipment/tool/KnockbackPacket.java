@@ -1,43 +1,28 @@
 package com.simibubi.create.content.equipment.tool;
 
-import com.simibubi.create.foundation.networking.SimplePacketBase;
+import com.simibubi.create.AllPackets;
 
-import net.minecraft.client.Minecraft;
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
-public class KnockbackPacket extends SimplePacketBase {
+public record KnockbackPacket(float yRot, float strength) implements ClientboundPacketPayload {
+	public static StreamCodec<ByteBuf, KnockbackPacket> STREAM_CODEC = StreamCodec.composite(
+		ByteBufCodecs.FLOAT, KnockbackPacket::yRot,
+	    ByteBufCodecs.FLOAT, KnockbackPacket::strength,
+	    KnockbackPacket::new
+	);
 
-	private float yRot;
-	private float strength;
-
-	public KnockbackPacket(float yRot, float strength) {
-		this.yRot = yRot;
-		this.strength = strength;
-	}
-
-	public KnockbackPacket(FriendlyByteBuf buffer) {
-		strength = buffer.readFloat();
-		yRot = buffer.readFloat();
+	@Override
+	public PacketTypeProvider getTypeProvider() {
+		return AllPackets.KNOCKBACK;
 	}
 
 	@Override
-	public void write(FriendlyByteBuf buffer) {
-		buffer.writeFloat(strength);
-		buffer.writeFloat(yRot);
+	public void handle(LocalPlayer player) {
+		if (player != null)
+			CardboardSwordItem.knockback(player, strength, yRot);
 	}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public boolean handle(Context context) {
-		LocalPlayer player = Minecraft.getInstance().player;
-		if (player == null)
-			return true;
-		CardboardSwordItem.knockback(player, strength, yRot);
-		return true;
-	}
-
 }

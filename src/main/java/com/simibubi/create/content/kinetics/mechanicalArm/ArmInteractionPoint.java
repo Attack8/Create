@@ -12,15 +12,16 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class ArmInteractionPoint {
 
@@ -30,7 +31,7 @@ public class ArmInteractionPoint {
 	protected Mode mode = Mode.DEPOSIT;
 
 	protected BlockState cachedState;
-	protected LazyOptional<IItemHandler> cachedHandler = LazyOptional.empty();
+	protected BlockCapabilityCache<IItemHandler, Direction> cachedHandler;
 	protected ArmAngleTarget cachedAngles;
 
 	public ArmInteractionPoint(ArmInteractionPointType type, Level level, BlockPos pos, BlockState state) {
@@ -93,13 +94,18 @@ public class ArmInteractionPoint {
 
 	@Nullable
 	protected IItemHandler getHandler() {
-		if (!cachedHandler.isPresent()) {
+		if (cachedHandler == null && !level.isClientSide()) {
 			BlockEntity be = level.getBlockEntity(pos);
 			if (be == null)
 				return null;
-			cachedHandler = be.getCapability(ForgeCapabilities.ITEM_HANDLER, Direction.UP);
+			cachedHandler = BlockCapabilityCache.create(
+					Capabilities.ItemHandler.BLOCK,
+					(ServerLevel) level,
+					pos,
+					Direction.UP
+			);
 		}
-		return cachedHandler.orElse(null);
+		return cachedHandler.getCapability();
 	}
 
 	public ItemStack insert(ItemStack stack, boolean simulate) {
@@ -136,7 +142,7 @@ public class ArmInteractionPoint {
 	}
 
 	public final CompoundTag serialize(BlockPos anchor) {
-		ResourceLocation key = AllRegistries.ARM_INTERACTION_POINT_TYPES.get().getKey(type);
+		ResourceLocation key = AllRegistries.ARM_INTERACTION_POINT_TYPES.getKey(type);
 		if (key == null)
 			throw new IllegalArgumentException("Could not get id for ArmInteractionPointType " + type + "!");
 
@@ -152,10 +158,10 @@ public class ArmInteractionPoint {
 		ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type"));
 		if (id == null)
 			return null;
-		ArmInteractionPointType type = AllRegistries.ARM_INTERACTION_POINT_TYPES.get().getValue(id);
+		ArmInteractionPointType type = AllRegistries.ARM_INTERACTION_POINT_TYPES.get(id);
 		if (type == null)
 			return null;
-		BlockPos pos = NbtUtils.readBlockPos(nbt.getCompound("Pos")).offset(anchor);
+		BlockPos pos = NbtUtils.readBlockPos(nbt, "Pos").orElseThrow().offset(anchor);
 		BlockState state = level.getBlockState(pos);
 		if (!type.canCreatePoint(level, pos, state))
 			return null;
@@ -167,7 +173,7 @@ public class ArmInteractionPoint {
 	}
 
 	public static void transformPos(CompoundTag nbt, StructureTransform transform) {
-		BlockPos pos = NbtUtils.readBlockPos(nbt.getCompound("Pos"));
+		BlockPos pos = NbtUtils.readBlockPos(nbt, "Pos").orElseThrow();
 		pos = transform.applyWithoutOffset(pos);
 		nbt.put("Pos", NbtUtils.writeBlockPos(pos));
 	}

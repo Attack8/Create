@@ -136,8 +136,8 @@ public class TrainMapManager {
 
 		if (!trainEntry.ownerName.isBlank())
 			CreateLang.translate("train_map.train_owned_by", trainEntry.ownerName)
-				.color(blue)
-				.addTo(output);
+					.color(blue)
+					.addTo(output);
 
 		switch (state) {
 
@@ -178,12 +178,12 @@ public class TrainMapManager {
 		if (!currentStation.isBlank()) {
 			if (targetStationDistance == 0)
 				CreateLang.translate("train_map.train_at_station", currentStation)
-					.color(darkBlue)
-					.addTo(output);
+						.color(darkBlue)
+						.addTo(output);
 			else
 				CreateLang.translate("train_map.train_moving_to_station", currentStation, targetStationDistance)
-					.color(darkBlue)
-					.addTo(output);
+						.color(darkBlue)
+						.addTo(output);
 		}
 
 		if (signalState != SignalState.NOT_WAITING) {
@@ -204,11 +204,12 @@ public class TrainMapManager {
 					Train trainWaitingFor = CreateClient.RAILWAYS.trains.get(waitingFor);
 					if (trainWaitingFor != null) {
 						CreateLang.translate("train_map.for_other_train", trainWaitingFor.name.getString())
-							.color(blue)
-							.addTo(output);
+								.color(blue)
+								.addTo(output);
 						trainFound = true;
 					}
 				}
+
 
 				if (!trainFound) {
 					if (chainSignal)

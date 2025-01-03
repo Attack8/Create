@@ -5,9 +5,10 @@ import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.utility.CreateLang;
-import mezz.jei.api.forge.ForgeTypes;
+
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
@@ -21,7 +22,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -42,7 +44,7 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 	protected final IDrawable background;
 	protected final IDrawable icon;
 
-	private final Supplier<List<T>> recipes;
+	private final Supplier<List<RecipeHolder<T>>> recipes;
 	private final List<Supplier<? extends ItemStack>> catalysts;
 
 	public CreateRecipeCategory(Info<T> info) {
@@ -76,7 +78,7 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 	}
 
 	public void registerRecipes(IRecipeRegistration registration) {
-		registration.addRecipes(type, recipes.get());
+		registration.addRecipes(type, recipes.get().stream().map(RecipeHolder::value).toList());
 	}
 
 	public void registerCatalysts(IRecipeCatalystRegistration registration) {
@@ -133,14 +135,14 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 
 	public static IRecipeSlotTooltipCallback addFluidTooltip(int mbAmount) {
 		return (view, tooltip) -> {
-			Optional<FluidStack> displayed = view.getDisplayedIngredient(ForgeTypes.FLUID_STACK);
+			Optional<FluidStack> displayed = view.getDisplayedIngredient(NeoForgeTypes.FLUID_STACK);
 			if (displayed.isEmpty())
 				return;
 
 			FluidStack fluidStack = displayed.get();
 
 			if (fluidStack.getFluid().isSame(AllFluids.POTION.get())) {
-				Component name = fluidStack.getDisplayName();
+				Component name = fluidStack.getHoverName();
 				if (tooltip.isEmpty())
 					tooltip.add(0, name);
 				else
@@ -182,7 +184,7 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 		};
 	}
 
-	public record Info<T extends Recipe<?>>(RecipeType<T> recipeType, Component title, IDrawable background, IDrawable icon, Supplier<List<T>> recipes, List<Supplier<? extends ItemStack>> catalysts) {
+	public record Info<T extends Recipe<?>>(RecipeType<T> recipeType, Component title, IDrawable background, IDrawable icon, Supplier<List<RecipeHolder<T>>> recipes, List<Supplier<? extends ItemStack>> catalysts) {
 	}
 
 	public interface Factory<T extends Recipe<?>> {

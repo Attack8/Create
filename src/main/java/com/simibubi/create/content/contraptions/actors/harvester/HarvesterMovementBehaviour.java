@@ -2,6 +2,8 @@ package com.simibubi.create.content.contraptions.actors.harvester;
 
 import javax.annotation.Nullable;
 
+import net.neoforged.neoforge.common.SpecialPlantable;
+
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
@@ -34,7 +36,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.IPlantable;
 
 public class HarvesterMovementBehaviour implements MovementBehaviour {
 
@@ -149,7 +150,7 @@ public class HarvesterMovementBehaviour implements MovementBehaviour {
 				return false;
 			}
 
-			if (state.getBlock() instanceof IPlantable)
+			if (state.getBlock() instanceof SpecialPlantable)
 				return true;
 		}
 

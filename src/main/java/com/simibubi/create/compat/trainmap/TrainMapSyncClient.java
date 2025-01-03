@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.compat.trainmap.TrainMapSync.TrainMapSyncEntry;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.AnimationTickHolder;
 import net.createmod.catnip.utility.Pair;
 
@@ -23,8 +23,7 @@ public class TrainMapSyncClient {
 	public static void requestData() {
 		ticks++;
 		if (ticks % 5 == 0)
-			AllPackets.getChannel()
-				.sendToServer(new TrainMapSyncRequestPacket());
+			CatnipServices.NETWORK.sendToServer(TrainMapSyncRequestPacket.INSTANCE);
 	}
 
 	public static void stopRequesting() {
@@ -35,12 +34,11 @@ public class TrainMapSyncClient {
 	public static void receive(TrainMapSyncPacket packet) {
 		if (ticks == 0)
 			return;
-		
+
 		lastPacket = AnimationTickHolder.getTicks();
 		lastPacket += AnimationTickHolder.getPartialTicks();
 
-		Set<UUID> staleEntries = new HashSet<>();
-		staleEntries.addAll(currentData.keySet());
+		Set<UUID> staleEntries = new HashSet<>(currentData.keySet());
 
 		for (Pair<UUID, TrainMapSyncEntry> pair : packet.entries) {
 			UUID id = pair.getFirst();

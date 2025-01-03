@@ -10,8 +10,8 @@ import com.simibubi.create.foundation.fluid.FluidIngredient;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public interface IAssemblyRecipe {
 
@@ -23,11 +23,11 @@ public interface IAssemblyRecipe {
 	public Component getDescriptionForAssembly();
 
 	public void addRequiredMachines(Set<ItemLike> list);
-	
+
 	public void addAssemblyIngredients(List<Ingredient> list);
 
 	default void addAssemblyFluidIngredients(List<FluidIngredient> list) {}
-	
+
 	public Supplier<Supplier<SequencedAssemblySubCategory>> getJEISubCategory();
 
 }

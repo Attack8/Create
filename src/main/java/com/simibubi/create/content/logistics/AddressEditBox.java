@@ -52,10 +52,10 @@ public class AddressEditBox extends EditBox {
 	}
 
 	@Override
-	public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
-		if (destinationSuggestions.mouseScrolled(Mth.clamp(pDelta, -1.0D, 1.0D)))
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		if (destinationSuggestions.mouseScrolled(Mth.clamp(scrollY, -1.0D, 1.0D)))
 			return true;
-		return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 	}
 
 	@Override
@@ -108,14 +108,11 @@ public class AddressEditBox extends EditBox {
 		super.setResponder(pResponder == mainResponder ? mainResponder : mainResponder.andThen(pResponder));
 	}
 
-	@Override
 	public void tick() {
-		super.tick();
 		if (!isFocused())
 			destinationSuggestions.hide();
 		if (isFocused() && destinationSuggestions.suggestions == null)
 			destinationSuggestions.updateCommandInfo();
 		destinationSuggestions.tick();
 	}
-
 }

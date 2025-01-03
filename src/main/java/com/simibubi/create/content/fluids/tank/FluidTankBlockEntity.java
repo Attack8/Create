@@ -5,9 +5,9 @@ import static java.lang.Math.abs;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.content.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.fluids.tank.FluidTankBlock.Shape;
@@ -18,10 +18,12 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.animation.LerpedFloat;
 import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
@@ -29,21 +31,20 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IMultiBlockEntityContainer.Fluid {
 
 	private static final int MAX_SIZE = 3;
 
-	protected LazyOptional<IFluidHandler> fluidCapability;
+	protected IFluidHandler fluidCapability;
 	protected boolean forceFluidLevelUpdate;
 	protected FluidTank tankInventory;
 	protected BlockPos controller;
@@ -67,7 +68,6 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 	public FluidTankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
 		tankInventory = createInventory();
-		fluidCapability = LazyOptional.of(() -> tankInventory);
 		forceFluidLevelUpdate = true;
 		updateConnectivity = false;
 		updateCapability = false;
@@ -76,6 +76,18 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 		width = 1;
 		boiler = new BoilerData();
 		refreshCapability();
+	}
+
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(
+				Capabilities.FluidHandler.BLOCK,
+				AllBlockEntityTypes.FLUID_TANK.get(),
+				(be, context) -> {
+					if (be.fluidCapability == null)
+						be.refreshCapability();
+					return be.fluidCapability;
+				}
+		);
 	}
 
 	protected SmartFluidTank createInventory() {
@@ -351,15 +363,14 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 		sendData();
 	}
 
-	private void refreshCapability() {
-		LazyOptional<IFluidHandler> oldCap = fluidCapability;
-		fluidCapability = LazyOptional.of(this::handlerForCapability);
-		oldCap.invalidate();
+	void refreshCapability() {
+		fluidCapability = handlerForCapability();
+		invalidateCapabilities();
 	}
 
 	private IFluidHandler handlerForCapability() {
-		return isController() ? boiler.isActive() ? boiler.createHandler() : tankInventory
-			: getControllerBE() != null ? getControllerBE().handlerForCapability() : new FluidTank(0);
+		return isController() ? (boiler.isActive() ? boiler.createHandler() : tankInventory)
+				: ((getControllerBE() != null) ? getControllerBE().handlerForCapability() : new FluidTank(0));
 	}
 
 	@Override
@@ -391,12 +402,12 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 		if (controllerBE.boiler.addToGoggleTooltip(tooltip, isPlayerSneaking, controllerBE.getTotalTankSize()))
 			return true;
 		return containedFluidTooltip(tooltip, isPlayerSneaking,
-			controllerBE.getCapability(ForgeCapabilities.FLUID_HANDLER));
+			level.getCapability(Capabilities.FluidHandler.BLOCK, controllerBE.getBlockPos(), null));
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
-		super.read(compound, clientPacket);
+	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(compound, registries, clientPacket);
 
 		BlockPos controllerBefore = controller;
 		int prevSize = width;
@@ -405,20 +416,16 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 
 		updateConnectivity = compound.contains("Uninitialized");
 		luminosity = compound.getInt("Luminosity");
-		controller = null;
-		lastKnownPos = null;
-
-		if (compound.contains("LastKnownPos"))
-			lastKnownPos = NbtUtils.readBlockPos(compound.getCompound("LastKnownPos"));
-		if (compound.contains("Controller"))
-			controller = NbtUtils.readBlockPos(compound.getCompound("Controller"));
+		lastKnownPos = NbtUtils.readBlockPos(compound, "LastKnownPos").orElse(null);
+		controller = NbtUtils.readBlockPos(compound, "Controller").orElse(null);
 
 		if (isController()) {
 			window = compound.getBoolean("Window");
 			width = compound.getInt("Size");
 			height = compound.getInt("Height");
 			tankInventory.setCapacity(getTotalTankSize() * getCapacityMultiplier());
-			tankInventory.readFromNBT(compound.getCompound("TankContent"));
+
+			tankInventory.readFromNBT(registries, compound.getCompound("TankContent"));
 			if (tankInventory.getSpace() < 0)
 				tankInventory.drain(-tankInventory.getSpace(), FluidAction.EXECUTE);
 		}
@@ -463,7 +470,7 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 	}
 
 	@Override
-	public void write(CompoundTag compound, boolean clientPacket) {
+	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		if (updateConnectivity)
 			compound.putBoolean("Uninitialized", true);
 		compound.put("Boiler", boiler.write());
@@ -473,12 +480,12 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 			compound.put("Controller", NbtUtils.writeBlockPos(controller));
 		if (isController()) {
 			compound.putBoolean("Window", window);
-			compound.put("TankContent", tankInventory.writeToNBT(new CompoundTag()));
+			compound.put("TankContent", tankInventory.writeToNBT(registries, new CompoundTag()));
 			compound.putInt("Size", width);
 			compound.putInt("Height", height);
 		}
 		compound.putInt("Luminosity", luminosity);
-		super.write(compound, clientPacket);
+		super.write(compound, registries, clientPacket);
 
 		if (!clientPacket)
 			return;
@@ -487,16 +494,6 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 		if (queuedSync)
 			compound.putBoolean("LazySync", true);
 		forceFluidLevelUpdate = false;
-	}
-
-	@Nonnull
-	@Override
-	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-		if (!fluidCapability.isPresent())
-			refreshCapability();
-		if (cap == ForgeCapabilities.FLUID_HANDLER)
-			return fluidCapability.cast();
-		return super.getCapability(cap, side);
 	}
 
 	@Override

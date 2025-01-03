@@ -6,16 +6,14 @@ import java.util.Map;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-import net.minecraftforge.fluids.FluidInteractionRegistry;
-import net.minecraftforge.fluids.FluidInteractionRegistry.InteractionInformation;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry.InteractionInformation;
+import net.neoforged.neoforge.fluids.FluidType;
 
 @Mixin(FluidInteractionRegistry.class)
 public interface FluidInteractionRegistryAccessor {
-
 	@Accessor("INTERACTIONS")
-	public static Map<FluidType, List<InteractionInformation>> getInteractions() {
+	static Map<FluidType, List<InteractionInformation>> getInteractions() {
 		throw new AssertionError();
 	}
-
 }

@@ -10,12 +10,13 @@ import com.simibubi.create.content.contraptions.MountedStorageManager;
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 public class TrainCargoManager extends MountedStorageManager {
 
@@ -45,33 +46,33 @@ public class TrainCargoManager extends MountedStorageManager {
 	}
 
 	@Override
-	public void write(CompoundTag nbt, boolean clientPacket) {
-		super.write(nbt, clientPacket);
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(nbt, registries, clientPacket);
 		nbt.putInt("TicksSinceLastExchange", ticksSinceLastExchange);
 	}
 
 	@Override
-	public void read(CompoundTag nbt, Map<BlockPos, BlockEntity> presentBlockEntities, boolean clientPacket) {
-		super.read(nbt, presentBlockEntities, clientPacket);
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, Map<BlockPos, BlockEntity> presentBlockEntities, boolean clientPacket) {
+		super.read(nbt, registries, presentBlockEntities, clientPacket);
 		ticksSinceLastExchange = nbt.getInt("TicksSinceLastExchange");
 	}
 
 	public void resetIdleCargoTracker() {
 		ticksSinceLastExchange = 0;
 	}
-	
+
 	public void tickIdleCargoTracker() {
 		ticksSinceLastExchange++;
 	}
-	
+
 	public int getTicksSinceLastExchange() {
 		return ticksSinceLastExchange;
 	}
-	
+
 	public int getVersion() {
 		return version.get();
 	}
-	
+
 	void changeDetected() {
 		version.incrementAndGet();
 		resetIdleCargoTracker();
@@ -137,7 +138,7 @@ public class TrainCargoManager extends MountedStorageManager {
 				changeDetected();
 			return drained;
 		}
-		
+
 	}
 
 }

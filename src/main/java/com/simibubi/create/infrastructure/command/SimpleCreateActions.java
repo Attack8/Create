@@ -13,7 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.common.ForgeConfig;
+import net.neoforged.neoforge.common.NeoForgeConfig;
 
 public class SimpleCreateActions {
 
@@ -45,7 +45,7 @@ public class SimpleCreateActions {
 	}
 
 	public static void experimentalLighting(String value) {
-		ForgeConfig.CLIENT.experimentalForgeLightPipelineEnabled.set(true);
+		NeoForgeConfig.CLIENT.experimentalForgeLightPipelineEnabled.set(true);
 		Minecraft.getInstance().levelRenderer.allChanged();
 	}
 

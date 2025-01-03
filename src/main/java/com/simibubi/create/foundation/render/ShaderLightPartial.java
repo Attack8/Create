@@ -13,11 +13,11 @@ import dev.engine_room.flywheel.lib.util.RendererReloadCache;
 import net.minecraft.client.renderer.RenderType;
 
 public class ShaderLightPartial {
-	private static final RendererReloadCache<PartialModel, Model> FLAT = new RendererReloadCache<>(it -> BakedModelBuilder.create(it.get())
+	private static final RendererReloadCache<PartialModel, Model> FLAT = new RendererReloadCache<>(it -> new BakedModelBuilder(it.get())
 		.materialFunc((renderType, aBoolean) -> getMaterial(renderType, aBoolean, LightShaders.FLAT))
 		.build());
 
-	private static final RendererReloadCache<PartialModel, Model> SMOOTH = new RendererReloadCache<>(it -> BakedModelBuilder.create(it.get())
+	private static final RendererReloadCache<PartialModel, Model> SMOOTH = new RendererReloadCache<>(it -> new BakedModelBuilder(it.get())
 		.materialFunc((renderType, aBoolean) -> getMaterial(renderType, aBoolean, LightShaders.SMOOTH))
 		.build());
 

@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.content.logistics.BigItemStack;
 import com.simibubi.create.content.logistics.box.PackageItem;
+import com.simibubi.create.content.logistics.box.PackageItem.PackageOrderData;
 import com.simibubi.create.content.logistics.stockTicker.PackageOrder;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class PackageDefragmenter {
 
@@ -25,15 +25,12 @@ public class PackageDefragmenter {
 	}
 
 	public boolean isFragmented(ItemStack box) {
-		if (!box.hasTag() || !box.getTag()
-			.contains("Fragment"))
+		if (!box.has(AllDataComponents.PACKAGE_ORDER_DATA))
 			return false;
 
-		CompoundTag fragTag = box.getTag()
-			.getCompound("Fragment");
+		PackageOrderData data = box.get(AllDataComponents.PACKAGE_ORDER_DATA);
 
-		return !(fragTag.getInt("LinkIndex") == 0 && fragTag.getBoolean("IsFinalLink") && fragTag.getInt("Index") == 0
-			&& fragTag.getBoolean("IsFinal"));
+		return !(data.linkIndex() == 0 && data.isFinalLink() && data.fragmentIndex() == 0 && data.isFinal());
 	}
 
 	public int addPackageFragment(ItemStack box) {
@@ -58,17 +55,13 @@ public class PackageDefragmenter {
 
 		for (ItemStack box : collectedPackages.get(orderId)) {
 			address = PackageItem.getAddress(box);
-			if (box.hasTag() && box.getTag()
-				.getCompound("Fragment")
-				.contains("OrderContext"))
-				orderContext = PackageOrder.read(box.getTag()
-					.getCompound("Fragment")
-					.getCompound("OrderContext"));
+			if (box.has(AllDataComponents.PACKAGE_ORDER_DATA))
+				orderContext = box.get(AllDataComponents.PACKAGE_ORDER_DATA).orderContext();
 			ItemStackHandler contents = PackageItem.getContents(box);
 			Slots: for (int slot = 0; slot < contents.getSlots(); slot++) {
 				ItemStack stackInSlot = contents.getStackInSlot(slot);
 				for (BigItemStack existing : allItems) {
-					if (!ItemHandlerHelper.canItemStacksStack(stackInSlot, existing.stack))
+					if (!ItemStack.isSameItemSameComponents(stackInSlot, existing.stack))
 						continue;
 					existing.count += stackInSlot.getCount();
 					continue Slots;
@@ -96,7 +89,7 @@ public class PackageDefragmenter {
 					continue;
 				if (targetedEntry != null) {
 					targetAmount = targetedEntry.count;
-					if (!ItemHandlerHelper.canItemStacksStack(entry.stack, targetedEntry.stack))
+					if (!ItemStack.isSameItemSameComponents(entry.stack, targetedEntry.stack))
 						continue;
 				}
 
@@ -105,7 +98,7 @@ public class PackageDefragmenter {
 					if (removedAmount == 0)
 						continue ItemSearch;
 
-					ItemStack output = ItemHandlerHelper.copyStackWithSize(entry.stack, removedAmount);
+					ItemStack output = entry.stack.copyWithCount(removedAmount);
 					targetAmount -= removedAmount;
 					targetedEntry.count = targetAmount;
 					entry.count -= removedAmount;
@@ -151,14 +144,13 @@ public class PackageDefragmenter {
 				break;
 			Packages: for (int packageCounter = 0; packageCounter < 1000; packageCounter++) {
 				for (ItemStack box : collectedPackages.get(orderId)) {
-					CompoundTag tag = box.getOrCreateTag()
-						.getCompound("Fragment");
-					if (linkCounter != tag.getInt("LinkIndex"))
+					PackageOrderData data = box.get(AllDataComponents.PACKAGE_ORDER_DATA);
+					if (linkCounter != data.linkIndex())
 						continue;
-					if (packageCounter != tag.getInt("Index"))
+					if (packageCounter != data.fragmentIndex())
 						continue;
-					finalLinkReached = tag.getBoolean("IsFinalLink");
-					if (tag.getBoolean("IsFinal"))
+					finalLinkReached = data.isFinalLink();
+					if (data.isFinal())
 						continue Links;
 					continue Packages;
 				}

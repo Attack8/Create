@@ -29,10 +29,9 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class SmartObserverBlock extends DirectedDirectionalBlock implements IBE<SmartObserverBlockEntity> {
 
@@ -51,8 +50,6 @@ public class SmartObserverBlock extends DirectedDirectionalBlock implements IBE<
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		BlockState state = defaultBlockState();
-		Capability<IItemHandler> itemCap = ForgeCapabilities.ITEM_HANDLER;
-		Capability<IFluidHandler> fluidCap = ForgeCapabilities.FLUID_HANDLER;
 
 		Direction preferredFacing = null;
 		for (Direction face : context.getNearestLookingDirections()) {
@@ -66,10 +63,10 @@ public class SmartObserverBlock extends DirectedDirectionalBlock implements IBE<
 				canDetect = true;
 			else if (BlockEntityBehaviour.get(blockEntity, FluidTransportBehaviour.TYPE) != null)
 				canDetect = true;
-			else if (blockEntity != null && (blockEntity.getCapability(itemCap)
-				.isPresent()
-				|| blockEntity.getCapability(fluidCap)
-					.isPresent()))
+			else if (blockEntity != null && (
+					context.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, blockEntity.getBlockPos(), null) != null ||
+					context.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, blockEntity.getBlockPos(), null) != null
+			))
 				canDetect = true;
 			else if (blockEntity instanceof FunnelBlockEntity)
 				canDetect = true;

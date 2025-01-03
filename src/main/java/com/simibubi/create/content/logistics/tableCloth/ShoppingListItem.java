@@ -5,20 +5,23 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.content.logistics.BigItemStack;
 import com.simibubi.create.content.logistics.packager.InventorySummary;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.utility.Couple;
 import net.createmod.catnip.utility.IntAttached;
-import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -32,24 +35,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
 public class ShoppingListItem extends Item {
+	public record ShoppingList(List<IntAttached<BlockPos>> purchases, UUID shopOwner, UUID shopNetwork) {
+		public static Codec<ShoppingList> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+			Codec.list(IntAttached.codec(BlockPos.CODEC)).fieldOf("purchases").forGetter(ShoppingList::purchases),
+			UUIDUtil.CODEC.fieldOf("shop_owner").forGetter(ShoppingList::shopOwner),
+			UUIDUtil.CODEC.fieldOf("shop_network").forGetter(ShoppingList::shopNetwork)
+		).apply(instance, ShoppingList::new));
 
-	public static record ShoppingList(List<IntAttached<BlockPos>> purchases, UUID shopOwner, UUID shopNetwork) {
-
-		public static ShoppingList load(CompoundTag tag) {
-			return new ShoppingList(
-				NBTHelper.readCompoundList(tag.getList("Purchases", Tag.TAG_COMPOUND),
-					c -> IntAttached.read(c, NbtUtils::readBlockPos)),
-				tag.getUUID("ShopOwner"), tag.getUUID("ShopNetwork"));
-		}
-
-		public CompoundTag save() {
-			CompoundTag tag = new CompoundTag();
-			tag.put("Purchases",
-				NBTHelper.writeCompoundList(purchases, ia -> ia.serializeNBT(NbtUtils::writeBlockPos)));
-			tag.putUUID("ShopOwner", shopOwner);
-			tag.putUUID("ShopNetwork", shopNetwork);
-			return tag;
-		}
+		public static StreamCodec<ByteBuf, ShoppingList> STREAM_CODEC = StreamCodec.composite(
+			CatnipStreamCodecBuilders.list(IntAttached.streamCodec(BlockPos.STREAM_CODEC)), ShoppingList::purchases,
+		    UUIDUtil.STREAM_CODEC, ShoppingList::shopOwner,
+		    UUIDUtil.STREAM_CODEC, ShoppingList::shopNetwork,
+		    ShoppingList::new
+		);
 
 		// Y value of clothPos is pixel perfect (x16)
 		public void addPurchases(BlockPos clothPos, int amount) {
@@ -92,34 +90,26 @@ public class ShoppingListItem extends Item {
 	}
 
 	public static ShoppingList getList(ItemStack stack) {
-		if (!stack.hasTag() || !stack.getTag()
-			.contains("ShoppingList"))
-			return null;
-		return ShoppingList.load(stack.getTag()
-			.getCompound("ShoppingList"));
+		return stack.get(AllDataComponents.SHOPPING_LIST);
 	}
 
 	public static ItemStack saveList(ItemStack stack, ShoppingList list, String address) {
-		CompoundTag tag = stack.getOrCreateTag();
-		tag.put("ShoppingList", list.save());
-		tag.putString("Address", address);
+		stack.set(AllDataComponents.SHOPPING_LIST, list);
+		stack.set(AllDataComponents.SHOPPING_LIST_ADDRESS, address);
 		return stack;
 	}
 
 	public static String getAddress(ItemStack stack) {
-		if (!stack.hasTag())
-			return "";
-		return stack.getTag()
-			.getString("Address");
+		return stack.getOrDefault(AllDataComponents.SHOPPING_LIST_ADDRESS, "");
 	}
 
 	@Override
-	public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> pTooltipComponents,
-		TooltipFlag pIsAdvanced) {
-		ShoppingList list = getList(pStack);
+	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents,
+		TooltipFlag tooltipFlag) {
+		ShoppingList list = getList(stack);
 
 		if (list != null) {
-			Couple<InventorySummary> lists = list.bakeEntries(pLevel, null);
+			Couple<InventorySummary> lists = list.bakeEntries(context.level(), null);
 
 			if (lists != null) {
 				for (InventorySummary items : lists) {
@@ -127,7 +117,7 @@ public class ShoppingListItem extends Item {
 					boolean cost = items == lists.getSecond();
 
 					if (cost)
-						pTooltipComponents.add(Components.empty());
+						tooltipComponents.add(Components.empty());
 
 					if (entries.size() == 1) {
 						BigItemStack entry = entries.get(0);
@@ -138,20 +128,20 @@ public class ShoppingListItem extends Item {
 								.text(" x")
 								.text(String.valueOf(entry.count))
 								.style(cost ? ChatFormatting.YELLOW : ChatFormatting.GRAY))
-							.addTo(pTooltipComponents);
+							.addTo(tooltipComponents);
 
 					} else {
 						if (cost)
 							CreateLang.translate("table_cloth.total_cost")
 								.style(ChatFormatting.GOLD)
-								.addTo(pTooltipComponents);
+								.addTo(tooltipComponents);
 						for (BigItemStack entry : entries) {
 							CreateLang.builder()
 								.add(entry.stack.getHoverName())
 								.text(" x")
 								.text(String.valueOf(entry.count))
 								.style(cost ? ChatFormatting.YELLOW : ChatFormatting.GRAY)
-								.addTo(pTooltipComponents);
+								.addTo(tooltipComponents);
 						}
 					}
 				}
@@ -160,11 +150,11 @@ public class ShoppingListItem extends Item {
 
 		CreateLang.translate("table_cloth.hand_to_shop_keeper")
 			.style(ChatFormatting.GRAY)
-			.addTo(pTooltipComponents);
+			.addTo(tooltipComponents);
 
 		CreateLang.translate("table_cloth.sneak_click_discard")
 			.style(ChatFormatting.DARK_GRAY)
-			.addTo(pTooltipComponents);
+			.addTo(tooltipComponents);
 	}
 
 	@Override
@@ -191,5 +181,4 @@ public class ShoppingListItem extends Item {
 		pPlayer.playSound(SoundEvents.BOOK_PAGE_TURN);
 		return InteractionResult.SUCCESS;
 	}
-
 }

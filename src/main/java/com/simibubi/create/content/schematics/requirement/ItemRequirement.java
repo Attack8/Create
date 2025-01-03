@@ -3,10 +3,10 @@ package com.simibubi.create.content.schematics.requirement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.api.schematic.requirement.ISpecialBlockEntityItemRequirement;
 import com.simibubi.create.api.schematic.requirement.ISpecialBlockItemRequirement;
@@ -14,10 +14,10 @@ import com.simibubi.create.api.schematic.requirement.ISpecialEntityItemRequireme
 import com.simibubi.create.api.schematic.requirement.SchematicRequirementsRegistry;
 import com.simibubi.create.compat.framedblocks.FramedBlocksInSchematics;
 import com.simibubi.create.foundation.data.recipe.Mods;
-
 import com.simibubi.create.impl.schematic.requirement.SchematicRequirementsRegistryImpl;
 
-import net.createmod.catnip.utility.NBTProcessors;
+import net.createmod.catnip.utility.ComponentProcessors;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -37,9 +37,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import org.jetbrains.annotations.Nullable;
 
 public class ItemRequirement {
 	public static final ItemRequirement NONE = new ItemRequirement(Collections.emptyList());
@@ -119,15 +116,15 @@ public class ItemRequirement {
 			return new ItemRequirement(ItemUseType.CONSUME, new ItemStack(item, state.getValue(SnowLayerBlock.LAYERS)
 				.intValue()));
 		// FD's rich soil extends FarmBlock so this is to make sure the cost is correct (it should be rich soil not dirt)
-		if (block == ForgeRegistries.BLOCKS.getValue(Mods.FD.asResource("rich_soil_farmland")))
-			return new ItemRequirement(ItemUseType.CONSUME, ForgeRegistries.ITEMS.getValue(Mods.FD.asResource("rich_soil")));
+		if (block == BuiltInRegistries.BLOCK.get(Mods.FD.asResource("rich_soil_farmland")))
+			return new ItemRequirement(ItemUseType.CONSUME, BuiltInRegistries.ITEM.get(Mods.FD.asResource("rich_soil")));
 		if (block instanceof FarmBlock || block instanceof DirtPathBlock)
 			return new ItemRequirement(ItemUseType.CONSUME, Items.DIRT);
 		if (block instanceof AbstractBannerBlock && be instanceof BannerBlockEntity bannerBE)
 			return new ItemRequirement(new StrictNbtStackRequirement(bannerBE.getItem(), ItemUseType.CONSUME));
 		// Tall grass doesnt exist as a block so use 2 grass blades
 		if (block == Blocks.TALL_GRASS)
-			return new ItemRequirement(ItemUseType.CONSUME, new ItemStack(Items.GRASS, 2));
+			return new ItemRequirement(ItemUseType.CONSUME, new ItemStack(Items.SHORT_GRASS, 2));
 		// Large ferns don't exist as blocks so use 2 ferns instead
 		if (block == Blocks.LARGE_FERN)
 			return new ItemRequirement(ItemUseType.CONSUME, new ItemStack(Items.FERN, 2));
@@ -145,7 +142,7 @@ public class ItemRequirement {
 
 		if (entity instanceof ItemFrame itemFrame) {
 			ItemStack frame = new ItemStack(Items.ITEM_FRAME);
-			ItemStack displayedItem = NBTProcessors.withUnsafeNBTDiscarded(itemFrame.getItem());
+			ItemStack displayedItem = ComponentProcessors.withUnsafeComponentsDiscarded(itemFrame.getItem());
 			if (displayedItem.isEmpty())
 				return new ItemRequirement(ItemUseType.CONSUME, Items.ITEM_FRAME);
 			return new ItemRequirement(List.of(new ItemRequirement.StackRequirement(frame, ItemUseType.CONSUME),
@@ -157,7 +154,7 @@ public class ItemRequirement {
 			requirements.add(new StackRequirement(new ItemStack(Items.ARMOR_STAND), ItemUseType.CONSUME));
 			armorStand.getAllSlots()
 				.forEach(s -> requirements
-					.add(new StrictNbtStackRequirement(NBTProcessors.withUnsafeNBTDiscarded(s), ItemUseType.CONSUME)));
+					.add(new StrictNbtStackRequirement(ComponentProcessors.withUnsafeComponentsDiscarded(s), ItemUseType.CONSUME)));
 			return new ItemRequirement(requirements);
 		}
 
@@ -213,7 +210,7 @@ public class ItemRequirement {
 
 		@Override
 		public boolean matches(ItemStack other) {
-			return ItemStack.isSameItemSameTags(stack, other);
+			return ItemStack.isSameItemSameComponents(stack, other);
 		}
 	}
 }

@@ -1,9 +1,22 @@
 package com.simibubi.create.content.contraptions;
 
+import static net.minecraft.world.entity.Entity.collideBoundingBox;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableFloat;
+import org.apache.commons.lang3.mutable.MutableObject;
+import org.apache.commons.lang3.tuple.MutablePair;
+
 import com.google.common.base.Predicates;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllMovementBehaviours;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity.ContraptionRotationState;
 import com.simibubi.create.content.contraptions.ContraptionColliderLockPacket.ContraptionColliderLockPacketRequest;
 import com.simibubi.create.content.contraptions.actors.harvester.HarvesterMovementBehaviour;
@@ -19,6 +32,8 @@ import com.simibubi.create.foundation.collision.OrientedBB;
 import com.simibubi.create.foundation.damageTypes.CreateDamageSources;
 import com.simibubi.create.foundation.utility.BlockHelper;
 import com.simibubi.create.infrastructure.config.AllConfigs;
+
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.Iterate;
 import net.createmod.catnip.utility.VecHelper;
 import net.minecraft.client.Minecraft;
@@ -49,22 +64,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
-import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.commons.lang3.mutable.MutableFloat;
-import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.commons.lang3.tuple.MutablePair;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-
-import static net.minecraft.world.entity.Entity.collideBoundingBox;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class ContraptionCollider {
 
@@ -91,8 +92,7 @@ public class ContraptionCollider {
 		ContraptionRotationState rotation = null;
 
 		if (world.isClientSide() && safetyLock.left != null && safetyLock.left.get() == contraptionEntity)
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-				() -> () -> saveClientPlayerFromClipping(contraptionEntity, contraptionMotion));
+			CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> saveClientPlayerFromClipping(contraptionEntity, contraptionMotion));
 
 		// After death, multiple refs to the client player may show up in the area
 		boolean skipClientPlayer = false;
@@ -107,8 +107,7 @@ public class ContraptionCollider {
 			if (playerType == PlayerType.REMOTE) {
 				if (!(contraption instanceof TranslatingContraption))
 					continue;
-				DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-					() -> () -> saveRemotePlayerFromClipping((Player) entity, contraptionEntity, contraptionMotion));
+				CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> saveRemotePlayerFromClipping((Player) entity, contraptionEntity, contraptionMotion));
 				continue;
 			}
 
@@ -203,7 +202,7 @@ public class ContraptionCollider {
 					Vec3 collisionPosition = intersect.getCollisionPosition();
 
 					if (!isTemporal) {
-						Vec3 separation = intersect.asSeparationVec(entity.getStepHeight());
+						Vec3 separation = intersect.asSeparationVec(entity.maxUpStep());
 						if (separation != null && !separation.equals(Vec3.ZERO)) {
 							collisionResponse.setValue(currentResponse.add(separation));
 							timeOfImpact = 0;
@@ -368,8 +367,7 @@ public class ContraptionCollider {
 				entity.fallDistance = 0;
 				for (Entity rider : entity.getIndirectPassengers())
 					if (getPlayerType(rider) == PlayerType.CLIENT)
-						AllPackets.getChannel()
-							.sendToServer(new ClientMotionPacket(rider.getDeltaMovement(), true, 0));
+						CatnipServices.NETWORK.sendToServer(new ClientMotionPacket(rider.getDeltaMovement(), true, 0));
 				boolean canWalk = bounce != 0 || slide == 0;
 				if (canWalk || !rotation.hasVerticalRotation()) {
 					if (canWalk)
@@ -393,8 +391,7 @@ public class ContraptionCollider {
 			float limbSwing = Mth.sqrt((float) (d0 * d0 + d1 * d1)) * 4.0F;
 			if (limbSwing > 1.0F)
 				limbSwing = 1.0F;
-			AllPackets.getChannel()
-				.sendToServer(new ClientMotionPacket(entityMotion, true, limbSwing));
+			CatnipServices.NETWORK.sendToServer(new ClientMotionPacket(entityMotion, true, limbSwing));
 
 			if (entity.onGround() && contraption instanceof TranslatingContraption) {
 				safetyLock.setLeft(new WeakReference<>(contraptionEntity));
@@ -424,8 +421,7 @@ public class ContraptionCollider {
 			if (packetCooldown > 0)
 				packetCooldown--;
 			if (packetCooldown == 0) {
-				AllPackets.getChannel()
-					.sendToServer(new ContraptionColliderLockPacketRequest(contraptionEntity.getId(), currentDiff));
+				CatnipServices.NETWORK.sendToServer(new ContraptionColliderLockPacketRequest(contraptionEntity.getId(), currentDiff));
 				packetCooldown = 3;
 			}
 		}
@@ -477,7 +473,7 @@ public class ContraptionCollider {
 		AABB bb = entity.getBoundingBox()
 			.deflate(1 / 4f, 0, 1 / 4f);
 		double shortestDistance = Double.MAX_VALUE;
-		double yStart = entity.getStepHeight() + contraptionEntity.getY() + yStartOffset;
+		double yStart = entity.maxUpStep() + contraptionEntity.getY() + yStartOffset;
 		double rayLength = Math.max(5, Math.abs(entity.getY() - yStart));
 
 		for (int rayIndex = 0; rayIndex < 4; rayIndex++) {
@@ -537,8 +533,7 @@ public class ContraptionCollider {
 			return entityMotion;
 
 		if (playerType == PlayerType.CLIENT) {
-			AllPackets.getChannel()
-				.sendToServer(new TrainCollisionPacket((int) (damage * 16), contraptionEntity.getId()));
+			CatnipServices.NETWORK.sendToServer(new TrainCollisionPacket((int) (damage * 16), contraptionEntity.getId()));
 			world.playSound((Player) entity, entity.blockPosition(), SoundEvents.PLAYER_ATTACK_CRIT,
 				SoundSource.NEUTRAL, 1, .75f);
 		} else {
@@ -617,12 +612,12 @@ public class ContraptionCollider {
 		boolean flag1 = p_20273_.y != vec3.y;
 		boolean flag2 = p_20273_.z != vec3.z;
 		boolean flag3 = flag1 && p_20273_.y < 0.0D;
-		if (e.getStepHeight() > 0.0F && flag3 && (flag || flag2)) {
-			Vec3 vec31 = collideBoundingBox(e, new Vec3(p_20273_.x, (double) e.getStepHeight(), p_20273_.z), aabb,
+		if (e.maxUpStep() > 0.0F && flag3 && (flag || flag2)) {
+			Vec3 vec31 = collideBoundingBox(e, new Vec3(p_20273_.x, (double) e.maxUpStep(), p_20273_.z), aabb,
 				e.level(), list);
-			Vec3 vec32 = collideBoundingBox(e, new Vec3(0.0D, (double) e.getStepHeight(), 0.0D),
+			Vec3 vec32 = collideBoundingBox(e, new Vec3(0.0D, (double) e.maxUpStep(), 0.0D),
 				aabb.expandTowards(p_20273_.x, 0.0D, p_20273_.z), e.level(), list);
-			if (vec32.y < (double) e.getStepHeight()) {
+			if (vec32.y < (double) e.maxUpStep()) {
 				Vec3 vec33 =
 					collideBoundingBox(e, new Vec3(p_20273_.x, 0.0D, p_20273_.z), aabb.move(vec32), e.level(), list)
 						.add(vec32);
@@ -646,7 +641,7 @@ public class ContraptionCollider {
 		if (!entity.level().isClientSide)
 			return PlayerType.SERVER;
 		MutableBoolean isClient = new MutableBoolean(false);
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> isClient.setValue(isClientPlayerEntity(entity)));
+		CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> isClient.setValue(isClientPlayerEntity(entity)));
 		return isClient.booleanValue() ? PlayerType.CLIENT : PlayerType.REMOTE;
 	}
 

@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.content.logistics.AddressEditBox;
 import com.simibubi.create.content.logistics.BigItemStack;
@@ -30,10 +29,10 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.NonNullList;
@@ -45,14 +44,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.common.crafting.IShapedRecipe;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 
 public class FactoryPanelScreen extends AbstractSimiScreen {
 
-	private EditBox addressBox;
+	private AddressEditBox addressBox;
 	private IconButton confirmButton;
 	private IconButton deleteButton;
 	private IconButton newInputButton;
@@ -104,9 +103,9 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 		int width = Math.min(3, ingredients.size());
 		int height = Math.min(3, ingredients.size() / 3 + 1);
 
-		if (availableCraftingRecipe instanceof IShapedRecipe<?> shaped) {
-			width = shaped.getRecipeWidth();
-			height = shaped.getRecipeHeight();
+		if (availableCraftingRecipe instanceof ShapedRecipe shaped) {
+			width = shaped.getWidth();
+			height = shaped.getHeight();
 		}
 
 		if (height == 1)
@@ -423,7 +422,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 				mouseX, mouseY);
 			return;
 		}
-		
+
 		if (itemStack.stack.isEmpty()) {
 			graphics.renderComponentTooltip(font, List.of(CreateLang.translate("gui.factory_panel.empty_panel")
 				.color(ScrollInput.HEADER_RGB)
@@ -549,7 +548,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 			playButtonSound();
 			return true;
 		}
-		
+
 		// remove redstone connections
 		itemX = x + 9;
 		itemY = y + windowHeight - 24;
@@ -566,16 +565,16 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 	public void playButtonSound() {
 		Minecraft.getInstance()
 			.getSoundManager()
-			.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.get(), 1.0f, 0.25f));
+			.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1.0f, 0.25f));
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double pDelta) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		int x = guiLeft;
 		int y = guiTop;
 
 		if (craftingActive)
-			return super.mouseScrolled(mouseX, mouseY, pDelta);
+			return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 
 		for (int i = 0; i < inputConfig.size(); i++) {
 			int inputX = x + 68 + (i % 3 * 20);
@@ -585,7 +584,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 				if (itemStack.stack.isEmpty())
 					return true;
 				itemStack.count =
-					Mth.clamp((int) (itemStack.count + Math.signum(pDelta) * (hasShiftDown() ? 10 : 1)), 1, 64);
+					Mth.clamp((int) (itemStack.count + Math.signum(scrollY) * (hasShiftDown() ? 10 : 1)), 1, 64);
 				return true;
 			}
 		}
@@ -596,12 +595,12 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 			if (mouseX >= outputX && mouseX < outputX + 16 && mouseY >= outputY && mouseY < outputY + 16) {
 				BigItemStack itemStack = outputConfig;
 				itemStack.count =
-					Mth.clamp((int) (itemStack.count + Math.signum(pDelta) * (hasShiftDown() ? 10 : 1)), 1, 64);
+					Mth.clamp((int) (itemStack.count + Math.signum(scrollY) * (hasShiftDown() ? 10 : 1)), 1, 64);
 				return true;
 			}
 		}
 
-		return super.mouseScrolled(mouseX, mouseY, pDelta);
+		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 	}
 
 	@Override
@@ -618,7 +617,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 				BigItemStack stackInConfig = inputConfig.get(i);
 				inputs.put(connections.get(i).from, craftingActive ? (int) craftingIngredients.stream()
 					.filter(
-						b -> !b.stack.isEmpty() && ItemHandlerHelper.canItemStacksStack(b.stack, stackInConfig.stack))
+						b -> !b.stack.isEmpty() && ItemStack.isSameItemSameComponents(b.stack, stackInConfig.stack))
 					.count() : stackInConfig.count);
 			}
 
@@ -632,8 +631,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 
 		FactoryPanelConfigurationPacket packet = new FactoryPanelConfigurationPacket(pos, address, inputs,
 			craftingArrangement, outputConfig.count, promiseExp, toRemove, clearPromises, sendReset, sendRedstoneReset);
-		AllPackets.getChannel()
-			.sendToServer(packet);
+		CatnipServices.NETWORK.sendToServer(packet);
 	}
 
 	private void searchForCraftingRecipe() {
@@ -654,16 +652,16 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 		availableCraftingRecipe = level.getRecipeManager()
 			.getAllRecipesFor(RecipeType.CRAFTING)
 			.parallelStream()
-			.filter(r -> r.getSerializer() == RecipeSerializer.SHAPED_RECIPE
-				|| r.getSerializer() == RecipeSerializer.SHAPELESS_RECIPE)
-			.filter(r -> output.getItem() == r.getResultItem(level.registryAccess())
+			.filter(r -> r.value().getSerializer() == RecipeSerializer.SHAPED_RECIPE
+				|| r.value().getSerializer() == RecipeSerializer.SHAPELESS_RECIPE)
+			.filter(r -> output.getItem() == r.value().getResultItem(level.registryAccess())
 				.getItem())
 			.filter(r -> {
 				if (AllRecipeTypes.shouldIgnoreInAutomation(r))
 					return false;
 
 				Set<Item> itemsUsed = new HashSet<>();
-				for (Ingredient ingredient : r.getIngredients()) {
+				for (Ingredient ingredient : r.value().getIngredients()) {
 					if (ingredient.isEmpty())
 						continue;
 					boolean available = false;
@@ -684,6 +682,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 				return true;
 			})
 			.findAny()
+			.map(RecipeHolder::value)
 			.orElse(null);
 	}
 

@@ -13,6 +13,7 @@ import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.animation.LerpedFloat;
 import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
@@ -49,8 +50,8 @@ public class CuckooClockBlockEntity extends KineticBlockEntity {
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
-		super.read(compound, clientPacket);
+	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(compound, registries, clientPacket);
 		if (clientPacket && compound.contains("Animation")) {
 			animationType = NBTHelper.readEnum(compound, "Animation", Animation.class);
 			animationProgress.startWithValue(0);
@@ -58,11 +59,11 @@ public class CuckooClockBlockEntity extends KineticBlockEntity {
 	}
 
 	@Override
-	public void write(CompoundTag compound, boolean clientPacket) {
+	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		if (clientPacket && sendAnimationUpdate)
 			NBTHelper.writeEnum(compound, "Animation", animationType);
 		sendAnimationUpdate = false;
-		super.write(compound, clientPacket);
+		super.write(compound, registries, clientPacket);
 	}
 
 	@Override
@@ -82,9 +83,9 @@ public class CuckooClockBlockEntity extends KineticBlockEntity {
 				moveHands(hours, minutes);
 
 				if (AnimationTickHolder.getTicks() % 6 == 0)
-					playSound(SoundEvents.NOTE_BLOCK_HAT.get(), 1 / 16f, 2f);
+					playSound(SoundEvents.NOTE_BLOCK_HAT.value(), 1 / 16f, 2f);
 				else if (AnimationTickHolder.getTicks() % 3 == 0)
-					playSound(SoundEvents.NOTE_BLOCK_HAT.get(), 1 / 16f, 1.5f);
+					playSound(SoundEvents.NOTE_BLOCK_HAT.value(), 1 / 16f, 1.5f);
 			}
 			return;
 		}
@@ -117,9 +118,9 @@ public class CuckooClockBlockEntity extends KineticBlockEntity {
 
 			if (animationType == Animation.NONE) {
 				if (AnimationTickHolder.getTicks() % 32 == 0)
-					playSound(SoundEvents.NOTE_BLOCK_HAT.get(), 1 / 16f, 2f);
+					playSound(SoundEvents.NOTE_BLOCK_HAT.value(), 1 / 16f, 2f);
 				else if (AnimationTickHolder.getTicks() % 16 == 0)
-					playSound(SoundEvents.NOTE_BLOCK_HAT.get(), 1 / 16f, 1.5f);
+					playSound(SoundEvents.NOTE_BLOCK_HAT.value(), 1 / 16f, 1.5f);
 			} else {
 
 				boolean isSurprise = animationType == Animation.SURPRISE;
@@ -131,9 +132,9 @@ public class CuckooClockBlockEntity extends KineticBlockEntity {
 				// sounds
 
 				if (value == 1)
-					playSound(SoundEvents.NOTE_BLOCK_CHIME.get(), 2, .5f);
+					playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 2, .5f);
 				if (value == 21)
-					playSound(SoundEvents.NOTE_BLOCK_CHIME.get(), 2, 0.793701f);
+					playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 2, 0.793701f);
 
 				if (value > 30 && isSurprise) {
 					Vec3 pos = VecHelper.offsetRandomly(VecHelper.getCenterOf(this.worldPosition), level.random, .5f);

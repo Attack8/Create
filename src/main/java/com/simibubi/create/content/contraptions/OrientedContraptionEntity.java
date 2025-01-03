@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.simibubi.create.AllAttachmentTypes;
 import com.simibubi.create.AllEntityTypes;
 import com.simibubi.create.content.contraptions.bearing.StabilizedContraption;
 import com.simibubi.create.content.contraptions.minecart.MinecartSim2020;
@@ -26,6 +27,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -45,9 +47,8 @@ import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * Ex: Minecarts, Couplings <br>
@@ -121,10 +122,10 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	}
 
 	@Override
-	protected void defineSynchedData() {
-		super.defineSynchedData();
-		entityData.define(COUPLING, Optional.empty());
-		entityData.define(INITIAL_ORIENTATION, Direction.UP);
+	protected void defineSynchedData(SynchedEntityData.Builder builder) {
+		super.defineSynchedData(builder);
+		builder.define(COUPLING, Optional.empty());
+		builder.define(INITIAL_ORIENTATION, Direction.UP);
 	}
 
 	@Override
@@ -176,8 +177,8 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	}
 
 	@Override
-	protected void writeAdditional(CompoundTag compound, boolean spawnPacket) {
-		super.writeAdditional(compound, spawnPacket);
+	protected void writeAdditional(CompoundTag compound, HolderLookup.Provider registries, boolean spawnPacket) {
+		super.writeAdditional(compound, registries, spawnPacket);
 
 		if (motionBeforeStall != null)
 			compound.put("CachedMotion", newDoubleList(motionBeforeStall.x, motionBeforeStall.y, motionBeforeStall.z));
@@ -280,12 +281,11 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 			tickActors();
 		boolean isStalled = isStalled();
 
-		LazyOptional<MinecartController> capability =
-			riding.getCapability(CapabilityMinecartController.MINECART_CONTROLLER_CAPABILITY);
-		if (capability.isPresent()) {
+		if (riding.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
+			MinecartController controller = riding.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+
 			if (!level().isClientSide())
-				capability.orElse(null)
-					.setStalledExternally(isStalled);
+				controller.setStalledExternally(isStalled);
 		} else {
 			if (isStalled) {
 				if (!wasStalled)
@@ -405,13 +405,13 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	}
 
 	protected void powerFurnaceCartWithFuelFromStorage(Entity riding) {
-		if (!(riding instanceof MinecartFurnace))
+		if (!(riding instanceof MinecartFurnace furnaceCart))
 			return;
-		MinecartFurnace furnaceCart = (MinecartFurnace) riding;
 
 		// Notify to not trigger serialization side-effects
 		isSerializingFurnaceCart = true;
-		CompoundTag nbt = furnaceCart.serializeNBT();
+		CompoundTag nbt = new CompoundTag();
+		furnaceCart.saveAsPassenger(nbt);
 		isSerializingFurnaceCart = false;
 
 		int fuel = nbt.getInt("Fuel");
@@ -443,7 +443,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 			nbt.putInt("Fuel", fuel);
 			nbt.putDouble("PushX", 0);
 			nbt.putDouble("PushZ", 0);
-			furnaceCart.deserializeNBT(nbt);
+			furnaceCart.load(nbt);
 		}
 	}
 
@@ -607,7 +607,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 
 	@OnlyIn(Dist.CLIENT)
 	public static void handleRelocationPacket(ContraptionRelocationPacket packet) {
-		if (Minecraft.getInstance().level.getEntity(packet.entityID) instanceof OrientedContraptionEntity oce)
+		if (Minecraft.getInstance().level.getEntity(packet.entityId()) instanceof OrientedContraptionEntity oce)
 			oce.nonDamageTicks = 10;
 	}
 }

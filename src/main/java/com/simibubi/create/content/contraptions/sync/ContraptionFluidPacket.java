@@ -1,49 +1,39 @@
 package com.simibubi.create.content.contraptions.sync;
 
+import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
-import com.simibubi.create.foundation.networking.SimplePacketBase;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.network.NetworkEvent.Context;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class ContraptionFluidPacket extends SimplePacketBase {
+public record ContraptionFluidPacket(int entityId, BlockPos localPos, FluidStack fluid) implements ClientboundPacketPayload {
+	public static final StreamCodec<RegistryFriendlyByteBuf, ContraptionFluidPacket> STREAM_CODEC = StreamCodec.composite(
+			ByteBufCodecs.INT, ContraptionFluidPacket::entityId,
+			BlockPos.STREAM_CODEC, ContraptionFluidPacket::localPos,
+			FluidStack.OPTIONAL_STREAM_CODEC, ContraptionFluidPacket::fluid,
+	        ContraptionFluidPacket::new
+	);
 
-	private int entityId;
-	private BlockPos localPos;
-	private FluidStack containedFluid;
-
-	public ContraptionFluidPacket(int entityId, BlockPos localPos, FluidStack containedFluid) {
-		this.entityId = entityId;
-		this.localPos = localPos;
-		this.containedFluid = containedFluid;
-	}
-
-	public ContraptionFluidPacket(FriendlyByteBuf buffer) {
-		entityId = buffer.readInt();
-		localPos = buffer.readBlockPos();
-		containedFluid = FluidStack.readFromPacket(buffer);
+	@Override
+	@OnlyIn(Dist.CLIENT)
+	public void handle(LocalPlayer player) {
+		Entity entityByID = player.clientLevel.getEntity(entityId);
+		if (!(entityByID instanceof AbstractContraptionEntity contraptionEntity))
+			return;
+		contraptionEntity.getContraption().handleContraptionFluidPacket(localPos, fluid);
 	}
 
 	@Override
-	public void write(FriendlyByteBuf buffer) {
-		buffer.writeInt(entityId);
-		buffer.writeBlockPos(localPos);
-		containedFluid.writeToPacket(buffer);
-	}
-
-	@Override
-	public boolean handle(Context context) {
-		context.enqueueWork(() -> {
-			Entity entityByID = Minecraft.getInstance().level.getEntity(entityId);
-			if (!(entityByID instanceof AbstractContraptionEntity))
-				return;
-			AbstractContraptionEntity contraptionEntity = (AbstractContraptionEntity) entityByID;
-			contraptionEntity.getContraption().handleContraptionFluidPacket(localPos, containedFluid);
-		});
-		return true;
+	public PacketTypeProvider getTypeProvider() {
+		return AllPackets.CONTRAPTION_FLUID;
 	}
 }

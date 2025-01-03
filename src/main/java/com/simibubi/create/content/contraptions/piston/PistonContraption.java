@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.phys.Vec3;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.simibubi.create.content.contraptions.AssemblyException;
@@ -126,9 +129,9 @@ public class PistonContraption extends TranslatingContraption {
 		extensionLength = extensionsInBack + extensionsInFront;
 		initialExtensionProgress = extensionsInFront;
 		pistonExtensionCollisionBox = new AABB(
-				BlockPos.ZERO.relative(direction, -1),
-				BlockPos.ZERO.relative(direction, -extensionLength - 1)).expandTowards(1,
-						1, 1);
+				Vec3.atLowerCornerOf(BlockPos.ZERO.relative(direction, -1)),
+				Vec3.atLowerCornerOf(BlockPos.ZERO.relative(direction, -extensionLength - 1))
+		).expandTowards(1, 1, 1);
 
 		if (extensionLength == 0)
 			throw AssemblyException.noPistonPoles();
@@ -233,8 +236,8 @@ public class PistonContraption extends TranslatingContraption {
 	}
 
 	@Override
-	public CompoundTag writeNBT(boolean spawnPacket) {
-		CompoundTag tag = super.writeNBT(spawnPacket);
+	public CompoundTag writeNBT(HolderLookup.Provider registries, boolean spawnPacket) {
+		CompoundTag tag = super.writeNBT(registries, spawnPacket);
 		tag.putInt("InitialLength", initialExtensionProgress);
 		tag.putInt("ExtensionLength", extensionLength);
 		tag.putInt("Orientation", orientation.get3DDataValue());

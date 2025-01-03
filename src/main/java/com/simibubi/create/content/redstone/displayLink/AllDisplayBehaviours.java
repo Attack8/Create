@@ -22,8 +22,9 @@ import com.simibubi.create.content.redstone.displayLink.target.SignDisplayTarget
 import com.simibubi.create.foundation.utility.AttachedRegistry;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
 
-import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.utility.RegisteredObjectsHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -32,16 +33,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class AllDisplayBehaviours {
 	public static final Map<ResourceLocation, DisplayBehaviour> GATHERER_BEHAVIOURS = new HashMap<>();
 
-	private static final AttachedRegistry<Block, List<DisplaySource>> SOURCES_BY_BLOCK = new AttachedRegistry<>(ForgeRegistries.BLOCKS);
-	private static final AttachedRegistry<BlockEntityType<?>, List<DisplaySource>> SOURCES_BY_BLOCK_ENTITY = new AttachedRegistry<>(ForgeRegistries.BLOCK_ENTITY_TYPES);
+	private static final AttachedRegistry<Block, List<DisplaySource>> SOURCES_BY_BLOCK = new AttachedRegistry<>(BuiltInRegistries.BLOCK);
+	private static final AttachedRegistry<BlockEntityType<?>, List<DisplaySource>> SOURCES_BY_BLOCK_ENTITY = new AttachedRegistry<>(BuiltInRegistries.BLOCK_ENTITY_TYPE);
 
-	private static final AttachedRegistry<Block, DisplayTarget> TARGETS_BY_BLOCK = new AttachedRegistry<>(ForgeRegistries.BLOCKS);
-	private static final AttachedRegistry<BlockEntityType<?>, DisplayTarget> TARGETS_BY_BLOCK_ENTITY = new AttachedRegistry<>(ForgeRegistries.BLOCK_ENTITY_TYPES);
+	private static final AttachedRegistry<Block, DisplayTarget> TARGETS_BY_BLOCK = new AttachedRegistry<>(BuiltInRegistries.BLOCK);
+	private static final AttachedRegistry<BlockEntityType<?>, DisplayTarget> TARGETS_BY_BLOCK_ENTITY = new AttachedRegistry<>(BuiltInRegistries.BLOCK_ENTITY_TYPE);
 
 	public static DisplayBehaviour register(ResourceLocation id, DisplayBehaviour behaviour) {
 		behaviour.id = id;
@@ -108,11 +108,11 @@ public class AllDisplayBehaviours {
 	public static <B extends Block> NonNullConsumer<? super B> assignDataBehaviour(DisplayBehaviour behaviour,
 		String... suffix) {
 		return b -> {
-			ResourceLocation registryName = CatnipServices.REGISTRIES.getKeyOrThrow(b);
+			ResourceLocation registryName = RegisteredObjectsHelper.getKeyOrThrow(b);
 			String idSuffix = behaviour instanceof DisplaySource ? "_source" : "_target";
 			if (suffix.length > 0)
 				idSuffix += "_" + suffix[0];
-			assignBlock(register(new ResourceLocation(registryName.getNamespace(), registryName.getPath() + idSuffix),
+			assignBlock(register(ResourceLocation.fromNamespaceAndPath(registryName.getNamespace(), registryName.getPath() + idSuffix),
 				behaviour), registryName);
 		};
 	}
@@ -120,12 +120,12 @@ public class AllDisplayBehaviours {
 	public static <B extends BlockEntityType<?>> NonNullConsumer<? super B> assignDataBehaviourBE(
 		DisplayBehaviour behaviour, String... suffix) {
 		return b -> {
-			ResourceLocation registryName = CatnipServices.REGISTRIES.getKeyOrThrow(b);
+			ResourceLocation registryName = RegisteredObjectsHelper.getKeyOrThrow(b);
 			String idSuffix = behaviour instanceof DisplaySource ? "_source" : "_target";
 			if (suffix.length > 0)
 				idSuffix += "_" + suffix[0];
 			assignBlockEntity(
-				register(new ResourceLocation(registryName.getNamespace(), registryName.getPath() + idSuffix),
+				register(ResourceLocation.fromNamespaceAndPath(registryName.getNamespace(), registryName.getPath() + idSuffix),
 					behaviour),
 				registryName);
 		};

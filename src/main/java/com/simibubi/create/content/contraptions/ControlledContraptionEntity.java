@@ -13,6 +13,7 @@ import net.createmod.catnip.utility.math.AngleHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.entity.Entity;
@@ -21,8 +22,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 /**
  * Ex: Pistons, bearings <br>
@@ -78,19 +79,16 @@ public class ControlledContraptionEntity extends AbstractContraptionEntity {
 	@Override
 	protected void readAdditional(CompoundTag compound, boolean spawnPacket) {
 		super.readAdditional(compound, spawnPacket);
-		if (compound.contains("Controller")) // legacy
-			controllerPos = NbtUtils.readBlockPos(compound.getCompound("Controller"));
-		else
-			controllerPos = NbtUtils.readBlockPos(compound.getCompound("ControllerRelative"))
-				.offset(blockPosition());
+		NbtUtils.readBlockPos(compound, "ControllerRelative")
+				.ifPresent(p -> controllerPos = p.offset(blockPosition()));
 		if (compound.contains("Axis"))
 			rotationAxis = NBTHelper.readEnum(compound, "Axis", Axis.class);
 		angle = compound.getFloat("Angle");
 	}
 
 	@Override
-	protected void writeAdditional(CompoundTag compound, boolean spawnPacket) {
-		super.writeAdditional(compound, spawnPacket);
+	protected void writeAdditional(CompoundTag compound, HolderLookup.Provider registries, boolean spawnPacket) {
+		super.writeAdditional(compound, registries, spawnPacket);
 		compound.put("ControllerRelative", NbtUtils.writeBlockPos(controllerPos.subtract(blockPosition())));
 		if (rotationAxis != null)
 			NBTHelper.writeEnum(compound, "Axis", rotationAxis);
@@ -147,7 +145,9 @@ public class ControlledContraptionEntity extends AbstractContraptionEntity {
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void lerpTo(double x, double y, double z, float yw, float pt, int inc, boolean t) {}
+	public void lerpTo(double pX, double pY, double pZ, float pYRot, float pXRot, int pSteps) {
+		super.lerpTo(pX, pY, pZ, pYRot, pXRot, pSteps);
+	}
 
 	protected void tickContraption() {
 		angleDelta = angle - prevAngle;

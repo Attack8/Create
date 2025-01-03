@@ -6,27 +6,27 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttributeTypes;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class ItemNameAttribute implements ItemAttribute {
-	private String itemName;
-
-	public ItemNameAttribute(String itemName) {
-		this.itemName = itemName;
-	}
+public record ItemNameAttribute(String itemName) implements ItemAttribute {
+	public static final MapCodec<ItemNameAttribute> CODEC = Codec.STRING
+			.xmap(ItemNameAttribute::new, ItemNameAttribute::itemName)
+			.fieldOf("value");
 
 	private static String extractCustomName(ItemStack stack) {
-		CompoundTag compoundnbt = stack.getTagElement("display");
-		if (compoundnbt != null && compoundnbt.contains("Name", 8)) {
+		if (stack.has(DataComponents.CUSTOM_NAME)) {
 			try {
-				Component itextcomponent = Component.Serializer.fromJson(compoundnbt.getString("Name"));
+				Component itextcomponent = Component.Serializer.fromJson(stack.getOrDefault(DataComponents.CUSTOM_NAME, Component.empty()).getString(), RegistryAccess.EMPTY);
 				if (itextcomponent != null) {
 					return itextcomponent.getString();
 				}
@@ -53,17 +53,7 @@ public class ItemNameAttribute implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.HAS_NAME.get();
-	}
-
-	@Override
-	public void save(CompoundTag nbt) {
-		nbt.putString("name", itemName);
-	}
-
-	@Override
-	public void load(CompoundTag nbt) {
-		itemName = nbt.getString("name");
+		return AllItemAttributeTypes.HAS_NAME.value();
 	}
 
 	public static class Type implements ItemAttributeType {
@@ -82,6 +72,11 @@ public class ItemNameAttribute implements ItemAttribute {
 			}
 
 			return list;
+		}
+
+		@Override
+		public MapCodec<? extends ItemAttribute> codec() {
+			return CODEC;
 		}
 	}
 }

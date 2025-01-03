@@ -7,6 +7,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 
@@ -66,17 +67,17 @@ public class ContraptionData {
 	/**
 	 * @return true if the given NBT is too large for a contraption to be picked up with a wrench.
 	 */
-	public static boolean isTooLargeForPickup(CompoundTag data) {
+	public static boolean isTooLargeForPickup(Tag data) {
 		return packetSize(data) > PICKUP_LIMIT;
 	}
 
 	/**
 	 * @return the size of the given NBT when put through a packet, in bytes.
 	 */
-	public static long packetSize(CompoundTag data) {
+	public static long packetSize(Tag data) {
 		FriendlyByteBuf test = new FriendlyByteBuf(Unpooled.buffer());
 		test.writeNbt(data);
-		NbtAccounter sizeTracker = new NbtAccounter(Long.MAX_VALUE);
+		NbtAccounter sizeTracker = NbtAccounter.unlimitedHeap();
 		test.readNbt(sizeTracker);
 		long size = ((NbtAccounterAccessor) sizeTracker).create$getUsage();
 		test.release();

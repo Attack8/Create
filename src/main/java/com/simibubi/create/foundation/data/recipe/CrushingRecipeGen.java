@@ -10,6 +10,7 @@ import static com.simibubi.create.foundation.data.recipe.CompatMetals.SILVER;
 import static com.simibubi.create.foundation.data.recipe.CompatMetals.TIN;
 import static com.simibubi.create.foundation.data.recipe.CompatMetals.URANIUM;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -22,6 +23,8 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 
 import net.createmod.catnip.utility.lang.Lang;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -31,10 +34,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.crafting.conditions.NotCondition;
-import net.minecraftforge.common.crafting.conditions.TagEmptyCondition;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.NotCondition;
+import net.neoforged.neoforge.common.conditions.TagEmptyCondition;
 
 public class CrushingRecipeGen extends ProcessingRecipeGen {
 
@@ -168,7 +170,7 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 		RAW_IRON_ORE = rawOre("iron", () -> Tags.Items.RAW_MATERIALS_IRON, AllItems.CRUSHED_IRON::get, 1),
 		RAW_COPPER_ORE = rawOre("copper", () -> Tags.Items.RAW_MATERIALS_COPPER, AllItems.CRUSHED_COPPER::get, 1),
 		RAW_GOLD_ORE = rawOre("gold", () -> Tags.Items.RAW_MATERIALS_GOLD, AllItems.CRUSHED_GOLD::get, 2),
-		RAW_ZINC_ORE = rawOre("zinc", () -> AllTags.forgeItemTag("raw_materials/zinc"), AllItems.CRUSHED_ZINC::get, 1),
+		RAW_ZINC_ORE = rawOre("zinc", () -> AllTags.commonItemTag("raw_materials/zinc"), AllItems.CRUSHED_ZINC::get, 1),
 
 		OSMIUM_RAW_ORE = moddedRawOre(OSMIUM, AllItems.CRUSHED_OSMIUM::get),
 		PLATINUM_RAW_ORE = moddedRawOre(PLATINUM, AllItems.CRUSHED_PLATINUM::get),
@@ -183,7 +185,7 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 		RAW_IRON_BLOCK = rawOreBlock("iron", () -> Tags.Items.STORAGE_BLOCKS_RAW_IRON, AllItems.CRUSHED_IRON::get, 1),
 		RAW_COPPER_BLOCK = rawOreBlock("copper", () -> Tags.Items.STORAGE_BLOCKS_RAW_COPPER, AllItems.CRUSHED_COPPER::get, 1),
 		RAW_GOLD_BLOCK = rawOreBlock("gold", () -> Tags.Items.STORAGE_BLOCKS_RAW_GOLD, AllItems.CRUSHED_GOLD::get, 2),
-		RAW_ZINC_BLOCK = rawOreBlock("zinc", () -> AllTags.forgeItemTag("storage_blocks/raw_zinc"), AllItems.CRUSHED_ZINC::get, 1),
+		RAW_ZINC_BLOCK = rawOreBlock("zinc", () -> AllTags.commonItemTag("storage_blocks/raw_zinc"), AllItems.CRUSHED_ZINC::get, 1),
 
 		OSMIUM_RAW_BLOCK = moddedRawOreBlock(OSMIUM, AllItems.CRUSHED_OSMIUM::get),
 		PLATINUM_RAW_BLOCK = moddedRawOreBlock(PLATINUM, AllItems.CRUSHED_PLATINUM::get),
@@ -197,8 +199,8 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 
 		// Oh The Biomes You'll Go
 		BYG_AMETRINE_ORE = create(Mods.BYG.recipeId("ametrine_ore"), b -> b.duration(500)
-				.require(AllTags.optionalTag(ForgeRegistries.ITEMS,
-						new ResourceLocation("forge", "ores/ametrine")))
+				.require(AllTags.optionalTag(BuiltInRegistries.ITEM,
+						ResourceLocation.fromNamespaceAndPath("c", "ores/ametrine")))
 				.output(1f, Mods.BYG, "ametrine_gems", 2)
 				.output(.25f, Mods.BYG, "ametrine_gems", 1)
 				.output(.75f, AllItems.EXP_NUGGET.get(), 1)
@@ -206,8 +208,8 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 				.whenModLoaded(Mods.BYG.getId())),
 
 		BYG_ANTHRACITE_ORE = create(Mods.BYG.recipeId("anthracite_ore"), b -> b.duration(150)
-				.require(AllTags.optionalTag(ForgeRegistries.ITEMS,
-						new ResourceLocation("forge", "ores/anthracite")))
+				.require(AllTags.optionalTag(BuiltInRegistries.ITEM,
+						ResourceLocation.fromNamespaceAndPath("c", "ores/anthracite")))
 				.output(1f, Mods.BYG, "anthracite", 2)
 				.output(.5f, Mods.BYG, "anthracite", 1)
 				.output(.75f, AllItems.EXP_NUGGET.get(), 1)
@@ -253,7 +255,7 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 				.whenModLoaded(Mods.BYG.getId())),
 
 		BYG_EMERALDITE_ORE = create(Mods.BYG.recipeId("emeraldite_ore"), b -> b.duration(500)
-				.require(AllTags.forgeItemTag("ores/emeraldite"))
+				.require(AllTags.commonItemTag("ores/emeraldite"))
 				.output(1f,Mods.BYG, "emeraldite_shards", 2)
 				.output(.25f, Mods.BYG, "emeraldite_shards", 1)
 				.output(.75f, AllItems.EXP_NUGGET.get(), 1)
@@ -261,7 +263,7 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 				.whenModLoaded(Mods.BYG.getId())),
 
 		BYG_LIGNITE_ORE = create(Mods.BYG.recipeId("lignite_ore"), b -> b.duration(300)
-				.require(AllTags.forgeItemTag("ores/lignite"))
+				.require(AllTags.commonItemTag("ores/lignite"))
 				.output(1f,Mods.BYG, "lignite", 2)
 				.output(.5f, Mods.BYG, "lignite", 2)
 				.output(.75f, AllItems.EXP_NUGGET.get(), 1)
@@ -269,7 +271,7 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 				.whenModLoaded(Mods.BYG.getId())),
 
 		BYG_NETHERRACK_ORE = create(Mods.BYG.recipeId("pervaded_netherrack"), b -> b.duration(150)
-				.require(AllTags.forgeItemTag("ores/emeraldite"))
+				.require(AllTags.commonItemTag("ores/emeraldite"))
 				.output(1f, Items.GLOWSTONE, 2)
 				.output(.5f, Items.GLOWSTONE, 1)
 				.output(.75f, AllItems.EXP_NUGGET.get(), 1)
@@ -461,8 +463,8 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 		return create(name + "_ore", b -> {
 			String prefix = "ores/";
 			return b.duration(400)
-				.withCondition(new NotCondition(new TagEmptyCondition("forge", prefix + name)))
-				.require(AllTags.forgeItemTag(prefix + name))
+				.withCondition(new NotCondition(new TagEmptyCondition("c", prefix + name)))
+				.require(AllTags.commonItemTag(prefix + name))
 				.output(result.get(), 1)
 				.output(.75f, result.get(), 1)
 				.output(.75f, AllItems.EXP_NUGGET.get());
@@ -501,8 +503,8 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 			int amount = block ? 9 : 1;
 			String tagPath = (block ? "storage_blocks/raw_" : "raw_materials/") + name;
 			return b.duration(400)
-				.withCondition(new NotCondition(new TagEmptyCondition("forge", tagPath)))
-				.require(AllTags.forgeItemTag(tagPath))
+				.withCondition(new NotCondition(new TagEmptyCondition("c", tagPath)))
+				.require(AllTags.commonItemTag(tagPath))
 				.output(result.get(), amount)
 				.output(.75f, AllItems.EXP_NUGGET.get(), amount);
 		});
@@ -605,8 +607,8 @@ public class CrushingRecipeGen extends ProcessingRecipeGen {
 		return null;
 	}
 
-	public CrushingRecipeGen(PackOutput output) {
-		super(output);
+	public CrushingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries);
 	}
 
 	@Override

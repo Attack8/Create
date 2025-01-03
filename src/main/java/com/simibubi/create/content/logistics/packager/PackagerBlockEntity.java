@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.Create;
@@ -39,6 +40,7 @@ import net.createmod.catnip.utility.Iterate;
 import net.createmod.catnip.utility.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -52,12 +54,11 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class PackagerBlockEntity extends SmartBlockEntity {
 
@@ -71,8 +72,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 
 	public List<ItemStack> queuedExitingPackages;
 
-	public PackagerItemHandler inventory;
-	private final LazyOptional<IItemHandler> invProvider;
+	public final PackagerItemHandler inventory;
 
 	public static final int CYCLE = 20;
 	public int animationTicks;
@@ -92,12 +92,19 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 		heldBox = ItemStack.EMPTY;
 		previouslyUnwrapped = ItemStack.EMPTY;
 		inventory = new PackagerItemHandler(this);
-		invProvider = LazyOptional.of(() -> inventory);
 		animationTicks = 0;
 		animationInward = true;
 		queuedExitingPackages = new LinkedList<>();
 		signBasedAddress = "";
 		buttonCooldown = 0;
+	}
+
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(
+			Capabilities.ItemHandler.BLOCK,
+			AllBlockEntityTypes.PACKAGER.get(),
+			(be, context) -> be.inventory
+		);
 	}
 
 	@Override
@@ -347,7 +354,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 						.get(slot);
 					if (targetStack.stack.isEmpty())
 						break;
-					if (!ItemHandlerHelper.canItemStacksStack(toInsert, targetStack.stack))
+					if (!ItemStack.isSameItemSameComponents(toInsert, targetStack.stack))
 						continue;
 				}
 
@@ -359,11 +366,10 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 					int maxStackSize = targetInv.getSlotLimit(slot);
 					if (maxStackSize < toInsert.getCount()) {
 						toInsert.shrink(maxStackSize);
-						toInsert = ItemHandlerHelper.copyStackWithSize(toInsert, maxStackSize);
-					} else
-						contents.setStackInSlot(boxSlot, ItemStack.EMPTY);
-
-					itemInSlot = toInsert;
+						toInsert = toInsert.copyWithCount(maxStackSize);
+						} else
+							contents.setStackInSlot(boxSlot, ItemStack.EMPTY);
+						itemInSlot = toInsert;
 					if (!simulate)
 						itemInSlot = itemInSlot.copy();
 
@@ -371,7 +377,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 					continue;
 				}
 
-				if (!ItemHandlerHelper.canItemStacksStack(toInsert, itemInSlot))
+				if (!ItemStack.isSameItemSameComponents(toInsert, itemInSlot))
 					continue;
 
 				int insertedAmount = toInsert.getCount() - targetInv.insertItem(slot, toInsert, simulate)
@@ -385,9 +391,9 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 				itemsAddedToSlot += added;
 
 				contents.setStackInSlot(boxSlot,
-					ItemHandlerHelper.copyStackWithSize(toInsert, toInsert.getCount() - added));
+					toInsert.copyWithCount(toInsert.getCount() - added));
+				}
 			}
-		}
 
 		if (targetBE instanceof BasinBlockEntity basin)
 			basin.inputInventory.packagerMode = false;
@@ -457,7 +463,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 					ItemStack extracted = targetInv.extractItem(slot, initialCount, true);
 					if (extracted.isEmpty())
 						continue;
-					if (requestQueue && !ItemHandlerHelper.canItemStacksStack(extracted, nextRequest.item()))
+					if (requestQueue && !ItemStack.isSameItemSameComponents(extracted, nextRequest.item()))
 						continue;
 
 					boolean bulky = !extracted.getItem()
@@ -577,41 +583,35 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
-		super.read(compound, clientPacket);
+	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(compound, registries, clientPacket);
 		redstonePowered = compound.getBoolean("Active");
 		animationInward = compound.getBoolean("AnimationInward");
 		animationTicks = compound.getInt("AnimationTicks");
 		signBasedAddress = compound.getString("SignAddress");
-		heldBox = ItemStack.of(compound.getCompound("HeldBox"));
-		previouslyUnwrapped = ItemStack.of(compound.getCompound("InsertedBox"));
+		heldBox = ItemStack.parseOptional(registries, compound.getCompound("HeldBox"));
+		previouslyUnwrapped = ItemStack.parseOptional(registries, compound.getCompound("InsertedBox"));
 		if (clientPacket)
 			return;
-		queuedExitingPackages = NBTHelper.readItemList(compound.getList("QueuedPackages", Tag.TAG_COMPOUND));
+		queuedExitingPackages = NBTHelper.readItemList(compound.getList("QueuedPackages", Tag.TAG_COMPOUND), registries);
 		if (compound.contains("LastSummary"))
 			availableItems = InventorySummary.read(compound.getCompound("LastSummary"));
 	}
 
 	@Override
-	protected void write(CompoundTag compound, boolean clientPacket) {
-		super.write(compound, clientPacket);
+	protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(compound, registries, clientPacket);
 		compound.putBoolean("Active", redstonePowered);
 		compound.putBoolean("AnimationInward", animationInward);
 		compound.putInt("AnimationTicks", animationTicks);
 		compound.putString("SignAddress", signBasedAddress);
-		compound.put("HeldBox", heldBox.serializeNBT());
-		compound.put("InsertedBox", previouslyUnwrapped.serializeNBT());
+		compound.put("HeldBox", heldBox.saveOptional(registries));
+		compound.put("InsertedBox", previouslyUnwrapped.saveOptional(registries));
 		if (clientPacket)
 			return;
-		compound.put("QueuedPackages", NBTHelper.writeItemList(queuedExitingPackages));
+		compound.put("QueuedPackages", NBTHelper.writeItemList(queuedExitingPackages, registries));
 		if (availableItems != null)
 			compound.put("LastSummary", availableItems.write());
-	}
-
-	@Override
-	public void invalidate() {
-		super.invalidate();
-		invProvider.invalidate();
 	}
 
 	@Override
@@ -621,13 +621,6 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 		queuedExitingPackages.forEach(stack -> Containers.dropItemStack(level, worldPosition.getX(),
 			worldPosition.getY(), worldPosition.getZ(), stack));
 		queuedExitingPackages.clear();
-	}
-
-	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-		if (cap == ForgeCapabilities.ITEM_HANDLER)
-			return invProvider.cast();
-		return super.getCapability(cap, side);
 	}
 
 	public float getTrayOffset(float partialTicks) {

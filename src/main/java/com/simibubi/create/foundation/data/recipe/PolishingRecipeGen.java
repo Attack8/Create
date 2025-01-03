@@ -3,7 +3,10 @@ package com.simibubi.create.foundation.data.recipe;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllRecipeTypes;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+
+import java.util.concurrent.CompletableFuture;
 
 public class PolishingRecipeGen extends ProcessingRecipeGen {
 
@@ -13,8 +16,8 @@ public class PolishingRecipeGen extends ProcessingRecipeGen {
 
 	;
 
-	public PolishingRecipeGen(PackOutput output) {
-		super(output);
+	public PolishingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.simibubi.create.content.logistics.packagePort.frogport;
 
 import java.util.List;
 
+import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.equipment.goggles.IHaveHoveringInformation;
 import com.simibubi.create.content.logistics.box.PackageItem;
@@ -20,6 +21,7 @@ import net.createmod.catnip.utility.animation.LerpedFloat;
 import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -33,9 +35,11 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class FrogportBlockEntity extends PackagePortBlockEntity implements IHaveHoveringInformation {
 
@@ -51,7 +55,7 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 
 	private boolean failedLastExport;
 	private FrogportSounds sounds;
-	
+
 	private AdvancementBehaviour advancements;
 
 	public FrogportBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -64,12 +68,20 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 			.chase(0, 0.35, Chaser.LINEAR);
 	}
 
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(
+			Capabilities.ItemHandler.BLOCK,
+			AllBlockEntityTypes.PACKAGE_FROGPORT.get(),
+			(be, context) -> be.itemHandler
+		);
+	}
+
 	@Override
 	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
 		behaviours.add(advancements = new AdvancementBehaviour(this, AllAdvancements.FROGPORT));
 		super.addBehaviours(behaviours);
 	}
-	
+
 	public boolean isAnimationInProgress() {
 		return animationProgress.getChaseTarget() == 1;
 	}
@@ -185,13 +197,13 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 		animationProgress.chase(1, 0.1, Chaser.LINEAR);
 		animatedPackage = box;
 		currentlyDepositing = deposit;
-		
+
 		if (level != null && !deposit && !level.isClientSide())
 			advancements.awardPlayer(AllAdvancements.FROGPORT);
 
 		if (level != null && level.isClientSide()) {
 			sounds.open(level, worldPosition);
-			
+
 			if (currentlyDepositing) {
 				sounds.depositPackage(level, worldPosition);
 
@@ -214,14 +226,13 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 
 	protected void tryPushingToAdjacentInventories() {
 		failedLastExport = false;
-		IItemHandler inventory = itemHandler.orElse(null);
 
-		if (inventory == null)
+		if (itemHandler == null)
 			return;
 
 		boolean empty = true;
-		for (int i = 0; i < inventory.getSlots(); i++)
-			if (!inventory.getStackInSlot(i)
+		for (int i = 0; i < itemHandler.getSlots(); i++)
+			if (!itemHandler.getStackInSlot(i)
 				.isEmpty())
 				empty = false;
 		if (empty)
@@ -230,13 +241,13 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 		if (handler == null)
 			return;
 
-		for (int i = 0; i < inventory.getSlots(); i++) {
-			ItemStack stackInSlot = inventory.extractItem(i, 1, true);
+		for (int i = 0; i < itemHandler.getSlots(); i++) {
+			ItemStack stackInSlot = itemHandler.extractItem(i, 1, true);
 			if (stackInSlot.isEmpty())
 				continue;
 			ItemStack remainder = ItemHandlerHelper.insertItemStacked(handler, stackInSlot, false);
 			if (remainder.isEmpty()) {
-				inventory.extractItem(i, 1, false);
+				itemHandler.extractItem(i, 1, false);
 				level.blockEntityChanged(worldPosition);
 			} else
 				failedLastExport = true;
@@ -283,16 +294,15 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 		BlockEntity blockEntity = level.getBlockEntity(worldPosition.relative(side));
 		if (blockEntity == null || blockEntity instanceof FrogportBlockEntity)
 			return null;
-		return blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER, side.getOpposite())
-			.orElse(null);
+		return level.getCapability(ItemHandler.BLOCK, blockEntity.getBlockPos(), side.getOpposite());
 	}
 
 	@Override
-	protected void write(CompoundTag tag, boolean clientPacket) {
-		super.write(tag, clientPacket);
+	protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(tag, registries, clientPacket);
 		tag.putFloat("PlacedYaw", passiveYaw);
 		if (animatedPackage != null) {
-			tag.put("AnimatedPackage", animatedPackage.serializeNBT());
+			tag.put("AnimatedPackage", animatedPackage.saveOptional(registries));
 			tag.putBoolean("Deposit", currentlyDepositing);
 		}
 		if (sendAnticipate) {
@@ -304,14 +314,14 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 	}
 
 	@Override
-	protected void read(CompoundTag tag, boolean clientPacket) {
-		super.read(tag, clientPacket);
+	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(tag, registries, clientPacket);
 		passiveYaw = tag.getFloat("PlacedYaw");
 		failedLastExport = tag.getBoolean("FailedLastExport");
 		if (!clientPacket)
 			animatedPackage = null;
 		if (tag.contains("AnimatedPackage"))
-			startAnimation(ItemStack.of(tag.getCompound("AnimatedPackage")), tag.getBoolean("Deposit"));
+			startAnimation(ItemStack.parseOptional(registries, tag.getCompound("AnimatedPackage")), tag.getBoolean("Deposit"));
 		if (clientPacket && tag.contains("Anticipate"))
 			anticipate();
 	}

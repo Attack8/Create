@@ -7,23 +7,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import net.minecraft.core.Registry;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.Create;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
 
 public class AttachedRegistry<K, V> {
 	private static final List<AttachedRegistry<?, ?>> ALL = new ArrayList<>();
 
-	protected final IForgeRegistry<K> objectRegistry;
+	protected final Registry<K> objectRegistry;
 	protected final Map<ResourceLocation, V> idMap = new HashMap<>();
 	protected final Map<K, V> objectMap = new IdentityHashMap<>();
 	protected final Map<ResourceLocation, Function<K, V>> deferredRegistrations = new HashMap<>();
 	protected boolean unwrapped = false;
 
-	public AttachedRegistry(IForgeRegistry<K> objectRegistry) {
+	public AttachedRegistry(Registry<K> objectRegistry) {
 		this.objectRegistry = objectRegistry;
 		ALL.add(this);
 	}
@@ -32,7 +33,7 @@ public class AttachedRegistry<K, V> {
 		if (!unwrapped) {
 			idMap.put(id, value);
 		} else {
-			K object = objectRegistry.getValue(id);
+			K object = objectRegistry.get(id);
 			if (object != null) {
 				objectMap.put(object, value);
 			} else {
@@ -58,7 +59,7 @@ public class AttachedRegistry<K, V> {
 		if (!unwrapped) {
 			deferredRegistrations.put(id, func);
 		} else {
-			K object = objectRegistry.getValue(id);
+			K object = objectRegistry.get(id);
 			if (object != null) {
 				objectMap.put(object, func.apply(object));
 			} else {
@@ -85,7 +86,7 @@ public class AttachedRegistry<K, V> {
 		if (!unwrapped) {
 			return idMap.get(id);
 		} else {
-			K object = objectRegistry.getValue(id);
+			K object = objectRegistry.get(id);
 			if (object != null) {
 				return objectMap.get(object);
 			} else {
@@ -116,7 +117,7 @@ public class AttachedRegistry<K, V> {
 
 	protected void unwrap() {
 		deferredRegistrations.forEach((id, func) -> {
-			K object = objectRegistry.getValue(id);
+			K object = objectRegistry.get(id);
 			if (object != null) {
 				objectMap.put(object, func.apply(object));
 			} else {
@@ -125,7 +126,7 @@ public class AttachedRegistry<K, V> {
 		});
 
 		idMap.forEach((id, value) -> {
-			K object = objectRegistry.getValue(id);
+			K object = objectRegistry.get(id);
 			if (object != null) {
 				objectMap.put(object, value);
 			} else {

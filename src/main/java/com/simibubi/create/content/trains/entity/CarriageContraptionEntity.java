@@ -11,7 +11,6 @@ import java.util.UUID;
 import com.google.common.base.Strings;
 import com.simibubi.create.AllEntityDataSerializers;
 import com.simibubi.create.AllEntityTypes;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.Create;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.ContraptionBlockChangedPacket;
@@ -25,6 +24,7 @@ import com.simibubi.create.content.trains.entity.Carriage.DimensionalCarriageEnt
 import com.simibubi.create.content.trains.entity.TravellingPoint.SteerDirection;
 import com.simibubi.create.content.trains.graph.TrackGraph;
 import com.simibubi.create.content.trains.station.GlobalStation;
+import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
@@ -35,6 +35,7 @@ import net.createmod.catnip.utility.theme.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -50,9 +51,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class CarriageContraptionEntity extends OrientedContraptionEntity {
 
@@ -99,11 +99,11 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 	}
 
 	@Override
-	protected void defineSynchedData() {
-		super.defineSynchedData();
-		entityData.define(CARRIAGE_DATA, new CarriageSyncData());
-		entityData.define(TRACK_GRAPH, Optional.empty());
-		entityData.define(SCHEDULED, false);
+	protected void defineSynchedData(SynchedEntityData.Builder builder) {
+		super.defineSynchedData(builder);
+		builder.define(CARRIAGE_DATA, new CarriageSyncData());
+		builder.define(TRACK_GRAPH, Optional.empty());
+		builder.define(SCHEDULED, false);
 	}
 
 	public void syncCarriage() {
@@ -201,7 +201,7 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 		carriage.forEachPresentEntity(cce -> {
 			cce.contraption.getBlocks()
 				.put(localPos, newInfo);
-			AllPackets.getChannel().send(PacketDistributor.TRACKING_ENTITY.with(() -> cce),
+			CatnipServices.NETWORK.sendToClientsTrackingEntity(cce,
 				new ContraptionBlockChangedPacket(cce.getId(), localPos, newInfo.state()));
 		});
 	}
@@ -461,8 +461,8 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 	}
 
 	@Override
-	protected void writeAdditional(CompoundTag compound, boolean spawnPacket) {
-		super.writeAdditional(compound, spawnPacket);
+	protected void writeAdditional(CompoundTag compound, HolderLookup.Provider registries, boolean spawnPacket) {
+		super.writeAdditional(compound, registries, spawnPacket);
 		compound.putUUID("TrainId", trainId);
 		compound.putInt("CarriageIndex", carriageIndex);
 	}
@@ -563,7 +563,7 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 				.equals(initialOrientation);
 
 		if (hudPacketCooldown-- <= 0 && player instanceof ServerPlayer sp) {
-			AllPackets.getChannel().send(PacketDistributor.PLAYER.with(() -> sp), new TrainHUDUpdatePacket(carriage.train));
+			CatnipServices.NETWORK.sendToClient(sp, new TrainHUDUpdatePacket.Clientbound(carriage.train));
 			hudPacketCooldown = 5;
 		}
 
@@ -677,7 +677,7 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 
 	private void sendPrompt(Player player, MutableComponent component, boolean shadow) {
 		if (player instanceof ServerPlayer sp)
-			AllPackets.getChannel().send(PacketDistributor.PLAYER.with(() -> sp), new TrainPromptPacket(component, shadow));
+			CatnipServices.NETWORK.sendToClient(sp, new TrainPromptPacket(component, shadow));
 	}
 
 	boolean stationMessage = false;

@@ -6,12 +6,14 @@ import javax.annotation.Nonnull;
 
 import com.simibubi.create.foundation.blockEntity.SyncedBlockEntity;
 
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class SmartInventory extends RecipeWrapper
 	implements IItemHandlerModifiable, INBTSerializable<CompoundTag> {
@@ -34,7 +36,7 @@ public class SmartInventory extends RecipeWrapper
 		this.stackSize = stackSize;
 		wrapped = (SyncedStackHandler) inv;
 	}
-	
+
 	public SmartInventory withMaxStackSize(int maxStackSize) {
 		stackSize = maxStackSize;
 		wrapped.stackSize = maxStackSize;
@@ -84,8 +86,8 @@ public class SmartInventory extends RecipeWrapper
 			return ItemStack.EMPTY;
 		if (stackNonStackables) {
 			ItemStack extractItem = inv.extractItem(slot, amount, true);
-			if (!extractItem.isEmpty() && extractItem.getMaxStackSize() < extractItem.getCount())
-				amount = extractItem.getMaxStackSize();
+			if (!extractItem.isEmpty() && extractItem.getOrDefault(DataComponents.MAX_STACK_SIZE, 64) < extractItem.getCount())
+				amount = extractItem.getOrDefault(DataComponents.MAX_STACK_SIZE, 64);
 		}
 		return inv.extractItem(slot, amount, simulate);
 	}
@@ -107,21 +109,21 @@ public class SmartInventory extends RecipeWrapper
 
 	@Override
 	public void setStackInSlot(int slot, ItemStack stack) {
-		inv.setStackInSlot(slot, stack);
+		((SyncedStackHandler) inv).setStackInSlot(slot, stack);
 	}
 
 	public int getStackLimit(int slot, @Nonnull ItemStack stack) {
-		return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
+		return Math.min(getSlotLimit(slot), stack.getOrDefault(DataComponents.MAX_STACK_SIZE, 64));
 	}
 
 	@Override
-	public CompoundTag serializeNBT() {
-		return getInv().serializeNBT();
+	public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+		return getInv().serializeNBT(registries);
 	}
 
 	@Override
-	public void deserializeNBT(CompoundTag nbt) {
-		getInv().deserializeNBT(nbt);
+	public void deserializeNBT(HolderLookup.Provider registries, CompoundTag nbt) {
+		getInv().deserializeNBT(registries, nbt);
 	}
 
 	private SyncedStackHandler getInv() {

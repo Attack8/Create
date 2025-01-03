@@ -15,12 +15,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event.Result;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 @EventBusSubscriber
 public class SuperGlueItem extends Item {
@@ -38,7 +38,7 @@ public class SuperGlueItem extends Item {
 
 		if (event.getItemStack()
 			.getItem() instanceof SuperGlueItem)
-			event.setUseBlock(Result.DENY);
+			event.setUseBlock(TriState.FALSE);
 	}
 
 	public SuperGlueItem(Properties properties) {
@@ -48,11 +48,6 @@ public class SuperGlueItem extends Item {
 	@Override
 	public boolean canAttackBlock(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer) {
 		return false;
-	}
-
-	@Override
-	public boolean canBeDepleted() {
-		return true;
 	}
 
 	public static void onBroken(Player player) {}

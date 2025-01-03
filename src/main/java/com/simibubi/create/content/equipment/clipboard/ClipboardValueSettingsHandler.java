@@ -6,6 +6,7 @@ import java.util.List;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.equipment.clipboard.ClipboardOverrides.ClipboardType;
 import com.simibubi.create.content.trains.track.TrackBlockOutline;
@@ -28,19 +29,25 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.ICancellableEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent.Block;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 
 @EventBusSubscriber
 public class ClipboardValueSettingsHandler {
 
 	@SubscribeEvent
 	@OnlyIn(Dist.CLIENT)
-	public static void drawCustomBlockSelection(RenderHighlightEvent.Block event) {
+	public static void drawCustomBlockSelection(Block event) {
 		Minecraft mc = Minecraft.getInstance();
 		BlockHitResult target = event.getTarget();
 		BlockPos pos = target.getBlockPos();
@@ -58,7 +65,7 @@ public class ClipboardValueSettingsHandler {
 		if (!(smartBE instanceof ClipboardBlockEntity) && !smartBE.getAllBehaviours()
 			.stream()
 			.anyMatch(b -> b instanceof ClipboardCloneable cc
-				&& cc.writeToClipboard(new CompoundTag(), target.getDirection()))
+				&& cc.writeToClipboard(mc.level.registryAccess(), new CompoundTag(), target.getDirection()))
 			&& !(smartBE instanceof ClipboardCloneable))
 			return;
 
@@ -100,21 +107,20 @@ public class ClipboardValueSettingsHandler {
 			return;
 		}
 
-		CompoundTag tagElement = mc.player.getMainHandItem()
-			.getTagElement("CopiedValues");
+		CompoundTag tagElement = mc.player.getMainHandItem().get(AllDataComponents.CLIPBOARD_COPIED_VALUES);
 
 		boolean canCopy = smartBE.getAllBehaviours()
 			.stream()
 			.anyMatch(b -> b instanceof ClipboardCloneable cc
-				&& cc.writeToClipboard(new CompoundTag(), target.getDirection()))
+				&& cc.writeToClipboard(mc.level.registryAccess(), new CompoundTag(), target.getDirection()))
 			|| smartBE instanceof ClipboardCloneable ccbe
-				&& ccbe.writeToClipboard(new CompoundTag(), target.getDirection());
+				&& ccbe.writeToClipboard(mc.level.registryAccess(), new CompoundTag(), target.getDirection());
 
 		boolean canPaste = tagElement != null && (smartBE.getAllBehaviours()
 			.stream()
-			.anyMatch(b -> b instanceof ClipboardCloneable cc && cc.readFromClipboard(
+			.anyMatch(b -> b instanceof ClipboardCloneable cc && cc.readFromClipboard(mc.level.registryAccess(),
 				tagElement.getCompound(cc.getClipboardKey()), mc.player, target.getDirection(), true))
-			|| smartBE instanceof ClipboardCloneable ccbe && ccbe.readFromClipboard(
+			|| smartBE instanceof ClipboardCloneable ccbe && ccbe.readFromClipboard(mc.level.registryAccess(),
 				tagElement.getCompound(ccbe.getClipboardKey()), mc.player, target.getDirection(), true));
 
 		if (!canCopy && !canPaste)
@@ -131,12 +137,12 @@ public class ClipboardValueSettingsHandler {
 	}
 
 	@SubscribeEvent
-	public static void rightClickToCopy(PlayerInteractEvent.RightClickBlock event) {
+	public static void rightClickToCopy(RightClickBlock event) {
 		interact(event, false);
 	}
 
 	@SubscribeEvent
-	public static void leftClickToPaste(PlayerInteractEvent.LeftClickBlock event) {
+	public static void leftClickToPaste(LeftClickBlock event) {
 		interact(event, true);
 	}
 
@@ -156,8 +162,17 @@ public class ClipboardValueSettingsHandler {
 			return;
 
 		if (smartBE instanceof ClipboardBlockEntity cbe) {
-			event.setCanceled(true);
-			event.setCancellationResult(InteractionResult.SUCCESS);
+			if (event instanceof ICancellableEvent cancellableEvent) {
+				cancellableEvent.setCanceled(true);
+
+				switch (event) {
+					case EntityInteractSpecific e -> e.setCancellationResult(InteractionResult.SUCCESS);
+					case EntityInteract e -> e.setCancellationResult(InteractionResult.SUCCESS);
+					case RightClickBlock e -> e.setCancellationResult(InteractionResult.SUCCESS);
+					case RightClickItem e -> e.setCancellationResult(InteractionResult.SUCCESS);
+					default -> {}
+				}
+			}
 
 			if (!world.isClientSide()) {
 				List<List<ClipboardEntry>> listTo = ClipboardEntry.readAll(itemStack);
@@ -203,7 +218,7 @@ public class ClipboardValueSettingsHandler {
 			return;
 		}
 
-		CompoundTag tag = itemStack.getTagElement("CopiedValues");
+		CompoundTag tag = itemStack.get(AllDataComponents.CLIPBOARD_COPIED_VALUES);
 		if (paste && tag == null)
 			return;
 		if (!paste)
@@ -218,11 +233,11 @@ public class ClipboardValueSettingsHandler {
 			String clipboardKey = cc.getClipboardKey();
 			if (paste) {
 				anySuccess |=
-					cc.readFromClipboard(tag.getCompound(clipboardKey), player, event.getFace(), world.isClientSide());
+					cc.readFromClipboard(world.registryAccess(), tag.getCompound(clipboardKey), player, event.getFace(), world.isClientSide());
 				continue;
 			}
 			CompoundTag compoundTag = new CompoundTag();
-			boolean success = cc.writeToClipboard(compoundTag, event.getFace());
+			boolean success = cc.writeToClipboard(world.registryAccess(), compoundTag, event.getFace());
 			anySuccess |= success;
 			if (success)
 				tag.put(clipboardKey, compoundTag);
@@ -232,11 +247,11 @@ public class ClipboardValueSettingsHandler {
 			anyValid = true;
 			String clipboardKey = ccbe.getClipboardKey();
 			if (paste) {
-				anySuccess |= ccbe.readFromClipboard(tag.getCompound(clipboardKey), player, event.getFace(),
+				anySuccess |= ccbe.readFromClipboard(world.registryAccess(), tag.getCompound(clipboardKey), player, event.getFace(),
 					world.isClientSide());
 			} else {
 				CompoundTag compoundTag = new CompoundTag();
-				boolean success = ccbe.writeToClipboard(compoundTag, event.getFace());
+				boolean success = ccbe.writeToClipboard(world.registryAccess(), compoundTag, event.getFace());
 				anySuccess |= success;
 				if (success)
 					tag.put(clipboardKey, compoundTag);
@@ -246,8 +261,9 @@ public class ClipboardValueSettingsHandler {
 		if (!anyValid)
 			return;
 
-		event.setCanceled(true);
-		event.setCancellationResult(InteractionResult.SUCCESS);
+		((ICancellableEvent) event).setCanceled(true);
+		if (event instanceof RightClickBlock rightClickBlock)
+			rightClickBlock.setCancellationResult(InteractionResult.SUCCESS);
 
 		if (world.isClientSide())
 			return;
@@ -264,8 +280,7 @@ public class ClipboardValueSettingsHandler {
 
 		if (!paste) {
 			ClipboardOverrides.switchTo(ClipboardType.WRITTEN, itemStack);
-			itemStack.getOrCreateTag()
-				.put("CopiedValues", tag);
+			itemStack.set(AllDataComponents.CLIPBOARD_COPIED_VALUES, tag);
 		}
 	}
 

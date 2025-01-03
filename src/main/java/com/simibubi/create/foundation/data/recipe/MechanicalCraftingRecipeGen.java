@@ -1,5 +1,6 @@
 package com.simibubi.create.foundation.data.recipe;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.UnaryOperator;
 
 import com.google.common.base.Supplier;
@@ -7,13 +8,14 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.Create;
 
-import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.utility.RegisteredObjectsHelper;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
 
 public class MechanicalCraftingRecipeGen extends CreateRecipeProvider {
 
@@ -32,9 +34,9 @@ public class MechanicalCraftingRecipeGen extends CreateRecipeProvider {
 
 		WAND_OF_SYMMETRY =
 			create(AllItems.WAND_OF_SYMMETRY::get).recipe(b -> b.key('E', Ingredient.of(Tags.Items.ENDER_PEARLS))
-				.key('G', Ingredient.of(Tags.Items.GLASS))
+				.key('G', Ingredient.of(Tags.Items.GLASS_BLOCKS))
 				.key('P', I.precisionMechanism())
-				.key('O', Ingredient.of(Tags.Items.OBSIDIAN))
+				.key('O', Ingredient.of(Tags.Items.OBSIDIANS))
 				.key('B', Ingredient.of(I.brass()))
 				.patternLine(" G ")
 				.patternLine("GEG")
@@ -64,8 +66,8 @@ public class MechanicalCraftingRecipeGen extends CreateRecipeProvider {
 
 	;
 
-	public MechanicalCraftingRecipeGen(PackOutput p_i48262_1_) {
-		super(p_i48262_1_);
+	public MechanicalCraftingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries);
 	}
 
 	GeneratedRecipeBuilder create(Supplier<ItemLike> result) {
@@ -95,13 +97,13 @@ public class MechanicalCraftingRecipeGen extends CreateRecipeProvider {
 		}
 
 		GeneratedRecipe recipe(UnaryOperator<MechanicalCraftingRecipeBuilder> builder) {
-			return register(consumer -> {
+			return register(output -> {
 				MechanicalCraftingRecipeBuilder b =
 					builder.apply(MechanicalCraftingRecipeBuilder.shapedRecipe(result.get(), amount));
-				ResourceLocation location = Create.asResource("mechanical_crafting/" + CatnipServices.REGISTRIES.getKeyOrThrow(result.get()
+				ResourceLocation location = Create.asResource("mechanical_crafting/" + RegisteredObjectsHelper.getKeyOrThrow(result.get()
 								.asItem())
 					.getPath() + suffix);
-				b.build(consumer, location);
+				b.build(output, location);
 			});
 		}
 	}

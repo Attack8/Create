@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.PatternSyntaxException;
 
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.trains.display.GlobalTrainDisplayData.TrainDeparturePrediction;
 import com.simibubi.create.content.trains.entity.Carriage;
@@ -22,6 +23,7 @@ import com.simibubi.create.content.trains.station.GlobalStation;
 
 import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.lang.Components;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
@@ -404,14 +406,14 @@ public class ScheduleRuntime {
 		return new TrainDeparturePrediction(train, time, Components.literal(text), destination);
 	}
 
-	public CompoundTag write() {
+	public CompoundTag write(HolderLookup.Provider registries) {
 		CompoundTag tag = new CompoundTag();
 		tag.putInt("CurrentEntry", currentEntry);
 		tag.putBoolean("AutoSchedule", isAutoSchedule);
 		tag.putBoolean("Paused", paused);
 		tag.putBoolean("Completed", completed);
 		if (schedule != null)
-			tag.put("Schedule", schedule.write());
+			tag.put("Schedule", schedule.write(registries));
 		NBTHelper.writeEnum(tag, "State", state);
 		tag.putIntArray("ConditionProgress", conditionProgress);
 		tag.put("ConditionContext", NBTHelper.writeCompoundList(conditionContext, CompoundTag::copy));
@@ -419,14 +421,14 @@ public class ScheduleRuntime {
 		return tag;
 	}
 
-	public void read(CompoundTag tag) {
+	public void read(HolderLookup.Provider registries, CompoundTag tag) {
 		reset();
 		paused = tag.getBoolean("Paused");
 		completed = tag.getBoolean("Completed");
 		isAutoSchedule = tag.getBoolean("AutoSchedule");
 		currentEntry = tag.getInt("CurrentEntry");
 		if (tag.contains("Schedule"))
-			schedule = Schedule.fromTag(tag.getCompound("Schedule"));
+			schedule = Schedule.fromTag(registries, tag.getCompound("Schedule"));
 		state = NBTHelper.readEnum(tag, "State", State.class);
 		for (int i : tag.getIntArray("ConditionProgress"))
 			conditionProgress.add(i);
@@ -441,13 +443,12 @@ public class ScheduleRuntime {
 		}
 	}
 
-	public ItemStack returnSchedule() {
+	public ItemStack returnSchedule(HolderLookup.Provider registries) {
 		if (schedule == null)
 			return ItemStack.EMPTY;
 		ItemStack stack = AllItems.SCHEDULE.asStack();
-		CompoundTag nbt = stack.getOrCreateTag();
 		schedule.savedProgress = currentEntry;
-		nbt.put("Schedule", schedule.write());
+		stack.set(AllDataComponents.TRAIN_SCHEDULE, schedule.write(registries));
 		stack = isAutoSchedule ? ItemStack.EMPTY : stack;
 		discardSchedule();
 		return stack;

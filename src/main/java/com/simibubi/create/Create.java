@@ -4,8 +4,6 @@ import java.util.Random;
 
 import org.slf4j.Logger;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.api.behaviour.BlockSpoutingBehaviour;
 import com.simibubi.create.compat.Mods;
@@ -13,6 +11,7 @@ import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
 import com.simibubi.create.compat.curios.Curios;
 import com.simibubi.create.content.contraptions.ContraptionMovementSetting;
 import com.simibubi.create.content.decoration.palettes.AllPaletteBlocks;
+import com.simibubi.create.content.equipment.armor.AllArmorMaterials;
 import com.simibubi.create.content.equipment.potatoCannon.BuiltinPotatoProjectileTypes;
 import com.simibubi.create.content.fluids.tank.BoilerHeaters;
 import com.simibubi.create.content.kinetics.TorquePropagator;
@@ -28,11 +27,11 @@ import com.simibubi.create.content.trains.bogey.BogeySizes;
 import com.simibubi.create.content.trains.track.AllPortalTracks;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.advancement.AllTriggers;
-import com.simibubi.create.foundation.block.CopperRegistries;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
+import com.simibubi.create.foundation.recipe.AllIngredients;
 import com.simibubi.create.foundation.utility.AttachedRegistry;
 import com.simibubi.create.foundation.utility.CreateNBTProcessors;
 import com.simibubi.create.infrastructure.command.ServerLagger;
@@ -43,21 +42,20 @@ import com.simibubi.create.infrastructure.worldgen.AllPlacementModifiers;
 
 import net.createmod.catnip.utility.FontHelper;
 import net.createmod.catnip.utility.lang.LangBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(Create.ID)
 public class Create {
@@ -67,10 +65,6 @@ public class Create {
 	public static final String VERSION = "0.5.2-experimental";
 
 	public static final Logger LOGGER = LogUtils.getLogger();
-
-	public static final Gson GSON = new GsonBuilder().setPrettyPrinting()
-		.disableHtmlEscaping()
-		.create();
 
 	/** Use the {@link Random} of a local {@link Level} or {@link Entity} or create one */
 	@Deprecated
@@ -97,22 +91,19 @@ public class Create {
 	public static final GlobalLogisticsManager LOGISTICS = new GlobalLogisticsManager();
 	public static final ServerLagger LAGGER = new ServerLagger();
 
-	public Create() {
-		onCtor();
+	public Create(IEventBus eventBus, ModContainer modContainer) {
+		onCtor(eventBus, modContainer);
 	}
 
-	public static void onCtor() {
+	public static void onCtor(IEventBus modEventBus, ModContainer modContainer) {
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
-
-		IEventBus modEventBus = FMLJavaModLoadingContext.get()
-			.getModEventBus();
-		IEventBus forgeEventBus = MinecraftForge.EVENT_BUS;
 
 		REGISTRATE.registerEventListeners(modEventBus);
 
 		AllSoundEvents.prepare();
 		AllTags.init();
 		AllCreativeModeTabs.register(modEventBus);
+		AllArmorMaterials.register(modEventBus);
 		AllBlocks.register();
 		AllItems.register();
 		AllFluids.register();
@@ -120,16 +111,20 @@ public class Create {
 		AllMenuTypes.register();
 		AllEntityTypes.register();
 		AllBlockEntityTypes.register();
-		AllEnchantments.register();
 		AllRecipeTypes.register(modEventBus);
 		AllParticleTypes.register(modEventBus);
 		AllStructureProcessorTypes.register(modEventBus);
 		AllEntityDataSerializers.register(modEventBus);
-		AllPackets.registerPackets();
 		AllFeatures.register(modEventBus);
 		AllPlacementModifiers.register(modEventBus);
+		AllIngredients.register(modEventBus);
+		AllAttachmentTypes.register(modEventBus);
+		AllDataComponents.register(modEventBus);
+		AllMapDecorationTypes.register(modEventBus);
 
-		AllConfigs.register(modLoadingContext);
+		AllConfigs.register(modLoadingContext, modContainer);
+
+		AllPackets.register();
 
 		AllArmInteractionPointTypes.register(modEventBus);
 		AllFanProcessingTypes.register(modEventBus);
@@ -148,18 +143,16 @@ public class Create {
 
 		ComputerCraftProxy.register();
 
-		ForgeMod.enableMilkFluid();
-		CopperRegistries.inject();
+		NeoForgeMod.enableMilkFluid();
 
 		modEventBus.addListener(Create::init);
+		modEventBus.addListener(Create::registerAdvancements);
 		modEventBus.addListener(AllEntityTypes::registerEntityAttributes);
 		modEventBus.addListener(EventPriority.LOWEST, CreateDatagen::gatherData);
 		modEventBus.addListener(AllSoundEvents::register);
 
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> CreateClient.onCtorClient(modEventBus, forgeEventBus));
-
 		// FIXME: this is not thread-safe
-		Mods.CURIOS.executeIfInstalled(() -> () -> Curios.init(modEventBus, forgeEventBus));
+		Mods.CURIOS.executeIfInstalled(() -> () -> Curios.init(modEventBus));
 	}
 
 	public static void init(final FMLCommonSetupEvent event) {
@@ -175,9 +168,14 @@ public class Create {
 			// --
 
 			AttachedRegistry.unwrapAll();
+		});
+	}
+
+	public static void registerAdvancements(final RegisterEvent event) {
+		if (event.getRegistry() == BuiltInRegistries.TRIGGER_TYPES) {
 			AllAdvancements.register();
 			AllTriggers.register();
-		});
+		}
 	}
 
 	public static LangBuilder lang() {
@@ -185,7 +183,7 @@ public class Create {
 	}
 
 	public static ResourceLocation asResource(String path) {
-		return new ResourceLocation(ID, path);
+		return ResourceLocation.fromNamespaceAndPath(ID, path);
 	}
 
 }

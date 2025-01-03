@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import com.simibubi.create.AllBlocks;
 
 import net.createmod.catnip.utility.Iterate;
+import net.createmod.catnip.utility.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -28,10 +29,10 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 public class ConnectedInputHandler {
 
@@ -212,7 +213,11 @@ public class ConnectedInputHandler {
 		public void write(CompoundTag nbt) {
 			nbt.putBoolean("Controller", isController);
 			ListTag list = new ListTag();
-			data.forEach(pos -> list.add(NbtUtils.writeBlockPos(pos)));
+			data.forEach(pos -> {
+				CompoundTag data = new CompoundTag();
+				data.put("Pos", NbtUtils.writeBlockPos(pos));
+				list.add(data);
+			});
 			nbt.put("Data", list);
 		}
 
@@ -220,7 +225,7 @@ public class ConnectedInputHandler {
 			isController = nbt.getBoolean("Controller");
 			data.clear();
 			nbt.getList("Data", Tag.TAG_COMPOUND)
-				.forEach(inbt -> data.add(NbtUtils.readBlockPos((CompoundTag) inbt)));
+				.forEach(inbt -> data.add(NbtUtils.readBlockPos((CompoundTag) inbt, "Pos").orElseThrow()));
 
 			// nbt got wiped -> reset
 			if (data.isEmpty()) {

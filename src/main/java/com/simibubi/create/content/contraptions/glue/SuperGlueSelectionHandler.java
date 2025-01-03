@@ -5,10 +5,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.base.Objects;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllSpecialTextures;
 import com.simibubi.create.content.contraptions.chassis.AbstractChassisBlock;
+import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.foundation.utility.RaycastHelper;
 
@@ -21,6 +21,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -28,7 +29,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class SuperGlueSelectionHandler {
 
@@ -74,8 +75,7 @@ public class SuperGlueSelectionHandler {
 
 		selected = null;
 		if (firstPos == null) {
-			double range = player.getAttribute(ForgeMod.BLOCK_REACH.get())
-				.getValue() + 1;
+			double range = player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE) + 1;
 			Vec3 traceOrigin = RaycastHelper.getTraceOrigin(player);
 			Vec3 traceTarget = RaycastHelper.getTraceTarget(player, range, traceOrigin);
 
@@ -179,7 +179,7 @@ public class SuperGlueSelectionHandler {
 	}
 
 	private AABB getCurrentSelectionBox() {
-		return firstPos == null || hoveredPos == null ? null : new AABB(firstPos, hoveredPos).expandTowards(1, 1, 1);
+		return firstPos == null || hoveredPos == null ? null : new AABB(Vec3.atLowerCornerOf(firstPos), Vec3.atLowerCornerOf(hoveredPos)).expandTowards(1, 1, 1);
 	}
 
 	public boolean onMouseInput(boolean attack) {
@@ -195,7 +195,7 @@ public class SuperGlueSelectionHandler {
 		if (attack) {
 			if (selected == null)
 				return false;
-			AllPackets.getChannel().sendToServer(new SuperGlueRemovalPacket(selected.getId(), soundSourceForRemoval));
+			CatnipServices.NETWORK.sendToServer(new SuperGlueRemovalPacket(selected.getId(), soundSourceForRemoval));
 			selected = null;
 			clusterCooldown = 0;
 			return true;
@@ -253,7 +253,7 @@ public class SuperGlueSelectionHandler {
 
 	public void confirm() {
 		LocalPlayer player = Minecraft.getInstance().player;
-		AllPackets.getChannel().sendToServer(new SuperGlueSelectionPacket(firstPos, hoveredPos));
+		CatnipServices.NETWORK.sendToServer(new SuperGlueSelectionPacket(firstPos, hoveredPos));
 		AllSoundEvents.SLIME_ADDED.playAt(player.level(), hoveredPos, 0.5F, 0.95F, false);
 		player.level().playSound(player, hoveredPos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.75f, 1);
 

@@ -13,12 +13,11 @@ import com.simibubi.create.foundation.block.WrenchableDirectionalBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.SignalGetter;
@@ -31,9 +30,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
 
 public class PackagerBlock extends WrenchableDirectionalBlock implements IBE<PackagerBlockEntity>, IWrenchable {
 
@@ -53,10 +50,9 @@ public class PackagerBlock extends WrenchableDirectionalBlock implements IBE<Pac
 		super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
 		AdvancementBehaviour.setPlacedBy(pLevel, pPos, pPlacer);
 	}
-	
+
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
-		Capability<IItemHandler> itemCap = ForgeCapabilities.ITEM_HANDLER;
 		Direction preferredFacing = null;
 		for (Direction face : context.getNearestLookingDirections()) {
 			BlockEntity be = context.getLevel()
@@ -64,8 +60,7 @@ public class PackagerBlock extends WrenchableDirectionalBlock implements IBE<Pac
 					.relative(face));
 			if (be instanceof PackagerBlockEntity)
 				continue;
-			if (be != null && (be.getCapability(itemCap)
-				.isPresent())) {
+			if (be != null && be.hasLevel() &&be.getLevel().getCapability(ItemHandler.BLOCK, be.getBlockPos(), null) != null) {
 				preferredFacing = face.getOpposite();
 				break;
 			}
@@ -83,50 +78,45 @@ public class PackagerBlock extends WrenchableDirectionalBlock implements IBE<Pac
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn,
-		BlockHitResult hit) {
-		if (player == null)
-			return InteractionResult.PASS;
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		if (AllItems.WRENCH.isIn(stack))
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		if (AllBlocks.FACTORY_GAUGE.isIn(stack))
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-		ItemStack itemInHand = player.getItemInHand(handIn);
-		if (AllItems.WRENCH.isIn(itemInHand))
-			return InteractionResult.PASS;
-		if (AllBlocks.FACTORY_GAUGE.isIn(itemInHand))
-			return InteractionResult.PASS;
-
-		if (onBlockEntityUse(worldIn, pos, be -> {
+		if (onBlockEntityUseItemOn(level, pos, be -> {
 			if (be.heldBox.isEmpty()) {
 				if (be.animationTicks > 0)
-					return InteractionResult.SUCCESS;
-				if (PackageItem.isPackage(itemInHand)) {
-					if (worldIn.isClientSide())
-						return InteractionResult.SUCCESS;
-					if (!be.unwrapBox(itemInHand.copy(), true))
-						return InteractionResult.SUCCESS;
-					be.unwrapBox(itemInHand.copy(), false);
+					return ItemInteractionResult.SUCCESS;
+				if (PackageItem.isPackage(stack)) {
+					if (level.isClientSide())
+						return ItemInteractionResult.SUCCESS;
+					if (!be.unwrapBox(stack.copy(), true))
+						return ItemInteractionResult.SUCCESS;
+					be.unwrapBox(stack.copy(), false);
 					be.triggerStockCheck();
-					itemInHand.shrink(1);
-					AllSoundEvents.DEPOT_PLOP.playOnServer(worldIn, pos);
-					if (itemInHand.isEmpty())
-						player.setItemInHand(handIn, ItemStack.EMPTY);
-					return InteractionResult.SUCCESS;
+					stack.shrink(1);
+					AllSoundEvents.DEPOT_PLOP.playOnServer(level, pos);
+					if (stack.isEmpty())
+						player.setItemInHand(hand, ItemStack.EMPTY);
+					return ItemInteractionResult.SUCCESS;
 				}
-				return InteractionResult.PASS;
+				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 			}
 			if (be.animationTicks > 0)
-				return InteractionResult.PASS;
-			if (!worldIn.isClientSide()) {
+				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			if (!level.isClientSide()) {
 				player.getInventory()
 					.placeItemBackInInventory(be.heldBox.copy());
 				AllSoundEvents.playItemPickup(player);
 				be.heldBox = ItemStack.EMPTY;
 				be.notifyUpdate();
 			}
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 		}).consumesAction())
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 
-		return InteractionResult.PASS;
+		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 	}
 
 	@Override
@@ -177,7 +167,7 @@ public class PackagerBlock extends WrenchableDirectionalBlock implements IBE<Pac
 	}
 
 	@Override
-	public boolean isPathfindable(BlockState pState, BlockGetter pLevel, BlockPos pPos, PathComputationType pType) {
+	protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
 		return false;
 	}
 

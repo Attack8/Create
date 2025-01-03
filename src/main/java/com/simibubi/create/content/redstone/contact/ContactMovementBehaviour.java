@@ -47,7 +47,7 @@ public class ContactMovementBehaviour implements MovementBehaviour {
 
 		if (AllBlocks.REDSTONE_CONTACT.has(visitedState))
 			world.setBlockAndUpdate(pos, visitedState.setValue(RedstoneContactBlock.POWERED, true));
-		if (AllBlocks.ELEVATOR_CONTACT.has(visitedState) && context.contraption instanceof ElevatorContraption ec) 
+		if (AllBlocks.ELEVATOR_CONTACT.has(visitedState) && context.contraption instanceof ElevatorContraption ec)
 			ec.broadcastFloorData(world, pos);
 
 		context.data.put("lastContact", NbtUtils.writeBlockPos(pos));
@@ -69,7 +69,7 @@ public class ContactMovementBehaviour implements MovementBehaviour {
 		if (!context.data.contains("lastContact"))
 			return;
 
-		BlockPos last = NbtUtils.readBlockPos(context.data.getCompound("lastContact"));
+		BlockPos last = NbtUtils.readBlockPos(context.data, "lastContact").orElseThrow();
 		context.data.remove("lastContact");
 		BlockState blockState = context.world.getBlockState(last);
 

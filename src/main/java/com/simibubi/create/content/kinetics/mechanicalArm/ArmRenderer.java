@@ -145,7 +145,6 @@ public class ArmRenderer extends KineticBlockEntityRenderer<ArmBlockEntity> {
 
 		if (inverted)
 			msr.rotateZDegrees(180);
-
 		claw.transform(msLocal)
 			.renderInto(ms, builder);
 

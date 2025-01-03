@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
 import com.simibubi.create.content.processing.recipe.ProcessingInventory;
@@ -17,11 +18,13 @@ import com.simibubi.create.foundation.sound.SoundScapes;
 import com.simibubi.create.foundation.sound.SoundScapes.AmbienceGroup;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -35,18 +38,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 
@@ -55,7 +56,6 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 	protected boolean searchForEntity;
 
 	public ProcessingInventory inventory;
-	protected LazyOptional<IItemHandlerModifiable> handler = LazyOptional.of(() -> inventory);
 	private RecipeWrapper wrapper;
 	public float crushingspeed;
 
@@ -70,6 +70,14 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 
 		};
 		wrapper = new RecipeWrapper(inventory);
+	}
+
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(
+				Capabilities.ItemHandler.BLOCK,
+				AllBlockEntityTypes.CRUSHING_WHEEL_CONTROLLER.get(),
+				(be, context) -> be.inventory
+		);
 	}
 
 	@Override
@@ -104,7 +112,7 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 			return;
 
 		if (level.isClientSide)
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> this.tickAudio());
+			CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> this.tickAudio());
 
 		float speed = crushingspeed * 4;
 
@@ -159,7 +167,7 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 						if (stack.isEmpty())
 							continue;
 						ItemStack remainder = behaviour.handleInsertion(stack, facing, false);
-						if (remainder.equals(stack, false))
+						if (ItemStack.isSameItemSameComponents(remainder, stack))
 							continue;
 						inventory.setStackInSlot(slot, remainder);
 						changed = true;
@@ -291,7 +299,7 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 	}
 
 	private void applyRecipe() {
-		Optional<ProcessingRecipe<RecipeWrapper>> recipe = findRecipe();
+		Optional<RecipeHolder<ProcessingRecipe<RecipeWrapper>>> recipe = findRecipe();
 
 		List<ItemStack> list = new ArrayList<>();
 		if (recipe.isPresent()) {
@@ -299,7 +307,7 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 				.getCount();
 			inventory.clear();
 			for (int roll = 0; roll < rolls; roll++) {
-				List<ItemStack> rolledResults = recipe.get()
+				List<ItemStack> rolledResults = recipe.get().value()
 					.rollResults();
 				for (int i = 0; i < rolledResults.size(); i++) {
 					ItemStack stack = rolledResults.get(i);
@@ -314,31 +322,31 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 
 	}
 
-	public Optional<ProcessingRecipe<RecipeWrapper>> findRecipe() {
-		Optional<ProcessingRecipe<RecipeWrapper>> crushingRecipe = AllRecipeTypes.CRUSHING.find(wrapper, level);
+	public Optional<RecipeHolder<ProcessingRecipe<RecipeWrapper>>> findRecipe() {
+		Optional<RecipeHolder<ProcessingRecipe<RecipeWrapper>>> crushingRecipe = AllRecipeTypes.CRUSHING.find(wrapper, level);
 		if (!crushingRecipe.isPresent())
 			crushingRecipe = AllRecipeTypes.MILLING.find(wrapper, level);
 		return crushingRecipe;
 	}
 
 	@Override
-	public void write(CompoundTag compound, boolean clientPacket) {
+	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		if (hasEntity())
 			compound.put("Entity", NbtUtils.createUUID(entityUUID));
-		compound.put("Inventory", inventory.serializeNBT());
+		compound.put("Inventory", inventory.serializeNBT(registries));
 		compound.putFloat("Speed", crushingspeed);
-		super.write(compound, clientPacket);
+		super.write(compound, registries, clientPacket);
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
-		super.read(compound, clientPacket);
+	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(compound, registries, clientPacket);
 		if (compound.contains("Entity") && !isOccupied()) {
 			entityUUID = NbtUtils.loadUUID(NBTHelper.getINBT(compound, "Entity"));
 			this.searchForEntity = true;
 		}
 		crushingspeed = compound.getFloat("Speed");
-		inventory.deserializeNBT(compound.getCompound("Inventory"));
+		inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
 	}
 
 	public void startCrushing(Entity entity) {
@@ -347,17 +355,10 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 	}
 
 	private void itemInserted(ItemStack stack) {
-		Optional<ProcessingRecipe<RecipeWrapper>> recipe = findRecipe();
-		inventory.remainingTime = recipe.isPresent() ? recipe.get()
+		Optional<RecipeHolder<ProcessingRecipe<RecipeWrapper>>> recipe = findRecipe();
+		inventory.remainingTime = recipe.isPresent() ? recipe.get().value()
 			.getProcessingDuration() : 100;
 		inventory.appliedRecipe = false;
-	}
-
-	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-		if (cap == ForgeCapabilities.ITEM_HANDLER)
-			return handler.cast();
-		return super.getCapability(cap, side);
 	}
 
 	public void clear() {

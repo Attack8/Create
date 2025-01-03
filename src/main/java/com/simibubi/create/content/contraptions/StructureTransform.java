@@ -4,18 +4,23 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.simibubi.create.api.contraption.transformable.ContraptionTransformableRegistry;
 import com.simibubi.create.api.contraption.transformable.ITransformableBlock;
 import com.simibubi.create.api.contraption.transformable.ITransformableBlockEntity;
-
 import com.simibubi.create.impl.contraption.transformable.ContraptionTransformableRegistryImpl;
 
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.createmod.catnip.utility.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
@@ -35,18 +40,29 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.phys.Vec3;
 
 public class StructureTransform {
+	public static final StreamCodec<ByteBuf, StructureTransform> STREAM_CODEC = StreamCodec.composite(
+			BlockPos.STREAM_CODEC, transform -> transform.offset,
+			ByteBufCodecs.VAR_INT, transform -> transform.angle,
+			CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.AXIS), transform -> transform.rotationAxis,
+			CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.ROTATION), transform -> transform.rotation,
+			CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.MIRROR), transform -> transform.mirror,
+			StructureTransform::new
+	);
 
-	// Assuming structures cannot be rotated around multiple axes at once
-	public Axis rotationAxis;
 	public BlockPos offset;
 	public int angle;
+	// Assuming structures cannot be rotated around multiple axes at once
+	@Nullable
+	public Axis rotationAxis;
+	@Nullable
 	public Rotation rotation;
+	@Nullable
 	public Mirror mirror;
 
-	private StructureTransform(BlockPos offset, int angle, Axis axis, Rotation rotation, Mirror mirror) {
+	private StructureTransform(BlockPos offset, int angle, @Nullable Axis axis, @Nullable Rotation rotation, @Nullable Mirror mirror) {
 		this.offset = offset;
 		this.angle = angle;
-		rotationAxis = axis;
+		this.rotationAxis = axis;
 		this.rotation = rotation;
 		this.mirror = mirror;
 	}
@@ -266,24 +282,4 @@ public class StructureTransform {
 			facing = facing.getClockWise(rotationAxis);
 		return facing;
 	}
-
-	public static StructureTransform fromBuffer(FriendlyByteBuf buffer) {
-		BlockPos readBlockPos = buffer.readBlockPos();
-		int readAngle = buffer.readInt();
-		int axisIndex = buffer.readVarInt();
-		int rotationIndex = buffer.readVarInt();
-		int mirrorIndex = buffer.readVarInt();
-		return new StructureTransform(readBlockPos, readAngle, axisIndex == -1 ? null : Axis.values()[axisIndex],
-			rotationIndex == -1 ? null : Rotation.values()[rotationIndex],
-			mirrorIndex == -1 ? null : Mirror.values()[mirrorIndex]);
-	}
-
-	public void writeToBuffer(FriendlyByteBuf buffer) {
-		buffer.writeBlockPos(offset);
-		buffer.writeInt(angle);
-		buffer.writeVarInt(rotationAxis == null ? -1 : rotationAxis.ordinal());
-		buffer.writeVarInt(rotation == null ? -1 : rotation.ordinal());
-		buffer.writeVarInt(mirror == null ? - 1 : mirror.ordinal());
-	}
-
 }

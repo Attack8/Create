@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.google.common.collect.ImmutableList;
+import com.simibubi.create.foundation.blockEntity.LegacyRecipeWrapper;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.minecraft.network.chat.Component;
@@ -14,8 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 public class MountedStorageInteraction {
 
@@ -27,7 +27,6 @@ public class MountedStorageInteraction {
 		int rows = Mth.clamp(slotCount / 9, 1, 6);
 		MenuType<?> menuType = menus.get(rows - 1);
 		Component menuName = CreateLang.translateDirect("contraptions.moving_container", displayName);
-
 		return new MenuProvider() {
 
 			@Override
@@ -44,9 +43,9 @@ public class MountedStorageInteraction {
 		};
 	}
 
-	public static class StorageInteractionContainer extends RecipeWrapper {
+	public static class StorageInteractionContainer extends LegacyRecipeWrapper {
 
-		private Supplier<Boolean> stillValid;
+		private final Supplier<Boolean> stillValid;
 
 		public StorageInteractionContainer(IItemHandlerModifiable inv, Supplier<Boolean> stillValid) {
 			super(inv);

@@ -2,10 +2,12 @@ package com.simibubi.create.content.equipment.clipboard;
 
 import javax.annotation.Nonnull;
 
+import com.simibubi.create.AllDataComponents;
+
 import net.createmod.catnip.gui.ScreenOpener;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -16,10 +18,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class ClipboardBlockItem extends BlockItem {
 
@@ -45,7 +45,7 @@ public class ClipboardBlockItem extends BlockItem {
 			return false;
 		if (!(pLevel.getBlockEntity(pPos) instanceof ClipboardBlockEntity cbe))
 			return false;
-		cbe.dataContainer = ItemHandlerHelper.copyStackWithSize(pStack, 1);
+		cbe.dataContainer = pStack.copyWithCount(1);
 		cbe.notifyUpdate();
 		return true;
 	}
@@ -59,10 +59,8 @@ public class ClipboardBlockItem extends BlockItem {
 		player.getCooldowns()
 			.addCooldown(heldItem.getItem(), 10);
 		if (world.isClientSide)
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> openScreen(player, heldItem));
-		CompoundTag tag = heldItem.getOrCreateTag();
-		tag.putInt("Type", ClipboardOverrides.ClipboardType.EDITING.ordinal());
-		heldItem.setTag(tag);
+			CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> openScreen(player, heldItem));
+		heldItem.set(AllDataComponents.CLIPBOARD_TYPE, ClipboardOverrides.ClipboardType.EDITING);
 
 		return InteractionResultHolder.success(heldItem);
 	}
@@ -74,7 +72,7 @@ public class ClipboardBlockItem extends BlockItem {
 	}
 
 	public void registerModelOverrides() {
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClipboardOverrides.registerModelOverridesClient(this));
+		CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> ClipboardOverrides.registerModelOverridesClient(this));
 	}
 
 }

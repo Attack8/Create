@@ -13,6 +13,8 @@ import com.simibubi.create.api.schematic.nbt.IPartialSafeNBT;
 import net.createmod.catnip.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.item.ItemStack;
@@ -20,8 +22,7 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 import java.util.List;
 
@@ -100,7 +101,7 @@ public class CopycatBlockEntity extends SmartBlockEntity
 	}
 
 	public void setConsumedItem(ItemStack stack) {
-		consumedItem = ItemHandlerHelper.copyStackWithSize(stack, 1);
+		consumedItem = stack.copyWithCount(1);
 		setChanged();
 	}
 
@@ -132,10 +133,10 @@ public class CopycatBlockEntity extends SmartBlockEntity
 	}
 
 	@Override
-	protected void read(CompoundTag tag, boolean clientPacket) {
-		super.read(tag, clientPacket);
+	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(tag, registries, clientPacket);
 
-		consumedItem = ItemStack.of(tag.getCompound("Item"));
+		consumedItem = ItemStack.parseOptional(registries, tag.getCompound("Item"));
 
 		BlockState prevMaterial = material;
 		if (!tag.contains("Material")) {
@@ -164,23 +165,22 @@ public class CopycatBlockEntity extends SmartBlockEntity
 	}
 
 	@Override
-	public void writeSafe(CompoundTag tag) {
-		super.writeSafe(tag);
+	public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
+		super.writeSafe(tag, registries);
 
-		ItemStack stackWithoutNBT = consumedItem.copy();
-		stackWithoutNBT.setTag(null);
+		ItemStack stackWithoutComponents = new ItemStack(consumedItem.getItemHolder(), consumedItem.getCount(), DataComponentPatch.EMPTY);
 
-		write(tag, stackWithoutNBT, material);
+		write(tag, registries, stackWithoutComponents, material);
 	}
 
 	@Override
-	protected void write(CompoundTag tag, boolean clientPacket) {
-		super.write(tag, clientPacket);
-		write(tag, consumedItem, material);
+	protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(tag, registries, clientPacket);
+		write(tag, registries, consumedItem, material);
 	}
 
-	protected void write(CompoundTag tag, ItemStack stack, BlockState material) {
-		tag.put("Item", stack.serializeNBT());
+	protected void write(CompoundTag tag, HolderLookup.Provider registries, ItemStack stack, BlockState material) {
+		tag.put("Item", stack.saveOptional(registries));
 		tag.put("Material", NbtUtils.writeBlockState(material));
 	}
 

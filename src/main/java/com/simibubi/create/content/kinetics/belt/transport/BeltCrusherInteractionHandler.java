@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class BeltCrusherInteractionHandler {
 
@@ -47,22 +47,20 @@ public class BeltCrusherInteractionHandler {
             currentItem.beltPosition = crusherEntry;
 
             BlockEntity be = world.getBlockEntity(crusherPos);
-            if (!(be instanceof CrushingWheelControllerBlockEntity))
+            if (!(be instanceof CrushingWheelControllerBlockEntity crusherBE))
                 return true;
 
-            CrushingWheelControllerBlockEntity crusherBE = (CrushingWheelControllerBlockEntity) be;
-
-            ItemStack toInsert = currentItem.stack.copy();
+			ItemStack toInsert = currentItem.stack.copy();
 
             ItemStack remainder = ItemHandlerHelper.insertItemStacked(crusherBE.inventory, toInsert, false);
-            if (toInsert.equals(remainder, false))
+            if (ItemStack.isSameItemSameComponents(toInsert, remainder))
                 return true;
 
             int notFilled = currentItem.stack.getCount() - toInsert.getCount();
             if (!remainder.isEmpty()) {
                 remainder.grow(notFilled);
             } else if (notFilled > 0)
-                remainder = ItemHandlerHelper.copyStackWithSize(currentItem.stack, notFilled);
+                remainder = currentItem.stack.copyWithCount(notFilled);
 
             currentItem.stack = remainder;
             beltInventory.belt.sendData();

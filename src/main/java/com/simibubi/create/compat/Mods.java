@@ -3,20 +3,21 @@ package com.simibubi.create.compat;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.utility.RegisteredObjectsHelper;
 import net.createmod.catnip.utility.lang.Lang;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.ModList;
 
 /**
  * For compatibility with and without another mod present, we have to define load conditions of the specific code
  */
 public enum Mods {
 	AETHER,
+	AETHER_II,
 	COMPUTERCRAFT,
 	CONNECTIVITY,
 	CURIOS,
@@ -49,22 +50,22 @@ public enum Mods {
 	}
 
 	public ResourceLocation rl(String path) {
-		return new ResourceLocation(id, path);
+		return ResourceLocation.fromNamespaceAndPath(id, path);
 	}
 
 	public Block getBlock(String id) {
-		return ForgeRegistries.BLOCKS.getValue(rl(id));
+		return BuiltInRegistries.BLOCK.get(rl(id));
 	}
 
 	public Item getItem(String id) {
-		return ForgeRegistries.ITEMS.getValue(rl(id));
+		return BuiltInRegistries.ITEM.get(rl(id));
 	}
 
 	public boolean contains(ItemLike entry) {
 		if (!isLoaded())
 			return false;
 		Item asItem = entry.asItem();
-		return asItem != null && CatnipServices.REGISTRIES.getKeyOrThrow(asItem)
+		return asItem != null && RegisteredObjectsHelper.getKeyOrThrow(asItem)
 			.getNamespace()
 			.equals(id);
 	}

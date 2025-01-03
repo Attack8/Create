@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllSpecialTextures;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.equipment.blueprint.BlueprintOverlayRenderer;
@@ -30,9 +33,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -50,11 +52,38 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
+import org.jetbrains.annotations.NotNull;
 
 public class TrackPlacement {
+	public record ConnectingFrom(BlockPos pos, Vec3 axis, Vec3 end, Vec3 normal) {
+		public static Codec<ConnectingFrom> CODEC = RecordCodecBuilder.create(i -> i.group(
+				BlockPos.CODEC.fieldOf("pos").forGetter(ConnectingFrom::pos),
+				Vec3.CODEC.fieldOf("axis").forGetter(ConnectingFrom::axis),
+				Vec3.CODEC.fieldOf("end").forGetter(ConnectingFrom::end),
+				Vec3.CODEC.fieldOf("normal").forGetter(ConnectingFrom::normal)
+		).apply(i, ConnectingFrom::new));
+
+		public static StreamCodec<FriendlyByteBuf, ConnectingFrom> STREAM_CODEC = new StreamCodec<>() {
+			public @NotNull ConnectingFrom decode(@NotNull FriendlyByteBuf buffer) {
+				BlockPos pos = FriendlyByteBuf.readBlockPos(buffer);
+				Vec3 axis = buffer.readVec3();
+				Vec3 end = buffer.readVec3();
+				Vec3 normal = buffer.readVec3();
+
+				return new ConnectingFrom(pos, axis, end, normal);
+			}
+
+			public void encode(@NotNull FriendlyByteBuf buffer, ConnectingFrom connectingFrom) {
+				FriendlyByteBuf.writeBlockPos(buffer, connectingFrom.pos());
+				buffer.writeVec3(connectingFrom.axis());
+				buffer.writeVec3(connectingFrom.end());
+				buffer.writeVec3(connectingFrom.normal());
+			}
+		};
+	}
 
 	public static class PlacementInfo {
 
@@ -131,14 +160,13 @@ public class TrackPlacement {
 		Vec3 normedAxis2 = axis2.normalize();
 		Vec3 end2 = track.getCurveStart(level, pos2, state2, axis2);
 
-		CompoundTag itemTag = stack.getTag();
-		CompoundTag selectionTag = itemTag.getCompound("ConnectingFrom");
-		BlockPos pos1 = NbtUtils.readBlockPos(selectionTag.getCompound("Pos"));
-		Vec3 axis1 = VecHelper.readNBT(selectionTag.getList("Axis", Tag.TAG_DOUBLE));
+		ConnectingFrom connectingFrom = stack.get(AllDataComponents.TRACK_CONNECTING_FROM);
+
+		BlockPos pos1 = connectingFrom.pos();
+		Vec3 axis1 = connectingFrom.axis();
 		Vec3 normedAxis1 = axis1.normalize();
-		Vec3 end1 = VecHelper.readNBT(selectionTag.getList("End", Tag.TAG_DOUBLE));
-		Vec3 normal1 = VecHelper.readNBT(selectionTag.getList("Normal", Tag.TAG_DOUBLE));
-		boolean front1 = selectionTag.getBoolean("Front");
+		Vec3 end1 = connectingFrom.end();
+		Vec3 normal1 = connectingFrom.normal();
 		BlockState state1 = level.getBlockState(pos1);
 
 		if (level.isClientSide) {
@@ -163,7 +191,6 @@ public class TrackPlacement {
 		if (axis1.dot(end2.subtract(end1)) < 0) {
 			axis1 = axis1.scale(-1);
 			normedAxis1 = normedAxis1.scale(-1);
-			front1 = !front1;
 			end1 = track.getCurveStart(level, pos1, state1, axis1);
 			if (level.isClientSide) {
 				info.end1 = end1;
@@ -418,8 +445,8 @@ public class TrackPlacement {
 						int remainingItems =
 							count - Math.min(isTrack ? tracks - foundTracks : pavement - foundPavement, count);
 						if (i == inv.selected)
-							stackInSlot.setTag(null);
-						ItemStack newItem = ItemHandlerHelper.copyStackWithSize(stackInSlot, remainingItems);
+							stackInSlot.remove(AllDataComponents.TRACK_CONNECTING_FROM);
+						ItemStack newItem = stackInSlot.copyWithCount(remainingItems);
 						if (offhand)
 							player.setItemInHand(InteractionHand.OFF_HAND, newItem);
 						else

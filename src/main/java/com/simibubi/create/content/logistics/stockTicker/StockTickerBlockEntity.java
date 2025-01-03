@@ -8,11 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import com.simibubi.create.AllBlockEntityTypes;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.contraptions.actors.seat.SeatEntity;
 import com.simibubi.create.content.equipment.goggles.IHaveHoveringInformation;
 import com.simibubi.create.content.logistics.BigItemStack;
@@ -24,6 +20,7 @@ import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.item.SmartInventory;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.Iterate;
 import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.lang.Components;
@@ -31,6 +28,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -43,11 +41,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class StockTickerBlockEntity extends StockCheckingBlockEntity implements IHaveHoveringInformation {
 
@@ -63,21 +61,28 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 
 	// Shop feature
 	protected SmartInventory receivedPayments;
-	protected LazyOptional<IItemHandler> capability;
+	protected IItemHandler capability;
 
 	public StockTickerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
 		previouslyUsedAddress = "";
 		receivedPayments = new SmartInventory(27, this, 64, false);
-		capability = LazyOptional.of(() -> receivedPayments);
+		capability = receivedPayments;
 		categories = new ArrayList<>();
 		hiddenCategoriesByPlayer = new HashMap<>();
 	}
 
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(
+			Capabilities.ItemHandler.BLOCK,
+			AllBlockEntityTypes.STOCK_TICKER.get(),
+			(be, context) -> be.capability
+		);
+	}
+
 	public void refreshClientStockSnapshot() {
 		ticksSinceLastUpdate = 0;
-		AllPackets.getChannel()
-			.sendToServer(new LogisticalStockRequestPacket(worldPosition));
+		CatnipServices.NETWORK.sendToServer(new LogisticalStockRequestPacket(worldPosition));
 	}
 
 	public List<List<BigItemStack>> getClientStockSnapshot() {
@@ -100,7 +105,7 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 		notifyUpdate();
 		return result;
 	}
-	
+
 	@Override
 	public InventorySummary getRecentSummary() {
 		InventorySummary recentSummary = super.getRecentSummary();
@@ -123,11 +128,11 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 	}
 
 	@Override
-	protected void write(CompoundTag tag, boolean clientPacket) {
-		super.write(tag, clientPacket);
+	protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(tag, registries, clientPacket);
 		tag.putString("PreviousAddress", previouslyUsedAddress);
-		tag.put("ReceivedPayments", receivedPayments.serializeNBT());
-		tag.put("Categories", NBTHelper.writeItemList(categories));
+		tag.put("ReceivedPayments", receivedPayments.serializeNBT(registries));
+		tag.put("Categories", NBTHelper.writeItemList(categories, registries));
 		tag.put("HiddenCategories", NBTHelper.writeCompoundList(hiddenCategoriesByPlayer.entrySet(), e -> {
 			CompoundTag c = new CompoundTag();
 			c.putUUID("Id", e.getKey());
@@ -140,11 +145,11 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 	}
 
 	@Override
-	protected void read(CompoundTag tag, boolean clientPacket) {
-		super.read(tag, clientPacket);
+	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(tag, registries, clientPacket);
 		previouslyUsedAddress = tag.getString("PreviousAddress");
-		receivedPayments.deserializeNBT(tag.getCompound("ReceivedPayments"));
-		categories = NBTHelper.readItemList(tag.getList("Categories", Tag.TAG_COMPOUND));
+		receivedPayments.deserializeNBT(registries, tag.getCompound("ReceivedPayments"));
+		categories = NBTHelper.readItemList(tag.getList("Categories", Tag.TAG_COMPOUND), registries);
 		categories.removeIf(stack -> !stack.isEmpty() && !(stack.getItem() instanceof FilterItem));
 		hiddenCategoriesByPlayer.clear();
 
@@ -235,13 +240,6 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 	}
 
 	@Override
-	public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		if (isItemHandlerCap(cap))
-			return capability.cast();
-		return super.getCapability(cap, side);
-	}
-
-	@Override
 	public void destroy() {
 		ItemHelper.dropContents(level, worldPosition, receivedPayments);
 		for (ItemStack filter : categories)
@@ -249,12 +247,6 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 				Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(),
 					filter);
 		super.destroy();
-	}
-
-	@Override
-	public void invalidate() {
-		capability.invalidate();
-		super.invalidate();
 	}
 
 	public class CategoryMenuProvider implements MenuProvider {

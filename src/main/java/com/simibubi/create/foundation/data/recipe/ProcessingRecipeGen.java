@@ -12,7 +12,8 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeSerializer;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 
-import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.utility.RegisteredObjectsHelper;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -20,7 +21,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public abstract class ProcessingRecipeGen extends CreateRecipeProvider {
 
@@ -28,20 +29,20 @@ public abstract class ProcessingRecipeGen extends CreateRecipeProvider {
 	protected static final int BUCKET = FluidType.BUCKET_VOLUME;
 	protected static final int BOTTLE = 250;
 
-	public static void registerAll(DataGenerator gen, PackOutput output) {
-		GENERATORS.add(new CrushingRecipeGen(output));
-		GENERATORS.add(new MillingRecipeGen(output));
-		GENERATORS.add(new CuttingRecipeGen(output));
-		GENERATORS.add(new WashingRecipeGen(output));
-		GENERATORS.add(new PolishingRecipeGen(output));
-		GENERATORS.add(new DeployingRecipeGen(output));
-		GENERATORS.add(new MixingRecipeGen(output));
-		GENERATORS.add(new CompactingRecipeGen(output));
-		GENERATORS.add(new PressingRecipeGen(output));
-		GENERATORS.add(new FillingRecipeGen(output));
-		GENERATORS.add(new EmptyingRecipeGen(output));
-		GENERATORS.add(new HauntingRecipeGen(output));
-		GENERATORS.add(new ItemApplicationRecipeGen(output));
+	public static void registerAll(DataGenerator gen, PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		GENERATORS.add(new CrushingRecipeGen(output, registries));
+		GENERATORS.add(new MillingRecipeGen(output, registries));
+		GENERATORS.add(new CuttingRecipeGen(output, registries));
+		GENERATORS.add(new WashingRecipeGen(output, registries));
+		GENERATORS.add(new PolishingRecipeGen(output, registries));
+		GENERATORS.add(new DeployingRecipeGen(output, registries));
+		GENERATORS.add(new MixingRecipeGen(output, registries));
+		GENERATORS.add(new CompactingRecipeGen(output, registries));
+		GENERATORS.add(new PressingRecipeGen(output, registries));
+		GENERATORS.add(new FillingRecipeGen(output, registries));
+		GENERATORS.add(new EmptyingRecipeGen(output, registries));
+		GENERATORS.add(new HauntingRecipeGen(output, registries));
+		GENERATORS.add(new ItemApplicationRecipeGen(output, registries));
 
 		gen.addProvider(true, new DataProvider() {
 
@@ -59,8 +60,8 @@ public abstract class ProcessingRecipeGen extends CreateRecipeProvider {
 		});
 	}
 
-	public ProcessingRecipeGen(PackOutput generator) {
-		super(generator);
+	public ProcessingRecipeGen(PackOutput generator, CompletableFuture<HolderLookup.Provider> registries) {
+		super(generator, registries);
 	}
 
 	/**
@@ -74,7 +75,7 @@ public abstract class ProcessingRecipeGen extends CreateRecipeProvider {
 			ItemLike itemLike = singleIngredient.get();
 			transform
 				.apply(new ProcessingRecipeBuilder<>(serializer.getFactory(),
-					new ResourceLocation(namespace, CatnipServices.REGISTRIES.getKeyOrThrow(itemLike.asItem())
+					ResourceLocation.fromNamespaceAndPath(namespace, RegisteredObjectsHelper.getKeyOrThrow(itemLike.asItem())
 						.getPath())).withItemIngredients(Ingredient.of(itemLike)))
 				.build(c);
 		};
@@ -127,7 +128,7 @@ public abstract class ProcessingRecipeGen extends CreateRecipeProvider {
 
 	protected Supplier<ResourceLocation> idWithSuffix(Supplier<ItemLike> item, String suffix) {
 		return () -> {
-			ResourceLocation registryName = CatnipServices.REGISTRIES.getKeyOrThrow(item.get()
+			ResourceLocation registryName = RegisteredObjectsHelper.getKeyOrThrow(item.get()
 					.asItem());
 			return Create.asResource(registryName.getPath() + suffix);
 		};

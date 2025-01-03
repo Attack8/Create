@@ -2,6 +2,7 @@ package com.simibubi.create.api.schematic.nbt;
 
 import com.simibubi.create.impl.schematic.nbt.SchematicSafeNBTRegistryImpl;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -17,7 +18,7 @@ public class SchematicSafeNBTRegistry {
 	 *
 	 * @param blockEntityType The block entity type you would like to register this for
 	 * @param safeNBT         The custom PartialSafeNBT provider you would like to register for this blockEntityType,
-	 *                        your {@link ContextProvidingPartialSafeNBT#writeSafe(BlockEntity, CompoundTag)} method will be
+	 *                        your {@link ContextProvidingPartialSafeNBT#writeSafe(BlockEntity, CompoundTag, HolderLookup.Provider)} method will be
 	 *                        called on the passed {@link ContextProvidingPartialSafeNBT}
 	 *                        when the block entities data is being prepared for placement.
 	 */
@@ -32,6 +33,6 @@ public class SchematicSafeNBTRegistry {
 		/**
 		 * This will always be called from the logical server
 		 */
-		void writeSafe(BlockEntity blockEntity, CompoundTag tag);
+		void writeSafe(BlockEntity blockEntity, CompoundTag tag, HolderLookup.Provider registries);
 	}
 }

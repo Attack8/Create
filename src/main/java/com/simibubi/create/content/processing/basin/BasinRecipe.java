@@ -26,11 +26,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class BasinRecipe extends ProcessingRecipe<SmartInventory> {
 
@@ -63,10 +64,8 @@ public class BasinRecipe extends ProcessingRecipe<SmartInventory> {
 
 	private static boolean apply(BasinBlockEntity basin, Recipe<?> recipe, boolean test) {
 		boolean isBasinRecipe = recipe instanceof BasinRecipe;
-		IItemHandler availableItems = basin.getCapability(ForgeCapabilities.ITEM_HANDLER)
-			.orElse(null);
-		IFluidHandler availableFluids = basin.getCapability(ForgeCapabilities.FLUID_HANDLER)
-			.orElse(null);
+		IItemHandler availableItems = basin.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, basin.getBlockPos(), null);
+		IFluidHandler availableFluids = basin.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, basin.getBlockPos(), null);
 
 		if (availableItems == null || availableFluids == null)
 			return false;
@@ -150,21 +149,21 @@ public class BasinRecipe extends ProcessingRecipe<SmartInventory> {
 			if (simulate) {
 				if (recipe instanceof BasinRecipe basinRecipe) {
 					recipeOutputItems.addAll(basinRecipe.rollResults());
-					
+
 					for (FluidStack fluidStack : basinRecipe.getFluidResults())
 						if (!fluidStack.isEmpty())
 							recipeOutputFluids.add(fluidStack);
 					for (ItemStack stack : basinRecipe.getRemainingItems(basin.getInputInventory()))
 						if (!stack.isEmpty())
 							recipeOutputItems.add(stack);
-					
+
 				} else {
 					recipeOutputItems.add(recipe.getResultItem(basin.getLevel()
 						.registryAccess()));
 
 					if (recipe instanceof CraftingRecipe craftingRecipe) {
 						for (ItemStack stack : craftingRecipe
-							.getRemainingItems(new DummyCraftingContainer(availableItems, extractedItemsFromSlot)))
+							.getRemainingItems(new DummyCraftingContainer(availableItems, extractedItemsFromSlot).asCraftInput()))
 							if (!stack.isEmpty())
 								recipeOutputItems.add(stack);
 					}
@@ -178,12 +177,12 @@ public class BasinRecipe extends ProcessingRecipe<SmartInventory> {
 		return true;
 	}
 
-	public static BasinRecipe convertShapeless(Recipe<?> recipe) {
+	public static RecipeHolder<BasinRecipe> convertShapeless(RecipeHolder<?> recipe) {
 		BasinRecipe basinRecipe =
-			new ProcessingRecipeBuilder<>(BasinRecipe::new, recipe.getId()).withItemIngredients(recipe.getIngredients())
-				.withSingleItemOutput(recipe.getResultItem(Minecraft.getInstance().level.registryAccess()))
+			new ProcessingRecipeBuilder<>(BasinRecipe::new, recipe.id()).withItemIngredients(recipe.value().getIngredients())
+				.withSingleItemOutput(recipe.value().getResultItem(Minecraft.getInstance().level.registryAccess()))
 				.build();
-		return basinRecipe;
+		return new RecipeHolder<>(recipe.id(), basinRecipe);
 	}
 
 	protected BasinRecipe(IRecipeTypeInfo type, ProcessingRecipeParams params) {

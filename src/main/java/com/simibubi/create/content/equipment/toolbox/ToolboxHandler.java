@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.foundation.networking.ISyncPersistentData.PersistentDataPacket;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.WorldAttached;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +20,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.PacketDistributor;
 
 public class ToolboxHandler {
 
@@ -63,7 +62,7 @@ public class ToolboxHandler {
 				continue;
 
 			CompoundTag data = compound.getCompound(key);
-			BlockPos pos = NbtUtils.readBlockPos(data.getCompound("Pos"));
+			BlockPos pos = NbtUtils.readBlockPos(data, "Pos").orElseThrow();
 			int slot = data.getInt("Slot");
 
 			if (!world.isLoaded(pos))
@@ -97,7 +96,7 @@ public class ToolboxHandler {
 	}
 
 	public static void syncData(Player player) {
-		AllPackets.getChannel().send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+		CatnipServices.NETWORK.sendToClient((ServerPlayer) player,
 			new PersistentDataPacket(player));
 	}
 
@@ -124,12 +123,11 @@ public class ToolboxHandler {
 			return;
 
 		CompoundTag prevData = compound.getCompound(key);
-		BlockPos prevPos = NbtUtils.readBlockPos(prevData.getCompound("Pos"));
+		BlockPos prevPos = NbtUtils.readBlockPos(prevData, "Pos").orElseThrow();
 		int prevSlot = prevData.getInt("Slot");
 
 		BlockEntity prevBlockEntity = world.getBlockEntity(prevPos);
-		if (prevBlockEntity instanceof ToolboxBlockEntity) {
-			ToolboxBlockEntity toolbox = (ToolboxBlockEntity) prevBlockEntity;
+		if (prevBlockEntity instanceof ToolboxBlockEntity toolbox) {
 			toolbox.unequip(prevSlot, player, hotbarSlot, keepItems || !ToolboxHandler.withinRange(player, toolbox));
 		}
 		compound.remove(key);

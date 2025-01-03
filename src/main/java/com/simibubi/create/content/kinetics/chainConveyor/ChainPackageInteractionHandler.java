@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.foundation.utility.RaycastHelper;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
 
 public class ChainPackageInteractionHandler {
 
@@ -30,8 +30,7 @@ public class ChainPackageInteractionHandler {
 					.expandTowards(0, 0.5, 0)
 					.inflate(0.45);
 
-				double range = mc.player.getAttribute(ForgeMod.BLOCK_REACH.get())
-					.getValue() + 1;
+				double range = mc.player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE) + 1;
 				Vec3 from = RaycastHelper.getTraceOrigin(mc.player);
 				Vec3 to = RaycastHelper.getTraceTarget(mc.player, range, from);
 
@@ -45,8 +44,7 @@ public class ChainPackageInteractionHandler {
 
 				for (ChainConveyorPackage pckg : ccbe.getLoopingPackages()) {
 					if (pckg.netId == i) {
-						AllPackets.getChannel()
-							.sendToServer(
+						CatnipServices.NETWORK.sendToServer(
 								new ChainPackageInteractionPacket(ccbe.getBlockPos(), null, pckg.chainPosition, null));
 						success.setTrue();
 						return;
@@ -59,8 +57,7 @@ public class ChainPackageInteractionHandler {
 						continue;
 					for (ChainConveyorPackage pckg : list) {
 						if (pckg.netId == i) {
-							AllPackets.getChannel()
-								.sendToServer(new ChainPackageInteractionPacket(ccbe.getBlockPos(), connection,
+							CatnipServices.NETWORK.sendToServer(new ChainPackageInteractionPacket(ccbe.getBlockPos(), connection,
 									pckg.chainPosition, null));
 							success.setTrue();
 							return;

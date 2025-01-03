@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.logistics.packager.InventorySummary;
 import com.simibubi.create.content.logistics.packager.PackagerBlockEntity;
@@ -17,16 +16,20 @@ import com.simibubi.create.content.logistics.stockTicker.PackageOrder;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.Pair;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.VibrationParticleOption;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.IItemHandler;
+
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class PackagerLinkBlockEntity extends SmartBlockEntity {
 
@@ -69,22 +72,22 @@ public class PackagerLinkBlockEntity extends SmartBlockEntity {
 		if (availableCount == 0)
 			return null;
 		int toWithdraw = Math.min(amount, availableCount);
-		if (toWithdraw != 0)
-			AllPackets.sendToNear(level, worldPosition, 32, new PackagerLinkEffectPacket(worldPosition));
+		if (toWithdraw != 0 && level instanceof ServerLevel serverLevel)
+			CatnipServices.NETWORK.sendToClientsAround(serverLevel, worldPosition, 32, new PackagerLinkEffectPacket(worldPosition));
 		return Pair.of(packager,
 			PackagingRequest.create(stack, toWithdraw, address, linkIndex, finalLink, 0, orderId, orderContext));
 	}
 
 	@Override
-	protected void write(CompoundTag tag, boolean clientPacket) {
-		super.write(tag, clientPacket);
+	protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(tag, registries, clientPacket);
 		if (placedBy != null)
 			tag.putUUID("PlacedBy", placedBy);
 	}
 
 	@Override
-	protected void read(CompoundTag tag, boolean clientPacket) {
-		super.read(tag, clientPacket);
+	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(tag, registries, clientPacket);
 		placedBy = tag.contains("PlacedBy") ? tag.getUUID("PlacedBy") : null;
 	}
 

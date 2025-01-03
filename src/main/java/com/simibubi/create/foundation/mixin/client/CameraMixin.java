@@ -11,11 +11,11 @@ import net.minecraft.client.Camera;
 @Mixin(Camera.class)
 public abstract class CameraMixin {
 	@ModifyArg(
-			method = "Lnet/minecraft/client/Camera;setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getMaxZoom(D)D"),
+			method = "setup(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/world/entity/Entity;ZZF)V",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getMaxZoom(F)F"),
 			index = 0
 	)
-	public double create$modifyCameraOffset(double originalValue) {
+	public float create$modifyCameraOffset(float originalValue) {
 		return originalValue * CameraDistanceModifier.getMultiplier();
 	}
 }

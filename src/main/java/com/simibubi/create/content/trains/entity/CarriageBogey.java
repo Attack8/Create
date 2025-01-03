@@ -14,25 +14,34 @@ import com.simibubi.create.content.trains.bogey.BogeyStyle;
 import com.simibubi.create.content.trains.graph.DimensionPalette;
 import com.simibubi.create.content.trains.graph.TrackGraph;
 
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.Couple;
 import net.createmod.catnip.utility.Iterate;
 import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.utility.RegisteredObjectsHelper;
 import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.animation.LerpedFloat;
 import net.createmod.catnip.utility.math.AngleHelper;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class CarriageBogey {
+	public static final StreamCodec<RegistryFriendlyByteBuf, CarriageBogey> STREAM_CODEC = StreamCodec.composite(
+			AbstractBogeyBlock.STREAM_CODEC, bogey -> bogey.type,
+			ByteBufCodecs.BOOL, bogey -> bogey.upsideDown,
+			ByteBufCodecs.COMPOUND_TAG, bogey -> bogey.bogeyData,
+			CarriageBogey::new
+	);
 
 	public static final String UPSIDE_DOWN_KEY = "UpsideDown";
 
@@ -52,6 +61,10 @@ public class CarriageBogey {
 	public Couple<Vec3> couplingAnchors;
 
 	int derailAngle;
+
+	public CarriageBogey(AbstractBogeyBlock<?> type, boolean upsideDown, CompoundTag bogeyData) {
+		this(type, upsideDown, bogeyData, new TravellingPoint(), new TravellingPoint());
+	}
 
 	public CarriageBogey(AbstractBogeyBlock<?> type, boolean upsideDown, CompoundTag bogeyData, TravellingPoint point, TravellingPoint point2) {
 		this.type = type;
@@ -178,7 +191,7 @@ public class CarriageBogey {
 
 	public CompoundTag write(DimensionPalette dimensions) {
 		CompoundTag tag = new CompoundTag();
-		tag.putString("Type", CatnipServices.REGISTRIES.getKeyOrThrow((Block) type)
+		tag.putString("Type", RegisteredObjectsHelper.getKeyOrThrow((Block) type)
 			.toString());
 		tag.put("Points", points.serializeEach(tp -> tp.write(dimensions)));
 		tag.putBoolean("UpsideDown", upsideDown);
@@ -189,8 +202,8 @@ public class CarriageBogey {
 	}
 
 	public static CarriageBogey read(CompoundTag tag, TrackGraph graph, DimensionPalette dimensions) {
-		ResourceLocation location = new ResourceLocation(tag.getString("Type"));
-		AbstractBogeyBlock<?> type = (AbstractBogeyBlock<?>) ForgeRegistries.BLOCKS.getValue(location);
+		ResourceLocation location = ResourceLocation.parse(tag.getString("Type"));
+		AbstractBogeyBlock<?> type = (AbstractBogeyBlock<?>) BuiltInRegistries.BLOCK.get(location);
 		boolean upsideDown = tag.getBoolean("UpsideDown");
 		Couple<TravellingPoint> points = Couple.deserializeEach(tag.getList("Points", Tag.TAG_COMPOUND),
 			c -> TravellingPoint.read(c, graph, dimensions));

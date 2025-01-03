@@ -9,6 +9,7 @@ import com.simibubi.create.foundation.utility.TickBasedCache;
 
 import net.createmod.catnip.utility.AnimationTickHolder;
 import net.createmod.catnip.utility.WorldAttached;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -30,14 +31,14 @@ public class ChainConveyorPackage {
 		public Vec3 prevTargetPos;
 		public Vec3 prevPos;
 		public Vec3 pos;
-		
+
 		public Vec3 motion;
 		public int lastTick;
 		public float yaw;
 		public float prevYaw;
 		public boolean flipped;
 		public ResourceLocation modelKey;
-		
+
 		public WeakReference<ChainConveyorBlockEntity> beReference;
 
 		public ChainConveyorPackagePhysicsData(Vec3 serverPosition) {
@@ -45,7 +46,7 @@ public class ChainConveyorPackage {
 			this.prevTargetPos = null;
 			this.pos = null;
 			this.prevPos = null;
-			
+
 			this.motion = Vec3.ZERO;
 			this.lastTick = AnimationTickHolder.getTicks();
 		}
@@ -56,12 +57,12 @@ public class ChainConveyorPackage {
 			lastTick = AnimationTickHolder.getTicks();
 			return true;
 		}
-		
+
 		public void setBE(ChainConveyorBlockEntity ccbe) {
 			if (beReference == null || beReference.get() != ccbe)
 				beReference = new WeakReference<ChainConveyorBlockEntity>(ccbe);
 		}
-		
+
 	}
 
 	public float chainPosition;
@@ -85,22 +86,22 @@ public class ChainConveyorPackage {
 		this.physicsData = null;
 	}
 
-	public CompoundTag writeToClient() {
-		CompoundTag tag = write();
+	public CompoundTag writeToClient(HolderLookup.Provider registries) {
+		CompoundTag tag = write(registries);
 		tag.putInt("NetID", netId);
 		return tag;
 	}
 
-	public CompoundTag write() {
+	public CompoundTag write(HolderLookup.Provider registries) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putFloat("Position", chainPosition);
-		compoundTag.put("Item", item.serializeNBT());
+		compoundTag.put("Item", item.saveOptional(registries));
 		return compoundTag;
 	}
 
-	public static ChainConveyorPackage read(CompoundTag compoundTag) {
+	public static ChainConveyorPackage read(CompoundTag compoundTag, HolderLookup.Provider registries) {
 		float pos = compoundTag.getFloat("Position");
-		ItemStack item = ItemStack.of(compoundTag.getCompound("Item"));
+		ItemStack item = ItemStack.parseOptional(registries, compoundTag.getCompound("Item"));
 		if (compoundTag.contains("NetID"))
 			return new ChainConveyorPackage(pos, item, compoundTag.getInt("NetID"));
 		return new ChainConveyorPackage(pos, item);

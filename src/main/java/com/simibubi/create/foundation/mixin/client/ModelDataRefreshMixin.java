@@ -9,9 +9,9 @@ import net.createmod.catnip.utility.levelWrappers.SchematicLevel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.model.data.ModelDataManager;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.model.data.ModelDataManager;
 
 @OnlyIn(Dist.CLIENT)
 @Mixin(ModelDataManager.class)

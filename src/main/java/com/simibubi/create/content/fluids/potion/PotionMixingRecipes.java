@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.simibubi.create.Create;
@@ -13,29 +14,57 @@ import com.simibubi.create.content.kinetics.mixer.MixingRecipe;
 import com.simibubi.create.content.processing.recipe.HeatCondition;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
+import com.simibubi.create.foundation.mixin.accessor.PotionBrewingAccessor;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.brewing.BrewingRecipe;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.common.brewing.IBrewingRecipe;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.brewing.BrewingRecipe;
+import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class PotionMixingRecipes {
 
 	public static final List<Item> SUPPORTED_CONTAINERS = List.of(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION);
 
-	public static final List<MixingRecipe> ALL = createRecipes();
-	public static final Map<Item, List<MixingRecipe>> BY_ITEM = sortRecipesByItem(ALL);
+	private static List<RecipeHolder<MixingRecipe>> RECIPES;
+	private static Map<Item, List<MixingRecipe>> SORTED;
 
-	private static List<MixingRecipe> createRecipes() {
-		List<MixingRecipe> mixingRecipes = new ArrayList<>();
+	private static boolean alreadyGenerated = false;
+	private static boolean alreadySorted = false;
+
+	public static List<RecipeHolder<MixingRecipe>> createRecipes(Level level) {
+		if (!alreadyGenerated) {
+			RECIPES = createRecipesImpl(level);
+			alreadyGenerated = true;
+		}
+
+		return RECIPES;
+	}
+
+	public static Map<Item, List<MixingRecipe>> sortRecipesByItem(Level level) {
+		if (!alreadySorted) {
+			SORTED = sortRecipesByItem(createRecipes(level));
+			alreadySorted = true;
+		}
+
+		return SORTED;
+	}
+
+	private static List<RecipeHolder<MixingRecipe>> createRecipesImpl(Level level) {
+		PotionBrewing potionBrewing = level.potionBrewing();
+
+		List<RecipeHolder<MixingRecipe>> mixingRecipes = new ArrayList<>();
 
 		int recipeIndex = 0;
 
@@ -44,48 +73,51 @@ public class PotionMixingRecipes {
 		for (Item container : SUPPORTED_CONTAINERS) {
 			ItemStack stack = new ItemStack(container);
 			supportedContainerStacks.add(stack);
-			if (PotionBrewing.ALLOWED_CONTAINER.test(stack)) {
+			if (((PotionBrewingAccessor) potionBrewing).create$isContainer(stack)) {
 				allowedSupportedContainers.add(container);
 			}
 		}
 
 		for (Item container : allowedSupportedContainers) {
 			BottleType bottleType = PotionFluidHandler.bottleTypeFromItem(container);
-			for (PotionBrewing.Mix<Potion> mix : PotionBrewing.POTION_MIXES) {
-				FluidStack fromFluid = PotionFluidHandler.getFluidFromPotion(mix.from.get(), bottleType, 1000);
-				FluidStack toFluid = PotionFluidHandler.getFluidFromPotion(mix.to.get(), bottleType, 1000);
+			for (PotionBrewing.Mix<Potion> mix : ((PotionBrewingAccessor) potionBrewing).create$getPotionMixes()) {
+				FluidStack fromFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(mix.from()), Optional.empty(), mix.from().value().getEffects()), bottleType, 1000);
+				FluidStack toFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(mix.to()), Optional.empty(), mix.to().value().getEffects()), bottleType, 1000);
 
-				mixingRecipes.add(createRecipe("potion_mixing_vanilla_" + recipeIndex++, mix.ingredient, fromFluid, toFluid));
+				mixingRecipes.add(createRecipe("potion_mixing_vanilla_" + recipeIndex++, mix.ingredient(), fromFluid, toFluid));
 			}
 		}
 
-		for (PotionBrewing.Mix<Item> mix : PotionBrewing.CONTAINER_MIXES) {
-			Item from = mix.from.get();
+		for (PotionBrewing.Mix<Item> mix : ((PotionBrewingAccessor) potionBrewing).create$getContainerMixes()) {
+			Item from = mix.from().value();
 			if (!allowedSupportedContainers.contains(from)) {
 				continue;
 			}
-			Item to = mix.to.get();
+			Item to = mix.to().value();
 			if (!allowedSupportedContainers.contains(to)) {
 				continue;
 			}
 			BottleType fromBottleType = PotionFluidHandler.bottleTypeFromItem(from);
 			BottleType toBottleType = PotionFluidHandler.bottleTypeFromItem(to);
-			Ingredient ingredient = mix.ingredient;
+			Ingredient ingredient = mix.ingredient();
 
-			for (Potion potion : ForgeRegistries.POTIONS.getValues()) {
-				if (potion == Potions.EMPTY) {
+			for (Map.Entry<ResourceKey<Potion>, Potion> potionEntry : BuiltInRegistries.POTION.entrySet()) {
+				Potion potion = potionEntry.getValue();
+
+				// FIXME 1.21: checkover
+				if (potion == Potions.WATER) {
 					continue;
 				}
 
-				FluidStack fromFluid = PotionFluidHandler.getFluidFromPotion(potion, fromBottleType, 1000);
-				FluidStack toFluid = PotionFluidHandler.getFluidFromPotion(potion, toBottleType, 1000);
+				FluidStack fromFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(BuiltInRegistries.POTION.wrapAsHolder(potion)), Optional.empty(), potion.getEffects()), fromBottleType, 1000);
+				FluidStack toFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(BuiltInRegistries.POTION.wrapAsHolder(potion)), Optional.empty(), potion.getEffects()), toBottleType, 1000);
 
 				mixingRecipes.add(createRecipe("potion_mixing_vanilla_" + recipeIndex++, ingredient, fromFluid, toFluid));
 			}
 		}
 
 		recipeIndex = 0;
-		for (IBrewingRecipe recipe : BrewingRecipeRegistry.getRecipes()) {
+		for (IBrewingRecipe recipe : potionBrewing.getRecipes()) {
 			if (recipe instanceof BrewingRecipe recipeImpl) {
 				ItemStack output = recipeImpl.getOutput();
 				if (!SUPPORTED_CONTAINERS.contains(output.getItem())) {
@@ -116,25 +148,28 @@ public class PotionMixingRecipes {
 		return mixingRecipes;
 	}
 
-	private static MixingRecipe createRecipe(String id, Ingredient ingredient, FluidStack fromFluid, FluidStack toFluid) {
-		return new ProcessingRecipeBuilder<>(MixingRecipe::new,
-				Create.asResource(id)).require(ingredient)
+	private static RecipeHolder<MixingRecipe> createRecipe(String id, Ingredient ingredient, FluidStack fromFluid, FluidStack toFluid) {
+		ResourceLocation recipeId = Create.asResource(id);
+		MixingRecipe recipe = new ProcessingRecipeBuilder<>(MixingRecipe::new, recipeId)
+				.require(ingredient)
 				.require(FluidIngredient.fromFluidStack(fromFluid))
 				.output(toFluid)
 				.requiresHeat(HeatCondition.HEATED)
 				.build();
+
+		return new RecipeHolder<>(recipeId, recipe);
 	}
 
-	private static Map<Item, List<MixingRecipe>> sortRecipesByItem(List<MixingRecipe> all) {
+	private static Map<Item, List<MixingRecipe>> sortRecipesByItem(List<RecipeHolder<MixingRecipe>> all) {
 		Map<Item, List<MixingRecipe>> byItem = new HashMap<>();
 		Set<Item> processedItems = new HashSet<>();
-		for (MixingRecipe recipe : all) {
-			for (Ingredient ingredient : recipe.getIngredients()) {
+		for (RecipeHolder<MixingRecipe> recipe : all) {
+			for (Ingredient ingredient : recipe.value().getIngredients()) {
 				for (ItemStack itemStack : ingredient.getItems()) {
 					Item item = itemStack.getItem();
 					if (processedItems.add(item)) {
 						byItem.computeIfAbsent(item, i -> new ArrayList<>())
-							.add(recipe);
+							.add(recipe.value());
 					}
 				}
 			}

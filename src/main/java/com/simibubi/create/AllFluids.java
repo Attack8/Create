@@ -12,7 +12,6 @@ import org.joml.Vector3f;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.simibubi.create.AllTags.AllFluidTags;
 import com.simibubi.create.content.decoration.palettes.AllPaletteStoneTypes;
 import com.simibubi.create.content.fluids.VirtualFluid;
 import com.simibubi.create.content.fluids.potion.PotionFluid;
@@ -32,13 +31,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fluids.FluidInteractionRegistry;
-import net.minecraftforge.fluids.FluidInteractionRegistry.InteractionInformation;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry.InteractionInformation;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public class AllFluids {
 	static {
@@ -52,10 +52,10 @@ public class AllFluids {
 
 	public static final FluidEntry<VirtualFluid> TEA = REGISTRATE.virtualFluid("tea")
 		.lang("Builder's Tea")
-		.tag(AllTags.forgeFluidTag("tea"))
+		.tag(AllTags.commonFluidTag("teas"))
 		.register();
 
-	public static final FluidEntry<ForgeFlowingFluid.Flowing> HONEY =
+	public static final FluidEntry<BaseFlowingFluid.Flowing> HONEY =
 		REGISTRATE.standardFluid("honey",
 				SolidRenderedPlaceableFluidType.create(0xEAAE2F,
 					() -> 1f / 8f * AllConfigs.client().honeyTransparencyMultiplier.getF()))
@@ -66,19 +66,19 @@ public class AllFluids {
 				.tickRate(25)
 				.slopeFindDistance(3)
 				.explosionResistance(100f))
-			.tag(AllFluidTags.HONEY.tag)
-			.source(ForgeFlowingFluid.Source::new) // TODO: remove when Registrate fixes FluidBuilder
+			.tag(Tags.Fluids.HONEY)
+			.source(BaseFlowingFluid.Source::new) // TODO: remove when Registrate fixes FluidBuilder
 			.bucket()
-			.tag(AllTags.forgeItemTag("buckets/honey"))
+			.tag(AllTags.commonItemTag("buckets/honey"))
 			.build()
 			.register();
 
-	public static final FluidEntry<ForgeFlowingFluid.Flowing> CHOCOLATE =
+	public static final FluidEntry<BaseFlowingFluid.Flowing> CHOCOLATE =
 		REGISTRATE.standardFluid("chocolate",
 			SolidRenderedPlaceableFluidType.create(0x622020,
 				() -> 1f / 32f * AllConfigs.client().chocolateTransparencyMultiplier.getF()))
 			.lang("Chocolate")
-			.tag(AllTags.forgeFluidTag("chocolate"))
+			.tag(AllTags.commonFluidTag("chocolates"))
 			.properties(b -> b.viscosity(1500)
 				.density(1400))
 			.fluidProperties(p -> p.levelDecreasePerBlock(2)
@@ -92,7 +92,7 @@ public class AllFluids {
 	public static void register() {}
 
 	public static void registerFluidInteractions() {
-		FluidInteractionRegistry.addInteraction(ForgeMod.LAVA_TYPE.get(), new InteractionInformation(
+		FluidInteractionRegistry.addInteraction(NeoForgeMod.LAVA_TYPE.value(), new InteractionInformation(
 				HONEY.get().getFluidType(),
 				fluidState -> {
 					if (fluidState.isSource()) {
@@ -105,7 +105,7 @@ public class AllFluids {
 				}
 		));
 
-		FluidInteractionRegistry.addInteraction(ForgeMod.LAVA_TYPE.get(), new InteractionInformation(
+		FluidInteractionRegistry.addInteraction(NeoForgeMod.LAVA_TYPE.value(), new InteractionInformation(
 				CHOCOLATE.get().getFluidType(),
 				fluidState -> {
 					if (fluidState.isSource()) {

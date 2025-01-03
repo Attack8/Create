@@ -25,6 +25,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.utility.Iterate;
+import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.levelWrappers.SchematicLevel;
 import net.createmod.ponder.api.level.PonderLevel;
@@ -34,6 +35,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
@@ -43,8 +45,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEntityBehaviour {
 
@@ -79,7 +81,7 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 	}
 
 	@Override
-	public void write(CompoundTag nbt, boolean clientPacket) {
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		nbt.putUUID("Id", id);
 		nbt.put("TargetTrack", NbtUtils.writeBlockPos(targetTrack));
 		nbt.putBoolean("Ortho", orthogonal);
@@ -97,13 +99,13 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 				.subtract(getPos())));
 			nbt.put("Bezier", bezierNbt);
 		}
-		super.write(nbt, clientPacket);
+		super.write(nbt, registries, clientPacket);
 	}
 
 	@Override
-	public void read(CompoundTag nbt, boolean clientPacket) {
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		id = nbt.contains("Id") ? nbt.getUUID("Id") : UUID.randomUUID();
-		targetTrack = NbtUtils.readBlockPos(nbt.getCompound("TargetTrack"));
+		targetTrack = NbtUtils.readBlockPos(nbt, "TargetTrack").orElseThrow();
 		targetDirection = nbt.getBoolean("TargetDirection") ? AxisDirection.POSITIVE : AxisDirection.NEGATIVE;
 		orthogonal = nbt.getBoolean("Ortho");
 		if (nbt.contains("PrevAxis"))
@@ -116,11 +118,11 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 			edgePoint = null;
 		if (nbt.contains("Bezier")) {
 			CompoundTag bezierNbt = nbt.getCompound("Bezier");
-			BlockPos key = NbtUtils.readBlockPos(bezierNbt.getCompound("Key"));
-			targetBezier = new BezierTrackPointLocation(bezierNbt.contains("FromStack") ? key : key.offset(getPos()),
+			BlockPos key = NbtUtils.readBlockPos(bezierNbt, "Key").orElseThrow();
+			targetBezier = new BezierTrackPointLocation(key.offset(getPos()),
 				bezierNbt.getInt("Segment"));
 		}
-		super.read(nbt, clientPacket);
+		super.read(nbt, registries, clientPacket);
 	}
 
 	@Nullable
@@ -220,7 +222,7 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 		}
 
 		if (data != null)
-			point.read(data, true, DimensionPalette.read(data));
+			point.read(data, level.registryAccess(), true, DimensionPalette.read(data));
 
 		point.setId(id);
 		boolean reverseEdge = front || point instanceof SingleBlockEntityEdgePoint;

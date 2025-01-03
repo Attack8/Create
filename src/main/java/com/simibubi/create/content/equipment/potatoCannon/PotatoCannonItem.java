@@ -28,14 +28,19 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.TooltipFlag;
@@ -46,9 +51,9 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmPoseItem {
 
@@ -56,7 +61,7 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 	public static final int MAX_DAMAGE = 100;
 
 	public PotatoCannonItem(Properties properties) {
-		super(properties.defaultDurability(MAX_DAMAGE));
+		super(properties.durability(MAX_DAMAGE));
 	}
 
 	@Override
@@ -65,18 +70,18 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 	}
 
 	@Override
-	public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-		if (enchantment == Enchantments.POWER_ARROWS)
+	public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+		if (enchantment.is(Enchantments.POWER))
 			return true;
-		if (enchantment == Enchantments.PUNCH_ARROWS)
+		if (enchantment.is(Enchantments.PUNCH))
 			return true;
-		if (enchantment == Enchantments.FLAMING_ARROWS)
+		if (enchantment.is(Enchantments.FLAME))
 			return true;
-		if (enchantment == Enchantments.MOB_LOOTING)
+		if (enchantment.is(Enchantments.LOOTING))
 			return true;
-		if (enchantment == AllEnchantments.POTATO_RECOVERY.get())
+		if (enchantment.is(AllEnchantments.POTATO_RECOVERY))
 			return true;
-		return super.canApplyAtEnchantingTable(stack, enchantment);
+		return super.supportsEnchantment(stack, enchantment);
 	}
 
 	@Override
@@ -106,6 +111,12 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 	public boolean isCannon(ItemStack stack) {
 		return stack.getItem() instanceof PotatoCannonItem;
 	}
+
+	@Override
+	protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float velocity, float inaccuracy, float angle, @Nullable LivingEntity target) {}
+
+	@Override
+	protected void shoot(ServerLevel level, LivingEntity shooter, InteractionHand hand, ItemStack weapon, List<ItemStack> projectileItems, float velocity, float inaccuracy, boolean isCrit, @Nullable LivingEntity target) {}
 
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
@@ -169,7 +180,7 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 			}
 
 			if (!BacktankUtil.canAbsorbDamage(player, maxUses()))
-				stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
+				stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
 
 			Integer cooldown =
 				findAmmoInInventory(world, player, stack).flatMap(PotatoProjectileTypeManager::getTypeForStack)
@@ -178,7 +189,7 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 
 			ShootableGadgetItemMethods.applyCooldown(player, stack, hand, this::isCannon, cooldown);
 			ShootableGadgetItemMethods.sendPackets(player,
-				b -> new PotatoCannonPacket(barrelPos, lookVec.normalize(), itemStack, hand, soundPitch, b));
+				b -> new PotatoCannonPacket(barrelPos, hand, b, soundPitch, lookVec.normalize(), itemStack));
 			return InteractionResultHolder.success(stack);
 		})
 			.orElse(InteractionResultHolder.pass(stack));
@@ -214,48 +225,53 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void appendHoverText(ItemStack stack, Level world, List<Component> tooltip, TooltipFlag flag) {
-		int power = stack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
-		int punch = stack.getEnchantmentLevel(Enchantments.PUNCH_ARROWS);
-		final float additionalDamageMult = 1 + power * .2f;
-		final float additionalKnockback = punch * .5f;
+	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+		HolderLookup.Provider registries = context.registries();
+		// FIXME 1.21: checkover
+		if (registries != null) {
+			HolderLookup.RegistryLookup<Enchantment> enchantLookup = registries.lookupOrThrow(Registries.ENCHANTMENT);
+			int power = stack.getEnchantmentLevel(enchantLookup.get(Enchantments.POWER).orElseThrow().getDelegate());
+			int punch = stack.getEnchantmentLevel(enchantLookup.get(Enchantments.PUNCH).orElseThrow().getDelegate());
+			final float additionalDamageMult = 1 + power * .2f;
+			final float additionalKnockback = punch * .5f;
 
-		getAmmoforPreview(stack).ifPresent(ammo -> {
-			String _attack = "potato_cannon.ammo.attack_damage";
-			String _reload = "potato_cannon.ammo.reload_ticks";
-			String _knockback = "potato_cannon.ammo.knockback";
+			getAmmoforPreview(stack).ifPresent(ammo -> {
+				String _attack = "potato_cannon.ammo.attack_damage";
+				String _reload = "potato_cannon.ammo.reload_ticks";
+				String _knockback = "potato_cannon.ammo.knockback";
 
-			tooltip.add(Components.immutableEmpty());
-			tooltip.add(Components.translatable(ammo.getDescriptionId()).append(Components.literal(":"))
-				.withStyle(ChatFormatting.GRAY));
-			PotatoCannonProjectileType type = PotatoProjectileTypeManager.getTypeForStack(ammo)
-				.get();
-			MutableComponent spacing = Components.literal(" ");
-			ChatFormatting green = ChatFormatting.GREEN;
-			ChatFormatting darkGreen = ChatFormatting.DARK_GREEN;
+				tooltip.add(Components.immutableEmpty());
+				tooltip.add(Components.translatable(ammo.getDescriptionId()).append(Components.literal(":"))
+						.withStyle(ChatFormatting.GRAY));
+				PotatoCannonProjectileType type = PotatoProjectileTypeManager.getTypeForStack(ammo)
+						.get();
+				MutableComponent spacing = Components.literal(" ");
+				ChatFormatting green = ChatFormatting.GREEN;
+				ChatFormatting darkGreen = ChatFormatting.DARK_GREEN;
 
-			float damageF = type.getDamage() * additionalDamageMult;
-			MutableComponent damage = Components.literal(
-				damageF == Mth.floor(damageF) ? "" + Mth.floor(damageF) : "" + damageF);
-			MutableComponent reloadTicks = Components.literal("" + type.getReloadTicks());
-			MutableComponent knockback =
-				Components.literal("" + (type.getKnockback() + additionalKnockback));
+				float damageF = type.getDamage() * additionalDamageMult;
+				MutableComponent damage = Components.literal(
+						damageF == Mth.floor(damageF) ? "" + Mth.floor(damageF) : "" + damageF);
+				MutableComponent reloadTicks = Components.literal("" + type.getReloadTicks());
+				MutableComponent knockback =
+						Components.literal("" + (type.getKnockback() + additionalKnockback));
 
-			damage = damage.withStyle(additionalDamageMult > 1 ? green : darkGreen);
-			knockback = knockback.withStyle(additionalKnockback > 0 ? green : darkGreen);
-			reloadTicks = reloadTicks.withStyle(darkGreen);
+				damage = damage.withStyle(additionalDamageMult > 1 ? green : darkGreen);
+				knockback = knockback.withStyle(additionalKnockback > 0 ? green : darkGreen);
+				reloadTicks = reloadTicks.withStyle(darkGreen);
 
-			tooltip.add(spacing.plainCopy()
-				.append(CreateLang.translateDirect(_attack, damage)
-					.withStyle(darkGreen)));
-			tooltip.add(spacing.plainCopy()
-				.append(CreateLang.translateDirect(_reload, reloadTicks)
-					.withStyle(darkGreen)));
-			tooltip.add(spacing.plainCopy()
-				.append(CreateLang.translateDirect(_knockback, knockback)
-					.withStyle(darkGreen)));
-		});
-		super.appendHoverText(stack, world, tooltip, flag);
+				tooltip.add(spacing.plainCopy()
+						.append(CreateLang.translateDirect(_attack, damage)
+								.withStyle(darkGreen)));
+				tooltip.add(spacing.plainCopy()
+						.append(CreateLang.translateDirect(_reload, reloadTicks)
+								.withStyle(darkGreen)));
+				tooltip.add(spacing.plainCopy()
+						.append(CreateLang.translateDirect(_knockback, knockback)
+								.withStyle(darkGreen)));
+			});
+		}
+		super.appendHoverText(stack, context, tooltip, flag);
 	}
 
 	@Override

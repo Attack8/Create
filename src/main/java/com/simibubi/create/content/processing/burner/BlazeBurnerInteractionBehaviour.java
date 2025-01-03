@@ -73,14 +73,14 @@ public class BlazeBurnerInteractionBehaviour extends MovingInteractionBehaviour 
 				player.displayClientMessage(CreateLang.translateDirect(
 					train.runtime.isAutoSchedule ? "schedule.auto_removed_from_train" : "schedule.removed_from_train"),
 					true);
-				player.setItemInHand(activeHand, train.runtime.returnSchedule());
+				player.setItemInHand(activeHand, train.runtime.returnSchedule(player.registryAccess()));
 				return true;
 			}
 
 			if (!AllItems.SCHEDULE.isIn(itemInHand))
 				return true;
 
-			Schedule schedule = ScheduleItem.getSchedule(itemInHand);
+			Schedule schedule = ScheduleItem.getSchedule(player.registryAccess(), itemInHand);
 			if (schedule == null)
 				return false;
 

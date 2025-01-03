@@ -4,29 +4,67 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.createmod.catnip.platform.CatnipServices;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.core.Holder;
-import net.minecraft.network.FriendlyByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipLargerStreamCodecs;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class PotatoCannonProjectileType {
+	public static Codec<PotatoCannonProjectileType> CODEC = RecordCodecBuilder.create(i -> i.group(
+			BuiltInRegistries.ITEM.byNameCodec().listOf().fieldOf("items").forGetter(p -> p.getItems()),
+			Codec.INT.optionalFieldOf("reload_ticks").forGetter(p -> Optional.of(p.getReloadTicks())),
+			Codec.INT.optionalFieldOf("damage").forGetter(p -> Optional.of(p.getDamage())),
+			Codec.INT.optionalFieldOf("split").forGetter(p -> Optional.of(p.getSplit())),
+			Codec.FLOAT.optionalFieldOf("knockback").forGetter(p -> Optional.of(p.getKnockback())),
+			Codec.FLOAT.optionalFieldOf("drag").forGetter(p -> Optional.of(p.getDrag())),
+			Codec.FLOAT.optionalFieldOf("velocity_multiplier").forGetter(p -> Optional.of(p.getVelocityMultiplier())),
+			Codec.FLOAT.optionalFieldOf("gravity_multiplier").forGetter(p -> Optional.of(p.getGravityMultiplier())),
+			Codec.FLOAT.optionalFieldOf("sound_pitch").forGetter(p -> Optional.of(p.getSoundPitch())),
+			Codec.BOOL.optionalFieldOf("sticky").forGetter(p -> Optional.of(p.isSticky()))
+	).apply(i, (items, reloadTicks, damage, split, knockback, drag, velocityMultiplier, gravityMultiplier, soundPitch, sticky) -> {
+		PotatoCannonProjectileType type = new PotatoCannonProjectileType();
+		type.items.addAll(items);
+		reloadTicks.ifPresent(r -> type.reloadTicks = r);
+		damage.ifPresent(r -> type.damage = r);
+		split.ifPresent(r -> type.split = r);
+		knockback.ifPresent(r -> type.knockback = r);
+		drag.ifPresent(r -> type.drag = r);
+		velocityMultiplier.ifPresent(r -> type.velocityMultiplier = r);
+		gravityMultiplier.ifPresent(r -> type.gravityMultiplier = r);
+		soundPitch.ifPresent(r -> type.soundPitch = r);
+		sticky.ifPresent(r -> type.sticky = r);
 
-	private List<Supplier<Item>> items = new ArrayList<>();
+		return type;
+	}));
+
+	public static StreamCodec<RegistryFriendlyByteBuf, PotatoCannonProjectileType> STREAM_CODEC = CatnipLargerStreamCodecs.composite(
+			ByteBufCodecs.registry(Registries.ITEM).apply(ByteBufCodecs.list()), t -> t.items,
+			ByteBufCodecs.INT, PotatoCannonProjectileType::getReloadTicks,
+			ByteBufCodecs.INT, PotatoCannonProjectileType::getDamage,
+			ByteBufCodecs.INT, PotatoCannonProjectileType::getSplit,
+			ByteBufCodecs.FLOAT, PotatoCannonProjectileType::getKnockback,
+			ByteBufCodecs.FLOAT, PotatoCannonProjectileType::getDrag,
+			ByteBufCodecs.FLOAT, PotatoCannonProjectileType::getVelocityMultiplier,
+			ByteBufCodecs.FLOAT, PotatoCannonProjectileType::getGravityMultiplier,
+			ByteBufCodecs.FLOAT, PotatoCannonProjectileType::getSoundPitch,
+			ByteBufCodecs.BOOL, PotatoCannonProjectileType::isSticky,
+			PotatoCannonProjectileType::new
+	);
+
+	private List<Item> items = new ArrayList<>();
 
 	private int reloadTicks = 10;
 	private int damage = 1;
@@ -43,10 +81,24 @@ public class PotatoCannonProjectileType {
 	private Predicate<EntityHitResult> onEntityHit = e -> false; // True if shouldn't recover projectile
 	private BiPredicate<LevelAccessor, BlockHitResult> onBlockHit = (w, ray) -> false;
 
-	protected PotatoCannonProjectileType() {
+	protected PotatoCannonProjectileType() {}
+
+	public PotatoCannonProjectileType(List<Item> items, int reloadTicks, int damage, int split, float knockback,
+									  float drag, float velocityMultiplier, float gravityMultiplier, float soundPitch,
+									  boolean sticky) {
+		this.items = items;
+		this.reloadTicks = reloadTicks;
+		this.damage = damage;
+		this.split = split;
+		this.knockback = knockback;
+		this.drag = drag;
+		this.velocityMultiplier = velocityMultiplier;
+		this.gravityMultiplier = gravityMultiplier;
+		this.soundPitch = soundPitch;
+		this.sticky = sticky;
 	}
 
-	public List<Supplier<Item>> getItems() {
+	public List<Item> getItems() {
 		return items;
 	}
 
@@ -100,90 +152,6 @@ public class PotatoCannonProjectileType {
 
 	public boolean onBlockHit(LevelAccessor world, BlockHitResult ray) {
 		return onBlockHit.test(world, ray);
-	}
-
-	public static PotatoCannonProjectileType fromJson(JsonObject object) {
-		PotatoCannonProjectileType type = new PotatoCannonProjectileType();
-		try {
-			JsonElement itemsElement = object.get("items");
-			if (itemsElement != null && itemsElement.isJsonArray()) {
-				for (JsonElement element : itemsElement.getAsJsonArray()) {
-					if (element.isJsonPrimitive()) {
-						JsonPrimitive primitive = element.getAsJsonPrimitive();
-						if (primitive.isString()) {
-							try {
-								Optional<Holder.Reference<Item>> reference = ForgeRegistries.ITEMS.getDelegate(new ResourceLocation(primitive.getAsString()));
-								if (reference.isPresent()) {
-									type.items.add(reference.get());
-								}
-							} catch (ResourceLocationException e) {
-								//
-							}
-						}
-					}
-				}
-			}
-
-			parseJsonPrimitive(object, "reload_ticks", JsonPrimitive::isNumber, primitive -> type.reloadTicks = primitive.getAsInt());
-			parseJsonPrimitive(object, "damage", JsonPrimitive::isNumber, primitive -> type.damage = primitive.getAsInt());
-			parseJsonPrimitive(object, "split", JsonPrimitive::isNumber, primitive -> type.split = primitive.getAsInt());
-			parseJsonPrimitive(object, "knockback", JsonPrimitive::isNumber, primitive -> type.knockback = primitive.getAsFloat());
-			parseJsonPrimitive(object, "drag", JsonPrimitive::isNumber, primitive -> type.drag = primitive.getAsFloat());
-			parseJsonPrimitive(object, "velocity_multiplier", JsonPrimitive::isNumber, primitive -> type.velocityMultiplier = primitive.getAsFloat());
-			parseJsonPrimitive(object, "gravity_multiplier", JsonPrimitive::isNumber, primitive -> type.gravityMultiplier = primitive.getAsFloat());
-			parseJsonPrimitive(object, "sound_pitch", JsonPrimitive::isNumber, primitive -> type.soundPitch = primitive.getAsFloat());
-			parseJsonPrimitive(object, "sticky", JsonPrimitive::isBoolean, primitive -> type.sticky = primitive.getAsBoolean());
-		} catch (Exception e) {
-			//
-		}
-		return type;
-	}
-
-	private static void parseJsonPrimitive(JsonObject object, String key, Predicate<JsonPrimitive> predicate, Consumer<JsonPrimitive> consumer) {
-		JsonElement element = object.get(key);
-		if (element != null && element.isJsonPrimitive()) {
-			JsonPrimitive primitive = element.getAsJsonPrimitive();
-			if (predicate.test(primitive)) {
-				consumer.accept(primitive);
-			}
-		}
-	}
-
-	public static void toBuffer(PotatoCannonProjectileType type, FriendlyByteBuf buffer) {
-		buffer.writeVarInt(type.items.size());
-		for (Supplier<Item> delegate : type.items) {
-			buffer.writeResourceLocation(CatnipServices.REGISTRIES.getKeyOrThrow(delegate.get()));
-		}
-		buffer.writeInt(type.reloadTicks);
-		buffer.writeInt(type.damage);
-		buffer.writeInt(type.split);
-		buffer.writeFloat(type.knockback);
-		buffer.writeFloat(type.drag);
-		buffer.writeFloat(type.velocityMultiplier);
-		buffer.writeFloat(type.gravityMultiplier);
-		buffer.writeFloat(type.soundPitch);
-		buffer.writeBoolean(type.sticky);
-	}
-
-	public static PotatoCannonProjectileType fromBuffer(FriendlyByteBuf buffer) {
-		PotatoCannonProjectileType type = new PotatoCannonProjectileType();
-		int size = buffer.readVarInt();
-		for (int i = 0; i < size; i++) {
-			Optional<Holder.Reference<Item>> reference = ForgeRegistries.ITEMS.getDelegate(buffer.readResourceLocation());
-			if (reference.isPresent()) {
-				type.items.add(reference.get());
-			}
-		}
-		type.reloadTicks = buffer.readInt();
-		type.damage = buffer.readInt();
-		type.split = buffer.readInt();
-		type.knockback = buffer.readFloat();
-		type.drag = buffer.readFloat();
-		type.velocityMultiplier = buffer.readFloat();
-		type.gravityMultiplier = buffer.readFloat();
-		type.soundPitch = buffer.readFloat();
-		type.sticky = buffer.readBoolean();
-		return type;
 	}
 
 	public static class Builder {
@@ -278,7 +246,7 @@ public class PotatoCannonProjectileType {
 
 		public Builder addItems(ItemLike... items) {
 			for (ItemLike provider : items)
-				result.items.add(ForgeRegistries.ITEMS.getDelegateOrThrow(provider.asItem()));
+				result.items.add(provider.asItem());
 			return this;
 		}
 
@@ -294,5 +262,4 @@ public class PotatoCannonProjectileType {
 		}
 
 	}
-
 }

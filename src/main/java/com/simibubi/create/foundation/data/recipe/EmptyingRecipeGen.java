@@ -1,13 +1,16 @@
 package com.simibubi.create.foundation.data.recipe;
 
+import java.util.concurrent.CompletableFuture;
+
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllRecipeTypes;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class EmptyingRecipeGen extends ProcessingRecipeGen {
 
@@ -26,7 +29,7 @@ public class EmptyingRecipeGen extends ProcessingRecipeGen {
 			.output(Items.GLASS_BOTTLE)),
 
 		FD_MILK = create(Mods.FD.recipeId("milk_bottle"), b -> b.require(Mods.FD, "milk_bottle")
-			.output(ForgeMod.MILK.get(), 250)
+			.output(NeoForgeMod.MILK.get(), 250)
 			.output(Items.GLASS_BOTTLE)
 			.whenModLoaded(Mods.FD.getId())),
 
@@ -36,14 +39,14 @@ public class EmptyingRecipeGen extends ProcessingRecipeGen {
 				.whenModLoaded(Mods.AM.getId())),
 
 		NEO_MILK = create(Mods.NEA.recipeId("milk_bottle"), b -> b.require(Mods.FD, "milk_bottle")
-				.output(ForgeMod.MILK.get(), 250)
+				.output(NeoForgeMod.MILK.get(), 250)
 				.output(Items.GLASS_BOTTLE)
 				.whenModLoaded(Mods.NEA.getId()))
 
 	;
 
-	public EmptyingRecipeGen(PackOutput output) {
-		super(output);
+	public EmptyingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries);
 	}
 
 	@Override

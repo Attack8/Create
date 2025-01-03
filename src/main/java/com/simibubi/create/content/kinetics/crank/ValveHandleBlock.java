@@ -12,6 +12,7 @@ import net.createmod.catnip.utility.Couple;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -22,30 +23,28 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 @ParametersAreNonnullByDefault
 @EventBusSubscriber
 public class ValveHandleBlock extends HandCrankBlock {
 
 	private final DyeColor color;
-	private final boolean inCreativeTab;
 
 	public static ValveHandleBlock copper(Properties properties) {
-		return new ValveHandleBlock(properties, null, true);
+		return new ValveHandleBlock(properties, null);
 	}
 
 	public static ValveHandleBlock dyed(Properties properties, DyeColor color) {
-		return new ValveHandleBlock(properties, color, false);
+		return new ValveHandleBlock(properties, color);
 	}
 
-	private ValveHandleBlock(Properties properties, DyeColor color, boolean inCreativeTab) {
+	private ValveHandleBlock(Properties properties, DyeColor color) {
 		super(properties);
 		this.color = color;
-		this.inCreativeTab = inCreativeTab;
 	}
 
 	@Override
@@ -99,9 +98,8 @@ public class ValveHandleBlock extends HandCrankBlock {
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-		BlockHitResult hit) {
-		return InteractionResult.PASS;
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 	}
 
 	@Override

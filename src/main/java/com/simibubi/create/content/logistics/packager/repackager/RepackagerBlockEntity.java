@@ -13,8 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class RepackagerBlockEntity extends PackagerBlockEntity {
 
@@ -58,7 +58,7 @@ public class RepackagerBlockEntity extends PackagerBlockEntity {
 
 	@Override
 	public void recheckIfLinksPresent() {}
-	
+
 	@Override
 	public boolean redstoneModeActive() {
 		return true;

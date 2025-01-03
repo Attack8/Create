@@ -3,10 +3,11 @@ package com.simibubi.create.content.contraptions.behaviour.dispenser;
 import javax.annotation.Nullable;
 
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
-import com.simibubi.create.foundation.mixin.accessor.AbstractProjectileDispenseBehaviorAccessor;
+import com.simibubi.create.foundation.mixin.accessor.ProjectileDispenseBehaviorAccessor;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -20,7 +21,7 @@ public abstract class MovedProjectileDispenserBehaviour extends MovedDefaultDisp
 		double x = pos.getX() + facing.x * .7 + .5;
 		double y = pos.getY() + facing.y * .7 + .5;
 		double z = pos.getZ() + facing.z * .7 + .5;
-		Projectile projectile = this.getProjectileEntity(context.world, x, y, z, itemStack.copy());
+		Projectile projectile = this.getProjectileEntity(context.world, x, y, z, itemStack.copy(), getClosestFacingDirection(facing));
 		if (projectile == null)
 			return itemStack;
 		Vec3 effectiveMovementVec = facing.scale(getProjectileVelocity()).add(context.motion);
@@ -36,7 +37,7 @@ public abstract class MovedProjectileDispenserBehaviour extends MovedDefaultDisp
 	}
 
 	@Nullable
-	protected abstract Projectile getProjectileEntity(Level world, double x, double y, double z, ItemStack itemStack);
+	protected abstract Projectile getProjectileEntity(Level world, double x, double y, double z, ItemStack itemStack, Direction facing);
 
 	protected float getProjectileInaccuracy() {
 		return 6.0F;
@@ -46,22 +47,22 @@ public abstract class MovedProjectileDispenserBehaviour extends MovedDefaultDisp
 		return 1.1F;
 	}
 
-	public static MovedProjectileDispenserBehaviour of(AbstractProjectileDispenseBehavior vanillaBehaviour) {
-		AbstractProjectileDispenseBehaviorAccessor accessor = (AbstractProjectileDispenseBehaviorAccessor) vanillaBehaviour;
+	public static MovedProjectileDispenserBehaviour of(ProjectileDispenseBehavior vanillaBehaviour) {
+		ProjectileDispenseBehaviorAccessor accessor = (ProjectileDispenseBehaviorAccessor) vanillaBehaviour;
 		return new MovedProjectileDispenserBehaviour() {
 			@Override
-			protected Projectile getProjectileEntity(Level world, double x, double y, double z, ItemStack itemStack) {
-				return accessor.create$callGetProjectile(world, new SimplePos(x, y, z), itemStack);
+			protected Projectile getProjectileEntity(Level world, double x, double y, double z, ItemStack itemStack, Direction facing) {
+				return accessor.create$getProjectileItem().asProjectile(world, new SimplePos(x, y, z), itemStack, facing);
 			}
 
 			@Override
 			protected float getProjectileInaccuracy() {
-				return accessor.create$callGetUncertainty();
+				return accessor.create$getDispenseConfig().uncertainty();
 			}
 
 			@Override
 			protected float getProjectileVelocity() {
-				return accessor.create$callGetPower();
+				return accessor.create$getDispenseConfig().power();
 			}
 		};
 	}

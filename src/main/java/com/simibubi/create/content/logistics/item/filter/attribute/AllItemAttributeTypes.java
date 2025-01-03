@@ -2,7 +2,6 @@ package com.simibubi.create.content.logistics.item.filter.attribute;
 
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes.HauntingType;
 import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes.SplashingType;
@@ -23,47 +22,43 @@ import com.simibubi.create.content.logistics.item.filter.attribute.attributes.In
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.InTagAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ItemNameAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ShulkerFillLevelAttribute;
-import com.simibubi.create.content.logistics.item.filter.attribute.attributes.astralsorcery.AstralSorceryAmuletAttribute;
-import com.simibubi.create.content.logistics.item.filter.attribute.attributes.astralsorcery.AstralSorceryAttunementAttribute;
-import com.simibubi.create.content.logistics.item.filter.attribute.attributes.astralsorcery.AstralSorceryCrystalAttribute;
-import com.simibubi.create.content.logistics.item.filter.attribute.attributes.astralsorcery.AstralSorceryPerkGemAttribute;
-import com.simibubi.create.content.logistics.item.filter.attribute.legacydeserializers.AllItemAttributeLegacyDeserializers;
 
-import net.minecraft.world.Container;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
-import net.minecraftforge.registries.DeferredRegister;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 // TODO - Documentation
 public class AllItemAttributeTypes {
-	private static final DeferredRegister<ItemAttributeType> REGISTER = DeferredRegister.create(AllRegistries.Keys.ITEM_ATTRIBUTE_TYPES, Create.ID);
-	private static final RecipeWrapper RECIPE_WRAPPER = new RecipeWrapper(new ItemStackHandler(1));
+	private static final DeferredRegister<ItemAttributeType> REGISTER = DeferredRegister.create(AllRegistries.ITEM_ATTRIBUTE_TYPES, Create.ID);
 
-	public static final Supplier<ItemAttributeType>
+	public static final Holder<ItemAttributeType>
 		PLACEABLE = singleton("placeable", s -> s.getItem() instanceof BlockItem),
-		CONSUMABLE = singleton("consumable", ItemStack::isEdible),
-		FLUID_CONTAINER = singleton("fluid_container", s -> s.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
-			.isPresent()),
+		CONSUMABLE = singleton("consumable", s -> s.has(DataComponents.FOOD)),
+		FLUID_CONTAINER = singleton("fluid_container", s -> s.getCapability(Capabilities.FluidHandler.ITEM) != null),
 		ENCHANTED = singleton("enchanted", ItemStack::isEnchanted),
 		MAX_ENCHANTED = singleton("max_enchanted", AllItemAttributeTypes::maxEnchanted),
-		RENAMED = singleton("renamed", ItemStack::hasCustomHoverName),
+		RENAMED = singleton("renamed", s -> s.has(DataComponents.CUSTOM_NAME)),
 		DAMAGED = singleton("damaged", ItemStack::isDamaged),
 		BADLY_DAMAGED = singleton("badly_damaged", s -> s.isDamaged() && (float) s.getDamageValue() / s.getMaxDamage() > 3 / 4f),
 		NOT_STACKABLE = singleton("not_stackable", ((Predicate<ItemStack>) ItemStack::isStackable).negate()),
-		EQUIPABLE = singleton("equipable", s -> LivingEntity.getEquipmentSlotForItem(s)
-			.getType() != EquipmentSlot.Type.HAND),
+		// TODO - Test this
+		EQUIPABLE = singleton("equipable", s -> {
+			Equipable equipable = Equipable.get(s);
+			EquipmentSlot.Type type = equipable != null ? equipable.getEquipmentSlot().getType() : EquipmentSlot.MAINHAND.getType();
+			return type != EquipmentSlot.Type.HAND;
+		}),
 		FURNACE_FUEL = singleton("furnace_fuel", AbstractFurnaceBlockEntity::isFuel),
 		WASHABLE = singleton("washable", (s, l) -> {
 			SplashingType type = AllFanProcessingTypes.SPLASHING.get();
@@ -89,46 +84,37 @@ public class AllItemAttributeTypes {
 		HAS_FLUID = register("has_fluid", new FluidContentsAttribute.Type()),
 		HAS_NAME = register("has_name", new ItemNameAttribute.Type()),
 		BOOK_AUTHOR = register("book_author", new BookAuthorAttribute.Type()),
-		BOOK_COPY = register("book_copy", new BookCopyAttribute.Type()),
+		BOOK_COPY = register("book_copy", new BookCopyAttribute.Type());
 
-		ASTRAL_AMULET = register("astral_amulet", new AstralSorceryAmuletAttribute.Type()),
-		ASTRAL_ATTUNMENT = register("astral_attunment", new AstralSorceryAttunementAttribute.Type()),
-		ASTRAL_CRYSTAL = register("astral_crystal", new AstralSorceryCrystalAttribute.Type()),
-		ASTRAL_PERK_GEM = register("astral_perk_gem", new AstralSorceryPerkGemAttribute.Type());
-
-	private static <T extends Recipe<Container>> boolean testRecipe(ItemStack s, Level w, RecipeType<T> type) {
-		RECIPE_WRAPPER.setItem(0, s.copy());
+		private static <T extends Recipe<SingleRecipeInput>> boolean testRecipe(ItemStack s, Level w, RecipeType<T> type) {
 		return w.getRecipeManager()
-			.getRecipeFor(type, RECIPE_WRAPPER, w)
-			.isPresent();
+				.getRecipeFor(type, new SingleRecipeInput(s.copy()), w)
+				.isPresent();
 	}
 
 	// TODO - Move away from stream()
 	private static boolean maxEnchanted(ItemStack s) {
-		return EnchantmentHelper.getEnchantments(s)
-			.entrySet()
-			.stream()
-			.anyMatch(e -> e.getKey()
-				.getMaxLevel() <= e.getValue());
+		return s.getTagEnchantments()
+				.entrySet()
+				.stream()
+				.anyMatch(e -> e.getKey().value()
+						.getMaxLevel() <= e.getIntValue());
 	}
 
-	private static Supplier<ItemAttributeType> singleton(String id, Predicate<ItemStack> predicate) {
+	private static Holder<ItemAttributeType> singleton(String id, Predicate<ItemStack> predicate) {
 		return register(id, new SingletonItemAttribute.Type(type -> new SingletonItemAttribute(type, (stack, level) -> predicate.test(stack), id)));
 	}
 
-	private static Supplier<ItemAttributeType> singleton(String id, BiPredicate<ItemStack, Level> predicate) {
+	private static Holder<ItemAttributeType> singleton(String id, BiPredicate<ItemStack, Level> predicate) {
 		return register(id, new SingletonItemAttribute.Type(type -> new SingletonItemAttribute(type, predicate, id)));
 	}
 
-	private static Supplier<ItemAttributeType> register(String id, ItemAttributeType type) {
+	private static Holder<ItemAttributeType> register(String id, ItemAttributeType type) {
 		return REGISTER.register(id, () -> type);
 	}
 
 	@ApiStatus.Internal
 	public static void register(IEventBus modEventBus) {
 		REGISTER.register(modEventBus);
-
-		// Register legacy deserializers to maintain backwards compatability
-		AllItemAttributeLegacyDeserializers.register();
 	}
 }

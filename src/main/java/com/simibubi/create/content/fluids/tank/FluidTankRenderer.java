@@ -16,8 +16,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 public class FluidTankRenderer extends SafeBlockEntityRenderer<FluidTankBlockEntity> {
 
@@ -74,7 +74,7 @@ public class FluidTankRenderer extends SafeBlockEntityRenderer<FluidTankBlockEnt
 		ms.pushPose();
 		ms.translate(0, clampedLevel - totalHeight, 0);
 		FluidRenderer.renderFluidBox(fluidStack.getFluid(), fluidStack.getAmount(), xMin, yMin, zMin, xMax, yMax, zMax,
-			buffer, ms, light, false, true, fluidStack.getTag());
+			buffer, ms, light, false, true, fluidStack.getComponents());
 		ms.popPose();
 	}
 

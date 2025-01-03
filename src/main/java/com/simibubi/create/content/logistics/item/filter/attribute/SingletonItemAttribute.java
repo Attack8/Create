@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
-import com.mojang.serialization.Codec;
+import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.nbt.CompoundTag;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-
-import org.jetbrains.annotations.NotNull;
 
 public final class SingletonItemAttribute implements ItemAttribute {
 	private final Type type;
@@ -32,12 +32,6 @@ public final class SingletonItemAttribute implements ItemAttribute {
 	public ItemAttributeType getType() {
 		return type;
 	}
-
-	@Override
-	public void save(CompoundTag nbt) {} // NO-OP
-
-	@Override
-	public void load(CompoundTag nbt) {} // NO-OP
 
 	@Override
 	public String getTranslationKey() {
@@ -62,6 +56,11 @@ public final class SingletonItemAttribute implements ItemAttribute {
 				return List.of(attribute);
 			}
 			return List.of();
+		}
+
+		@Override
+		public MapCodec<? extends ItemAttribute> codec() {
+			return Codec.unit(attribute).fieldOf("value");
 		}
 	}
 }

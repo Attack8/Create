@@ -8,24 +8,22 @@ import net.createmod.catnip.utility.NBTHelper;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.serialization.MapCodec;
 import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttributeTypes;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class InTagAttribute implements ItemAttribute {
-	@ApiStatus.Internal
-	public TagKey<Item> tag;
-
-	public InTagAttribute(TagKey<Item> tag) {
-		this.tag = tag;
-	}
+public record InTagAttribute(TagKey<Item> tag) implements ItemAttribute {
+	public static final MapCodec<InTagAttribute> CODEC = TagKey.codec(Registries.ITEM)
+			.xmap(InTagAttribute::new, InTagAttribute::tag)
+			.fieldOf("value");
 
 	@Override
 	public boolean appliesTo(ItemStack stack, Level level) {
@@ -44,17 +42,7 @@ public class InTagAttribute implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.IN_TAG.get();
-	}
-
-	@Override
-	public void save(CompoundTag nbt) {
-		NBTHelper.writeResourceLocation(nbt, "tag", tag.location());
-	}
-
-	@Override
-	public void load(CompoundTag nbt) {
-		tag = ItemTags.create(NBTHelper.readResourceLocation(nbt, "tag"));
+		return AllItemAttributeTypes.IN_TAG.value();
 	}
 
 	public static class Type implements ItemAttributeType {
@@ -68,6 +56,11 @@ public class InTagAttribute implements ItemAttribute {
 			return stack.getTags()
 				.map(InTagAttribute::new)
 				.collect(Collectors.toList());
+		}
+
+		@Override
+		public MapCodec<? extends ItemAttribute> codec() {
+			return CODEC;
 		}
 	}
 }

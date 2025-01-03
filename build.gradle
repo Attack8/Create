@@ -1,459 +1,230 @@
 plugins {
-    id 'idea'
+    id 'java-library'
     id 'eclipse'
+    id 'idea'
     id 'maven-publish'
-
-    id 'net.minecraftforge.gradle' version "${forgegradle_version}"
-    id 'org.spongepowered.mixin' version "${mixingradle_version}"
-    id 'org.parchmentmc.librarian.forgegradle' version "${librarian_version}"
-
-    id 'com.matthewprenger.cursegradle' version "${cursegradle_version}"
+    id 'net.neoforged.moddev' version '2.0.9-beta'
 }
 
-apply from: './gradle/java.gradle'
+boolean dev = System.getenv('RELEASE') == null || System.getenv('RELEASE').equals('false');
+String buildNumber = System.getenv('BUILD_NUMBER')
 
-jarJar.enable()
+version = project.mod_version + (dev && buildNumber != null ? "-${buildNumber}" : '')
+group = project.maven_group
 
-boolean dev = System.getenv('RELEASE') == null || System.getenv('RELEASE').equals('false')
-ext.buildNumber = System.getenv('BUILD_NUMBER')
+repositories {
+    mavenLocal()
+}
 
 base {
-    archivesName = "create-${artifact_minecraft_version}"
-    group = 'com.simibubi.create'
-    version = mod_version + (dev && buildNumber != null ? "-${buildNumber}" : '')
+    archivesName = "$mod_id-$minecraft_version"
 }
 
-boolean inMultiModWorkspace = rootProject.hasProperty('multiModWorkspace.enabled')
-boolean catnipInWorkspace = rootProject.hasProperty('multiModWorkspace.catnip')
-boolean ponderInWorkspace = rootProject.hasProperty('multiModWorkspace.ponder')
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-if (catnipInWorkspace) {
-    evaluationDependsOn(":catnip:Forge")
-}
+neoForge {
+    version = project.neo_version
 
-if (ponderInWorkspace) {
-    evaluationDependsOn(":ponder:Forge")
-}
-
-project.logger.lifecycle("MultiModWorkspace ${inMultiModWorkspace ? 'enabled' : 'disabled'} for project ${project.name}.")
-project.logger.lifecycle("Dependencies included in Workspace: [Catnip: ${catnipInWorkspace}], [Ponder: ${ponderInWorkspace}]")
-
-mixin {
-    add sourceSets.main, 'create.refmap.json'
-
-    config 'create.mixins.json'
-}
-
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-
-mixin {
-    add sourceSets.main, 'create.refmap.json'
-
-    debug.verbose = true
-    debug.export = true
-}
-
-idea {
-    module {
-        downloadJavadoc = true
-        downloadSources = true
-    }
-}
-
-minecraft {
-
-    if (Boolean.parseBoolean(use_parchment)) {
-        mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
-    } else {
-        mappings channel: 'official', version: "${minecraft_version}"
+    parchment {
+        minecraftVersion = project.parchment_minecraft_version
+        mappingsVersion = project.parchment_version
     }
 
-    // This property allows configuring Gradle's ProcessResources task(s) to run on IDE output locations before launching the game.
-    copyIdeResources = true
-
-    if (file('src/main/resources/META-INF/accesstransformer.cfg').exists()) {
-        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    }
+    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
-        // applies to all the run configs below
-        configureEach {
-            if (inMultiModWorkspace)
-                ideaModule "createmod.Create.main"
-            else
-                ideaModule "Create.main"
-
-            property 'forge.logging.markers', ''
-            property 'forge.logging.console.level', 'info'
-            jvmArgs '-XX:+IgnoreUnrecognizedVMOptions', '-XX:+AllowEnhancedClassRedefinition'
-            //jvmArgs("-XX:-OmitStackTraceInFastThrow") // uncomment when you get exceptions with null messages etc
-            //jvmArgs '-XX:+UnlockCommercialFeatures' // uncomment for profiling
-
-            property 'mixin.debug.export', 'true'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            arg '-mixin.config=create.mixins.json'
-            arg '-mixin.config=catnip.mixins.json'
-
-            mods {
-                create {
-                    source sourceSets.main
-                }
-
-                if (catnipInWorkspace) {
-                    catnip {
-                        source project(":catnip:Common").sourceSets.main
-                        source project(":catnip:Forge").sourceSets.main
-                    }
-                }
-
-                if (ponderInWorkspace) {
-                    ponder {
-                        source project(":ponder:Common").sourceSets.main
-                        source project(":ponder:Forge").sourceSets.main
-                    }
-                }
-            }
-        }
-
         client {
-            workingDirectory project.file('run')
+            client()
+
+            // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         server {
-            workingDirectory project.file('run/server')
+            server()
+
+            gameDirectory = project.file('run/server')
+
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        // This run config launches GameTestServer and runs all registered gametests, then exits.
+        // By default, the server will crash when no gametests are provided.
+        // The gametest system is also enabled by default for other run configs under the /test command.
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
         data {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES,REGISTRYDUMP'
-            property 'forge.logging.console.level', 'debug'
-            args '--mod', 'create', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources')
+            data()
+
+            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
         }
 
-        gameTestServer {
-            workingDirectory project.file('run/gametest')
-            // setForceExit false <- FIXME 1.20
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+
+            systemProperty 'mixin.debug.verbose', 'true'
+            systemProperty 'mixin.debug.export', 'true'
+
+            // IThundxr ~ I use JBR for enhanced hotswap, this adds the required arg while not affecting other people
+            jvmArguments = ["-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions"]
+
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
         }
     }
 }
 
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
 repositories {
-    maven {
-        // location of the maven for Registrate and Flywheel
-        name = 'tterrag maven'
-        url = 'https://maven.tterrag.com'
-    }
-    maven {
-        // location of the maven that hosts JEI files since January 2023
-        // location of the maven for Vazkii's mods
-        name = "Jared's maven"
-        url = "https://maven.blamejared.com/"
-    }
-    /*maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "https://modmaven.dev"
-    }*/
-    maven {
-        // location of the maven for Dynamic Trees
-        url = 'https://harleyoconnor.com/maven'
-    }
-    maven {
-        // location of the maven for Curios API
-        url = "https://maven.theillusivec4.top/"
-    }
-    maven {
-        // location of maven for CC: Tweaked
-        name = "squiddev"
-        url = "https://squiddev.cc/maven/"
-    }
-    maven {
-        name = "ftb"
-        url = "https://maven.saps.dev/releases"
-    }
-	maven {
-        name = "architectury"
-        url = "https://maven.architectury.dev/"
-    }
-	maven {
-        url = "https://jm.gserv.me/repository/maven-public/"
+    maven { url = "https://maven.createmod.net" } // Ponder, Catnip
+    maven { url = "https://maven.tterrag.com" } // Flywheel
+    maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
+    maven { url = "https://maven.blamejared.com" } // JEI, Vazkii's Mods
+    maven { url = "https://harleyoconnor.com/maven" } // Dynamic Trees
+    maven { url = "https://maven.theillusivec4.top/" } // Curios API
+    maven { url = "https://maven.squiddev.cc/" } // CC: Tweaked
+    maven { url = "https://www.cursemaven.com" }
+    maven { url = "https://api.modrinth.com/maven" }
+    maven { url = "https://maven.saps.dev/releases" } // FTB Mods
+    maven { url = "https://maven.architectury.dev/" } // Arch API
+    maven { url = "https://jm.gserv.me/repository/maven-public/" // JourneyMap
         content {
             includeGroup "info.journeymap"
             includeGroup "mysticdrew"
         }
     }
 
-
-    maven {
-        url = 'https://www.cursemaven.com'
-        content {
-            includeGroup "curse.maven"
-        }
-    }
-    maven {
-        // Location of the maven for Ponder, Catnip
-        name = 'createmod maven'
-        url 'https://maven.createmod.net'
-    }
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content {
-            includeGroup "maven.modrinth"
-        }
-    }
-    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
-
     // Mirror of maven.createmod.net
     if (System.getProperty("os.name").contains("Mac") && System.getenv("USER") == "ithundxr") {
         maven { url = "https://maven.ithundxr.dev/mirror" }
     }
 
-    mavenCentral()
-    mavenLocal()
+    // todo - temp
+    maven { url = "https://maven.ithundxr.dev/hidden" } // Flywheel 1.21 PR
     flatDir {
-        dirs 'libs'
+        dirs "libs"
+    }
+}
+
+dependencies {
+    jarJar(implementation("com.tterrag.registrate:Registrate:${registrate_version}"))
+
+    compileOnly("dev.engine_room.flywheel:flywheel-neoforge-api-${flywheel_minecraft_version}:${flywheel_version}")
+    jarJar(runtimeOnly("dev.engine_room.flywheel:flywheel-neoforge-${flywheel_minecraft_version}:${flywheel_version}"))
+
+    jarJar(implementation("net.createmod.catnip:Catnip-NeoForge-${catnip_and_ponder_mc_ver}:${catnip_version}"))
+    jarJar(implementation("net.createmod.ponder:Ponder-NeoForge-${catnip_and_ponder_mc_ver}:${ponder_version}"))
+
+    //compileOnly("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
+    //compileOnly("mezz.jei:jei-${jei_minecraft_version}-neoforge-api:${jei_version}")
+    implementation("mezz.jei:jei-${jei_minecraft_version}-neoforge:${jei_version}")
+
+    compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}+${curios_minecraft_version}:api")
+    // FIXME: Look into what to replace this with
+    //runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}+${curios_minecraft_version}")
+
+    if (cc_tweaked_enable.toBoolean()) {
+        compileOnly("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-core-api:${cc_tweaked_version}")
+        compileOnly("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-forge-api:${cc_tweaked_version}")
+        if (!cc_tweaked_disable_runtime.toBoolean())
+            runtimeOnly("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-forge:${cc_tweaked_version}")
+    }
+
+    implementation("dev.architectury:architectury-neoforge:13.0.8")
+    implementation("dev.ftb.mods:ftb-chunks-neoforge:2101.1.1")
+    implementation("dev.ftb.mods:ftb-teams-neoforge:2101.1.0")
+    implementation("dev.ftb.mods:ftb-library-neoforge:2101.1.3")
+
+    implementation("maven.modrinth:journeymap:1.21.1-6.0.0-beta.32+neoforge")
+    implementation("info.journeymap:journeymap-api-neoforge:2.0.0-1.21.1-SNAPSHOT")
+
+    // implementation("curse.maven:druidcraft-340991:3101903")
+    // implementation("com.ferreusveritas.dynamictrees:DynamicTrees-1.16.5:0.10.0-Beta25")
+    // runtimeOnly("vazkii.arl:AutoRegLib:1.4-35.69")
+    // runtimeOnly("vazkii.quark:Quark:r2.0-212.984")
+    // runtimeOnly("slimeknights.mantle:Mantle:1.16.5-1.6.115")
+    // runtimeOnly("slimeknights.tconstruct:TConstruct:1.16.5-3.1.1.252")
+    // runtimeOnly("maven.modrinth:rubidium:0.5.3")
+    // implementation("com.railwayteam.railways:railways-1.18.2-1.1.1:all" { transitive = false })
+    // runtimeOnly("maven.modrinth:aether:1.19.2-1.0.0-beta.1.1-forge")
+    // runtimeOnly("maven.modrinth:spark:1.10.38-forge")
+    // runtimeOnly("curse.maven:xycraft-653786:4788862")
+    // runtimeOnly("curse.maven:xycraft-world-653789:4788863")
+}
+
+sourceSets.main.java {
+    if (!cc_tweaked_enable.toBoolean()) {
+        exclude "com/simibubi/create/compat/computercraft/implementation/**"
     }
 }
 
 sourceSets.main.resources {
-    srcDir 'src/generated/resources'
-    exclude '.cache/'
+    srcDir "src/generated/resources"
+    exclude ".cache/"
 }
 
-dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    jarJar("com.tterrag.registrate:Registrate:${registrate_version}") {
-        jarJar.ranged(it, '[MC1.19.3-1.1.10,)')
-    }
-    jarJar("dev.engine_room.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}") {
-        jarJar.ranged(it, '[1.0,2.0)')
-    }
-
-	jarJar("net.createmod.catnip:Catnip-Forge-${minecraft_version}:${catnip_version}") {
-        jarJar.ranged(it, '[0.7.5,)')
-    }
-    jarJar("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}") {
-        jarJar.ranged(it, '[0.7.5,)')
-    }
-
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}")) {
-        jarJar.ranged(it, "[${mixin_extras_version},)")
-    }
-
-    implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
-
-    compileOnly fg.deobf("dev.engine_room.flywheel:flywheel-forge-api-${flywheel_minecraft_version}:${flywheel_version}")
-    runtimeOnly fg.deobf("dev.engine_room.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}")
-
-    if (catnipInWorkspace) {
-        implementation project(":catnip:Common")
-        implementation project(":catnip:Forge")
-    } else {
-        implementation fg.deobf("net.createmod.catnip:Catnip-Forge-${minecraft_version}:${catnip_version}")
-    }
-
-    if (ponderInWorkspace) {
-        implementation project(":ponder:Common")
-        implementation project(":ponder:Forge")
-    } else {
-        implementation fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")
-    }
-
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
-
-    // compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
-    // compileOnly fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge-api:${jei_version}")
-    implementation fg.deobf("mezz.jei:jei-${jei_minecraft_version}-forge:${jei_version}")
-
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${curios_minecraft_version}:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${curios_minecraft_version}")
-
-	if (cc_tweaked_enable.toBoolean()) {
-	    compileOnly("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-core-api:${cc_tweaked_version}")
-        compileOnly fg.deobf("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-forge-api:${cc_tweaked_version}")
-        runtimeOnly fg.deobf("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-forge:${cc_tweaked_version}")
-	}
-
-    if (dynamic_trees_enable.toBoolean()) {
-        compileOnly fg.deobf("com.ferreusveritas.dynamictrees:DynamicTrees-${dynamic_trees_minecraft_version}:${dynamic_trees_version}")
-    }
-
-    // implementation fg.deobf("curse.maven:ic2-classic-242942:5555152")
-    // implementation fg.deobf("curse.maven:druidcraft-340991:3101903")
-    // implementation fg.deobf("com.railwayteam.railways:railways-1.19.2-1.6.4:all") { transitive = false }
-
-	implementation fg.deobf("dev.architectury:architectury-forge:9.1.12")
-	implementation fg.deobf("dev.ftb.mods:ftb-chunks-forge:2001.3.1")
-	implementation fg.deobf("dev.ftb.mods:ftb-teams-forge:2001.3.0")
-	implementation fg.deobf("dev.ftb.mods:ftb-library-forge:2001.2.4")
-
-	implementation fg.deobf("curse.maven:journeymap-32274:5457831")
-	// implementation fg.deobf("ignored:journeymap-1.20.1-5.10.1-forge")
-
-    // runtimeOnly fg.deobf("curse.maven:framedblocks-441647:5399211")
-    // runtimeOnly fg.deobf("curse.maven:galosphere-631098:4574834")
-    // runtimeOnly fg.deobf("curse.maven:elementary-ores-332609:4514276") 1.19.4 only
-    // runtimeOnly fg.deobf("curse.maven:flib-661261:4479544")
-    // runtimeOnly fg.deobf("curse.maven:infernal-expansion-395078:4002091")
-    // runtimeOnly fg.deobf("vazkii.autoreglib:AutoRegLib:1.8.2-58.126")
-    // runtimeOnly fg.deobf("curse.maven:quark-243121:4812006")
-    // runtimeOnly fg.deobf("curse.maven:mantle-74924:5339977")
-    // runtimeOnly fg.deobf("curse.maven:tinkers-construct-74072:5358052")
-    // runtimeOnly fg.deobf("maven.modrinth:rubidium:0.6.2c")
-    // runtimeOnly fg.deobf("maven.modrinth:aether:1.19.2-1.4.2-forge")
-    // runtimeOnly fg.deobf("maven.modrinth:spark:1.10.38-forge")
-    // runtimeOnly fg.deobf("curse.maven:forbidden-arcanus-309858:4852521")
-    // runtimeOnly fg.deobf("curse.maven:valhelsia-core-416935:4181245")
-    // runtimeOnly fg.deobf("curse.maven:modern-ui-352491:5229370")
-    // runtimeOnly fg.deobf("curse.maven:sophisticated-storage-619320:5194750")
-    // runtimeOnly fg.deobf("curse.maven:sophisticated-core-618298:5296313")
-    // runtimeOnly fg.deobf("curse.maven:functional-storage-556861:5499169")
-    // runtimeOnly fg.deobf("curse.maven:titanium-287342:5356458")
-    // runtimeOnly fg.deobf("curse.maven:storage-drawers-223852:3884263")
-    // runtimeOnly fg.deobf("curse.maven:ftb-chunks-forge-314906:5417874")
-    // runtimeOnly fg.deobf("curse.maven:architectury-api-419699:5137942")
-    // runtimeOnly fg.deobf("curse.maven:ftb-library-forge-404465:4661834")
-    // runtimeOnly fg.deobf("curse.maven:ftb-teams-forge-404468:4611938")
-    // runtimeOnly fg.deobf("curse.maven:citadel-331936:4556677")
-    // runtimeOnly fg.deobf("curse.maven:ice-and-fire-dragons-264231:5037952")
-    // runtimeOnly fg.deobf("curse.maven:exnihilosequentia-400012:4993344")
-    // runtimeOnly fg.deobf("curse.maven:upgrade-aquatic-326895:4777515")
-    // runtimeOnly fg.deobf("curse.maven:blueprint-382216:4749000")
-    // runtimeOnly fg.deobf("curse.maven:windsweptmod-636321:4817132")
-    // runtimeOnly fg.deobf("curse.maven:good-ending-690161:4363719")
-
-    // https://discord.com/channels/313125603924639766/725850371834118214/910619168821354497
-    // Prevent Mixin annotation processor from getting into IntelliJ's annotation processor settings
-    // This allows 'Settings > Build, Execution, and Deployment > Build Tools > Gradle > Build and run using' set to IntelliJ to work correctly
-    if (!Boolean.getBoolean('idea.sync.active')) {
-        annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
-    }
-}
-
-sourceSets.main.java {
-	if (!cc_tweaked_enable.toBoolean()) {
-        exclude 'com/simibubi/create/compat/computercraft/implementation/**'
-	}
-}
-
-// Workaround for SpongePowered/MixinGradle#38
-afterEvaluate {
-    tasks.configureReobfTaskForReobfJar.mustRunAfter(tasks.compileJava)
-    tasks.configureReobfTaskForReobfJarJar.mustRunAfter(tasks.compileJava)
-}
-
-processResources {
-    def buildProps = project.properties.clone()
-
-    // Replaces FML's magic file.jarVersion string with the correct version at build time.
-    buildProps.put('file', [jarVersion: project.version])
-
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand buildProps
-    }
-}
-
-compileJava {
-    options.compilerArgs = ['-Xdiags:verbose']
-}
-
-void addLicense(jarTask) {
-    jarTask.from('LICENSE') {
+jar {
+    from('LICENSE') {
         rename { "${it}_${project.archivesBaseName}" }
     }
 }
 
-tasks.jar {
-    archiveClassifier = 'slim'
-    finalizedBy('reobfJar')
-    addLicense it
-}
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            mod_version            : mod_version,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_author             : mod_author,
+            mod_description        : mod_description,
+            mod_license            : mod_license,
+            minecraft_version_range: minecraft_version_range,
+            neo_version_range      : neo_version_range,
+            flywheel_version_range : flywheel_version_range,
+    ]
+    inputs.properties replaceProperties
 
-tasks.jarJar {
-    finalizedBy('reobfJarJar')
-    addLicense it
-}
-
-task jarJarRelease {
-    group = 'jarjar'
-    doLast {
-        tasks.jarJar {
-            archiveClassifier = ''
-        }
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
     }
-    finalizedBy tasks.jarJar
 }
 
-project.publishing {
+java {
+    withSourcesJar()
+}
+
+publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifactId base.archivesName.get()
+        register('mavenJava', MavenPublication) {
             from components.java
-            fg.component(it)
-            jarJar.component(it)
         }
     }
-
     repositories {
         if (project.hasProperty('mavendir')) {
-            maven { url mavendir }
+            maven { url = mavendir }
         }
     }
 }
 
-String getChangelogText() {
-    def changelogFile = file('changelog.txt')
-    String str = ''
-    int lineCount = 0
-    boolean done = false
-    changelogFile.eachLine {
-        if (done || it == null) {
-            return
-        }
-        if (it.size() > 1) {
-            def temp = it
-            if (lineCount == 0) {
-                temp = "Create ${version}"
-                temp = "<span style=\"font-size: 18px; color: #333399;\">Create v${mod_version}</span>&nbsp;&nbsp;<em>for Minecraft ${minecraft_version}</em><br/>"
-            } else if (it.startsWith('-')) {
-                temp = "&nbsp;&nbsp;&nbsp;$temp<br/>"
-                temp = temp.replaceAll("(\\S+\\/\\S+)#([0-9]+)\\b", "<a href=\"https://github.com/\$1/issues/\$2\">\$0</a>");
-                temp = temp.replaceAll("#([0-9]+)\\b(?!<\\/a>)", "<a href=\"https://github.com/$github_project/issues/\$1\">\$0</a>");
-            } else {
-                temp = "<h4>$temp</h4>"
-            }
-            str += temp
-            lineCount++
-        } else {
-            str += "<p>Please submit any Issues you come across on the&nbsp;<a href=\"https://github.com/${github_project}/issues\" rel=\"nofollow\">Issue Tracker</a>.</p>"
-            done = true
-        }
-    }
-    return str
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
 
-// changelog debugging
-// new File("changelog.html").write getChangelogText()
-// tasks.curseforge.enabled = !dev && project.hasProperty('simi_curseforge_key')
-// curseforge {
-//     if (project.hasProperty('simi_curseforge_key')) {
-//         apiKey = project.simi_curseforge_key
-//     }
-//
-//     project {
-//         id = project.projectId
-//         changelog = System.getenv('CHANGELOG') == null || System.getenv('CHANGELOG').equals('none') ? getChangelogText() : System.getenv('CHANGELOG')
-//         changelogType = 'html'
-//         releaseType = project.curse_type
-//         mainArtifact(shadowJar) {
-//             displayName = "Create - ${version}"
-//         }
-//         relations {
-//             optionalDependency 'jei'
-//         }
-//     }
-// }
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

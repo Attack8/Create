@@ -31,6 +31,7 @@ import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.Pair;
 import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.theme.Color;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -520,7 +521,7 @@ public class TrackGraph {
 		Create.RAILWAYS.markTracksDirty();
 	}
 
-	public CompoundTag write(DimensionPalette dimensions) {
+	public CompoundTag write(HolderLookup.Provider registries, DimensionPalette dimensions) {
 		CompoundTag tag = new CompoundTag();
 		tag.putUUID("Id", id);
 		tag.putInt("Color", color.getRGB());
@@ -558,14 +559,14 @@ public class TrackGraph {
 		});
 
 		tag.put("Nodes", nodesList);
-		tag.put("Points", edgePoints.write(dimensions));
+		tag.put("Points", edgePoints.write(registries, dimensions));
 		return tag;
 	}
 
-	public static TrackGraph read(CompoundTag tag, DimensionPalette dimensions) {
+	public static TrackGraph read(CompoundTag tag, HolderLookup.Provider registries, DimensionPalette dimensions) {
 		TrackGraph graph = new TrackGraph(tag.getUUID("Id"));
 		graph.color = new Color(tag.getInt("Color"));
-		graph.edgePoints.read(tag.getCompound("Points"), dimensions);
+		graph.edgePoints.read(tag.getCompound("Points"), registries, dimensions);
 
 		Map<Integer, TrackNode> indexTracker = new HashMap<>();
 		ListTag nodesList = tag.getList("Nodes", Tag.TAG_COMPOUND);

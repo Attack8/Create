@@ -7,7 +7,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.simibubi.create.AllItems;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags.AllBlockTags;
 import com.simibubi.create.content.logistics.BigItemStack;
@@ -21,21 +20,26 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.codecs.CatnipCodecUtils;
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.IntAttached;
 import net.createmod.catnip.utility.NBTHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -101,32 +105,32 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 		return !requestData.encodedRequest.isEmpty();
 	}
 
-	public InteractionResult use(Player player, BlockHitResult ray) {
+	public ItemInteractionResult use(Player player, BlockHitResult ray) {
 		if (isShop())
 			return useShop(player);
 		if (level.isClientSide())
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 
 		ItemStack heldItem = player.getItemInHand(InteractionHand.MAIN_HAND);
 
 		if (heldItem.isEmpty()) {
 			if (manuallyAddedItems.isEmpty())
-				return InteractionResult.SUCCESS;
+				return ItemInteractionResult.SUCCESS;
 			player.setItemInHand(InteractionHand.MAIN_HAND, manuallyAddedItems.remove(manuallyAddedItems.size() - 1));
 			level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 0.5f, 1f);
-			
+
 			if (manuallyAddedItems.isEmpty()) {
 				level.setBlock(worldPosition, getBlockState().setValue(TableClothBlock.HAS_BE, false), 3);
-				AllPackets.getChannel()
-					.send(packetTarget(), new RemoveBlockEntityPacket(worldPosition));
+				if (level instanceof ServerLevel serverLevel)
+					CatnipServices.NETWORK.sendToClientsTrackingChunk(serverLevel, new ChunkPos(worldPosition), new RemoveBlockEntityPacket(worldPosition));
 			} else
 				notifyUpdate();
 
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 		}
 
 		if (manuallyAddedItems.size() >= 4)
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 
 		level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.5f, 1f);
 		manuallyAddedItems.add(heldItem.copyWithCount(1));
@@ -136,7 +140,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 		if (heldItem.isEmpty())
 			player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
 		notifyUpdate();
-		return InteractionResult.SUCCESS;
+		return ItemInteractionResult.SUCCESS;
 	}
 
 	public boolean targetsPriceTag(Player player, BlockHitResult ray) {
@@ -145,7 +149,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 				.subtract(Vec3.atLowerCornerOf(worldPosition)));
 	}
 
-	public InteractionResult useShop(Player player) {
+	public ItemInteractionResult useShop(Player player) {
 		ItemStack itemInHand = player.getItemInHand(InteractionHand.MAIN_HAND);
 		ItemStack prevListItem = ItemStack.EMPTY;
 		boolean addOntoList = false;
@@ -176,7 +180,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 					.sendStatus(player);
 				AllSoundEvents.DENY.playAt(level, worldPosition, 1, 1, false);
 			}
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 		}
 
 		if (getPaymentItem().isEmpty()) {
@@ -185,7 +189,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 					.sendStatus(player);
 				AllSoundEvents.DENY.playAt(level, worldPosition, 1, 1, false);
 			}
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 		}
 
 		UUID tickerID = null;
@@ -202,7 +206,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 					.sendStatus(player);
 				AllSoundEvents.DENY.playAt(level, worldPosition, 1, 1, false);
 			}
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 		}
 
 		if (stockLevel == 0) {
@@ -222,7 +226,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 				}
 			}
 
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 		}
 
 		ShoppingList list = new ShoppingList(new ArrayList<>(), owner, tickerID);
@@ -239,7 +243,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 			for (IntAttached<BlockPos> entry : list.purchases())
 				if (worldPosition.equals(entry.getValue()))
 					entry.setFirst(Math.min(stockLevel, entry.getFirst()));
-			
+
 			if (clientSide)
 				CreateLang.translate("stock_keeper.limited_stock")
 					.style(ChatFormatting.RED)
@@ -248,7 +252,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 		} else {
 			if (clientSide) {
 				AllSoundEvents.CONFIRM_2.playAt(level, worldPosition, 0.5f, 1, false);
-				return InteractionResult.SUCCESS;
+				return ItemInteractionResult.SUCCESS;
 			}
 
 			list.addPurchases(worldPosition, 1);
@@ -261,10 +265,10 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 		}
 
 		if (clientSide)
-			return InteractionResult.SUCCESS;
+			return ItemInteractionResult.SUCCESS;
 
 		ItemStack newListItem =
-			ShoppingListItem.saveList(AllItems.SHOPPING_LIST.asStack(), list, requestData.encodedTargetAdress);
+			ShoppingListItem.saveList(AllItems.SHOPPING_LIST.asStack(), list, requestData.encodedTargetAddress);
 
 		if (player.getItemInHand(InteractionHand.MAIN_HAND)
 			.isEmpty())
@@ -273,7 +277,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 			player.getInventory()
 				.placeItemBackInInventory(newListItem);
 
-		return InteractionResult.SUCCESS;
+		return ItemInteractionResult.SUCCESS;
 	}
 
 	public int getStockLevelForTrade(@Nullable ShoppingList otherPurchases) {
@@ -308,20 +312,20 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 	}
 
 	@Override
-	protected void write(CompoundTag tag, boolean clientPacket) {
-		super.write(tag, clientPacket);
-		tag.put("Items", NBTHelper.writeItemList(manuallyAddedItems));
+	protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(tag, registries, clientPacket);
+		tag.put("Items", NBTHelper.writeItemList(manuallyAddedItems, registries));
 		tag.putInt("Facing", facing.get2DDataValue());
-		requestData.write(tag);
+		tag.put("RequestData", CatnipCodecUtils.encodeOrThrow(AutoRequestData.CODEC, requestData));
 		if (owner != null)
 			tag.putUUID("OwnerUUID", owner);
 	}
 
 	@Override
-	protected void read(CompoundTag tag, boolean clientPacket) {
-		super.read(tag, clientPacket);
-		manuallyAddedItems = NBTHelper.readItemList(tag.getList("Items", Tag.TAG_COMPOUND));
-		requestData = AutoRequestData.read(tag);
+	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(tag, registries, clientPacket);
+		manuallyAddedItems = NBTHelper.readItemList(tag.getList("Items", Tag.TAG_COMPOUND), registries);
+		requestData = CatnipCodecUtils.decodeOrThrow(AutoRequestData.CODEC, tag.get("RequestData"));
 		owner = tag.contains("OwnerUUID") ? tag.getUUID("OwnerUUID") : null;
 		facing = Direction.from2DDataValue(Mth.positiveModulo(tag.getInt("Facing"), 4));
 	}

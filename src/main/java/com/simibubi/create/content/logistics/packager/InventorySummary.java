@@ -11,20 +11,17 @@ import java.util.function.Predicate;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.google.common.collect.Lists;
-import com.simibubi.create.AllPackets;
+import com.mojang.serialization.Codec;
 import com.simibubi.create.content.logistics.BigItemStack;
 import com.simibubi.create.content.logistics.stockTicker.LogisticalStockResponsePacket;
 
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.codecs.CatnipCodecUtils;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PacketDistributor.PacketTarget;
 
 public class InventorySummary {
 
@@ -48,9 +45,19 @@ public class InventorySummary {
 	public void add(BigItemStack entry) {
 		add(entry.stack, entry.count);
 	}
-	
+
 	public Map<Item, List<BigItemStack>> getItemMap() {
 		return items;
+	}
+
+	public void addAllItemStacks(List<ItemStack> list) {
+		for (ItemStack stack : list)
+			add(stack, stack.getCount());
+	}
+
+	public void addAllBigItemStacks(List<BigItemStack> list) {
+		for (BigItemStack entry : list)
+			add(entry.stack, entry.count);
 	}
 
 	public InventorySummary copy() {
@@ -69,13 +76,13 @@ public class InventorySummary {
 		List<BigItemStack> stacks = items.computeIfAbsent(stack.getItem(), $ -> Lists.newArrayList());
 		for (BigItemStack existing : stacks) {
 			ItemStack existingStack = existing.stack;
-			if (ItemHandlerHelper.canItemStacksStack(existingStack, stack)) {
+			if (ItemStack.isSameItemSameComponents(existingStack, stack)) {
 				if (existing.count < BigItemStack.INF)
 					existing.count += count;
 				return;
 			}
 		}
-		
+
 		if (stack.getCount() > stack.getMaxStackSize())
 			stack = stack.copyWithCount(1);
 
@@ -90,7 +97,7 @@ public class InventorySummary {
 		for (Iterator<BigItemStack> iterator = stacks.iterator(); iterator.hasNext();) {
 			BigItemStack existing = iterator.next();
 			ItemStack existingStack = existing.stack;
-			if (!ItemHandlerHelper.canItemStacksStack(existingStack, stack))
+			if (!ItemStack.isSameItemSameComponents(existingStack, stack))
 				continue;
 			totalCount -= existing.count;
 			iterator.remove();
@@ -104,7 +111,7 @@ public class InventorySummary {
 		if (list == null)
 			return 0;
 		for (BigItemStack entry : list)
-			if (ItemHandlerHelper.canItemStacksStack(entry.stack, stack))
+			if (ItemStack.isSameItemSameComponents(entry.stack, stack))
 				return entry.count;
 		return 0;
 	}
@@ -146,11 +153,9 @@ public class InventorySummary {
 		int remaining = stacks.size();
 
 		List<BigItemStack> currentList = null;
-		PacketTarget target = PacketDistributor.PLAYER.with(() -> player);
 
 		if (stacks.isEmpty())
-			AllPackets.getChannel()
-				.send(target, new LogisticalStockResponsePacket(true, pos, Collections.emptyList()));
+			CatnipServices.NETWORK.sendToClient(player, new LogisticalStockResponsePacket(true, pos, Collections.emptyList()));
 
 		for (BigItemStack entry : stacks) {
 			if (currentList == null)
@@ -164,27 +169,25 @@ public class InventorySummary {
 			if (currentList.size() < 100)
 				continue;
 
-			AllPackets.getChannel()
-				.send(target, new LogisticalStockResponsePacket(false, pos, currentList));
+			CatnipServices.NETWORK.sendToClient(player, new LogisticalStockResponsePacket(false, pos, currentList));
 			currentList = null;
 		}
 
 		if (currentList != null)
-			AllPackets.getChannel()
-				.send(target, new LogisticalStockResponsePacket(true, pos, currentList));
+			CatnipServices.NETWORK.sendToClient(player, new LogisticalStockResponsePacket(true, pos, currentList));
 	}
 
 	public CompoundTag write() {
 		List<BigItemStack> all = new ArrayList<>();
 		items.forEach((key, list) -> all.addAll(list));
 		CompoundTag tag = new CompoundTag();
-		tag.put("List", NBTHelper.writeCompoundList(all, BigItemStack::write));
+		tag.put("List", CatnipCodecUtils.encodeOrThrow(Codec.list(BigItemStack.CODEC), all));
 		return tag;
 	}
 
 	public static InventorySummary read(CompoundTag tag) {
 		InventorySummary summary = new InventorySummary();
-		NBTHelper.iterateCompoundList(tag.getList("List", Tag.TAG_COMPOUND), c -> summary.add(BigItemStack.read(c)));
+		summary.addAllBigItemStacks(CatnipCodecUtils.decodeOrThrow(Codec.list(BigItemStack.CODEC), tag.getCompound("List")));
 		return summary;
 	}
 

@@ -2,18 +2,27 @@ package com.simibubi.create.content.contraptions.behaviour.dispenser;
 
 import java.util.HashMap;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.foundation.mixin.accessor.DispenserBlockAccessor;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
+import net.minecraft.core.dispenser.ProjectileDispenseBehavior;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.entity.DispenserBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 
 public class DispenserMovementBehaviour extends DropperMovementBehaviour {
@@ -30,8 +39,8 @@ public class DispenserMovementBehaviour extends DropperMovementBehaviour {
 		MOVED_DISPENSE_ITEM_BEHAVIOURS.put(item, movedDispenseItemBehaviour);
 	}
 
-	public static DispenseItemBehavior getDispenseMethod(ItemStack itemstack) {
-		return ((DispenserBlockAccessor) Blocks.DISPENSER).create$callGetDispenseMethod(itemstack);
+	public static DispenseItemBehavior getDispenseMethod(Level level, ItemStack itemstack) {
+		return ((DispenserBlockAccessor) Blocks.DISPENSER).create$callGetDispenseMethod(level, itemstack);
 	}
 
 	@Override
@@ -60,9 +69,9 @@ public class DispenserMovementBehaviour extends DropperMovementBehaviour {
 					return;
 				}
 
-				DispenseItemBehavior behavior = getDispenseMethod(itemStack);
-				if (behavior instanceof AbstractProjectileDispenseBehavior) { // Projectile behaviours can be converted most of the time
-					IMovedDispenseItemBehaviour movedBehaviour = MovedProjectileDispenserBehaviour.of((AbstractProjectileDispenseBehavior) behavior);
+				DispenseItemBehavior behavior = getDispenseMethod(context.world, itemStack);
+				if (behavior instanceof ProjectileDispenseBehavior projectileDispenseBehavior) { // Projectile behaviours can be converted most of the time
+					IMovedDispenseItemBehaviour movedBehaviour = MovedProjectileDispenserBehaviour.of(projectileDispenseBehavior);
 					setItemStackAt(location, movedBehaviour.dispense(itemStack, context, pos), context);
 					MOVED_PROJECTILE_DISPENSE_BEHAVIOURS.put(itemStack.getItem(), movedBehaviour); // buffer conversion if successful
 					return;
@@ -72,7 +81,22 @@ public class DispenserMovementBehaviour extends DropperMovementBehaviour {
 				facingVec = context.rotation.apply(facingVec);
 				facingVec.normalize();
 				Direction clostestFacing = Direction.getNearest(facingVec.x, facingVec.y, facingVec.z);
-				ContraptionBlockSource blockSource = new ContraptionBlockSource(context, pos, clostestFacing);
+
+				MinecraftServer server = context.world.getServer();
+				ServerLevel serverLevel = server != null ? server.getLevel(context.world.dimension()) : null;
+
+				BlockState state;
+				if (context.state.hasProperty(BlockStateProperties.FACING) && clostestFacing != null) {
+					state = context.state.setValue(BlockStateProperties.FACING, clostestFacing);
+				} else {
+					state = context.state;
+				}
+
+				@Nullable DispenserBlockEntity blockEntity = null;
+				if (context.world.getBlockEntity(pos) instanceof DispenserBlockEntity dispenserBlockEntity)
+					blockEntity = dispenserBlockEntity;
+
+				BlockSource blockSource = new BlockSource(serverLevel, pos, state, blockEntity);
 
 				if (behavior.getClass() != DefaultDispenseItemBehavior.class) { // There is a dispense item behaviour registered for the vanilla dispenser
 					setItemStackAt(location, behavior.dispense(blockSource, itemStack), context);

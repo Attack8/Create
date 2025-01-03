@@ -10,14 +10,15 @@ import com.simibubi.create.foundation.particle.AirParticleData;
 
 import net.createmod.catnip.utility.VecHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -29,17 +30,15 @@ import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
-public class PotatoProjectileEntity extends AbstractHurtingProjectile implements IEntityAdditionalSpawnData {
+public class PotatoProjectileEntity extends AbstractHurtingProjectile implements IEntityWithComplexSpawn {
 
 	protected PotatoCannonProjectileType type;
 	protected ItemStack stack = ItemStack.EMPTY;
@@ -73,24 +72,17 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 	}
 
 	public void setEnchantmentEffectsFromCannon(ItemStack cannon) {
-		int power = cannon.getEnchantmentLevel(Enchantments.POWER_ARROWS);
-		int punch = cannon.getEnchantmentLevel(Enchantments.PUNCH_ARROWS);
-		int flame = cannon.getEnchantmentLevel(Enchantments.FLAMING_ARROWS);
-		int recovery = cannon.getEnchantmentLevel(AllEnchantments.POTATO_RECOVERY.get());
+		Registry<Enchantment> enchantmentRegistry = registryAccess().registryOrThrow(Registries.ENCHANTMENT);
 
-		if (power > 0)
-			additionalDamageMult = 1 + power * .2f;
-		if (punch > 0)
-			additionalKnockback = punch * .5f;
-		if (flame > 0)
-			setSecondsOnFire(100);
+		int recovery = cannon.getEnchantmentLevel(enchantmentRegistry.getHolderOrThrow(AllEnchantments.POTATO_RECOVERY));
+
 		if (recovery > 0)
 			recoveryChance = .125f + recovery * .125f;
 	}
 
 	@Override
 	public void readAdditionalSaveData(CompoundTag nbt) {
-		stack = ItemStack.of(nbt.getCompound("Item"));
+		stack = ItemStack.parseOptional(this.registryAccess(), nbt.getCompound("Item"));
 		additionalDamageMult = nbt.getFloat("AdditionalDamage");
 		additionalKnockback = nbt.getFloat("AdditionalKnockback");
 		recoveryChance = nbt.getFloat("Recovery");
@@ -99,7 +91,7 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 
 	@Override
 	public void addAdditionalSaveData(CompoundTag nbt) {
-		nbt.put("Item", stack.serializeNBT());
+		nbt.put("Item", stack.saveOptional(this.registryAccess()));
 		nbt.putFloat("AdditionalDamage", additionalDamageMult);
 		nbt.putFloat("AdditionalKnockback", additionalKnockback);
 		nbt.putFloat("Recovery", recoveryChance);
@@ -207,10 +199,11 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 		boolean targetIsEnderman = target.getType() == EntityType.ENDERMAN;
 		int k = target.getRemainingFireTicks();
 		if (this.isOnFire() && !targetIsEnderman)
-			target.setSecondsOnFire(5);
+			target.igniteForSeconds(5);
 
 		boolean onServer = !level().isClientSide;
-		if (onServer && !target.hurt(causePotatoDamage(), damage)) {
+		DamageSource damageSource = causePotatoDamage();
+		if (onServer && !target.hurt(damageSource, damage)) {
 			target.setRemainingFireTicks(k);
 			kill();
 			return;
@@ -244,8 +237,7 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 		}
 
 		if (onServer && owner instanceof LivingEntity) {
-			EnchantmentHelper.doPostHurtEffects(livingentity, owner);
-			EnchantmentHelper.doPostDamageEffects((LivingEntity) owner, livingentity);
+			EnchantmentHelper.doPostAttackEffects((ServerLevel) level(), livingentity, damageSource);
 		}
 
 		if (livingentity != owner && livingentity instanceof Player && owner instanceof ServerPlayer
@@ -254,8 +246,7 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 				.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.ARROW_HIT_PLAYER, 0.0F));
 		}
 
-		if (onServer && owner instanceof ServerPlayer) {
-			ServerPlayer serverplayerentity = (ServerPlayer) owner;
+		if (onServer && owner instanceof ServerPlayer serverplayerentity) {
 			if (!target.isAlive() && target.getType()
 				.getCategory() == MobCategory.MONSTER || (target instanceof Player && target != owner))
 				AllAdvancements.POTATO_CANNON.awardTo(serverplayerentity);
@@ -271,7 +262,7 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 
 	private void recoverItem() {
 		if (!stack.isEmpty())
-			spawnAtLocation(ItemHandlerHelper.copyStackWithSize(stack, 1));
+			spawnAtLocation(stack.copyWithCount(1));
 	}
 
 	public static void playHitSound(Level world, Vec3 location) {
@@ -327,19 +318,14 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 	}
 
 	@Override
-	public Packet<ClientGamePacketListener> getAddEntityPacket() {
-		return NetworkHooks.getEntitySpawningPacket(this);
-	}
-
-	@Override
-	public void writeSpawnData(FriendlyByteBuf buffer) {
+	public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
 		CompoundTag compound = new CompoundTag();
 		addAdditionalSaveData(compound);
 		buffer.writeNbt(compound);
 	}
 
 	@Override
-	public void readSpawnData(FriendlyByteBuf additionalData) {
+	public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
 		readAdditionalSaveData(additionalData.readNbt());
 	}
 

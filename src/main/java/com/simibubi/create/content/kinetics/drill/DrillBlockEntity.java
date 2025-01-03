@@ -15,9 +15,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class DrillBlockEntity extends BlockBreakingKineticBlockEntity {
 
@@ -66,8 +66,7 @@ public class DrillBlockEntity extends BlockBreakingKineticBlockEntity {
 		else {
 			BlockEntity blockEntity = level.getBlockEntity(breakingPos.below());
 			if (blockEntity instanceof HopperBlockEntity hbe) {
-				IItemHandler handler = hbe.getCapability(ForgeCapabilities.ITEM_HANDLER)
-					.orElse(null);
+				IItemHandler handler = level.getCapability(ItemHandler.BLOCK, hbe.getBlockPos(), null);
 				if (handler != null)
 					for (ItemStack stack : Block.getDrops(stateToBreak, sl, breakingPos, null))
 						ItemHandlerHelper.insertItemStacked(handler, stack, false);

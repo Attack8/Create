@@ -2,12 +2,13 @@ package com.simibubi.create.content.contraptions;
 
 import com.simibubi.create.foundation.utility.AttachedRegistry;
 import com.simibubi.create.infrastructure.config.AllConfigs;
+
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.minecraftforge.common.extensions.IForgeBlock;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.extensions.IBlockExtension;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -16,7 +17,7 @@ import java.util.function.Supplier;
 public enum ContraptionMovementSetting {
 	MOVABLE, NO_PICKUP, UNMOVABLE;
 
-	private static final AttachedRegistry<Block, Supplier<ContraptionMovementSetting>> SETTING_SUPPLIERS = new AttachedRegistry<>(ForgeRegistries.BLOCKS);
+	private static final AttachedRegistry<Block, Supplier<ContraptionMovementSetting>> SETTING_SUPPLIERS = new AttachedRegistry<>(BuiltInRegistries.BLOCK);
 
 	public static void register(ResourceLocation block, Supplier<ContraptionMovementSetting> settingSupplier) {
 		SETTING_SUPPLIERS.register(block, settingSupplier);
@@ -53,7 +54,7 @@ public enum ContraptionMovementSetting {
 		register(Blocks.REINFORCED_DEEPSLATE, () -> AllConfigs.server().kinetics.reinforcedDeepslateMovement.get());
 	}
 
-	public interface IMovementSettingProvider extends IForgeBlock {
+	public interface IMovementSettingProvider extends IBlockExtension {
 		ContraptionMovementSetting getContraptionMovementSetting();
 	}
 }

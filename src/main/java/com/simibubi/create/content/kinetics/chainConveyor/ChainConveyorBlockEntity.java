@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.api.contraption.transformable.ITransformableBlockEntity;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.kinetics.base.IRotate;
@@ -27,12 +28,15 @@ import com.simibubi.create.foundation.utility.ServerSpeedProvider;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.engine_room.flywheel.api.backend.BackendManager;
+import net.createmod.catnip.codecs.CatnipCodecUtils;
+import net.createmod.catnip.codecs.CatnipCodecs;
 import net.createmod.catnip.utility.Iterate;
 import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.math.AngleHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -52,7 +56,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITransformableBlockEntity {
 
@@ -660,47 +663,46 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 	}
 
 	@Override
-	public void writeSafe(CompoundTag tag) {
-		super.writeSafe(tag);
-		tag.put("Connections", NBTHelper.writeCompoundList(connections, NbtUtils::writeBlockPos));
+	public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
+		super.writeSafe(tag, registries);
+		tag.put("Connections", CatnipCodecUtils.encodeOrThrow(CatnipCodecs.set(BlockPos.CODEC), connections));
 	}
 
 	@Override
-	protected void write(CompoundTag compound, boolean clientPacket) {
-		super.write(compound, clientPacket);
+	protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(compound, registries, clientPacket);
 		if (clientPacket && chainDestroyedEffectToSend != null) {
 			compound.put("DestroyEffect", NbtUtils.writeBlockPos(chainDestroyedEffectToSend));
 			chainDestroyedEffectToSend = null;
 		}
 
-		compound.put("Connections", NBTHelper.writeCompoundList(connections, NbtUtils::writeBlockPos));
+		compound.put("Connections", CatnipCodecUtils.encodeOrThrow(CatnipCodecs.set(BlockPos.CODEC), connections));
 		compound.put("TravellingPackages", NBTHelper.writeCompoundList(travellingPackages.entrySet(), entry -> {
 			CompoundTag compoundTag = new CompoundTag();
 			compoundTag.put("Target", NbtUtils.writeBlockPos(entry.getKey()));
 			compoundTag.put("Packages", NBTHelper.writeCompoundList(entry.getValue(),
-				clientPacket ? ChainConveyorPackage::writeToClient : ChainConveyorPackage::write));
+				p -> clientPacket ? p.writeToClient(registries) : p.write(registries)));
 			return compoundTag;
 		}));
 		compound.put("LoopingPackages", NBTHelper.writeCompoundList(loopingPackages,
-			clientPacket ? ChainConveyorPackage::writeToClient : ChainConveyorPackage::write));
+			p -> clientPacket ? p.writeToClient(registries) : p.write(registries)));
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
-		super.read(compound, clientPacket);
+	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(compound, registries, clientPacket);
 		if (clientPacket && compound.contains("DestroyEffect") && level != null)
-			spawnDestroyParticles(NbtUtils.readBlockPos(compound.getCompound("DestroyEffect")));
+			spawnDestroyParticles(NbtUtils.readBlockPos(compound, "DestroyEffect").orElseThrow());
 
 		int sizeBefore = connections.size();
 		connections.clear();
-		NBTHelper.iterateCompoundList(compound.getList("Connections", Tag.TAG_COMPOUND),
-			c -> connections.add(NbtUtils.readBlockPos(c)));
+		connections.addAll(CatnipCodecUtils.decodeOrThrow(CatnipCodecs.set(BlockPos.CODEC), compound.get("Connections")));
 		travellingPackages.clear();
 		NBTHelper.iterateCompoundList(compound.getList("TravellingPackages", Tag.TAG_COMPOUND),
-			c -> travellingPackages.put(NbtUtils.readBlockPos(c.getCompound("Target")),
-				NBTHelper.readCompoundList(c.getList("Packages", Tag.TAG_COMPOUND), ChainConveyorPackage::read)));
+			c -> travellingPackages.put(NbtUtils.readBlockPos(c, "Target").orElseThrow(),
+				NBTHelper.readCompoundList(c.getList("Packages", Tag.TAG_COMPOUND), t -> ChainConveyorPackage.read(t, registries))));
 		loopingPackages = NBTHelper.readCompoundList(compound.getList("LoopingPackages", Tag.TAG_COMPOUND),
-			ChainConveyorPackage::read);
+			t -> ChainConveyorPackage.read(t, registries));
 		connectionStats = null;
 		updateBoxWorldPositions();
 		updateChainShapes();
@@ -746,9 +748,9 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 
 			if (!simulate) {
 				int remainingItems = count - Math.min(cost - found, count);
-				if (i == inv.selected)
-					stackInSlot.setTag(null);
-				ItemStack newItem = ItemHandlerHelper.copyStackWithSize(stackInSlot, remainingItems);
+				if (i == inv.selected) // TODO 1.21: Check if the BlockEntityTag component also needs to be removed
+					stackInSlot.remove(AllDataComponents.CLICK_TO_LINK_DATA);
+				ItemStack newItem = stackInSlot.copyWithCount(remainingItems);
 				if (offhand)
 					player.setItemInHand(InteractionHand.OFF_HAND, newItem);
 				else

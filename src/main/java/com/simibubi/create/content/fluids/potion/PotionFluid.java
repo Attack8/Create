@@ -1,26 +1,34 @@
 package com.simibubi.create.content.fluids.potion;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import io.netty.buffer.ByteBuf;
+
+import net.createmod.catnip.utility.lang.Lang;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.mojang.serialization.Codec;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.AllFluids.TintedFluidType;
 import com.simibubi.create.content.fluids.VirtualFluid;
 
-import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.NBTHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class PotionFluid extends VirtualFluid {
 
@@ -28,66 +36,67 @@ public class PotionFluid extends VirtualFluid {
 		super(properties);
 	}
 
-	public static FluidStack of(int amount, Potion potion) {
+	public static FluidStack of(int amount, PotionContents potionContents) {
 		FluidStack fluidStack = new FluidStack(AllFluids.POTION.get()
 			.getSource(), amount);
-		addPotionToFluidStack(fluidStack, potion);
+		addPotionToFluidStack(fluidStack, potionContents);
 		return fluidStack;
 	}
 
-	public static FluidStack withEffects(int amount, Potion potion, List<MobEffectInstance> customEffects) {
-		FluidStack fluidStack = of(amount, potion);
-		appendEffects(fluidStack, customEffects);
+	public static FluidStack withEffects(int amount, PotionContents potionContents) {
+		FluidStack fluidStack = of(amount, potionContents);
+		appendEffects(fluidStack, potionContents.customEffects());
 		return fluidStack;
 	}
 
-	public static FluidStack addPotionToFluidStack(FluidStack fs, Potion potion) {
-		ResourceLocation resourcelocation = CatnipServices.REGISTRIES.getKeyOrThrow(potion);
-		if (potion == Potions.EMPTY) {
-			fs.removeChildTag("Potion");
+	public static FluidStack addPotionToFluidStack(FluidStack fs, PotionContents potionContents) {
+		if (potionContents == PotionContents.EMPTY) {
+			fs.remove(DataComponents.POTION_CONTENTS);
 			return fs;
 		}
-		fs.getOrCreateTag()
-			.putString("Potion", resourcelocation.toString());
+		fs.set(DataComponents.POTION_CONTENTS, potionContents);
 		return fs;
 	}
 
 	public static FluidStack appendEffects(FluidStack fs, Collection<MobEffectInstance> customEffects) {
 		if (customEffects.isEmpty())
 			return fs;
-		CompoundTag compoundnbt = fs.getOrCreateTag();
-		ListTag listnbt = compoundnbt.getList("CustomPotionEffects", 9);
-		for (MobEffectInstance effectinstance : customEffects)
-			listnbt.add(effectinstance.save(new CompoundTag()));
-		compoundnbt.put("CustomPotionEffects", listnbt);
+		PotionContents contents = fs.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+		List<MobEffectInstance> effects = new ArrayList<>(customEffects);
+		effects.addAll(contents.customEffects());
+		fs.set(DataComponents.POTION_CONTENTS, new PotionContents(contents.potion(), contents.customColor(), effects));
 		return fs;
 	}
 
-	public enum BottleType {
+	public enum BottleType implements StringRepresentable {
 		REGULAR, SPLASH, LINGERING;
+
+		public static final Codec<BottleType> CODEC = StringRepresentable.fromEnum(BottleType::values);
+		public static final StreamCodec<ByteBuf, BottleType> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(BottleType.class);
+
+		@Override
+		public @NotNull String getSerializedName() {
+			return Lang.asId(name());
+		}
 	}
 
 	public static class PotionFluidType extends TintedFluidType {
 
-		public PotionFluidType(Properties properties, ResourceLocation stillTexture, ResourceLocation flowingTexture) {
+		public PotionFluidType(net.neoforged.neoforge.fluids.FluidType.Properties properties, ResourceLocation stillTexture, ResourceLocation flowingTexture) {
 			super(properties, stillTexture, flowingTexture);
 		}
 
 		@Override
 		public int getTintColor(FluidStack stack) {
-			CompoundTag tag = stack.getOrCreateTag();
-			int color = PotionUtils.getColor(PotionUtils.getAllEffects(tag)) | 0xff000000;
-			return color;
+			return stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getColor() | 0xff000000;
 		}
 
 		@Override
 		public String getDescriptionId(FluidStack stack) {
-			CompoundTag tag = stack.getOrCreateTag();
+			PotionContents contents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
 			ItemLike itemFromBottleType =
-				PotionFluidHandler.itemFromBottleType(NBTHelper.readEnum(tag, "Bottle", BottleType.class));
-			return PotionUtils.getPotion(tag)
-				.getName(itemFromBottleType.asItem()
-					.getDescriptionId() + ".effect.");
+				PotionFluidHandler.itemFromBottleType(stack.getOrDefault(AllDataComponents.POTION_FLUID_BOTTLE_TYPE, BottleType.REGULAR));
+			return Potion.getName(contents.potion(), itemFromBottleType.asItem().getDescriptionId() + ".effect.");
 		}
 
 		@Override

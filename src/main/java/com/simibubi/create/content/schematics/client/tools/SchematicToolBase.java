@@ -17,6 +17,7 @@ import net.createmod.catnip.utility.AnimationTickHolder;
 import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.outliner.AABBOutline;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -25,7 +26,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
 
 public abstract class SchematicToolBase implements ISchematicTool {
 
@@ -125,7 +125,7 @@ public abstract class SchematicToolBase implements ISchematicTool {
 	public void renderTool(PoseStack ms, SuperRenderTypeBuffer buffer, Vec3 camera) {}
 
 	@Override
-	public void renderOverlay(ForgeGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {}
+	public void renderOverlay(Gui gui, GuiGraphics graphics, float partialTicks, int width, int height) {}
 
 	@Override
 	public void renderOnSchematic(PoseStack ms, SuperRenderTypeBuffer buffer) {

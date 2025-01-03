@@ -1,17 +1,32 @@
 package com.simibubi.create.content.kinetics.deployer;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipeSerializer;
+import com.simibubi.create.infrastructure.codec.CombiningCodec;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class ItemApplicationRecipe extends ProcessingRecipe<RecipeWrapper> {
+
+	public static <T extends ProcessingRecipe<?>> MapCodec<T> codec(AllRecipeTypes recipeTypes) {
+		return CombiningCodec.ofExtending(
+			ProcessingRecipeSerializer.codec(recipeTypes),
+			Codec.BOOL.optionalFieldOf("keepHeldItem", false),
+			(parent, keepHeldItem) -> {
+				if (parent instanceof ItemApplicationRecipe iar)
+					iar.keepHeldItem = keepHeldItem;
+				return parent;
+			},
+			recipe -> recipe instanceof ItemApplicationRecipe iar && iar.keepHeldItem
+		);
+	}
 
 	private boolean keepHeldItem;
 
@@ -49,19 +64,6 @@ public class ItemApplicationRecipe extends ProcessingRecipe<RecipeWrapper> {
 		if (ingredients.isEmpty())
 			throw new IllegalStateException("Item Application Recipe: " + id.toString() + " has no ingredient!");
 		return ingredients.get(0);
-	}
-
-	@Override
-	public void readAdditional(JsonObject json) {
-		super.readAdditional(json);
-		keepHeldItem = GsonHelper.getAsBoolean(json, "keepHeldItem", false);
-	}
-
-	@Override
-	public void writeAdditional(JsonObject json) {
-		super.writeAdditional(json);
-		if (keepHeldItem)
-			json.addProperty("keepHeldItem", keepHeldItem);
 	}
 
 	@Override

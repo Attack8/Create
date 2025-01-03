@@ -17,6 +17,7 @@ import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
@@ -31,13 +32,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 public class MountedStorageManager {
 
@@ -89,14 +90,14 @@ public class MountedStorageManager {
 			fluidStorage.put(localPos, new MountedFluidStorage(be));
 	}
 
-	public void read(CompoundTag nbt, Map<BlockPos, BlockEntity> presentBlockEntities, boolean clientPacket) {
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, Map<BlockPos, BlockEntity> presentBlockEntities, boolean clientPacket) {
 		storage.clear();
 		NBTHelper.iterateCompoundList(nbt.getList("Storage", Tag.TAG_COMPOUND), c -> storage
-			.put(NbtUtils.readBlockPos(c.getCompound("Pos")), MountedStorage.deserialize(c.getCompound("Data"))));
+			.put(NbtUtils.readBlockPos(c, "Pos").orElseThrow(), MountedStorage.deserialize(c.getCompound("Data"), registries)));
 
 		fluidStorage.clear();
 		NBTHelper.iterateCompoundList(nbt.getList("FluidStorage", Tag.TAG_COMPOUND), c -> fluidStorage
-			.put(NbtUtils.readBlockPos(c.getCompound("Pos")), MountedFluidStorage.deserialize(c.getCompound("Data"))));
+			.put(NbtUtils.readBlockPos(c, "Pos").orElseThrow(), MountedFluidStorage.deserialize(c.getCompound("Data"), registries)));
 
 		if (clientPacket && presentBlockEntities != null)
 			bindTanks(presentBlockEntities);
@@ -133,7 +134,7 @@ public class MountedStorageManager {
 		});
 	}
 
-	public void write(CompoundTag nbt, boolean clientPacket) {
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		ListTag storageNBT = new ListTag();
 		if (!clientPacket)
 			for (BlockPos pos : storage.keySet()) {
@@ -142,7 +143,7 @@ public class MountedStorageManager {
 				if (!mountedStorage.isValid())
 					continue;
 				c.put("Pos", NbtUtils.writeBlockPos(pos));
-				c.put("Data", mountedStorage.serialize());
+				c.put("Data", mountedStorage.serialize(registries));
 				storageNBT.add(c);
 			}
 
@@ -153,7 +154,7 @@ public class MountedStorageManager {
 			if (!mountedStorage.isValid())
 				continue;
 			c.put("Pos", NbtUtils.writeBlockPos(pos));
-			c.put("Data", mountedStorage.serialize());
+			c.put("Data", mountedStorage.serialize(registries));
 			fluidStorageNBT.add(c);
 		}
 

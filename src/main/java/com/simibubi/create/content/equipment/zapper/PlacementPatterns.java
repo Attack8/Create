@@ -5,21 +5,32 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import com.google.common.base.Predicates;
+import com.mojang.serialization.Codec;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.foundation.gui.AllIcons;
 
 import net.createmod.catnip.utility.lang.Lang;
+
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 
-public enum PlacementPatterns {
+import io.netty.buffer.ByteBuf;
 
+import org.jetbrains.annotations.NotNull;
+
+public enum PlacementPatterns implements StringRepresentable {
 	Solid(AllIcons.I_PATTERN_SOLID),
 	Checkered(AllIcons.I_PATTERN_CHECKERED),
 	InverseCheckered(AllIcons.I_PATTERN_CHECKERED_INVERSED),
 	Chance25(AllIcons.I_PATTERN_CHANCE_25),
 	Chance50(AllIcons.I_PATTERN_CHANCE_50),
 	Chance75(AllIcons.I_PATTERN_CHANCE_75);
+
+	public static final Codec<PlacementPatterns> CODEC = StringRepresentable.fromValues(PlacementPatterns::values);
+	public static final StreamCodec<ByteBuf, PlacementPatterns> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(PlacementPatterns.class);
 
 	public final String translationKey;
 	public final AllIcons icon;
@@ -30,9 +41,7 @@ public enum PlacementPatterns {
 	}
 
 	public static void applyPattern(List<BlockPos> blocksIn, ItemStack stack) {
-		CompoundTag tag = stack.getTag();
-		PlacementPatterns pattern =
-			!tag.contains("Pattern") ? Solid : valueOf(tag.getString("Pattern"));
+		PlacementPatterns pattern = stack.getOrDefault(AllDataComponents.PLACEMENT_PATTERN, Solid);
 		Random r = new Random();
 		Predicate<BlockPos> filter = Predicates.alwaysFalse();
 
@@ -60,4 +69,8 @@ public enum PlacementPatterns {
 		blocksIn.removeIf(filter);
 	}
 
+	@Override
+	public @NotNull String getSerializedName() {
+		return Lang.asId(name());
+	}
 }

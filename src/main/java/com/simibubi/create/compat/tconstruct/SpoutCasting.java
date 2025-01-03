@@ -5,23 +5,24 @@ import com.simibubi.create.compat.Mods;
 import com.simibubi.create.content.fluids.spout.SpoutBlockEntity;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.infrastructure.config.AllConfigs;
-import net.createmod.catnip.platform.CatnipServices;
+
+import net.createmod.catnip.utility.RegisteredObjectsHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class SpoutCasting extends BlockSpoutingBehaviour {
 
 	private static final boolean TICON_PRESENT = Mods.TCONSTRUCT.isLoaded();
 
-	ResourceLocation TABLE = new ResourceLocation("tconstruct", "table");
-	ResourceLocation BASIN = new ResourceLocation("tconstruct", "basin");
+	ResourceLocation TABLE = ResourceLocation.fromNamespaceAndPath("tconstruct", "table");
+	ResourceLocation BASIN = ResourceLocation.fromNamespaceAndPath("tconstruct", "basin");
 
 	@Override
 	public int fillBlock(Level level, BlockPos pos, SpoutBlockEntity spout, FluidStack availableFluid,
@@ -33,21 +34,20 @@ public class SpoutCasting extends BlockSpoutingBehaviour {
 		if (blockEntity == null)
 			return 0;
 
-		IFluidHandler handler = blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, Direction.UP)
-			.orElse(null);
+		IFluidHandler handler = level.getCapability(Capabilities.FluidHandler.BLOCK, blockEntity.getBlockPos(), Direction.UP);
 		if (handler == null)
 			return 0;
 		if (handler.getTanks() != 1)
 			return 0;
 
-		ResourceLocation registryName = CatnipServices.REGISTRIES.getKeyOrThrow(blockEntity.getType());
+		ResourceLocation registryName = RegisteredObjectsHelper.getKeyOrThrow(blockEntity.getType());
 		if (!registryName.equals(TABLE) && !registryName.equals(BASIN))
 			return 0;
 		if (!handler.isFluidValid(0, availableFluid))
 			return 0;
 
 		FluidStack containedFluid = handler.getFluidInTank(0);
-		if (!(containedFluid.isEmpty() || containedFluid.isFluidEqual(availableFluid)))
+		if (!(containedFluid.isEmpty() || FluidStack.isSameFluidSameComponents(containedFluid, availableFluid)))
 			return 0;
 
 		// Do not fill if it would only partially fill the table (unless > 1000mb)

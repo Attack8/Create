@@ -21,8 +21,8 @@ public class FixLightingCommand {
 				);
 
 				ctx.getSource()
-					.sendSuccess(() -> 
-						Components.literal("Forge's experimental block rendering pipeline is now enabled."), true);
+					.sendSuccess(() ->
+						Components.literal("NeoForge's experimental block rendering pipeline is now enabled."), true);
 
 				return 1;
 			});

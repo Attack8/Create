@@ -21,7 +21,7 @@ public class CreateMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		if (targetClassName.equals("journeymap/client/ui/fullscreen/Fullscreen") && !Mods.JOURNEYMAP.isLoaded())
+		if (mixinClassName.equals("compat/journeymap") && !Mods.JOURNEYMAP.isLoaded())
 			return false;
 		return true;
 	}

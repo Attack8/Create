@@ -1,9 +1,9 @@
 package com.simibubi.create.content.kinetics.chainConveyor;
 
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity.ConnectionStats;
 import com.simibubi.create.foundation.utility.ServerSpeedProvider;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.AnimationTickHolder;
 import net.createmod.catnip.utility.VecHelper;
 import net.minecraft.client.Minecraft;
@@ -96,14 +96,12 @@ public class ChainConveyorRidingHandler {
 			.scale(0.75)
 			.add(diff.scale(0.25)));
 		if (AnimationTickHolder.getTicks() % 10 == 0)
-			AllPackets.getChannel()
-				.sendToServer(new ServerboundChainConveyorRidingPacket(ridingChainConveyor, false));
+			CatnipServices.NETWORK.sendToServer(new ServerboundChainConveyorRidingPacket(ridingChainConveyor, false));
 	}
 
 	private static void stopRiding() {
 		if (ridingChainConveyor != null)
-			AllPackets.getChannel()
-				.sendToServer(new ServerboundChainConveyorRidingPacket(ridingChainConveyor, true));
+			CatnipServices.NETWORK.sendToServer(new ServerboundChainConveyorRidingPacket(ridingChainConveyor, true));
 		ridingChainConveyor = null;
 		ridingConnection = null;
 		Minecraft.getInstance()

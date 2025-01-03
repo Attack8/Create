@@ -19,14 +19,13 @@ import com.simibubi.create.infrastructure.debugInfo.element.InfoEntry;
 import dev.engine_room.flywheel.api.Flywheel;
 import dev.engine_room.flywheel.api.backend.Backend;
 import dev.engine_room.flywheel.api.backend.BackendManager;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.SharedConstants;
 import net.minecraft.SystemReport;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.forgespi.language.IModInfo;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforgespi.language.IModInfo;
 import oshi.SystemInfo;
 
 /**
@@ -69,11 +68,11 @@ public class DebugInformation {
 	static {
 		DebugInfoSection.builder(Create.NAME)
 				.put("Mod Version", Create.VERSION)
-				.put("Forge Version", getVersionOfMod("forge"))
+				.put("NeoForge Version", getVersionOfMod("neoforge"))
 				.put("Minecraft Version", SharedConstants.getCurrentVersion().getName())
 				.buildTo(DebugInformation::registerBothInfo);
 
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+		CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> {
 			DebugInfoSection.builder("Graphics")
 					.put("Flywheel Version", ModList.get()
 							.getModContainerById(Flywheel.ID)
@@ -112,7 +111,7 @@ public class DebugInformation {
 	public static Collection<InfoElement> listAllOtherMods() {
 		List<InfoElement> mods = new ArrayList<>();
 		ModList.get().forEachModContainer((id, mod) -> {
-			if (!id.equals(Create.ID) && !id.equals("forge") && !id.equals("minecraft") && !id.equals("flywheel")) {
+			if (!id.equals(Create.ID) && !id.equals("neoforge") && !id.equals("minecraft") && !id.equals("flywheel")) {
 				IModInfo info = mod.getModInfo();
 				String name = info.getDisplayName();
 				String version = info.getVersion().toString();

@@ -13,14 +13,14 @@ import com.simibubi.create.foundation.utility.AttachedRegistry;
 import com.simibubi.create.foundation.utility.BlockHelper;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class BoilerHeaters {
-	private static final AttachedRegistry<Block, Heater> BLOCK_HEATERS = new AttachedRegistry<>(ForgeRegistries.BLOCKS);
+	private static final AttachedRegistry<Block, Heater> BLOCK_HEATERS = new AttachedRegistry<>(BuiltInRegistries.BLOCK);
 	private static final List<HeaterProvider> GLOBAL_HEATERS = new ArrayList<>();
 
 	public static void registerHeater(ResourceLocation block, Heater heater) {

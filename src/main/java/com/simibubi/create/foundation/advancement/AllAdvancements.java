@@ -23,11 +23,12 @@ import com.simibubi.create.content.logistics.box.PackageStyles;
 import com.simibubi.create.foundation.advancement.CreateAdvancement.Builder;
 
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.PackOutput.PathProvider;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -231,47 +232,47 @@ public class AllAdvancements implements DataProvider {
 			.special(SECRET)),
 
 		// Logistics
-		
+
 		CARDBOARD = create("cardboard", b -> b.icon(AllItems.CARDBOARD)
 			.title("Part and Parcel")
 			.description("Produce or obtain your first Cardboard")
 			.whenIconCollected()
 			.after(MIXER)),
-		
+
 		PACKAGER = create("packager", b -> b.icon(AllBlocks.PACKAGER)
 			.title("Post Production")
 			.description("Package items from an inventory using the Packager")
 			.after(CARDBOARD)),
-		
+
 		STOCK_TICKER = create("stock_ticker", b -> b.icon(AllBlocks.STOCK_TICKER)
 			.title("Order Up!")
 			.description("Employ a mob at your stock ticker and make your first requests")
 			.special(NOISY)
 			.after(PACKAGER)),
-		
+
 		FROGPORT = create("frogport", b -> b.icon(AllBlocks.PACKAGE_FROGPORT)
 			.title("Hungry hoppers")
 			.description("Catch packages from your Chain Conveyor using a Frogport")
 			.special(NOISY)
 			.after(STOCK_TICKER)),
-		
+
 		TABLE_CLOTH_SHOP = create("table_cloth_shop", b -> b.icon(AllBlocks.TABLE_CLOTHS.get(DyeColor.RED))
 			.title("Open for business")
 			.description("Put items up for sale using a Table Cloth")
 			.special(NOISY)
 			.after(FROGPORT)),
-		
+
 		FACTORY_GAUGE = create("factory_gauge", b -> b.icon(AllBlocks.FACTORY_GAUGE)
 			.title("High Logistics")
 			.description("Trigger an automatic package request using Factory Gauges")
 			.special(NOISY)
 			.after(TABLE_CLOTH_SHOP)),
-		
+
 		CARDBOARD_ARMOR = create("cardboard_armor", b -> b.icon(AllItems.CARDBOARD_CHESTPLATE)
 			.title("Full Stealth")
 			.description("Sneak around in full Cardboard Armor")
 			.after(FACTORY_GAUGE)),
-		
+
 		// Logistics - Secret
 
 		PACKAGE_CHUTE_THROW = create("package_chute_throw", b -> b.icon(PackageStyles.getDefaultBox())
@@ -663,12 +664,13 @@ public class AllAdvancements implements DataProvider {
 
 	private static ItemStack createArmorTrimmedCardboardChestplate() {
 		ItemStack asStack = AllItems.CARDBOARD_CHESTPLATE.asStack();
-		CompoundTag tag = new CompoundTag();
-		CompoundTag trimTag = new CompoundTag();
-		trimTag.putString("material", "minecraft:diamond");
-		trimTag.putString("pattern", "minecraft:sentry");
-		tag.put("Trim", trimTag);
-		asStack.setTag(tag);
+		// FIXME 1.21.1: Swap to components
+//		CompoundTag tag = new CompoundTag();
+//		CompoundTag trimTag = new CompoundTag();
+//		trimTag.putString("material", "minecraft:diamond");
+//		trimTag.putString("pattern", "minecraft:sentry");
+//		tag.put("Trim", trimTag);
+//		asStack.setTag(tag);
 		return asStack;
 	}
 
@@ -679,30 +681,34 @@ public class AllAdvancements implements DataProvider {
 	// Datagen
 
 	private final PackOutput output;
+	private final CompletableFuture<HolderLookup.Provider> registries;
 
-	public AllAdvancements(PackOutput output) {
+	public AllAdvancements(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 		this.output = output;
+		this.registries = registries;
 	}
 
 	@Override
 	public CompletableFuture<?> run(CachedOutput cache) {
-		PathProvider pathProvider = output.createPathProvider(PackOutput.Target.DATA_PACK, "advancements");
-		List<CompletableFuture<?>> futures = new ArrayList<>();
+		return this.registries.thenCompose(provider -> {
+			PathProvider pathProvider = output.createPathProvider(PackOutput.Target.DATA_PACK, "advancement");
+			List<CompletableFuture<?>> futures = new ArrayList<>();
 
-		Set<ResourceLocation> set = Sets.newHashSet();
-		Consumer<Advancement> consumer = (advancement) -> {
-			ResourceLocation id = advancement.getId();
-			if (!set.add(id))
-				throw new IllegalStateException("Duplicate advancement " + id);
-			Path path = pathProvider.json(id);
-			futures.add(DataProvider.saveStable(cache, advancement.deconstruct()
-				.serializeToJson(), path));
-		};
+			Set<ResourceLocation> set = Sets.newHashSet();
+			Consumer<AdvancementHolder> consumer = (advancement) -> {
+				ResourceLocation id = advancement.id();
+				if (!set.add(id))
+					throw new IllegalStateException("Duplicate advancement " + id);
+				Path path = pathProvider.json(id);
+				LOGGER.info("Saving advancement {}", id);
+				futures.add(DataProvider.saveStable(cache, provider, Advancement.CODEC, advancement.value(), path));
+			};
 
-		for (CreateAdvancement advancement : ENTRIES)
-			advancement.save(consumer);
+			for (CreateAdvancement advancement : ENTRIES)
+				advancement.save(consumer);
 
-		return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+			return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
+		});
 	}
 
 	@Override

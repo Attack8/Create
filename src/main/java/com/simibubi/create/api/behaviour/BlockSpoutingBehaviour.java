@@ -8,7 +8,7 @@ import com.simibubi.create.impl.behaviour.BlockSpoutingBehaviourImpl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public abstract class BlockSpoutingBehaviour {
 	/**

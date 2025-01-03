@@ -19,6 +19,7 @@ import com.simibubi.create.content.trains.signal.SingleBlockEntityEdgePoint;
 
 import net.createmod.catnip.utility.NBTHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
@@ -29,10 +30,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class GlobalStation extends SingleBlockEntityEdgePoint {
 
@@ -57,8 +58,8 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 	}
 
 	@Override
-	public void read(CompoundTag nbt, boolean migration, DimensionPalette dimensions) {
-		super.read(nbt, migration, dimensions);
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean migration, DimensionPalette dimensions) {
+		super.read(nbt, registries, migration, dimensions);
 		name = nbt.getString("Name");
 		assembling = nbt.getBoolean("Assembling");
 		nearestTrain = new WeakReference<Train>(null);
@@ -68,9 +69,9 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 		NBTHelper.iterateCompoundList(portList, c -> {
 			GlobalPackagePort port = new GlobalPackagePort();
 			port.address = c.getString("Address");
-			port.offlineBuffer.deserializeNBT(c.getCompound("OfflineBuffer"));
+			port.offlineBuffer.deserializeNBT(registries, c.getCompound("OfflineBuffer"));
 			port.primed = c.getBoolean("Primed");
-			connectedPorts.put(NbtUtils.readBlockPos(c.getCompound("Pos")), port);
+			connectedPorts.put(NbtUtils.readBlockPos(c, "Pos").orElseThrow(), port);
 		});
 	}
 
@@ -84,15 +85,15 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 	}
 
 	@Override
-	public void write(CompoundTag nbt, DimensionPalette dimensions) {
-		super.write(nbt, dimensions);
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, DimensionPalette dimensions) {
+		super.write(nbt, registries, dimensions);
 		nbt.putString("Name", name);
 		nbt.putBoolean("Assembling", assembling);
 
 		nbt.put("Ports", NBTHelper.writeCompoundList(connectedPorts.entrySet(), e -> {
 			CompoundTag c = new CompoundTag();
 			c.putString("Address", e.getValue().address);
-			c.put("OfflineBuffer", e.getValue().offlineBuffer.serializeNBT());
+			c.put("OfflineBuffer", e.getValue().offlineBuffer.serializeNBT(registries));
 			c.putBoolean("Primed", e.getValue().primed);
 			c.put("Pos", NbtUtils.writeBlockPos(e.getKey()));
 			return c;
@@ -215,7 +216,7 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 					carriageInventory.setStackInSlot(slot, ItemStack.EMPTY);
 					if (box != null)
 						box.spawnParticles();
-					
+
 					break;
 				}
 			}

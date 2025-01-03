@@ -22,10 +22,10 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.fluids.FluidInteractionRegistry.FluidInteraction;
-import net.minecraftforge.fluids.FluidInteractionRegistry.HasFluidInteraction;
-import net.minecraftforge.fluids.FluidInteractionRegistry.InteractionInformation;
-import net.minecraftforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry.FluidInteraction;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry.HasFluidInteraction;
+import net.neoforged.neoforge.fluids.FluidInteractionRegistry.InteractionInformation;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public class CobbleGenOptimisation {
 

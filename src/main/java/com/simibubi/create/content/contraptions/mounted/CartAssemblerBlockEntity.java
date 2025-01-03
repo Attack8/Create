@@ -3,12 +3,12 @@ package com.simibubi.create.content.contraptions.mounted;
 import java.util.List;
 import java.util.UUID;
 
+import com.simibubi.create.AllAttachmentTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.contraptions.AssemblyException;
 import com.simibubi.create.content.contraptions.IDisplayAssemblyExceptions;
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity;
 import com.simibubi.create.content.contraptions.minecart.CouplingHandler;
-import com.simibubi.create.content.contraptions.minecart.capability.CapabilityMinecartController;
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartController;
 import com.simibubi.create.content.redstone.rail.ControllerRailBlock;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
@@ -28,6 +28,7 @@ import net.createmod.catnip.utility.lang.Lang;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -39,10 +40,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
-@EventBusSubscriber
 public class CartAssemblerBlockEntity extends SmartBlockEntity implements IDisplayAssemblyExceptions {
 	private static final int assemblyCooldown = 8;
 
@@ -120,10 +118,8 @@ public class CartAssemblerBlockEntity extends SmartBlockEntity implements IDispl
 			.isEmpty())
 			return;
 
-		LazyOptional<MinecartController> optional =
-			cart.getCapability(CapabilityMinecartController.MINECART_CONTROLLER_CAPABILITY);
-		if (optional.isPresent() && optional.orElse(null)
-			.isCoupledThroughContraption())
+		MinecartController optional = cart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+		if (optional != MinecartController.empty() && optional.isCoupledThroughContraption())
 			return;
 
 		CartMovementMode mode = CartMovementMode.values()[movementMode.value];
@@ -169,10 +165,12 @@ public class CartAssemblerBlockEntity extends SmartBlockEntity implements IDispl
 		entity.startRiding(cart);
 
 		if (cart instanceof MinecartFurnace) {
-			CompoundTag nbt = cart.serializeNBT();
-			nbt.putDouble("PushZ", 0);
-			nbt.putDouble("PushX", 0);
-			cart.deserializeNBT(nbt);
+			CompoundTag nbt = new CompoundTag();
+			if (cart.save(nbt)) {
+				nbt.putDouble("PushZ", 0);
+				nbt.putDouble("PushX", 0);
+				cart.load(nbt);
+			}
 		}
 
 		if (contraption.containsBlockBreakers())
@@ -225,10 +223,11 @@ public class CartAssemblerBlockEntity extends SmartBlockEntity implements IDispl
 	protected void disassembleCart(AbstractMinecart cart) {
 		cart.ejectPassengers();
 		if (cart instanceof MinecartFurnace) {
-			CompoundTag nbt = cart.serializeNBT();
+			CompoundTag nbt = new CompoundTag();
+			cart.saveAsPassenger(nbt);
 			nbt.putDouble("PushZ", cart.getDeltaMovement().x);
 			nbt.putDouble("PushX", cart.getDeltaMovement().z);
-			cart.deserializeNBT(nbt);
+			cart.load(nbt);
 		}
 	}
 
@@ -241,15 +240,15 @@ public class CartAssemblerBlockEntity extends SmartBlockEntity implements IDispl
 	}
 
 	@Override
-	public void write(CompoundTag compound, boolean clientPacket) {
-		AssemblyException.write(compound, lastException);
-		super.write(compound, clientPacket);
+	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		AssemblyException.write(compound, registries, lastException);
+		super.write(compound, registries, clientPacket);
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
-		lastException = AssemblyException.read(compound);
-		super.read(compound, clientPacket);
+	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		lastException = AssemblyException.read(compound, registries);
+		super.read(compound, registries, clientPacket);
 	}
 
 	@Override

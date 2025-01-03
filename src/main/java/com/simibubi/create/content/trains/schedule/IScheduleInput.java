@@ -10,12 +10,13 @@ import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import net.createmod.catnip.utility.Pair;
 import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public interface IScheduleInput {
 
@@ -25,7 +26,7 @@ public interface IScheduleInput {
 
 	public abstract CompoundTag getData();
 
-	public abstract void setData(CompoundTag data);
+	public abstract void setData(HolderLookup.Provider registries, CompoundTag data);
 
 	public default int slotsTargeted() {
 		return 0;

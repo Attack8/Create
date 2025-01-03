@@ -16,23 +16,23 @@ import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.item.ItemHelper;
 
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
+import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
-import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.utility.RegisteredObjectsHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 @ParametersAreNonnullByDefault
 public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
@@ -43,51 +43,53 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 		super(info);
 	}
 
-	public static void consumeRecipes(Consumer<FillingRecipe> consumer, IIngredientManager ingredientManager) {
-		Collection<FluidStack> fluidStacks = ingredientManager.getAllIngredients(ForgeTypes.FLUID_STACK);
+	public static void consumeRecipes(Consumer<RecipeHolder<FillingRecipe>> consumer, IIngredientManager ingredientManager) {
+		Collection<FluidStack> fluidStacks = ingredientManager.getAllIngredients(NeoForgeTypes.FLUID_STACK);
 		for (ItemStack stack : ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK)) {
 			if (PotionFluidHandler.isPotionItem(stack)) {
 				FluidStack fluidFromPotionItem = PotionFluidHandler.getFluidFromPotionItem(stack);
 				Ingredient bottle = Ingredient.of(Items.GLASS_BOTTLE);
-				consumer.accept(new ProcessingRecipeBuilder<>(FillingRecipe::new, Create.asResource("potions"))
-					.withItemIngredients(bottle)
-					.withFluidIngredients(FluidIngredient.fromFluidStack(fluidFromPotionItem))
-					.withSingleItemOutput(stack)
-					.build());
+				ResourceLocation id = Create.asResource("potions");
+				FillingRecipe recipe = new ProcessingRecipeBuilder<>(FillingRecipe::new, id)
+						.withItemIngredients(bottle)
+						.withFluidIngredients(FluidIngredient.fromFluidStack(fluidFromPotionItem))
+						.withSingleItemOutput(stack)
+						.build();
+				consumer.accept(new RecipeHolder<>(id, recipe));
 				continue;
 			}
 
-			LazyOptional<IFluidHandlerItem> capability =
-				stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM);
-			if (!capability.isPresent())
+			IFluidHandlerItem capability = stack.getCapability(Capabilities.FluidHandler.ITEM);
+			if (capability == null)
 				continue;
 
 			for (FluidStack fluidStack : fluidStacks) {
 				ItemStack copy = stack.copy();
-				copy.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM)
-					.ifPresent(fhi -> {
-						if (!GenericItemFilling.isFluidHandlerValid(copy, fhi))
-							return;
-						FluidStack fluidCopy = fluidStack.copy();
-						fluidCopy.setAmount(1000);
-						fhi.fill(fluidCopy, FluidAction.EXECUTE);
-						ItemStack container = fhi.getContainer();
-						if (ItemHelper.sameItem(container, copy))
-							return;
-						if (container.isEmpty())
-							return;
+				IFluidHandlerItem fhi = copy.getCapability(Capabilities.FluidHandler.ITEM);
+				if (fhi != null) {
+					if (!GenericItemFilling.isFluidHandlerValid(copy, fhi))
+						return;
+					FluidStack fluidCopy = fluidStack.copy();
+					fluidCopy.setAmount(1000);
+					fhi.fill(fluidCopy, FluidAction.EXECUTE);
+					ItemStack container = fhi.getContainer();
+					if (ItemHelper.sameItem(container, copy))
+						return;
+					if (container.isEmpty())
+						return;
 
-						Ingredient bucket = Ingredient.of(stack);
-						ResourceLocation itemName = CatnipServices.REGISTRIES.getKeyOrThrow(stack.getItem());
-						ResourceLocation fluidName = CatnipServices.REGISTRIES.getKeyOrThrow(fluidCopy.getFluid());
-						consumer.accept(new ProcessingRecipeBuilder<>(FillingRecipe::new,
-							Create.asResource("fill_" + itemName.getNamespace() + "_" + itemName.getPath()
-								+ "_with_" + fluidName.getNamespace() + "_" + fluidName.getPath()))
-									.withItemIngredients(bucket)
-									.withFluidIngredients(FluidIngredient.fromFluidStack(fluidCopy))
-									.withSingleItemOutput(container)
-									.build());
-					});
+					Ingredient bucket = Ingredient.of(stack);
+					ResourceLocation itemName = RegisteredObjectsHelper.getKeyOrThrow(stack.getItem());
+					ResourceLocation fluidName = RegisteredObjectsHelper.getKeyOrThrow(fluidCopy.getFluid());
+					ResourceLocation id = Create.asResource("fill_" + itemName.getNamespace() + "_" + itemName.getPath()
+							+ "_with_" + fluidName.getNamespace() + "_" + fluidName.getPath());
+					FillingRecipe recipe = new ProcessingRecipeBuilder<>(FillingRecipe::new, id)
+							.withItemIngredients(bucket)
+							.withFluidIngredients(FluidIngredient.fromFluidStack(fluidCopy))
+							.withSingleItemOutput(container)
+							.build();
+					consumer.accept(new RecipeHolder<>(id, recipe));
+				}
 			}
 		}
 	}
@@ -101,7 +103,7 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 		builder
 				.addSlot(RecipeIngredientRole.INPUT, 27, 32)
 				.setBackground(getRenderedSlot(), -1, -1)
-				.addIngredients(ForgeTypes.FLUID_STACK, withImprovedVisibility(recipe.getRequiredFluid().getMatchingFluidStacks()))
+				.addIngredients(NeoForgeTypes.FLUID_STACK, withImprovedVisibility(recipe.getRequiredFluid().getMatchingFluidStacks()))
 				.addTooltipCallback(addFluidTooltip(recipe.getRequiredFluid().getRequiredAmount()));
 		builder
 				.addSlot(RecipeIngredientRole.OUTPUT, 132, 51)

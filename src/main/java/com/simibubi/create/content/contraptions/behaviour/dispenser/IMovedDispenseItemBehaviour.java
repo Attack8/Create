@@ -4,6 +4,7 @@ import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -21,7 +22,7 @@ import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -41,7 +42,7 @@ public interface IMovedDispenseItemBehaviour {
 				if (!(itemStack.getItem() instanceof SpawnEggItem))
 					return super.dispenseStack(itemStack, context, pos, facing);
 				if (context.world instanceof ServerLevel) {
-					EntityType<?> entityType = ((SpawnEggItem) itemStack.getItem()).getType(itemStack.getTag());
+					EntityType<?> entityType = ((SpawnEggItem) itemStack.getItem()).getType(itemStack);
 					Entity spawnedEntity = entityType.spawn((ServerLevel) context.world, itemStack, null,
 						pos.offset(BlockPos.containing(facing.x + .7, facing.y + .7, facing.z + .7)), MobSpawnType.DISPENSER, facing.y < .5,
 						false);
@@ -60,8 +61,8 @@ public interface IMovedDispenseItemBehaviour {
 	static void init() {
 		MovedProjectileDispenserBehaviour movedPotionDispenseItemBehaviour = new MovedProjectileDispenserBehaviour() {
 			@Override
-			protected Projectile getProjectileEntity(Level world, double x, double y, double z, ItemStack itemStack) {
-				return Util.make(new ThrownPotion(world, x, y, z), (p_218411_1_) -> p_218411_1_.setItem(itemStack));
+			protected Projectile getProjectileEntity(Level world, double x, double y, double z, ItemStack itemStack, Direction facing) {
+				return Util.make(new ThrownPotion(world, x, y, z), (thrownPotion) -> thrownPotion.setItem(itemStack));
 			}
 
 			protected float getProjectileInaccuracy() {
@@ -134,10 +135,10 @@ public interface IMovedDispenseItemBehaviour {
 					double z = pos.getZ() + facing.z * .7 + .5;
 					context.world.addFreshEntity(Util.make(
 						new SmallFireball(context.world, x, y, z,
-							random.nextGaussian() * 0.05D + facing.x + context.motion.x,
+							new Vec3(random.nextGaussian() * 0.05D + facing.x + context.motion.x,
 							random.nextGaussian() * 0.05D + facing.y + context.motion.y,
-							random.nextGaussian() * 0.05D + facing.z + context.motion.z),
-						(p_229425_1_) -> p_229425_1_.setItem(itemStack)));
+							random.nextGaussian() * 0.05D + facing.z + context.motion.z).normalize()),
+						(smallFireball) -> smallFireball.setItem(itemStack)));
 					itemStack.shrink(1);
 					return itemStack;
 				}
@@ -162,7 +163,7 @@ public interface IMovedDispenseItemBehaviour {
 						.is(FluidTags.WATER)) {
 						this.successful = true;
 						return placeItemInInventory(itemStack,
-							PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER), context, pos, facing);
+							PotionContents.createItemStack(Items.POTION, Potions.WATER), context, pos, facing);
 					} else {
 						return super.dispenseStack(itemStack, context, pos, facing);
 					}
@@ -178,7 +179,7 @@ public interface IMovedDispenseItemBehaviour {
 					BlockState state = context.world.getBlockState(interactAt);
 					Block block = state.getBlock();
 					if (block instanceof BucketPickup) {
-						ItemStack bucket = ((BucketPickup) block).pickupBlock(context.world, interactAt, state);
+						ItemStack bucket = ((BucketPickup) block).pickupBlock(null, context.world, interactAt, state);
 						return placeItemInInventory(itemStack, bucket, context, pos, facing);
 					}
 					return super.dispenseStack(itemStack, context, pos, facing);

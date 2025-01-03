@@ -95,7 +95,7 @@ public class FanProcessing {
 		CompoundTag processing = createData.getCompound("Processing");
 
 		if (!processing.contains("Type") || AllFanProcessingTypes.parseLegacy(processing.getString("Type")) != type) {
-			ResourceLocation key = AllRegistries.FAN_PROCESSING_TYPES.get().getKey(type);
+			ResourceLocation key = AllRegistries.FAN_PROCESSING_TYPES.getKey(type);
 			if (key == null)
 				throw new IllegalArgumentException("Could not get id for FanProcessingType " + type + "!");
 

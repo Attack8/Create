@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
+import net.minecraft.core.HolderLookup;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.simibubi.create.content.contraptions.AssemblyException;
@@ -102,8 +104,8 @@ public class ClockworkContraption extends Contraption {
 	}
 
 	@Override
-	public CompoundTag writeNBT(boolean spawnPacket) {
-		CompoundTag tag = super.writeNBT(spawnPacket);
+	public CompoundTag writeNBT(HolderLookup.Provider registries, boolean spawnPacket) {
+		CompoundTag tag = super.writeNBT(registries, spawnPacket);
 		tag.putInt("facing", facing.get3DDataValue());
 		tag.putInt("offset", offset);
 		NBTHelper.writeEnum(tag, "HandType", handType);

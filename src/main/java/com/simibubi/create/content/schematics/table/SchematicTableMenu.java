@@ -7,20 +7,21 @@ import com.simibubi.create.foundation.gui.menu.MenuBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class SchematicTableMenu extends MenuBase<SchematicTableBlockEntity> {
 
 	private Slot inputSlot;
 	private Slot outputSlot;
 
-	public SchematicTableMenu(MenuType<?> type, int id, Inventory inv, FriendlyByteBuf extraData) {
+	public SchematicTableMenu(MenuType<?> type, int id, Inventory inv, RegistryFriendlyByteBuf extraData) {
 		super(type, id, inv, extraData);
 	}
 
@@ -52,11 +53,11 @@ public class SchematicTableMenu extends MenuBase<SchematicTableBlockEntity> {
 	}
 
 	@Override
-	protected SchematicTableBlockEntity createOnClient(FriendlyByteBuf extraData) {
+	protected SchematicTableBlockEntity createOnClient(RegistryFriendlyByteBuf extraData) {
 		ClientLevel world = Minecraft.getInstance().level;
 		BlockEntity blockEntity = world.getBlockEntity(extraData.readBlockPos());
 		if (blockEntity instanceof SchematicTableBlockEntity schematicTable) {
-			schematicTable.readClient(extraData.readNbt());
+			schematicTable.readClient(extraData.readNbt(), extraData.registryAccess());
 			return schematicTable;
 		}
 		return null;

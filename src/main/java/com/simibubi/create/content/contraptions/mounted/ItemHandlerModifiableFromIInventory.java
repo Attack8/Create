@@ -4,10 +4,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 
 @MethodsReturnNonnullByDefault
@@ -52,7 +52,7 @@ public class ItemHandlerModifiableFromIInventory implements IItemHandlerModifiab
 
 		if (!existing.isEmpty())
 		{
-			if (!ItemHandlerHelper.canItemStacksStack(stack, existing))
+			if (!ItemStack.isSameItemSameComponents(stack, existing))
 				return stack;
 
 			limit -= existing.getCount();
@@ -67,7 +67,7 @@ public class ItemHandlerModifiableFromIInventory implements IItemHandlerModifiab
 		{
 			if (existing.isEmpty())
 			{
-				setStackInSlot(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
+				setStackInSlot(slot, reachedLimit ? stack.copyWithCount(limit) : stack);
 			}
 			else
 			{
@@ -75,7 +75,7 @@ public class ItemHandlerModifiableFromIInventory implements IItemHandlerModifiab
 			}
 		}
 
-		return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount()- limit) : ItemStack.EMPTY;
+		return reachedLimit ? stack.copyWithCount(stack.getCount() - limit) : ItemStack.EMPTY;
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class ItemHandlerModifiableFromIInventory implements IItemHandlerModifiab
 		if (existing.isEmpty())
 			return ItemStack.EMPTY;
 
-		int toExtract = Math.min(amount, existing.getMaxStackSize());
+		int toExtract = Math.min(amount, existing.getOrDefault(DataComponents.MAX_STACK_SIZE, 64));
 
 		if (existing.getCount() <= toExtract)
 		{
@@ -110,10 +110,10 @@ public class ItemHandlerModifiableFromIInventory implements IItemHandlerModifiab
 		{
 			if (!simulate)
 			{
-				setStackInSlot(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
+				setStackInSlot(slot, existing.copyWithCount(existing.getCount() - toExtract));
 			}
 
-			return ItemHandlerHelper.copyStackWithSize(existing, toExtract);
+			return existing.copyWithCount(toExtract);
 		}
 	}
 
@@ -135,6 +135,6 @@ public class ItemHandlerModifiableFromIInventory implements IItemHandlerModifiab
 
 	private int getStackLimit(int slot, ItemStack stack)
 	{
-		return Math.min(getSlotLimit(slot), stack.getMaxStackSize());
+		return Math.min(getSlotLimit(slot), stack.getOrDefault(DataComponents.MAX_STACK_SIZE, 64));
 	}
 }

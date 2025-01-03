@@ -114,7 +114,7 @@ public class CloneCommand {
 					BlockState state = cached.getState();
 					BlockEntity be = world.getBlockEntity(currentPos);
 					if (be != null) {
-						CompoundTag nbt = be.saveWithFullMetadata();
+						CompoundTag nbt = be.saveWithFullMetadata(world.registryAccess());
 						beBlocks.add(new StructureTemplate.StructureBlockInfo(newPos, state, nbt));
 					} else {
 						blocks.add(new StructureTemplate.StructureBlockInfo(newPos, state, null));
@@ -146,7 +146,7 @@ public class CloneCommand {
 				info.nbt().putInt("x", info.pos().getX());
 				info.nbt().putInt("y", info.pos().getY());
 				info.nbt().putInt("z", info.pos().getZ());
-				be.load(info.nbt());
+				be.loadWithComponents(info.nbt(), world.registryAccess());
 				be.setChanged();
 			}
 

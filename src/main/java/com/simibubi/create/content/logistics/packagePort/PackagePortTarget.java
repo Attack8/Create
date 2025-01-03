@@ -4,6 +4,11 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity;
@@ -12,9 +17,13 @@ import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEnti
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorPackage;
 import com.simibubi.create.content.trains.station.StationBlockEntity;
 
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.utility.lang.Lang;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -22,12 +31,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class PackagePortTarget {
+	public static final Codec<PackagePortTarget> CODEC = PackagePortTarget.Type.CODEC.dispatch(PackagePortTarget::getType, type -> type.codec);
+	public static StreamCodec<ByteBuf, PackagePortTarget> STREAM_CODEC = Type.STREAM_CODEC.dispatch(PackagePortTarget::getType, type -> type.streamCodec);
 
 	public BlockPos relativePos;
-	private String typeKey;
 
-	public PackagePortTarget(String typeKey, BlockPos relativePos) {
-		this.typeKey = typeKey;
+	public PackagePortTarget(BlockPos relativePos) {
 		this.relativePos = relativePos;
 	}
 
@@ -49,37 +58,7 @@ public abstract class PackagePortTarget {
 		return false;
 	}
 
-	public CompoundTag write() {
-		CompoundTag compoundTag = new CompoundTag();
-		writeInternal(compoundTag);
-		compoundTag.putString("Type", typeKey);
-		compoundTag.put("RelativePos", NbtUtils.writeBlockPos(relativePos));
-		return compoundTag;
-	}
-
-	public static PackagePortTarget read(CompoundTag tag) {
-		if (tag.isEmpty())
-			return null;
-
-		BlockPos relativePos = NbtUtils.readBlockPos(tag.getCompound("RelativePos"));
-		PackagePortTarget target = switch (tag.getString("Type")) {
-
-		case "ChainConveyor" -> new ChainConveyorFrogportTarget(relativePos, 0, null);
-		case "TrainStation" -> new TrainStationFrogportTarget(relativePos);
-
-		default -> null;
-		};
-
-		if (target == null)
-			return null;
-
-		target.readInternal(tag);
-		return target;
-	}
-
-	protected abstract void writeInternal(CompoundTag tag);
-
-	protected abstract void readInternal(CompoundTag tag);
+	protected abstract Type getType();
 
 	public BlockEntity be(LevelAccessor level, BlockPos portPos) {
 		if (level instanceof Level l && !l.isLoaded(portPos.offset(relativePos)))
@@ -88,13 +67,25 @@ public abstract class PackagePortTarget {
 	}
 
 	public static class ChainConveyorFrogportTarget extends PackagePortTarget {
+		public static MapCodec<ChainConveyorFrogportTarget> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+			BlockPos.CODEC.fieldOf("relativePos").forGetter(i -> i.relativePos),
+			Codec.FLOAT.fieldOf("chainPos").forGetter(i -> i.chainPos),
+			BlockPos.CODEC.fieldOf("connection").forGetter(i -> i.connection)
+		).apply(instance, ChainConveyorFrogportTarget::new));
+
+		public static StreamCodec<ByteBuf, ChainConveyorFrogportTarget> STREAM_CODEC = StreamCodec.composite(
+		    BlockPos.STREAM_CODEC, i -> i.relativePos,
+			ByteBufCodecs.FLOAT, i -> i.chainPos,
+		    BlockPos.STREAM_CODEC, i -> i.connection,
+		    ChainConveyorFrogportTarget::new
+		);
 
 		public float chainPos;
 		public BlockPos connection;
 		public boolean flipped;
 
 		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, @Nullable BlockPos connection) {
-			super("ChainConveyor", relativePos);
+			super(relativePos);
 			this.chainPos = chainPos;
 			this.connection = connection;
 		}
@@ -174,24 +165,6 @@ public abstract class PackagePortTarget {
 		}
 
 		@Override
-		protected void writeInternal(CompoundTag tag) {
-			tag.putFloat("ChainPos", chainPos);
-			if (connection != null) {
-				tag.put("Connection", NbtUtils.writeBlockPos(connection));
-				tag.putBoolean("Flipped", flipped);
-			}
-		}
-
-		@Override
-		protected void readInternal(CompoundTag tag) {
-			chainPos = tag.getFloat("ChainPos");
-			if (tag.contains("Connection")) {
-				connection = NbtUtils.readBlockPos(tag.getCompound("Connection"));
-				flipped = tag.getBoolean("Flipped");
-			}
-		}
-
-		@Override
 		public Vec3 getExactTargetLocation(PackagePortBlockEntity ppbe, LevelAccessor level, BlockPos portPos) {
 			if (!(be(level, portPos) instanceof ChainConveyorBlockEntity clbe))
 				return Vec3.ZERO;
@@ -203,12 +176,24 @@ public abstract class PackagePortTarget {
 			return AllBlockEntityTypes.PACKAGE_FROGPORT.is(be);
 		}
 
+		@Override
+		protected Type getType() {
+			return Type.CHAIN_CONVEYOR;
+		}
 	}
 
 	public static class TrainStationFrogportTarget extends PackagePortTarget {
+		public static MapCodec<TrainStationFrogportTarget> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+			BlockPos.CODEC.fieldOf("relativePos").forGetter(i -> i.relativePos)
+		).apply(instance, TrainStationFrogportTarget::new));
+
+		public static StreamCodec<ByteBuf, TrainStationFrogportTarget> STREAM_CODEC = StreamCodec.composite(
+		    BlockPos.STREAM_CODEC, i -> i.relativePos,
+		    TrainStationFrogportTarget::new
+		);
 
 		public TrainStationFrogportTarget(BlockPos relativePos) {
-			super("TrainStation", relativePos);
+			super(relativePos);
 		}
 
 		@Override
@@ -244,16 +229,35 @@ public abstract class PackagePortTarget {
 		}
 
 		@Override
-		protected void writeInternal(CompoundTag tag) {}
-
-		@Override
-		protected void readInternal(CompoundTag tag) {}
-
-		@Override
 		public boolean canSupport(BlockEntity be) {
 			return AllBlockEntityTypes.PACKAGE_POSTBOX.is(be);
 		}
 
+		@Override
+		protected Type getType() {
+			return Type.TRAIN_STATION;
+		}
 	}
 
+	// TODO - Turn this into a registry so addons and other mods can extend it
+	public enum Type implements StringRepresentable {
+		CHAIN_CONVEYOR(ChainConveyorFrogportTarget.CODEC, ChainConveyorFrogportTarget.STREAM_CODEC),
+		TRAIN_STATION(TrainStationFrogportTarget.CODEC, TrainStationFrogportTarget.STREAM_CODEC);
+
+		public static Codec<Type> CODEC = StringRepresentable.fromValues(Type::values);
+		public static StreamCodec<ByteBuf, Type> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(Type.class);
+
+		private final MapCodec<? extends PackagePortTarget> codec;
+		private final StreamCodec<ByteBuf, ? extends PackagePortTarget> streamCodec;
+
+		Type(MapCodec<? extends PackagePortTarget> codec, StreamCodec<ByteBuf, ? extends PackagePortTarget> streamCodec) {
+			this.codec = codec;
+			this.streamCodec = streamCodec;
+		}
+
+		@Override
+		public @NotNull String getSerializedName() {
+			return Lang.asId(name());
+		}
+	}
 }

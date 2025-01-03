@@ -21,7 +21,7 @@ public class SmartBlockEntityRenderer<T extends SmartBlockEntity> extends SafeBl
 
 	public SmartBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
 	}
-	
+
 	@Override
 	protected void renderSafe(T blockEntity, float partialTicks, PoseStack ms, MultiBufferSource buffer, int light,
 			int overlay) {

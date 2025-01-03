@@ -38,9 +38,9 @@ public class ScoreboardDisplaySource extends ValueListDisplaySource {
 			return notFound(objectiveName).stream();
 
 		return sLevel.getScoreboard()
-			.getPlayerScores(objective)
+			.listPlayerScores(objective)
 			.stream()
-			.map(score -> IntAttached.with(score.getScore(), Components.literal(score.getOwner())
+			.map(score -> IntAttached.with(score.value(), Components.literal(score.owner())
 				.copy()))
 			.sorted(IntAttached.comparator())
 			.limit(maxRows);

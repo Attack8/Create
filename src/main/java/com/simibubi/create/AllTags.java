@@ -1,15 +1,17 @@
 package com.simibubi.create;
 
+import static com.simibubi.create.AllTags.NameSpace.COMMON;
 import static com.simibubi.create.AllTags.NameSpace.CURIOS;
-import static com.simibubi.create.AllTags.NameSpace.FORGE;
 import static com.simibubi.create.AllTags.NameSpace.MOD;
 import static com.simibubi.create.AllTags.NameSpace.QUARK;
 import static com.simibubi.create.AllTags.NameSpace.TIC;
 
-import java.util.Collections;
-
 import net.createmod.catnip.utility.lang.Lang;
+
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
@@ -25,36 +27,32 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
 
 public class AllTags {
-	public static <T> TagKey<T> optionalTag(IForgeRegistry<T> registry,
-		ResourceLocation id) {
-		return registry.tags()
-			.createOptionalTagKey(id, Collections.emptySet());
+	public static <T> TagKey<T> optionalTag(Registry<T> registry, ResourceLocation id) {
+		return TagKey.create(registry.key(), id);
 	}
 
-	public static <T> TagKey<T> forgeTag(IForgeRegistry<T> registry, String path) {
-		return optionalTag(registry, new ResourceLocation("forge", path));
+	public static <T> TagKey<T> commonTag(Registry<T> registry, String path) {
+		return optionalTag(registry, ResourceLocation.fromNamespaceAndPath("c", path));
 	}
 
-	public static TagKey<Block> forgeBlockTag(String path) {
-		return forgeTag(ForgeRegistries.BLOCKS, path);
+	public static TagKey<Block> commonBlockTag(String path) {
+		return commonTag(BuiltInRegistries.BLOCK, path);
 	}
 
-	public static TagKey<Item> forgeItemTag(String path) {
-		return forgeTag(ForgeRegistries.ITEMS, path);
+	public static TagKey<Item> commonItemTag(String path) {
+		return commonTag(BuiltInRegistries.ITEM, path);
 	}
 
-	public static TagKey<Fluid> forgeFluidTag(String path) {
-		return forgeTag(ForgeRegistries.FLUIDS, path);
+	public static TagKey<Fluid> commonFluidTag(String path) {
+		return commonTag(BuiltInRegistries.FLUID, path);
 	}
 
 	public enum NameSpace {
 
 		MOD(Create.ID, false, true),
-		FORGE("forge"),
+		COMMON("c"),
 		TIC("tconstruct"),
 		QUARK("quark"),
 		GS("galosphere"),
@@ -108,8 +106,7 @@ public class AllTags {
 
 		CORALS,
 
-		RELOCATION_NOT_SUPPORTED(FORGE),
-		WG_STONE(FORGE),
+		RELOCATION_NOT_SUPPORTED(COMMON),
 
 		SLIMY_LOGS(TIC),
 		NON_DOUBLE_DOOR(QUARK),
@@ -136,9 +133,9 @@ public class AllTags {
 		}
 
 		AllBlockTags(NameSpace namespace, String path, boolean optional, boolean alwaysDatagen) {
-			ResourceLocation id = new ResourceLocation(namespace.id, path == null ? Lang.asId(name()) : path);
+			ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace.id, path == null ? Lang.asId(name()) : path);
 			if (optional) {
-				tag = optionalTag(ForgeRegistries.BLOCKS, id);
+				tag = optionalTag(BuiltInRegistries.BLOCK, id);
 			} else {
 				tag = BlockTags.create(id);
 			}
@@ -172,8 +169,6 @@ public class AllTags {
 		CREATE_INGOTS,
 		CRUSHED_RAW_MATERIALS,
 		DEPLOYABLE_DRINK,
-		MODDED_STRIPPED_LOGS,
-		MODDED_STRIPPED_WOOD,
 		PRESSURIZED_AIR_SOURCES,
 		SANDPAPER,
 		SEATS,
@@ -187,14 +182,10 @@ public class AllTags {
 		TRACKS,
 		UPRIGHT_ON_BELT,
 		VALVE_HANDLES,
-		VANILLA_STRIPPED_LOGS,
-		VANILLA_STRIPPED_WOOD,
 
-		STRIPPED_LOGS(FORGE),
-		STRIPPED_WOOD(FORGE),
-		PLATES(FORGE),
-		OBSIDIAN_DUST(FORGE,"dusts/obsidian"),
-		WRENCH(FORGE, "tools/wrench"),
+		PLATES(COMMON),
+		OBSIDIAN_DUST(COMMON,"dusts/obsidian"),
+		WRENCH(COMMON, "tools/wrench"),
 
 		ALLURITE(MOD,"stone_types/galosphere/allurite"),
 		AMETHYST(MOD,"stone_types/galosphere/amethyst"),
@@ -225,9 +216,9 @@ public class AllTags {
 		}
 
 		AllItemTags(NameSpace namespace, String path, boolean optional, boolean alwaysDatagen) {
-			ResourceLocation id = new ResourceLocation(namespace.id, path == null ? Lang.asId(name()) : path);
+			ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace.id, path == null ? Lang.asId(name()) : path);
 			if (optional) {
-				tag = optionalTag(ForgeRegistries.ITEMS, id);
+				tag = optionalTag(BuiltInRegistries.ITEM, id);
 			} else {
 				tag = ItemTags.create(id);
 			}
@@ -257,8 +248,6 @@ public class AllTags {
 		FAN_PROCESSING_CATALYSTS_SMOKING(MOD, "fan_processing_catalysts/smoking"),
 		FAN_PROCESSING_CATALYSTS_SPLASHING(MOD, "fan_processing_catalysts/splashing"),
 
-		HONEY(FORGE)
-
 		;
 
 		public final TagKey<Fluid> tag;
@@ -281,9 +270,9 @@ public class AllTags {
 		}
 
 		AllFluidTags(NameSpace namespace, String path, boolean optional, boolean alwaysDatagen) {
-			ResourceLocation id = new ResourceLocation(namespace.id, path == null ? Lang.asId(name()) : path);
+			ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace.id, path == null ? Lang.asId(name()) : path);
 			if (optional) {
-				tag = optionalTag(ForgeRegistries.FLUIDS, id);
+				tag = optionalTag(BuiltInRegistries.FLUID, id);
 			} else {
 				tag = FluidTags.create(id);
 			}
@@ -330,9 +319,9 @@ public class AllTags {
 		}
 
 		AllEntityTags(NameSpace namespace, String path, boolean optional, boolean alwaysDatagen) {
-			ResourceLocation id = new ResourceLocation(namespace.id, path == null ? Lang.asId(name()) : path);
+			ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace.id, path == null ? Lang.asId(name()) : path);
 			if (optional) {
-				tag = optionalTag(ForgeRegistries.ENTITY_TYPES, id);
+				tag = optionalTag(BuiltInRegistries.ENTITY_TYPE, id);
 			} else {
 				tag = TagKey.create(Registries.ENTITY_TYPE, id);
 			}
@@ -377,9 +366,9 @@ public class AllTags {
 		}
 
 		AllRecipeSerializerTags(NameSpace namespace, String path, boolean optional, boolean alwaysDatagen) {
-			ResourceLocation id = new ResourceLocation(namespace.id, path == null ? Lang.asId(name()) : path);
+			ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace.id, path == null ? Lang.asId(name()) : path);
 			if (optional) {
-				tag = optionalTag(ForgeRegistries.RECIPE_SERIALIZERS, id);
+				tag = optionalTag(BuiltInRegistries.RECIPE_SERIALIZER, id);
 			} else {
 				tag = TagKey.create(Registries.RECIPE_SERIALIZER, id);
 			}
@@ -387,7 +376,8 @@ public class AllTags {
 		}
 
 		public boolean matches(RecipeSerializer<?> recipeSerializer) {
-			return ForgeRegistries.RECIPE_SERIALIZERS.getHolder(recipeSerializer).orElseThrow().is(tag);
+			ResourceKey<RecipeSerializer<?>> key = BuiltInRegistries.RECIPE_SERIALIZER.getResourceKey(recipeSerializer).orElseThrow();
+			return BuiltInRegistries.RECIPE_SERIALIZER.getHolder(key).orElseThrow().is(tag);
 		}
 
 		private static void init() {}

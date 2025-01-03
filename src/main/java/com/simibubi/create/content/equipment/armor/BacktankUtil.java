@@ -1,14 +1,23 @@
 package com.simibubi.create.content.equipment.armor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllEnchantments;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.foundation.utility.DistExecutor;
 import com.simibubi.create.infrastructure.config.AllConfigs;
+
+import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -18,12 +27,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.neoforged.api.distmarker.Dist;
 
 public class BacktankUtil {
 
@@ -61,18 +67,15 @@ public class BacktankUtil {
 		return getAir(backtank) > 0;
 	}
 
-	public static float getAir(ItemStack backtank) {
-		CompoundTag tag = backtank.getOrCreateTag();
-		return Math.min(tag.getFloat("Air"), maxAir(backtank));
+	public static int getAir(ItemStack backtank) {
+		return Math.min(backtank.getOrDefault(AllDataComponents.BACKTANK_AIR, 0), maxAir(backtank));
 	}
 
-	public static void consumeAir(LivingEntity entity, ItemStack backtank, float i) {
-		CompoundTag tag = backtank.getOrCreateTag();
+	public static void consumeAir(LivingEntity entity, ItemStack backtank, int i) {
 		int maxAir = maxAir(backtank);
-		float air = getAir(backtank);
-		float newAir = Math.max(air - i, 0);
-		tag.putFloat("Air", Math.min(newAir, maxAir));
-		backtank.setTag(tag);
+		int air = getAir(backtank);
+		int newAir = Math.max(air - i, 0);
+		backtank.set(AllDataComponents.BACKTANK_AIR, Math.min(newAir, maxAir));
 
 		if (!(entity instanceof ServerPlayer player))
 			return;
@@ -101,7 +104,15 @@ public class BacktankUtil {
 	}
 
 	public static int maxAir(ItemStack backtank) {
-		return maxAir(backtank.getEnchantmentLevel(AllEnchantments.CAPACITY.get()));
+		int enchantLevel = 0;
+		ItemEnchantments enchants = backtank.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+		for (Entry<Holder<Enchantment>> entry : enchants.entrySet()) {
+			if (entry.getKey().is(AllEnchantments.CAPACITY)) {
+				enchantLevel = entry.getIntValue();
+				break;
+			}
+		}
+		return maxAir(enchantLevel);
 	}
 
 	public static int maxAir(int enchantLevel) {
@@ -121,8 +132,8 @@ public class BacktankUtil {
 		List<ItemStack> backtanks = getAllWithAir(entity);
 		if (backtanks.isEmpty())
 			return false;
-		float cost = ((float) maxAirWithoutEnchants()) / usesPerTank;
-		consumeAir(entity, backtanks.get(0), cost);
+		int cost = maxAirWithoutEnchants() / usesPerTank;
+		consumeAir(entity, backtanks.getFirst(), cost);
 		return true;
 	}
 
@@ -153,9 +164,9 @@ public class BacktankUtil {
 			return Math.round(13.0F - (float) stack.getDamageValue() / stack.getMaxDamage() * 13.0F);
 
 		if (backtanks.size() == 1)
-			return backtanks.get(0)
+			return backtanks.getFirst()
 				.getItem()
-				.getBarWidth(backtanks.get(0));
+				.getBarWidth(backtanks.getFirst());
 
 		// If there is more than one backtank, average the bar widths.
 		int sumBarWidth = backtanks.stream()

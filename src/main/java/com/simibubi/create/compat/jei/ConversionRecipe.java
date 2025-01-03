@@ -11,8 +11,9 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.Pro
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 /**
  * Helper recipe type for displaying an item relationship in JEI
@@ -22,12 +23,13 @@ public class ConversionRecipe extends ProcessingRecipe<RecipeWrapper> {
 
 	static int counter = 0;
 
-	public static ConversionRecipe create(ItemStack from, ItemStack to) {
+	public static RecipeHolder<ConversionRecipe> create(ItemStack from, ItemStack to) {
 		ResourceLocation recipeId = Create.asResource("conversion_" + counter++);
-		return new ProcessingRecipeBuilder<>(ConversionRecipe::new, recipeId)
+		ConversionRecipe recipe = new ProcessingRecipeBuilder<>(ConversionRecipe::new, recipeId)
 			.withItemIngredients(Ingredient.of(from))
 			.withSingleItemOutput(to)
 			.build();
+		return new RecipeHolder<>(recipeId, recipe);
 	}
 
 	public ConversionRecipe(ProcessingRecipeParams params) {

@@ -3,13 +3,16 @@ package com.simibubi.create.content.fluids.tank;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class CreativeFluidTankBlockEntity extends FluidTankBlockEntity {
 
@@ -17,11 +20,23 @@ public class CreativeFluidTankBlockEntity extends FluidTankBlockEntity {
 		super(type, pos, state);
 	}
 
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(
+				Capabilities.FluidHandler.BLOCK,
+				AllBlockEntityTypes.CREATIVE_FLUID_TANK.get(),
+				(be, context) -> {
+					if (be.fluidCapability == null)
+						be.refreshCapability();
+					return be.fluidCapability;
+				}
+		);
+	}
+
 	@Override
 	protected SmartFluidTank createInventory() {
 		return new CreativeSmartFluidTank(getCapacityMultiplier(), this::onFluidStackChanged);
 	}
-	
+
 	@Override
 	public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
 		return false;
@@ -32,15 +47,15 @@ public class CreativeFluidTankBlockEntity extends FluidTankBlockEntity {
 		public CreativeSmartFluidTank(int capacity, Consumer<FluidStack> updateCallback) {
 			super(capacity, updateCallback);
 		}
-		
+
 		@Override
 		public int getFluidAmount() {
 			return getFluid().isEmpty() ? 0 : getTankCapacity(0);
 		}
-		
+
 		public void setContainedFluid(FluidStack fluidStack) {
 			fluid = fluidStack.copy();
-			if (!fluidStack.isEmpty()) 
+			if (!fluidStack.isEmpty())
 				fluid.setAmount(getTankCapacity(0));
 			onContentsChanged();
 		}

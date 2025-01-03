@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class VanillaFluidTargets {
 
@@ -34,13 +34,13 @@ public class VanillaFluidTargets {
 			return new FluidStack(AllFluids.HONEY.get()
 				.getSource(), 250);
 		}
-		
+
 		if (state.is(Blocks.LAVA_CAULDRON)) {
 			if (!simulate)
 				level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
 			return new FluidStack(Fluids.LAVA, 1000);
 		}
-		
+
 		if (state.is(Blocks.WATER_CAULDRON) && state.getBlock() instanceof LayeredCauldronBlock lcb) {
 			if (!lcb.isFull(state))
 				return FluidStack.EMPTY;
@@ -48,7 +48,7 @@ public class VanillaFluidTargets {
 				level.setBlock(pos, Blocks.CAULDRON.defaultBlockState(), 3);
 			return new FluidStack(Fluids.WATER, 1000);
 		}
-		
+
 		return FluidStack.EMPTY;
 	}
 

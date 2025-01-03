@@ -9,12 +9,12 @@ import com.simibubi.create.content.kinetics.BlockStressDefaults;
 import com.simibubi.create.content.kinetics.BlockStressValues.IStressValueProvider;
 
 import net.createmod.catnip.config.ConfigBase;
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.Couple;
+import net.createmod.catnip.utility.RegisteredObjectsHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.ForgeConfigSpec.Builder;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.neoforged.neoforge.common.ModConfigSpec.Builder;
+import net.neoforged.neoforge.common.ModConfigSpec.ConfigValue;
 
 public class CStress extends ConfigBase implements IStressValueProvider {
 
@@ -45,7 +45,7 @@ public class CStress extends ConfigBase implements IStressValueProvider {
 	@Override
 	public double getImpact(Block block) {
 		block = redirectValues(block);
-		ResourceLocation key = CatnipServices.REGISTRIES.getKeyOrThrow(block);
+		ResourceLocation key = RegisteredObjectsHelper.getKeyOrThrow(block);
 		ConfigValue<Double> value = getImpacts().get(key);
 		if (value != null)
 			return value.get();
@@ -55,7 +55,7 @@ public class CStress extends ConfigBase implements IStressValueProvider {
 	@Override
 	public double getCapacity(Block block) {
 		block = redirectValues(block);
-		ResourceLocation key = CatnipServices.REGISTRIES.getKeyOrThrow(block);
+		ResourceLocation key = RegisteredObjectsHelper.getKeyOrThrow(block);
 		ConfigValue<Double> value = getCapacities().get(key);
 		if (value != null)
 			return value.get();
@@ -65,7 +65,7 @@ public class CStress extends ConfigBase implements IStressValueProvider {
 	@Override
 	public Couple<Integer> getGeneratedRPM(Block block) {
 		block = redirectValues(block);
-		ResourceLocation key = CatnipServices.REGISTRIES.getKeyOrThrow(block);
+		ResourceLocation key = RegisteredObjectsHelper.getKeyOrThrow(block);
 		Supplier<Couple<Integer>> supplier = BlockStressDefaults.GENERATOR_SPEEDS.get(key);
 		if (supplier == null)
 			return null;
@@ -75,14 +75,14 @@ public class CStress extends ConfigBase implements IStressValueProvider {
 	@Override
 	public boolean hasImpact(Block block) {
 		block = redirectValues(block);
-		ResourceLocation key = CatnipServices.REGISTRIES.getKeyOrThrow(block);
+		ResourceLocation key = RegisteredObjectsHelper.getKeyOrThrow(block);
 		return getImpacts().containsKey(key);
 	}
 
 	@Override
 	public boolean hasCapacity(Block block) {
 		block = redirectValues(block);
-		ResourceLocation key = CatnipServices.REGISTRIES.getKeyOrThrow(block);
+		ResourceLocation key = RegisteredObjectsHelper.getKeyOrThrow(block);
 		return getCapacities().containsKey(key);
 	}
 

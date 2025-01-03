@@ -40,9 +40,13 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
+@Mod(value = Create.ID, dist = Dist.CLIENT)
 public class CreateClient {
 
 	public static final ModelSwapper MODEL_SWAPPER = new ModelSwapper();
@@ -61,7 +65,13 @@ public class CreateClient {
 
 	public static final ClientResourceReloadListener RESOURCE_RELOAD_LISTENER = new ClientResourceReloadListener();
 
-	public static void onCtorClient(IEventBus modEventBus, IEventBus forgeEventBus) {
+	public CreateClient(IEventBus modEventBus) {
+		onCtorClient(modEventBus);
+	}
+
+	public static void onCtorClient(IEventBus modEventBus) {
+		IEventBus neoEventBus = NeoForge.EVENT_BUS;
+
 		modEventBus.addListener(CreateClient::clientInit);
 		modEventBus.addListener(AllParticleTypes::registerFactories);
 
@@ -69,10 +79,10 @@ public class CreateClient {
 
 		MODEL_SWAPPER.registerListeners(modEventBus);
 
-		ZAPPER_RENDER_HANDLER.registerListeners(forgeEventBus);
-		POTATO_CANNON_RENDER_HANDLER.registerListeners(forgeEventBus);
-		
-		Mods.FTBLIBRARY.executeIfInstalled(() -> () -> FTBIntegration.init(modEventBus, forgeEventBus));
+		ZAPPER_RENDER_HANDLER.registerListeners(neoEventBus);
+		POTATO_CANNON_RENDER_HANDLER.registerListeners(neoEventBus);
+
+		Mods.FTBLIBRARY.executeIfInstalled(() -> () -> FTBIntegration.init(modEventBus, neoEventBus));
 	}
 
 	public static void clientInit(final FMLClientSetupEvent event) {
@@ -102,7 +112,7 @@ public class CreateClient {
 
 	private static void setupConfigUIBackground() {
 		ConfigScreen.backgrounds.put(Create.ID, (screen, graphics, partialTicks) -> {
-			CreateMainMenuScreen.PANORAMA.render(screen.getMinecraft().getDeltaFrameTime(), 1);
+			CreateMainMenuScreen.PANORAMA.render(graphics, screen.width, screen.height, 1, partialTicks);
 
 			//RenderSystem.setShaderTexture(0, CreateMainMenuScreen.PANORAMA_OVERLAY_TEXTURES);
 			RenderSystem.enableBlend();

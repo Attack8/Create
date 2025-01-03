@@ -6,14 +6,14 @@ import com.simibubi.create.api.contraption.transformable.ContraptionTransformabl
 import com.simibubi.create.api.contraption.transformable.ContraptionTransformableRegistry.TransformableBlockEntity;
 import com.simibubi.create.foundation.utility.AttachedRegistry;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.registries.ForgeRegistries;
 
 @ApiStatus.Internal
 public class ContraptionTransformableRegistryImpl {
-	private static final AttachedRegistry<Block, TransformableBlock> TRANSFORMABLE_BLOCKS = new AttachedRegistry<>(ForgeRegistries.BLOCKS);
-	private static final AttachedRegistry<BlockEntityType<?>, TransformableBlockEntity> TRANSFORMABLE_BLOCK_ENTITIES = new AttachedRegistry<>(ForgeRegistries.BLOCK_ENTITY_TYPES);
+	private static final AttachedRegistry<Block, TransformableBlock> TRANSFORMABLE_BLOCKS = new AttachedRegistry<>(BuiltInRegistries.BLOCK);
+	private static final AttachedRegistry<BlockEntityType<?>, TransformableBlockEntity> TRANSFORMABLE_BLOCK_ENTITIES = new AttachedRegistry<>(BuiltInRegistries.BLOCK_ENTITY_TYPE);
 
 	public static void registerForBlock(Block block, TransformableBlock transformableBlock) {
 		TRANSFORMABLE_BLOCKS.register(block, transformableBlock);

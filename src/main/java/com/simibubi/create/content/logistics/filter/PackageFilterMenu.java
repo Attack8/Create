@@ -1,20 +1,21 @@
 package com.simibubi.create.content.logistics.filter;
 
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllMenuTypes;
 
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class PackageFilterMenu extends AbstractFilterMenu {
 
 	String address;
 	EditBox addressInput;
 
-	public PackageFilterMenu(MenuType<?> type, int id, Inventory inv, FriendlyByteBuf extraData) {
+	public PackageFilterMenu(MenuType<?> type, int id, Inventory inv, RegistryFriendlyByteBuf extraData) {
 		super(type, id, inv, extraData);
 	}
 
@@ -52,15 +53,13 @@ public class PackageFilterMenu extends AbstractFilterMenu {
 	@Override
 	protected void initAndReadInventory(ItemStack filterItem) {
 		super.initAndReadInventory(filterItem);
-		address = filterItem.getOrCreateTag()
-			.getString("Address");
+		address = filterItem.getOrDefault(AllDataComponents.PACKAGE_ADDRESS, "");
 	}
 
 	@Override
 	protected void saveData(ItemStack filterItem) {
 		super.saveData(filterItem);
-		filterItem.getOrCreateTag()
-			.putString("Address", address);
+		filterItem.set(AllDataComponents.PACKAGE_ADDRESS, address);
 	}
 
 }

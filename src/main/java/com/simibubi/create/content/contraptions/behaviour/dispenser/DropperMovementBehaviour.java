@@ -10,6 +10,7 @@ import com.simibubi.create.foundation.item.ItemHelper;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -40,17 +41,17 @@ public class DropperMovementBehaviour implements MovementBehaviour {
 	private void collectItems(MovementContext context) {
 		getStacks(context).stream()
 			.filter(itemStack -> !itemStack.isEmpty() && itemStack.getItem() != Items.AIR
-				&& itemStack.getMaxStackSize() > itemStack.getCount())
+				&& itemStack.getOrDefault(DataComponents.MAX_STACK_SIZE, 64) > itemStack.getCount())
 			.forEach(itemStack -> itemStack.grow(ItemHelper
-				.extract(context.contraption.getSharedInventory(), (otherItemStack) -> ItemStack.isSameItemSameTags(itemStack, otherItemStack),
-					ItemHelper.ExtractionCountMode.UPTO, itemStack.getMaxStackSize() - itemStack.getCount(), false)
+				.extract(context.contraption.getSharedInventory(), (otherItemStack) -> ItemStack.isSameItemSameComponents(itemStack, otherItemStack),
+					ItemHelper.ExtractionCountMode.UPTO, itemStack.getOrDefault(DataComponents.MAX_STACK_SIZE, 64) - itemStack.getCount(), false)
 				.getCount()));
 	}
 
 	private void updateTemporaryData(MovementContext context) {
 		if (!(context.temporaryData instanceof NonNullList) && context.world != null) {
 			NonNullList<ItemStack> stacks = NonNullList.withSize(getInvSize(), ItemStack.EMPTY);
-			ContainerHelper.loadAllItems(context.blockEntityData, stacks);
+			ContainerHelper.loadAllItems(context.blockEntityData, stacks, context.world.registryAccess());
 			context.temporaryData = stacks;
 		}
 	}
@@ -68,7 +69,7 @@ public class DropperMovementBehaviour implements MovementBehaviour {
 			ItemStack testStack = getItemStackAt(location, context);
 			if (testStack == null || testStack.isEmpty())
 				continue;
-			if (testStack.getMaxStackSize() == 1) {
+			if (testStack.getOrDefault(DataComponents.MAX_STACK_SIZE, 64) == 1) {
 				location = new DispenseItemLocation(false, ItemHelper.findFirstMatchingSlotIndex(
 					context.contraption.getSharedInventory(), ItemHelper.sameItemPredicate(testStack)));
 				if (!getItemStackAt(location, context).isEmpty())
@@ -84,7 +85,7 @@ public class DropperMovementBehaviour implements MovementBehaviour {
 		NonNullList<ItemStack> stacks = getStacks(context);
 		if (stacks == null)
 			return;
-		ContainerHelper.saveAllItems(context.blockEntityData, stacks);
+		ContainerHelper.saveAllItems(context.blockEntityData, stacks, context.world.registryAccess());
 	}
 
 	@Override

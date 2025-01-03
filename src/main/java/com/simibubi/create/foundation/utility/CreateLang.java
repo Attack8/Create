@@ -13,13 +13,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class CreateLang extends Lang {
 
 	/**
 	 * legacy-ish. Use CreateLang.translate and other builder methods where possible
 	 *
+
 	 */
 	public static MutableComponent translateDirect(String key, Object... args) {
 		return Components.translatable(Create.ID + "." + key, LangBuilder.resolveBuilders(args));
@@ -49,7 +50,7 @@ public class CreateLang extends Lang {
 	}
 
 	public static LangBuilder fluidName(FluidStack stack) {
-		return builder().add(stack.getDisplayName()
+		return builder().add(stack.getHoverName()
 				.copy());
 	}
 
@@ -64,7 +65,7 @@ public class CreateLang extends Lang {
 	public static LangBuilder text(String text) {
 		return builder().text(text);
 	}
-	
+
 	@Deprecated // Use while implementing and replace all references with Lang.translate
 	public static LangBuilder temporaryText(String text) {
 		return builder().text(text);

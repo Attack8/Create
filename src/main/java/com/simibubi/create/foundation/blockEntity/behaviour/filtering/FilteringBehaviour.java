@@ -4,6 +4,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
@@ -27,6 +29,8 @@ import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
@@ -40,9 +44,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSettingsBehaviour {
 
@@ -53,7 +56,6 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 	boolean showCount;
 
 	protected FilterItemStack filter;
-
 	public int count;
 	public boolean upTo;
 	private Predicate<ItemStack> predicate;
@@ -86,16 +88,16 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 	}
 
 	@Override
-	public void write(CompoundTag nbt, boolean clientPacket) {
-		nbt.put("Filter", getFilter().serializeNBT());
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		nbt.put("Filter", getFilter().saveOptional(registries));
 		nbt.putInt("FilterAmount", count);
 		nbt.putBoolean("UpTo", upTo);
-		super.write(nbt, clientPacket);
+		super.write(nbt, registries, clientPacket);
 	}
 
 	@Override
-	public void read(CompoundTag nbt, boolean clientPacket) {
-		filter = FilterItemStack.of(nbt.getCompound("Filter"));
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		filter = FilterItemStack.of(registries, nbt.getCompound("Filter"));
 		count = nbt.getInt("FilterAmount");
 		upTo = nbt.getBoolean("UpTo");
 
@@ -103,10 +105,10 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 		if (count == 0) {
 			upTo = true;
 			count = filter.item()
-				.getMaxStackSize();
+					.getOrDefault(DataComponents.MAX_STACK_SIZE, 64);
 		}
 
-		super.read(nbt, clientPacket);
+		super.read(nbt, registries, clientPacket);
 	}
 
 	public FilteringBehaviour withCallback(Consumer<ItemStack> filterCallback) {
@@ -158,7 +160,7 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 			return false;
 		this.filter = FilterItemStack.of(filter);
 		if (!upTo)
-			count = Math.min(count, stack.getMaxStackSize());
+			count = Math.min(count, stack.getOrDefault(DataComponents.MAX_STACK_SIZE, 64));
 		callback.accept(filter);
 		blockEntity.setChanged();
 		blockEntity.sendData();
@@ -170,7 +172,7 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 		if (getValueSettings().equals(settings))
 			return;
 		count = Mth.clamp(settings.value(), 1, filter.item()
-			.getMaxStackSize());
+			.getOrDefault(DataComponents.MAX_STACK_SIZE, 64));
 		upTo = settings.row() == 0;
 		blockEntity.setChanged();
 		blockEntity.sendData();
@@ -180,7 +182,7 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 	@Override
 	public ValueSettings getValueSettings() {
 		return new ValueSettings(upTo ? 0 : 1, count == 0 ? filter.item()
-			.getMaxStackSize() : count);
+			.getOrDefault(DataComponents.MAX_STACK_SIZE, 64) : count);
 	}
 
 	@Override
@@ -212,7 +214,7 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 
 	public boolean isCountVisible() {
 		return showCountPredicate.get() && filter.item()
-			.getMaxStackSize() > 1;
+			.getOrDefault(DataComponents.MAX_STACK_SIZE, 64) > 1;
 	}
 
 	public boolean test(ItemStack stack) {
@@ -261,7 +263,7 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 	@Override
 	public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
 		ItemStack filter = getFilter(hitResult.getDirection());
-		int maxAmount = (filter.getItem() instanceof FilterItem) ? 64 : filter.getMaxStackSize();
+		int maxAmount = (filter.getItem() instanceof FilterItem) ? 64 : filter.getOrDefault(DataComponents.MAX_STACK_SIZE, 64);
 		return new ValueSettingsBoard(CreateLang.translateDirect("logistics.filter.extracted_amount"), maxAmount, 16,
 			CreateLang.translatedOptions("logistics.filter", "up_to", "exactly"),
 			new ValueSettingsFormatter(this::formatValue));
@@ -269,7 +271,7 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 
 	public MutableComponent formatValue(ValueSettings value) {
 		if (value.row() == 0 && value.value() == filter.item()
-			.getMaxStackSize())
+			.getOrDefault(DataComponents.MAX_STACK_SIZE, 64))
 			return CreateLang.translateDirect("logistics.filter.any_amount_short");
 		return Components.literal(((value.row() == 0) ? "\u2264" : "=") + Math.max(1, value.value()));
 	}
@@ -291,7 +293,7 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 		if (getFilter(side).getItem() instanceof FilterItem) {
 			if (!player.isCreative() || ItemHelper
 				.extract(new InvWrapper(player.getInventory()),
-					stack -> ItemHandlerHelper.canItemStacksStack(stack, getFilter(side)), true)
+					stack -> ItemStack.isSameItemSameComponents(stack, getFilter(side)), true)
 				.isEmpty())
 				player.getInventory()
 					.placeItemBackInInventory(getFilter(side).copy());
@@ -345,18 +347,18 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 	}
 
 	@Override
-	public boolean writeToClipboard(CompoundTag tag, Direction side) {
-		ValueSettingsBehaviour.super.writeToClipboard(tag, side);
+	public boolean writeToClipboard(HolderLookup.@NotNull Provider registries, CompoundTag tag, Direction side) {
+		ValueSettingsBehaviour.super.writeToClipboard(registries, tag, side);
 		ItemStack filter = getFilter(side);
-		tag.put("Filter", filter.serializeNBT());
+		tag.put("Filter", filter.saveOptional(registries));
 		return true;
 	}
 
 	@Override
-	public boolean readFromClipboard(CompoundTag tag, Player player, Direction side, boolean simulate) {
+	public boolean readFromClipboard(HolderLookup.@NotNull Provider registries, CompoundTag tag, Player player, Direction side, boolean simulate) {
 		if (!mayInteract(player))
 			return false;
-		boolean upstreamResult = ValueSettingsBehaviour.super.readFromClipboard(tag, player, side, simulate);
+		boolean upstreamResult = ValueSettingsBehaviour.super.readFromClipboard(registries, tag, player, side, simulate);
 		if (!tag.contains("Filter"))
 			return upstreamResult;
 		if (simulate)
@@ -368,14 +370,14 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 		if (getFilter(side).getItem() instanceof FilterItem && !player.isCreative())
 			refund = getFilter(side).copy();
 
-		ItemStack copied = ItemStack.of(tag.getCompound("Filter"));
+		ItemStack copied = ItemStack.parseOptional(registries, tag.getCompound("Filter"));
 
 		if (copied.getItem() instanceof FilterItem filterType && !player.isCreative()) {
 			InvWrapper inv = new InvWrapper(player.getInventory());
 
 			for (boolean preferStacksWithoutData : Iterate.trueAndFalse) {
 				if (refund.getItem() != filterType && ItemHelper
-					.extract(inv, stack -> stack.getItem() == filterType && preferStacksWithoutData != stack.hasTag(),
+					.extract(inv, stack -> stack.getItem() == filterType && preferStacksWithoutData == stack.isComponentsPatchEmpty(),
 						1, false)
 					.isEmpty())
 					continue;
@@ -413,7 +415,7 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 	public boolean bypassesInput(ItemStack mainhandItem) {
 		return false;
 	}
-	
+
 	@Override
 	public int netId() {
 		return 1;

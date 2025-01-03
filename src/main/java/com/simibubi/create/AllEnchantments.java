@@ -1,31 +1,76 @@
 package com.simibubi.create;
 
-import static com.simibubi.create.Create.REGISTRATE;
+import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileTypeManager;
 
-import com.simibubi.create.content.equipment.armor.CapacityEnchantment;
-import com.simibubi.create.content.equipment.potatoCannon.PotatoRecoveryEnchantment;
-import com.tterrag.registrate.util.entry.RegistryEntry;
-
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.enchantment.Enchantment.Rarity;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.core.HolderGetter;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
+import net.minecraft.world.item.enchantment.LevelBasedValue;
+import net.minecraft.world.item.enchantment.effects.SetValue;
+import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 
 public class AllEnchantments {
+	public static final ResourceKey<Enchantment>
+			POTATO_RECOVERY = key("potato_recovery"),
+			CAPACITY = key("capacity");
 
-	public static final RegistryEntry<PotatoRecoveryEnchantment> POTATO_RECOVERY = REGISTRATE.object("potato_recovery")
-		.enchantment(EnchantmentCategory.BOW, PotatoRecoveryEnchantment::new)
-		.addSlots(EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND)
-		.lang("Potato Recovery")
-		.rarity(Rarity.UNCOMMON)
-		.register();
-	
-	public static final RegistryEntry<CapacityEnchantment> CAPACITY = REGISTRATE.object("capacity")
-		.enchantment(EnchantmentCategory.ARMOR_CHEST, CapacityEnchantment::new)
-		.addSlots(EquipmentSlot.CHEST)
-		.lang("Capacity")
-		.rarity(Rarity.COMMON)
-		.register();
+	private static ResourceKey<Enchantment> key(String name) {
+		return ResourceKey.create(Registries.ENCHANTMENT, Create.asResource(name));
+	}
 
-	public static void register() {}
+	public static void bootstrap(BootstrapContext<Enchantment> context) {
+		HolderGetter<Item> itemHolderGetter = context.lookup(Registries.ITEM);
+
+		register(
+				context,
+				POTATO_RECOVERY,
+				Enchantment.enchantment(
+						Enchantment.definition(
+								HolderSet.direct(AllItems.POTATO_CANNON),
+								10,
+								3,
+								Enchantment.dynamicCost(15, 15),
+								Enchantment.dynamicCost(45, 15),
+								1,
+								EquipmentSlotGroup.MAINHAND
+						)
+				).withEffect(
+						EnchantmentEffectComponents.AMMO_USE,
+						new SetValue(LevelBasedValue.perLevel(0.0F, 33.3333333333F)),
+						MatchTool.toolMatches(
+								ItemPredicate.Builder.item().of(
+										PotatoProjectileTypeManager.getItems().toArray(Item[]::new)
+								)
+						)
+				)
+		);
+
+		register(
+				context,
+				CAPACITY,
+				Enchantment.enchantment(
+						Enchantment.definition(
+								itemHolderGetter.getOrThrow(AllTags.AllItemTags.PRESSURIZED_AIR_SOURCES.tag),
+								10,
+								3,
+								Enchantment.dynamicCost(15, 15),
+								Enchantment.dynamicCost(45, 15),
+								1,
+								EquipmentSlotGroup.MAINHAND
+						)
+				)
+		);
+	}
+
+	private static void register(BootstrapContext<Enchantment> context, ResourceKey<Enchantment> key, Enchantment.Builder builder) {
+		context.register(key, builder.build(key.location()));
+	}
 
 }

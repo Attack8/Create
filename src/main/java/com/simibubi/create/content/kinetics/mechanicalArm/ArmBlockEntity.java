@@ -22,6 +22,7 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.engine_room.flywheel.lib.visualization.VisualizationHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.animation.LerpedFloat;
@@ -29,6 +30,7 @@ import net.createmod.catnip.utility.lang.Lang;
 import net.createmod.catnip.utility.math.AngleHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -42,13 +44,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.JukeboxBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 
 public class ArmBlockEntity extends KineticBlockEntity implements ITransformableBlockEntity {
 
@@ -304,7 +305,7 @@ public class ArmBlockEntity extends KineticBlockEntity implements ITransformable
 				continue;
 
 			ItemStack remainder = armInteractionPoint.insert(held, true);
-			if (remainder.equals(heldItem, false))
+			if (ItemStack.isSameItemSameComponents(remainder, heldItem))
 				continue;
 
 			selectIndex(false, i);
@@ -513,48 +514,48 @@ public class ArmBlockEntity extends KineticBlockEntity implements ITransformable
 	}
 
 	@Override
-	public void write(CompoundTag compound, boolean clientPacket) {
-		super.write(compound, clientPacket);
+	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(compound, registries, clientPacket);
 
 		writeInteractionPoints(compound);
 
 		NBTHelper.writeEnum(compound, "Phase", phase);
 		compound.putBoolean("Powered", redstoneLocked);
 		compound.putBoolean("Goggles", goggles);
-		compound.put("HeldItem", heldItem.serializeNBT());
+		compound.put("HeldItem", heldItem.saveOptional(registries));
 		compound.putInt("TargetPointIndex", chasedPointIndex);
 		compound.putFloat("MovementProgress", chasedPointProgress);
 	}
 
 	@Override
-	public void writeSafe(CompoundTag compound) {
-		super.writeSafe(compound);
+	public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
+		super.writeSafe(tag, registries);
 
-		writeInteractionPoints(compound);
+		writeInteractionPoints(tag);
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
+	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		int previousIndex = chasedPointIndex;
 		Phase previousPhase = phase;
 		ListTag interactionPointTagBefore = interactionPointTag;
 
-		super.read(compound, clientPacket);
-		heldItem = ItemStack.of(compound.getCompound("HeldItem"));
-		phase = NBTHelper.readEnum(compound, "Phase", Phase.class);
-		chasedPointIndex = compound.getInt("TargetPointIndex");
-		chasedPointProgress = compound.getFloat("MovementProgress");
-		interactionPointTag = compound.getList("InteractionPoints", Tag.TAG_COMPOUND);
-		redstoneLocked = compound.getBoolean("Powered");
+		super.read(tag, registries, clientPacket);
+		heldItem = ItemStack.parseOptional(registries, tag.getCompound("HeldItem"));
+		phase = NBTHelper.readEnum(tag, "Phase", Phase.class);
+		chasedPointIndex = tag.getInt("TargetPointIndex");
+		chasedPointProgress = tag.getFloat("MovementProgress");
+		interactionPointTag = tag.getList("InteractionPoints", Tag.TAG_COMPOUND);
+		redstoneLocked = tag.getBoolean("Powered");
 
 		boolean hadGoggles = goggles;
-		goggles = compound.getBoolean("Goggles");
+		goggles = tag.getBoolean("Goggles");
 
 		if (!clientPacket)
 			return;
 
-		if (hadGoggles != goggles)
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> VisualizationHelper.queueUpdate(this));
+		if (hadGoggles != goggles && CatnipServices.PLATFORM.getEnv().isClient())
+			Client.queueUpdate(this);
 
 		boolean ceiling = isOnCeiling();
 		if (interactionPointTagBefore == null || interactionPointTagBefore.size() != interactionPointTag.size())
@@ -655,4 +656,9 @@ public class ArmBlockEntity extends KineticBlockEntity implements ITransformable
 		}
 	}
 
+	private static class Client {
+		private static void queueUpdate(BlockEntity be) {
+			VisualizationHelper.queueUpdate(be);
+		}
+	}
 }

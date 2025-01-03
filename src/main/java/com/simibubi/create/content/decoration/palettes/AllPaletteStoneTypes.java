@@ -5,12 +5,12 @@ import com.simibubi.create.Create;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import net.createmod.catnip.utility.lang.Lang;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Function;
 
@@ -89,7 +89,7 @@ public enum AllPaletteStoneTypes {
 			paletteStoneVariants.baseBlock = baseBlock;
 			String id = Lang.asId(paletteStoneVariants.name());
 			paletteStoneVariants.materialTag =
-				AllTags.optionalTag(ForgeRegistries.ITEMS, Create.asResource("stone_types/" + id));
+				AllTags.optionalTag(BuiltInRegistries.ITEM, Create.asResource("stone_types/" + id));
 			paletteStoneVariants.variants = new PalettesVariantEntry(id, paletteStoneVariants);
 		}
 	}

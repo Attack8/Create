@@ -25,10 +25,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.ChunkRenderTypeSet;
-import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.client.model.data.ModelData.Builder;
-import net.minecraftforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.client.ChunkRenderTypeSet;
+import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelData.Builder;
+import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.common.util.TriState;
 
 public class PipeAttachmentModel extends BakedModelWrapperWithData {
 
@@ -38,11 +39,11 @@ public class PipeAttachmentModel extends BakedModelWrapperWithData {
 	public static PipeAttachmentModel withAO(BakedModel template) {
 		return new PipeAttachmentModel(template, true);
 	}
-	
+
 	public static PipeAttachmentModel withoutAO(BakedModel template) {
 		return new PipeAttachmentModel(template, false);
 	}
-	
+
 	public PipeAttachmentModel(BakedModel template, boolean ao) {
 		super(template);
 		this.ao = ao;
@@ -85,17 +86,16 @@ public class PipeAttachmentModel extends BakedModelWrapperWithData {
 		}
 		return quads;
 	}
-	
+
 	@Override
-	public boolean useAmbientOcclusion(BlockState state, RenderType renderType) {
-		return ao;
+	public TriState useAmbientOcclusion(BlockState state, ModelData data, RenderType renderType) {
+		if (ao) {
+			return TriState.TRUE;
+		} else {
+			return TriState.FALSE;
+		}
 	}
-	
-	@Override
-	public boolean useAmbientOcclusion(BlockState state) {
-		return ao;
-	}
-	
+
 	@Override
 	public boolean useAmbientOcclusion() {
 		return ao;

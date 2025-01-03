@@ -13,13 +13,14 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.simibubi.create.AllSoundEvents;
+
 import org.joml.Math;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.mojang.serialization.Codec;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllPackets;
-import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.logistics.BigItemStack;
@@ -43,7 +44,10 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.codecs.CatnipCodecUtils;
+import net.createmod.catnip.codecs.CatnipCodecs;
 import net.createmod.catnip.gui.ScreenOpener;
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.animation.LerpedFloat;
 import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
@@ -52,18 +56,19 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class FactoryPanelBehaviour extends FilteringBehaviour {
 
@@ -248,7 +253,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 			&& lastReportedUnloadedLinks == unloadedLinkCount && satisfied == shouldSatisfy
 			&& promisedSatisfied == shouldPromiseSatisfy && waitingForNetwork == shouldWait)
 			return;
-		
+
 		if (!satisfied && shouldSatisfy) {
 			AllSoundEvents.CONFIRM.playOnServer(getWorld(), getPos(), 0.075f, 1f);
 			AllSoundEvents.CONFIRM_2.playOnServer(getWorld(), getPos(), 0.125f, 0.575f);
@@ -349,7 +354,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 		RequestPromiseQueue promises = Create.LOGISTICS.getQueuedPromises(network);
 		if (promises != null)
 			promises.add(new RequestPromise(new BigItemStack(getFilter(), recipeOutput)));
-		
+
 		panelBE.advancements.awardPlayer(AllAdvancements.FACTORY_GAUGE);
 	}
 
@@ -388,8 +393,8 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 	}
 
 	private void sendEffect(FactoryPanelPosition fromPos, boolean success) {
-		AllPackets.sendToNear(getWorld(), getPos(), 64,
-			new FactoryPanelEffectPacket(fromPos, getPanelPosition(), success));
+		if (getWorld() instanceof ServerLevel serverLevel)
+			CatnipServices.NETWORK.sendToClientsAround(serverLevel, getPos(), 64, new FactoryPanelEffectPacket(fromPos, getPanelPosition(), success));
 	}
 
 	public void addConnection(FactoryPanelPosition fromPos) {
@@ -484,7 +489,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 		}
 
 		if (player.level().isClientSide)
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> displayScreen(player));
+			CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> displayScreen(player));
 	}
 
 	public void enable() {
@@ -615,12 +620,12 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 	}
 
 	@Override
-	public void writeSafe(CompoundTag nbt) {
+	public void writeSafe(CompoundTag nbt, HolderLookup.Provider registries) {
 		if (!active)
 			return;
 
 		CompoundTag panelTag = new CompoundTag();
-		panelTag.put("Filter", getFilter().serializeNBT());
+		panelTag.put("Filter", getFilter().saveOptional(registries));
 		panelTag.putInt("FilterAmount", count);
 		panelTag.putUUID("Freq", network);
 		panelTag.putString("RecipeAddress", recipeAddress);
@@ -630,12 +635,12 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 	}
 
 	@Override
-	public void write(CompoundTag nbt, boolean clientPacket) {
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		if (!active)
 			return;
 
 		CompoundTag panelTag = new CompoundTag();
-		super.write(panelTag, clientPacket);
+		super.write(panelTag, registries, clientPacket);
 
 		panelTag.putInt("LastLevel", lastReportedLevelInStorage);
 		panelTag.putInt("LastPromised", lastReportedPromises);
@@ -644,15 +649,14 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 		panelTag.putBoolean("PromisedSatisfied", promisedSatisfied);
 		panelTag.putBoolean("Waiting", waitingForNetwork);
 		panelTag.putBoolean("RedstonePowered", redstonePowered);
-		panelTag.put("Targeting", NBTHelper.writeCompoundList(targeting, FactoryPanelPosition::write));
-		panelTag.put("TargetedBy", NBTHelper.writeCompoundList(targetedBy.values(), FactoryPanelConnection::write));
-		panelTag.put("TargetedByLinks",
-			NBTHelper.writeCompoundList(targetedByLinks.values(), FactoryPanelConnection::write));
+		panelTag.put("Targeting", CatnipCodecUtils.encodeOrThrow(CatnipCodecs.set(FactoryPanelPosition.CODEC), targeting));
+		panelTag.put("TargetedBy", CatnipCodecUtils.encodeOrThrow(Codec.list(FactoryPanelConnection.CODEC), new ArrayList<>(targetedBy.values())));
+		panelTag.put("TargetedByLinks", CatnipCodecUtils.encodeOrThrow(Codec.list(FactoryPanelConnection.CODEC), new ArrayList<>(targetedByLinks.values())));
 		panelTag.putString("RecipeAddress", recipeAddress);
 		panelTag.putInt("RecipeOutput", recipeOutput);
 		panelTag.putInt("PromiseClearingInterval", promiseClearingInterval);
 		panelTag.putUUID("Freq", network);
-		panelTag.put("Craft", NBTHelper.writeItemList(activeCraftingArrangement));
+		panelTag.put("Craft", NBTHelper.writeItemList(activeCraftingArrangement, registries));
 
 		if (panelBE().restocker && !clientPacket)
 			panelTag.put("Promises", restockerPromises.write());
@@ -661,15 +665,15 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 	}
 
 	@Override
-	public void read(CompoundTag nbt, boolean clientPacket) {
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		CompoundTag panelTag = nbt.getCompound(CreateLang.asId(slot.name()));
 		if (panelTag.isEmpty()) {
 			active = false;
 			return;
 		}
-		
+
 		active = true;
-		filter = FilterItemStack.of(panelTag.getCompound("Filter"));
+		filter = FilterItemStack.of(registries, panelTag.getCompound("Filter"));
 		count = panelTag.getInt("FilterAmount");
 		upTo = panelTag.getBoolean("UpTo");
 		lastReportedLevelInStorage = panelTag.getInt("LastLevel");
@@ -684,19 +688,17 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 			network = panelTag.getUUID("Freq");
 
 		targeting.clear();
-		NBTHelper.iterateCompoundList(panelTag.getList("Targeting", Tag.TAG_COMPOUND),
-			c -> targeting.add(FactoryPanelPosition.read(c)));
+		targeting = CatnipCodecUtils.decodeOrThrow(CatnipCodecs.set(FactoryPanelPosition.CODEC), panelTag.get("Targeting"));
 
 		targetedBy.clear();
-		NBTHelper.iterateCompoundList(panelTag.getList("TargetedBy", Tag.TAG_COMPOUND),
-			c -> targetedBy.put(FactoryPanelPosition.read(c), FactoryPanelConnection.read(c)));
+		CatnipCodecUtils.decodeOrThrow(Codec.list(FactoryPanelConnection.CODEC), panelTag.get("TargetedBy"))
+			.forEach(c -> targetedBy.put(c.from, c));
 
 		targetedByLinks.clear();
-		NBTHelper.iterateCompoundList(panelTag.getList("TargetedByLinks", Tag.TAG_COMPOUND),
-			c -> targetedByLinks.put(FactoryPanelPosition.read(c)
-				.pos(), FactoryPanelConnection.read(c)));
+		CatnipCodecUtils.decodeOrThrow(Codec.list(FactoryPanelConnection.CODEC), panelTag.get("TargetedByLinks"))
+			.forEach(c -> targetedByLinks.put(c.from.pos(), c));
 
-		activeCraftingArrangement = NBTHelper.readItemList(panelTag.getList("Craft", Tag.TAG_COMPOUND));
+		activeCraftingArrangement = NBTHelper.readItemList(panelTag.getList("Craft", Tag.TAG_COMPOUND), registries);
 		recipeAddress = panelTag.getString("RecipeAddress");
 		recipeOutput = panelTag.getInt("RecipeOutput");
 

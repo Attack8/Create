@@ -6,9 +6,9 @@ import java.util.Vector;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllKeys;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.schematics.SchematicInstances;
@@ -18,6 +18,7 @@ import com.simibubi.create.content.schematics.packet.SchematicPlacePacket;
 import com.simibubi.create.content.schematics.packet.SchematicSyncPacket;
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
+import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.render.SuperRenderTypeBuffer;
@@ -25,16 +26,15 @@ import net.createmod.catnip.utility.AnimationTickHolder;
 import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.levelWrappers.SchematicLevel;
 import net.createmod.catnip.utility.outliner.AABBOutline;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -50,10 +50,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
-import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
-public class SchematicHandler implements IGuiOverlay {
+public class SchematicHandler implements LayeredDraw.Layer {
 
 	private String displayedSchematic;
 	private SchematicTransformation transformation;
@@ -114,8 +112,7 @@ public class SchematicHandler implements IGuiOverlay {
 			return;
 		}
 
-		if (!active || !stack.getTag()
-			.getString("File")
+		if (!active || !stack.get(AllDataComponents.SCHEMATIC_FILE)
 			.equals(displayedSchematic)) {
 			renderers.forEach(r -> r.setActive(false));
 			init(player, stack);
@@ -135,8 +132,7 @@ public class SchematicHandler implements IGuiOverlay {
 
 	private void init(LocalPlayer player, ItemStack stack) {
 		loadSettings(stack);
-		displayedSchematic = stack.getTag()
-			.getString("File");
+		displayedSchematic = stack.get(AllDataComponents.SCHEMATIC_FILE);
 		active = true;
 		if (deployed) {
 			setupRenderer();
@@ -272,14 +268,15 @@ public class SchematicHandler implements IGuiOverlay {
 	}
 
 	@Override
-	public void render(ForgeGui gui, GuiGraphics graphics, float partialTicks, int width, int height) {
-		if (Minecraft.getInstance().options.hideGui || !active)
+	public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.options.hideGui || !active)
 			return;
 		if (activeSchematicItem != null)
-			this.overlay.renderOn(graphics, activeHotbarSlot);
+			this.overlay.renderOn(guiGraphics, activeHotbarSlot);
 		currentTool.getTool()
-			.renderOverlay(gui, graphics, partialTicks, width, height);
-		selectionScreen.renderPassive(graphics, partialTicks);
+			.renderOverlay(mc.gui, guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(false), guiGraphics.guiWidth(), guiGraphics.guiHeight());
+		selectionScreen.renderPassive(guiGraphics, deltaTracker.getGameTimeDeltaPartialTick(false));
 	}
 
 	public boolean onMouseInput(int button, boolean pressed) {
@@ -334,7 +331,7 @@ public class SchematicHandler implements IGuiOverlay {
 		ItemStack stack = player.getMainHandItem();
 		if (!AllItems.SCHEMATIC.isIn(stack))
 			return null;
-		if (!stack.hasTag())
+		if (!stack.has(AllDataComponents.SCHEMATIC_FILE))
 			return null;
 
 		activeSchematicItem = stack;
@@ -363,7 +360,7 @@ public class SchematicHandler implements IGuiOverlay {
 	public void sync() {
 		if (activeSchematicItem == null)
 			return;
-		AllPackets.getChannel().sendToServer(new SchematicSyncPacket(activeHotbarSlot, transformation.toSettings(),
+		CatnipServices.NETWORK.sendToServer(new SchematicSyncPacket(activeHotbarSlot, transformation.toSettings(),
 			transformation.getAnchor(), deployed));
 	}
 
@@ -374,15 +371,14 @@ public class SchematicHandler implements IGuiOverlay {
 	}
 
 	public void loadSettings(ItemStack blueprint) {
-		CompoundTag tag = blueprint.getTag();
 		BlockPos anchor = BlockPos.ZERO;
 		StructurePlaceSettings settings = SchematicItem.getSettings(blueprint);
 		transformation = new SchematicTransformation();
 
-		deployed = tag.getBoolean("Deployed");
+		deployed = blueprint.getOrDefault(AllDataComponents.SCHEMATIC_DEPLOYED, false);
 		if (deployed)
-			anchor = NbtUtils.readBlockPos(tag.getCompound("Anchor"));
-		Vec3i size = NBTHelper.readVec3i(tag.getList("Bounds", Tag.TAG_INT));
+			anchor = blueprint.get(AllDataComponents.SCHEMATIC_ANCHOR);
+		Vec3i size = blueprint.get(AllDataComponents.SCHEMATIC_BOUNDS);
 
 		bounds = new AABB(0, 0, 0, size.getX(), size.getY(), size.getZ());
 		outline = new AABBOutline(bounds);
@@ -406,10 +402,8 @@ public class SchematicHandler implements IGuiOverlay {
 	}
 
 	public void printInstantly() {
-		AllPackets.getChannel().sendToServer(new SchematicPlacePacket(activeSchematicItem.copy()));
-		CompoundTag nbt = activeSchematicItem.getTag();
-		nbt.putBoolean("Deployed", false);
-		activeSchematicItem.setTag(nbt);
+		CatnipServices.NETWORK.sendToServer(new SchematicPlacePacket(activeSchematicItem.copy()));
+		activeSchematicItem.set(AllDataComponents.SCHEMATIC_DEPLOYED, false);
 		SchematicInstances.clearHash(activeSchematicItem);
 		renderers.forEach(r -> r.setActive(false));
 		active = false;

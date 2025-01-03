@@ -6,19 +6,18 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllEntityTypes;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.logistics.chute.ChuteBlock;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.math.AngleHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -49,14 +48,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.PlayMessages.SpawnEntity;
+import net.neoforged.neoforge.common.CommonHooks;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
-public class PackageEntity extends LivingEntity implements IEntityAdditionalSpawnData {
+public class PackageEntity extends LivingEntity implements IEntityWithComplexSpawn {
 
 	private Entity originalEntity;
 	public ItemStack box;
@@ -123,8 +119,8 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 	public static EntityType.Builder<?> build(EntityType.Builder<?> builder) {
 		@SuppressWarnings("unchecked")
 		EntityType.Builder<PackageEntity> boxBuilder = (EntityType.Builder<PackageEntity>) builder;
-		return boxBuilder.setCustomClientFactory(PackageEntity::spawn)
-			.sized(1, 1);
+		return boxBuilder.sized(1, 1);
+		/*.setCustomClientFactory(PackageEntity::spawn)*/
 	}
 
 	@Override
@@ -149,7 +145,7 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 		if (tickCount < 5)
 			setPos(clientPos.x, clientPos.y, clientPos.z);
 		if (tickCount < 20)
-			lerpTo(clientPos.x, clientPos.y, clientPos.z, getYRot(), getXRot(), lerpSteps == 0 ? 3 : lerpSteps, true);
+			lerpTo(clientPos.x, clientPos.y, clientPos.z, getYRot(), getXRot(), lerpSteps == 0 ? 3 : lerpSteps);
 	}
 
 	@Override
@@ -159,8 +155,7 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 	}
 
 	public String getAddress() {
-		return box.getTag()
-			.getString("Address");
+		return box.get(AllDataComponents.PACKAGE_ADDRESS);
 	}
 
 	@Override
@@ -192,28 +187,28 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 	}
 
 	@Override
-	public EntityDimensions getDimensions(Pose pPose) {
+	protected EntityDimensions getDefaultDimensions(Pose pose) {
 		if (box == null)
-			return super.getDimensions(pPose);
-		return new EntityDimensions(PackageItem.getWidth(box), PackageItem.getHeight(box), true);
+			return super.getDefaultDimensions(pose);
+		return EntityDimensions.fixed(PackageItem.getWidth(box), PackageItem.getHeight(box));
 	}
 
-	public static PackageEntity spawn(SpawnEntity spawnEntity, Level world) {
-		PackageEntity packageEntity =
-			new PackageEntity(world, spawnEntity.getPosX(), spawnEntity.getPosY(), spawnEntity.getPosZ());
-		packageEntity.setDeltaMovement(spawnEntity.getVelX(), spawnEntity.getVelY(), spawnEntity.getVelZ());
-		packageEntity.clientPosition = packageEntity.position();
-		return packageEntity;
-	}
+	// TODO - Test if this is still needed
+//	public static PackageEntity spawn(SpawnEntity spawnEntity, Level world) {
+//		PackageEntity packageEntity =
+//			new PackageEntity(world, spawnEntity.getPosX(), spawnEntity.getPosY(), spawnEntity.getPosZ());
+//		packageEntity.setDeltaMovement(spawnEntity.getVelX(), spawnEntity.getVelY(), spawnEntity.getVelZ());
+//		packageEntity.clientPosition = packageEntity.position();
+//		return packageEntity;
+//	}
 
 	public ItemStack getBox() {
 		return box;
 	}
 
 	public static boolean centerPackage(Entity entity, Vec3 target) {
-		if (!(entity instanceof PackageEntity))
+		if (!(entity instanceof PackageEntity packageEntity))
 			return true;
-		PackageEntity packageEntity = (PackageEntity) entity;
 		return packageEntity.decreaseInsertionTimer(target);
 	}
 
@@ -280,9 +275,10 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 		}
 	}
 
+	// TODO - Lookover
 	@Override
-	public double getPassengersRidingOffset() {
-		return this.getDimensions(getPose()).height;
+	public Vec3 getPassengerRidingPosition(Entity entity) {
+		return new Vec3(0, entity.getDimensions(getPose()).height(), 0);
 	}
 
 	@Override
@@ -298,7 +294,7 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 
 	@Override
 	public boolean hurt(DamageSource source, float amount) {
-		if (!ForgeHooks.onLivingAttack(this, source, amount))
+		if (source.getEntity() instanceof Player player && !CommonHooks.onPlayerAttackTarget(player, this))
 			return false;
 
 		if (level().isClientSide || !this.isAlive())
@@ -328,7 +324,7 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 			if (this.isOnFire()) {
 				this.takeDamage(source, 0.15F);
 			} else {
-				this.setSecondsOnFire(5);
+				this.setRemainingFireTicks(100); // 5 seconds
 			}
 			return false;
 		}
@@ -356,24 +352,23 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 	}
 
 	private void destroy(DamageSource source) {
-		AllPackets.getChannel()
-			.send(PacketDistributor.TRACKING_ENTITY.with(() -> this),
-				new PackageDestroyPacket(getBoundingBox().getCenter(), box));
+		CatnipServices.NETWORK.sendToClientsTrackingEntity(this, new PackageDestroyPacket(getBoundingBox().getCenter(), box));
 		AllSoundEvents.PACKAGE_POP.playOnServer(level(), blockPosition());
-		this.dropAllDeathLoot(source);
+		if (level() instanceof ServerLevel serverLevel)
+			this.dropAllDeathLoot(serverLevel, source);
 	}
 
 	@Override
-	protected void dropAllDeathLoot(DamageSource pDamageSource) {
-		super.dropAllDeathLoot(pDamageSource);
+	protected void dropAllDeathLoot(ServerLevel level, DamageSource pDamageSource) {
+		super.dropAllDeathLoot(level, pDamageSource);
 		ItemStackHandler contents = PackageItem.getContents(box);
 		for (int i = 0; i < contents.getSlots(); i++) {
 			ItemStack itemstack = contents.getStackInSlot(i);
 
-			if (itemstack.getItem() instanceof SpawnEggItem sei && level() instanceof ServerLevel sl) {
-				EntityType<?> entitytype = sei.getType(itemstack.getTag());
+			if (itemstack.getItem() instanceof SpawnEggItem sei) {
+				EntityType<?> entitytype = sei.getType(itemstack);
 				Entity entity =
-					entitytype.spawn(sl, itemstack, null, blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
+					entitytype.spawn(level, itemstack, null, blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
 				if (entity != null)
 					itemstack.shrink(1);
 			}
@@ -381,26 +376,21 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 			if (itemstack.isEmpty())
 				continue;
 			ItemEntity entityIn = new ItemEntity(level(), getX(), getY(), getZ(), itemstack);
-			level().addFreshEntity(entityIn);
+			level.addFreshEntity(entityIn);
 		}
 	}
 
 	@Override
 	public void readAdditionalSaveData(CompoundTag compound) {
 		super.readAdditionalSaveData(compound);
-		box = ItemStack.of(compound.getCompound("Box"));
+		box = ItemStack.parseOptional(level().registryAccess(), compound.getCompound("Box"));
 		refreshDimensions();
 	}
 
 	@Override
 	public void addAdditionalSaveData(CompoundTag compound) {
 		super.addAdditionalSaveData(compound);
-		compound.put("Box", box.serializeNBT());
-	}
-
-	@Override
-	public Packet<ClientGamePacketListener> getAddEntityPacket() {
-		return NetworkHooks.getEntitySpawningPacket(this);
+		compound.put("Box", box.saveOptional(level().registryAccess()));
 	}
 
 	@Override
@@ -432,8 +422,8 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 	}
 
 	@Override
-	public void writeSpawnData(FriendlyByteBuf buffer) {
-		buffer.writeItem(getBox());
+	public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
+		ItemStack.STREAM_CODEC.encode(buffer, getBox());
 		Vec3 motion = getDeltaMovement();
 		buffer.writeFloat((float) motion.x);
 		buffer.writeFloat((float) motion.y);
@@ -441,8 +431,8 @@ public class PackageEntity extends LivingEntity implements IEntityAdditionalSpaw
 	}
 
 	@Override
-	public void readSpawnData(FriendlyByteBuf additionalData) {
-		setBox(additionalData.readItem());
+	public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
+		setBox(ItemStack.STREAM_CODEC.decode(additionalData));
 		setDeltaMovement(additionalData.readFloat(), additionalData.readFloat(), additionalData.readFloat());
 	}
 

@@ -13,11 +13,11 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider.Context;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class PackageRenderer extends EntityRenderer<PackageEntity> {
 
@@ -31,7 +31,7 @@ public class PackageRenderer extends EntityRenderer<PackageEntity> {
 		ItemStack box = entity.box;
 		if (box.isEmpty() || !PackageItem.isPackage(box))
 			box = AllBlocks.CARDBOARD_BLOCK.asStack();
-		PartialModel model = AllPartialModels.PACKAGES.get(ForgeRegistries.ITEMS.getKey(box.getItem()));
+		PartialModel model = AllPartialModels.PACKAGES.get(BuiltInRegistries.ITEM.getKey(box.getItem()));
 		renderBox(entity, yaw, ms, buffer, light, model);
 		super.render(entity, yaw, pt, ms, buffer, light);
 	}

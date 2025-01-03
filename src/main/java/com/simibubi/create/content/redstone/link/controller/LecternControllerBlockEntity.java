@@ -7,13 +7,16 @@ import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,10 +24,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fml.DistExecutor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class LecternControllerBlockEntity extends SmartBlockEntity {
 
@@ -41,23 +42,23 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 	public void addBehaviours(List<BlockEntityBehaviour> behaviours) { }
 
 	@Override
-	protected void write(CompoundTag compound, boolean clientPacket) {
-		super.write(compound, clientPacket);
-		compound.put("Controller", controller.save(new CompoundTag()));
+	protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(compound, registries, clientPacket);
+		compound.put("Controller", controller.saveOptional(registries));
 		if (user != null)
 			compound.putUUID("User", user);
 	}
 
 	@Override
-	public void writeSafe(CompoundTag compound) {
-		super.writeSafe(compound);
-		compound.put("Controller", controller.save(new CompoundTag()));
+	public void writeSafe(CompoundTag compound, HolderLookup.Provider registries) {
+		super.writeSafe(compound, registries);
+		compound.put("Controller", controller.saveOptional(registries));
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
-		super.read(compound, clientPacket);
-		controller = ItemStack.of(compound.getCompound("Controller"));
+	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(compound, registries, clientPacket);
+		controller = ItemStack.parseOptional(registries, compound.getCompound("Controller"));
 		user = compound.hasUUID("User") ? compound.getUUID("User") : null;
 	}
 
@@ -104,7 +105,7 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 		super.tick();
 
 		if (level.isClientSide) {
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::tryToggleActive);
+			CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tryToggleActive);
 			prevUser = user;
 		}
 
@@ -172,7 +173,7 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 
 	public static boolean playerInRange(Player player, Level world, BlockPos pos) {
 		//double modifier = world.isRemote ? 0 : 1.0;
-		double reach = 0.4 * player.getAttributeValue(ForgeMod.BLOCK_REACH.get());// + modifier;
+		double reach = 0.4 * player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE);// + modifier;
 		return player.distanceToSqr(Vec3.atCenterOf(pos)) < reach * reach;
 	}
 

@@ -42,7 +42,7 @@ public class BlockStressDefaults {
 
 	public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setImpact(double impact) {
 		return b -> {
-			setDefaultImpact(new ResourceLocation(b.getOwner()
+			setDefaultImpact(ResourceLocation.fromNamespaceAndPath(b.getOwner()
 				.getModid(), b.getName()), impact);
 			return b;
 		};
@@ -50,7 +50,7 @@ public class BlockStressDefaults {
 
 	public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setCapacity(double capacity) {
 		return b -> {
-			setDefaultCapacity(new ResourceLocation(b.getOwner()
+			setDefaultCapacity(ResourceLocation.fromNamespaceAndPath(b.getOwner()
 				.getModid(), b.getName()), capacity);
 			return b;
 		};
@@ -59,7 +59,7 @@ public class BlockStressDefaults {
 	public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> setGeneratorSpeed(
 		Supplier<Couple<Integer>> provider) {
 		return b -> {
-			setGeneratorSpeed(new ResourceLocation(b.getOwner()
+			setGeneratorSpeed(ResourceLocation.fromNamespaceAndPath(b.getOwner()
 				.getModid(), b.getName()), provider);
 			return b;
 		};

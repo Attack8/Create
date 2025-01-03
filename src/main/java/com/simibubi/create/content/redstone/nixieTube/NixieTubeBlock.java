@@ -18,13 +18,12 @@ import com.simibubi.create.foundation.block.IBE;
 import net.createmod.catnip.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -33,6 +32,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -60,55 +60,51 @@ public class NixieTubeBlock extends DoubleFaceAttachedBlock
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-		BlockHitResult ray) {
-
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (player.isShiftKeyDown())
-			return InteractionResult.PASS;
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-		ItemStack heldItem = player.getItemInHand(hand);
-		NixieTubeBlockEntity nixie = getBlockEntity(world, pos);
+		NixieTubeBlockEntity nixie = getBlockEntity(level, pos);
 
 		if (nixie == null)
-			return InteractionResult.PASS;
-		if (heldItem.isEmpty()) {
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		if (stack.isEmpty()) {
 			if (nixie.reactsToRedstone())
-				return InteractionResult.PASS;
+				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 			nixie.clearCustomText();
-			updateDisplayedRedstoneValue(state, world, pos);
-			return InteractionResult.SUCCESS;
+			updateDisplayedRedstoneValue(state, level, pos);
+			return ItemInteractionResult.SUCCESS;
 		}
 
 		boolean display =
-			heldItem.getItem() == Items.NAME_TAG && heldItem.hasCustomHoverName() || AllBlocks.CLIPBOARD.isIn(heldItem);
-		DyeColor dye = DyeColor.getColor(heldItem);
+			stack.getItem() == Items.NAME_TAG && stack.has(DataComponents.CUSTOM_NAME) || AllBlocks.CLIPBOARD.isIn(stack);
+		DyeColor dye = DyeColor.getColor(stack);
 
 		if (!display && dye == null)
-			return InteractionResult.PASS;
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
-		CompoundTag tag = heldItem.getTagElement("display");
-		String tagElement = tag != null && tag.contains("Name", Tag.TAG_STRING) ? tag.getString("Name") : null;
+		String tagElement = stack.getOrDefault(DataComponents.CUSTOM_NAME, Component.empty()).getString();
 
-		if (AllBlocks.CLIPBOARD.isIn(heldItem)) {
-			List<ClipboardEntry> entries = ClipboardEntry.getLastViewedEntries(heldItem);
+		if (AllBlocks.CLIPBOARD.isIn(stack)) {
+			List<ClipboardEntry> entries = ClipboardEntry.getLastViewedEntries(stack);
 			for (int i = 0; i < entries.size();) {
-				tagElement = Component.Serializer.toJson(entries.get(i).text);
+				tagElement = Component.Serializer.toJson(entries.get(i).text, level.registryAccess());
 				break;
 			}
 		}
 
-		if (world.isClientSide)
-			return InteractionResult.SUCCESS;
+		if (level.isClientSide)
+			return ItemInteractionResult.SUCCESS;
 
 		String tagUsed = tagElement;
-		walkNixies(world, pos, (currentPos, rowPosition) -> {
+		walkNixies(level, pos, (currentPos, rowPosition) -> {
 			if (display)
-				withBlockEntityDo(world, currentPos, be -> be.displayCustomText(tagUsed, rowPosition));
+				withBlockEntityDo(level, currentPos, be -> be.displayCustomText(tagUsed, rowPosition));
 			if (dye != null)
-				world.setBlockAndUpdate(currentPos, withColor(state, dye));
+				level.setBlockAndUpdate(currentPos, withColor(state, dye));
 		});
 
-		return InteractionResult.SUCCESS;
+		return ItemInteractionResult.SUCCESS;
 	}
 
 	public static void walkNixies(LevelAccessor world, BlockPos start, BiConsumer<BlockPos, Integer> callback) {
@@ -160,7 +156,7 @@ public class NixieTubeBlock extends DoubleFaceAttachedBlock
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockGetter p_185473_1_, BlockPos p_185473_2_, BlockState p_185473_3_) {
+	public ItemStack getCloneItemStack(LevelReader pLevel, BlockPos pPos, BlockState pState) {
 		return AllBlocks.ORANGE_NIXIE_TUBE.asStack();
 	}
 
@@ -186,12 +182,12 @@ public class NixieTubeBlock extends DoubleFaceAttachedBlock
 	}
 
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos,
-		Player player) {
+	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos,
+									   Player player) {
 		if (color != DyeColor.ORANGE)
 			return AllBlocks.ORANGE_NIXIE_TUBE.get()
-				.getCloneItemStack(state, target, world, pos, player);
-		return super.getCloneItemStack(state, target, world, pos, player);
+				.getCloneItemStack(state, target, level, pos, player);
+		return super.getCloneItemStack(state, target, level, pos, player);
 	}
 
 	@Override
@@ -267,7 +263,7 @@ public class NixieTubeBlock extends DoubleFaceAttachedBlock
 	}
 
 	@Override
-	public boolean isPathfindable(BlockState state, BlockGetter reader, BlockPos pos, PathComputationType type) {
+	protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
 		return false;
 	}
 

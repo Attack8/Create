@@ -2,7 +2,6 @@ package com.simibubi.create.content.logistics.factoryBoard;
 
 import javax.annotation.Nullable;
 
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelBlock.PanelSlot;
 import com.simibubi.create.foundation.block.WrenchableDirectionalBlock;
@@ -10,6 +9,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.CatnipClient;
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.AnimationTickHolder;
 import net.createmod.catnip.utility.VecHelper;
 import net.minecraft.ChatFormatting;
@@ -61,8 +61,7 @@ public class FactoryPanelConnectionHandler {
 		ItemStack filterFrom = panel.getFilter();
 		ItemStack filterTo = at.getFilter();
 
-		AllPackets.getChannel()
-			.sendToServer(new FactoryPanelConnectionPacket(panel.getPanelPosition(), connectingFrom));
+		CatnipServices.NETWORK.sendToServer(new FactoryPanelConnectionPacket(panel.getPanelPosition(), connectingFrom));
 
 		player.displayClientMessage(CreateLang.translate("factory_panel.panels_connected", filterFrom.getHoverName()
 			.getString(),
@@ -206,8 +205,7 @@ public class FactoryPanelConnectionHandler {
 					bestPosition = panelPosition;
 				}
 
-				AllPackets.getChannel()
-					.sendToServer(new FactoryPanelConnectionPacket(bestPosition, connectingFrom));
+				CatnipServices.NETWORK.sendToServer(new FactoryPanelConnectionPacket(bestPosition, connectingFrom));
 
 				mc.player.displayClientMessage(CreateLang
 					.translate("factory_panel.link_connected", blockEntity.getBlockState()

@@ -35,9 +35,8 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class FluidPropagator {
 
@@ -203,9 +202,9 @@ public class FluidPropagator {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity == null)
 			return false;
-		LazyOptional<IFluidHandler> capability =
-			blockEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, side);
-		return capability.isPresent();
+		IFluidHandler capability =
+			blockEntity.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, blockEntity.getBlockPos(), side);
+		return capability != null;
 	}
 
 	@Nullable

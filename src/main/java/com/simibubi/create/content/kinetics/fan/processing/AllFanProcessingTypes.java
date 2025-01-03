@@ -4,26 +4,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
-
-import com.simibubi.create.AllRegistries;
-import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPointType;
-
-import net.minecraft.resources.ResourceLocation;
-
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
 
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import com.simibubi.create.AllRecipeTypes;
+import com.simibubi.create.AllRegistries;
 import com.simibubi.create.AllTags.AllBlockTags;
 import com.simibubi.create.AllTags.AllFluidTags;
 import com.simibubi.create.Create;
-import com.simibubi.create.content.kinetics.fan.processing.HauntingRecipe.HauntingWrapper;
-import com.simibubi.create.content.kinetics.fan.processing.SplashingRecipe.SplashingWrapper;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.content.processing.burner.LitBlazeBurnerBlock;
 import com.simibubi.create.foundation.damageTypes.CreateDamageSources;
@@ -34,6 +24,7 @@ import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.theme.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -53,7 +44,10 @@ import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.BlastingRecipe;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.item.crafting.SmeltingRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.level.Level;
@@ -62,8 +56,9 @@ import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class AllFanProcessingTypes {
 	private static final DeferredRegister<FanProcessingType> REGISTER = DeferredRegister.create(AllRegistries.Keys.FAN_PROCESSING_TYPES, Create.ID);
@@ -144,8 +139,6 @@ public class AllFanProcessingTypes {
 	}
 
 	public static class BlastingType implements FanProcessingType {
-		private static final RecipeWrapper RECIPE_WRAPPER = new RecipeWrapper(new ItemStackHandler(1));
-
 		@Override
 		public boolean isValidAt(Level level, BlockPos pos) {
 			FluidState fluidState = level.getFluidState(pos);
@@ -169,50 +162,44 @@ public class AllFanProcessingTypes {
 
 		@Override
 		public boolean canProcess(ItemStack stack, Level level) {
-			RECIPE_WRAPPER.setItem(0, stack);
-			Optional<SmeltingRecipe> smeltingRecipe = level.getRecipeManager()
-				.getRecipeFor(RecipeType.SMELTING, RECIPE_WRAPPER, level)
+			Optional<RecipeHolder<SmeltingRecipe>> smeltingRecipe = level.getRecipeManager()
+				.getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level)
 				.filter(AllRecipeTypes.CAN_BE_AUTOMATED);
 
 			if (smeltingRecipe.isPresent())
 				return true;
 
-			RECIPE_WRAPPER.setItem(0, stack);
-			Optional<BlastingRecipe> blastingRecipe = level.getRecipeManager()
-				.getRecipeFor(RecipeType.BLASTING, RECIPE_WRAPPER, level)
+			Optional<RecipeHolder<BlastingRecipe>> blastingRecipe = level.getRecipeManager()
+				.getRecipeFor(RecipeType.BLASTING, new SingleRecipeInput(stack), level)
 				.filter(AllRecipeTypes.CAN_BE_AUTOMATED);
 
 			if (blastingRecipe.isPresent())
 				return true;
 
-			return !stack.getItem()
-				.isFireResistant();
+			return !stack.has(DataComponents.FIRE_RESISTANT);
 		}
 
 		@Override
 		@Nullable
 		public List<ItemStack> process(ItemStack stack, Level level) {
-			RECIPE_WRAPPER.setItem(0, stack);
-			Optional<SmokingRecipe> smokingRecipe = level.getRecipeManager()
-				.getRecipeFor(RecipeType.SMOKING, RECIPE_WRAPPER, level)
+			Optional<RecipeHolder<SmokingRecipe>> smokingRecipe = level.getRecipeManager()
+				.getRecipeFor(RecipeType.SMOKING, new SingleRecipeInput(stack), level)
 				.filter(AllRecipeTypes.CAN_BE_AUTOMATED);
 
-			RECIPE_WRAPPER.setItem(0, stack);
-			Optional<? extends AbstractCookingRecipe> smeltingRecipe = level.getRecipeManager()
-				.getRecipeFor(RecipeType.SMELTING, RECIPE_WRAPPER, level)
+			Optional<? extends RecipeHolder<? extends AbstractCookingRecipe>> smeltingRecipe = level.getRecipeManager()
+				.getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level)
 				.filter(AllRecipeTypes.CAN_BE_AUTOMATED);
 
 			if (!smeltingRecipe.isPresent()) {
-				RECIPE_WRAPPER.setItem(0, stack);
 				smeltingRecipe = level.getRecipeManager()
-					.getRecipeFor(RecipeType.BLASTING, RECIPE_WRAPPER, level);
+					.getRecipeFor(RecipeType.BLASTING, new SingleRecipeInput(stack), level);
 			}
 
 			if (smeltingRecipe.isPresent()) {
 				RegistryAccess registryAccess = level.registryAccess();
-				if (!smokingRecipe.isPresent() || !ItemStack.isSameItem(smokingRecipe.get()
+				if (!smokingRecipe.isPresent() || !ItemStack.isSameItem(smokingRecipe.get().value()
 					.getResultItem(registryAccess),
-					smeltingRecipe.get()
+					smeltingRecipe.get().value()
 						.getResultItem(registryAccess))) {
 					return RecipeApplier.applyRecipeOn(level, stack, smeltingRecipe.get());
 				}
@@ -244,15 +231,13 @@ public class AllFanProcessingTypes {
 				return;
 
 			if (!entity.fireImmune()) {
-				entity.setSecondsOnFire(10);
+				entity.igniteForSeconds(10);
 				entity.hurt(CreateDamageSources.fanLava(level), 4);
 			}
 		}
 	}
 
 	public static class HauntingType implements FanProcessingType {
-		private static final HauntingWrapper HAUNTING_WRAPPER = new HauntingWrapper();
-
 		@Override
 		public boolean isValidAt(Level level, BlockPos pos) {
 			FluidState fluidState = level.getFluidState(pos);
@@ -279,16 +264,14 @@ public class AllFanProcessingTypes {
 
 		@Override
 		public boolean canProcess(ItemStack stack, Level level) {
-			HAUNTING_WRAPPER.setItem(0, stack);
-			Optional<HauntingRecipe> recipe = AllRecipeTypes.HAUNTING.find(HAUNTING_WRAPPER, level);
+			Optional<RecipeHolder<Recipe<SingleRecipeInput>>> recipe = AllRecipeTypes.HAUNTING.find(new SingleRecipeInput(stack), level);
 			return recipe.isPresent();
 		}
 
 		@Override
 		@Nullable
 		public List<ItemStack> process(ItemStack stack, Level level) {
-			HAUNTING_WRAPPER.setItem(0, stack);
-			Optional<HauntingRecipe> recipe = AllRecipeTypes.HAUNTING.find(HAUNTING_WRAPPER, level);
+			Optional<RecipeHolder<Recipe<SingleRecipeInput>>> recipe = AllRecipeTypes.HAUNTING.find(new SingleRecipeInput(stack), level);
 			if (recipe.isPresent())
 				return RecipeApplier.applyRecipeOn(level, stack, recipe.get());
 			return null;
@@ -344,7 +327,7 @@ public class AllFanProcessingTypes {
 					.getInt("CreateHaunting");
 				if (progress < 100) {
 					if (progress % 10 == 0) {
-						level.playSound(null, entity.blockPosition(), SoundEvents.SOUL_ESCAPE, SoundSource.NEUTRAL,
+						level.playSound(null, entity.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.NEUTRAL,
 							1f, 1.5f * progress / 100f);
 					}
 					horse.getPersistentData()
@@ -358,11 +341,11 @@ public class AllFanProcessingTypes {
 				SkeletonHorse skeletonHorse = EntityType.SKELETON_HORSE.create(level);
 				CompoundTag serializeNBT = horse.saveWithoutId(new CompoundTag());
 				serializeNBT.remove("UUID");
-				if (!horse.getArmor()
+				if (!horse.getBodyArmorItem()
 					.isEmpty())
-					horse.spawnAtLocation(horse.getArmor());
+					horse.spawnAtLocation(horse.getBodyArmorItem());
 
-				skeletonHorse.deserializeNBT(serializeNBT);
+				skeletonHorse.deserializeNBT(entity.registryAccess(), serializeNBT);
 				skeletonHorse.setPos(horse.getPosition(0));
 				level.addFreshEntity(skeletonHorse);
 				horse.discard();
@@ -371,8 +354,6 @@ public class AllFanProcessingTypes {
 	}
 
 	public static class SmokingType implements FanProcessingType {
-		private static final RecipeWrapper RECIPE_WRAPPER = new RecipeWrapper(new ItemStackHandler(1));
-
 		@Override
 		public boolean isValidAt(Level level, BlockPos pos) {
 			FluidState fluidState = level.getFluidState(pos);
@@ -402,9 +383,8 @@ public class AllFanProcessingTypes {
 
 		@Override
 		public boolean canProcess(ItemStack stack, Level level) {
-			RECIPE_WRAPPER.setItem(0, stack);
-			Optional<SmokingRecipe> recipe = level.getRecipeManager()
-				.getRecipeFor(RecipeType.SMOKING, RECIPE_WRAPPER, level)
+			Optional<RecipeHolder<SmokingRecipe>> recipe = level.getRecipeManager()
+				.getRecipeFor(RecipeType.SMOKING, new SingleRecipeInput(stack), level)
 				.filter(AllRecipeTypes.CAN_BE_AUTOMATED);
 
 			return recipe.isPresent();
@@ -413,9 +393,8 @@ public class AllFanProcessingTypes {
 		@Override
 		@Nullable
 		public List<ItemStack> process(ItemStack stack, Level level) {
-			RECIPE_WRAPPER.setItem(0, stack);
-			Optional<SmokingRecipe> smokingRecipe = level.getRecipeManager()
-				.getRecipeFor(RecipeType.SMOKING, RECIPE_WRAPPER, level)
+			Optional<RecipeHolder<SmokingRecipe>> smokingRecipe = level.getRecipeManager()
+				.getRecipeFor(RecipeType.SMOKING, new SingleRecipeInput(stack), level)
 				.filter(AllRecipeTypes.CAN_BE_AUTOMATED);
 
 			if (smokingRecipe.isPresent())
@@ -447,15 +426,13 @@ public class AllFanProcessingTypes {
 				return;
 
 			if (!entity.fireImmune()) {
-				entity.setSecondsOnFire(2);
+				entity.igniteForSeconds(2);
 				entity.hurt(CreateDamageSources.fanFire(level), 2);
 			}
 		}
 	}
 
 	public static class SplashingType implements FanProcessingType {
-		private static final SplashingWrapper SPLASHING_WRAPPER = new SplashingWrapper();
-
 		@Override
 		public boolean isValidAt(Level level, BlockPos pos) {
 			FluidState fluidState = level.getFluidState(pos);
@@ -476,16 +453,14 @@ public class AllFanProcessingTypes {
 
 		@Override
 		public boolean canProcess(ItemStack stack, Level level) {
-			SPLASHING_WRAPPER.setItem(0, stack);
-			Optional<SplashingRecipe> recipe = AllRecipeTypes.SPLASHING.find(SPLASHING_WRAPPER, level);
+			Optional<RecipeHolder<Recipe<SingleRecipeInput>>> recipe = AllRecipeTypes.SPLASHING.find(new SingleRecipeInput(stack), level);
 			return recipe.isPresent();
 		}
 
 		@Override
 		@Nullable
 		public List<ItemStack> process(ItemStack stack, Level level) {
-			SPLASHING_WRAPPER.setItem(0, stack);
-			Optional<SplashingRecipe> recipe = AllRecipeTypes.SPLASHING.find(SPLASHING_WRAPPER, level);
+			Optional<RecipeHolder<Recipe<SingleRecipeInput>>> recipe = AllRecipeTypes.SPLASHING.find(new SingleRecipeInput(stack), level);
 			if (recipe.isPresent())
 				return RecipeApplier.applyRecipeOn(level, stack, recipe.get());
 			return null;

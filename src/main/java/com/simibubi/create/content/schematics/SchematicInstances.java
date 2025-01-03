@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.content.contraptions.StructureTransform;
 
 import net.createmod.catnip.utility.WorldAttached;
@@ -14,8 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -44,10 +43,9 @@ public class SchematicInstances {
 	}
 
 	private static SchematicLevel loadWorld(Level wrapped, ItemStack schematic) {
-		if (schematic == null || !schematic.hasTag())
+		if (schematic == null || !schematic.has(AllDataComponents.SCHEMATIC_FILE))
 			return null;
-		if (!schematic.getTag()
-			.getBoolean("Deployed"))
+		if (!schematic.has(AllDataComponents.SCHEMATIC_DEPLOYED))
 			return null;
 
 		StructureTemplate activeTemplate =
@@ -57,8 +55,7 @@ public class SchematicInstances {
 			.equals(Vec3i.ZERO))
 			return null;
 
-		BlockPos anchor = NbtUtils.readBlockPos(schematic.getTag()
-			.getCompound("Anchor"));
+		BlockPos anchor = schematic.get(AllDataComponents.SCHEMATIC_ANCHOR);
 		SchematicLevel world = new SchematicLevel(anchor, wrapped);
 		StructurePlaceSettings settings = SchematicItem.getSettings(schematic);
 		activeTemplate.placeInWorld(world, anchor, anchor, settings, wrapped.getRandom(), Block.UPDATE_CLIENTS);
@@ -72,20 +69,17 @@ public class SchematicInstances {
 	}
 
 	public static void clearHash(ItemStack schematic) {
-		if (schematic == null || !schematic.hasTag())
+		if (schematic == null || !schematic.has(AllDataComponents.SCHEMATIC_FILE))
 			return;
-		schematic.getTag()
-			.remove("SchematicHash");
+		schematic.remove(AllDataComponents.SCHEMATIC_HASH);
 	}
 
 	public static int getHash(ItemStack schematic) {
-		if (schematic == null || !schematic.hasTag())
+		if (schematic == null || !schematic.has(AllDataComponents.SCHEMATIC_FILE))
 			return -1;
-		CompoundTag tag = schematic.getTag();
-		if (!tag.contains("SchematicHash"))
-			tag.putInt("SchematicHash", tag.toString()
-				.hashCode());
-		return tag.getInt("SchematicHash");
+		if (!schematic.has(AllDataComponents.SCHEMATIC_HASH))
+			schematic.set(AllDataComponents.SCHEMATIC_HASH, schematic.getComponentsPatch().hashCode());
+		return schematic.getOrDefault(AllDataComponents.SCHEMATIC_HASH, -1);
 	}
 
 }

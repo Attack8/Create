@@ -1,14 +1,21 @@
 package com.simibubi.create.content.logistics.factoryBoard;
 
-import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelBlock.PanelSlot;
+import com.simibubi.create.AllPackets;
 import com.simibubi.create.foundation.networking.BlockEntityConfigurationPacket;
 
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 
 public class FactoryPanelConnectionPacket extends BlockEntityConfigurationPacket<FactoryPanelBlockEntity> {
+	public static StreamCodec<ByteBuf, FactoryPanelConnectionPacket> STREAM_CODEC = StreamCodec.composite(
+	    FactoryPanelPosition.STREAM_CODEC, packet -> packet.fromPos,
+		FactoryPanelPosition.STREAM_CODEC, packet -> packet.toPos,
+	    FactoryPanelConnectionPacket::new
+	);
 
-	private FactoryPanelPosition fromPos;
-	private FactoryPanelPosition toPos;
+	private final FactoryPanelPosition fromPos;
+	private final FactoryPanelPosition toPos;
 
 	public FactoryPanelConnectionPacket(FactoryPanelPosition fromPos, FactoryPanelPosition toPos) {
 		super(toPos.pos());
@@ -16,28 +23,13 @@ public class FactoryPanelConnectionPacket extends BlockEntityConfigurationPacket
 		this.toPos = toPos;
 	}
 
-	public FactoryPanelConnectionPacket(FriendlyByteBuf buffer) {
-		super(buffer);
+	@Override
+	public PacketTypeProvider getTypeProvider() {
+		return AllPackets.CONNECT_FACTORY_PANEL;
 	}
 
 	@Override
-	protected void writeSettings(FriendlyByteBuf buffer) {
-		buffer.writeBlockPos(fromPos.pos());
-		buffer.writeVarInt(fromPos.slot()
-			.ordinal());
-		buffer.writeBlockPos(toPos.pos());
-		buffer.writeVarInt(toPos.slot()
-			.ordinal());
-	}
-
-	@Override
-	protected void readSettings(FriendlyByteBuf buffer) {
-		fromPos = new FactoryPanelPosition(buffer.readBlockPos(), PanelSlot.values()[buffer.readVarInt()]);
-		toPos = new FactoryPanelPosition(buffer.readBlockPos(), PanelSlot.values()[buffer.readVarInt()]);
-	}
-
-	@Override
-	protected void applySettings(FactoryPanelBlockEntity be) {
+	protected void applySettings(ServerPlayer player, FactoryPanelBlockEntity be) {
 		FactoryPanelBehaviour behaviour = FactoryPanelBehaviour.at(be.getLevel(), toPos);
 		if (behaviour != null)
 			behaviour.addConnection(fromPos);

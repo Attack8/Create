@@ -23,9 +23,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class BasinRenderer extends SmartBlockEntityRenderer<BasinBlockEntity> {
 
@@ -51,7 +51,10 @@ public class BasinRenderer extends SmartBlockEntityRenderer<BasinBlockEntity> {
 		RandomSource r = RandomSource.create(pos.hashCode());
 		Vec3 baseVector = new Vec3(.125, level, 0);
 
-		IItemHandlerModifiable inv = basin.itemCapability.orElse(new ItemStackHandler());
+		IItemHandlerModifiable inv = basin.itemCapability;
+		if (inv == null)
+			inv = new ItemStackHandler();
+
 		int itemCount = 0;
 		for (int slot = 0; slot < inv.getSlots(); slot++)
 			if (!inv.getStackInSlot(slot)
@@ -172,7 +175,7 @@ public class BasinRenderer extends SmartBlockEntityRenderer<BasinBlockEntity> {
 				float partial = Mth.clamp(units / totalUnits, 0, 1);
 				xMax += partial * 12 / 16f;
 				FluidRenderer.renderFluidBox(renderedFluid.getFluid(), renderedFluid.getAmount(), xMin, yMin, zMin, xMax, yMax, zMax, buffer, ms, light,
-					false, false, renderedFluid.getTag());
+					false, false, renderedFluid.getComponents());
 
 				xMin = xMax;
 			}

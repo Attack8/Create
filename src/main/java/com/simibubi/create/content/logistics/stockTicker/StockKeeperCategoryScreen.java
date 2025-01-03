@@ -13,7 +13,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.ScreenWithStencils;
@@ -25,6 +24,8 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.gui.UIRenderHelper;
 import net.createmod.catnip.gui.element.GuiGameElement;
+import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.utility.AnimationTickHolder;
 import net.createmod.catnip.utility.animation.LerpedFloat;
 import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.utility.lang.Components;
@@ -34,13 +35,14 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<StockKeeperCategoryMenu>
 	implements ScreenWithStencils {
@@ -107,8 +109,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		editingIndex = index;
 		editingItem = index == -1 ? ItemStack.EMPTY : schedule.get(index);
 		menu.proxyInventory.setStackInSlot(0, editingItem);
-		AllPackets.getChannel()
-			.sendToServer(new GhostItemSubmitPacket(editingItem, 0));
+		CatnipServices.NETWORK.sendToServer(new GhostItemSubmitPacket(editingItem, 0));
 
 		addRenderableWidget(editorConfirm);
 		addRenderableWidget(editorEditBox);
@@ -119,23 +120,22 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		if (editingItem == null)
 			return;
 
-		playUiSound(SoundEvents.UI_BUTTON_CLICK.get(), 1, 1);
-		
+		playUiSound(SoundEvents.UI_BUTTON_CLICK.value(), 1, 1);
+
 		removeWidget(editorConfirm);
 		removeWidget(editorEditBox);
 
 		ItemStack stackInSlot = menu.proxyInventory.getStackInSlot(0)
 			.copy();
 		if (!stackInSlot.isEmpty())
-			stackInSlot.setHoverName(Components.literal(editorEditBox.getValue()));
+			stackInSlot.set(DataComponents.CUSTOM_NAME, Components.literal(editorEditBox.getValue()));
 
 		if (editingIndex == -1)
 			schedule.add(stackInSlot);
 		else
 			schedule.set(editingIndex, stackInSlot);
 
-		AllPackets.getChannel()
-			.sendToServer(new GhostItemSubmitPacket(ItemStack.EMPTY, 0));
+		CatnipServices.NETWORK.sendToServer(new GhostItemSubmitPacket(ItemStack.EMPTY, 0));
 
 		editingItem = null;
 		editorConfirm = null;
@@ -154,8 +154,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 			.equals(CreateLang.translate("gui.stock_ticker.new_category")
 				.string()))
 			return;
-		if (menu.proxyInventory.getStackInSlot(0)
-			.hasCustomHoverName())
+		if (menu.proxyInventory.getStackInSlot(0).has(DataComponents.CUSTOM_NAME))
 			editorEditBox.setValue(menu.proxyInventory.getStackInSlot(0)
 				.getHoverName()
 				.getString());
@@ -163,12 +162,13 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		partialTicks = minecraft.getFrameTime();
+		// TODO - Is this really needed? We already get passed partialTick by the render method
+		partialTicks = AnimationTickHolder.getPartialTicksUI();
 
 		if (menu.slotsActive)
 			super.render(graphics, mouseX, mouseY, partialTicks);
 		else {
-			renderBackground(graphics);
+			renderBackground(graphics, mouseX, mouseY, partialTicks);
 			renderBg(graphics, partialTicks, mouseX, mouseY);
 			for (Renderable widget : this.renderables)
 				widget.render(graphics, mouseX, mouseY, partialTicks);
@@ -289,8 +289,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 					.component()), mx, my);
 				if (click == 0) {
 					if (!entry.isEmpty())
-						AllPackets.getChannel()
-							.sendToServer(new StockKeeperCategoryRefundPacket(menu.contentHolder.getBlockPos(), entry));
+						CatnipServices.NETWORK.sendToServer(new StockKeeperCategoryRefundPacket(menu.contentHolder.getBlockPos(), entry));
 					entries.remove(entry);
 					init();
 				}
@@ -341,7 +340,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 			renderActionTooltip(graphics, ImmutableList.of(CreateLang.translate("gui.stock_ticker.new_category")
 				.component()), mx, my);
 			if (click == 0) {
-				playUiSound(SoundEvents.UI_BUTTON_CLICK.get(), 1f, 1f);				
+				playUiSound(SoundEvents.UI_BUTTON_CLICK.value(), 1f, 1f);
 				startEditing(-1);
 			}
 		}
@@ -361,7 +360,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 			return true;
 		}
 		if (action(null, pMouseX, pMouseY, pButton)) {
-			playUiSound(SoundEvents.UI_BUTTON_CLICK.get(), 1f, 1f);
+			playUiSound(SoundEvents.UI_BUTTON_CLICK.value(), 1f, 1f);
 			return true;
 		}
 
@@ -369,7 +368,8 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		boolean mouseClicked = super.mouseClicked(pMouseX, pMouseY, pButton);
 
 		if (editorEditBox != null && editorEditBox.isMouseOver(pMouseX, pMouseY) && wasNotFocused) {
-			editorEditBox.moveCursorToEnd();
+			// TODO - Checkover the select = true part
+			editorEditBox.moveCursorToEnd(true);
 			editorEditBox.setHighlightPos(0);
 		}
 
@@ -394,21 +394,21 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 	}
 
 	@Override
-	public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		if (editingItem != null)
-			return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+			return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 
 		float chaseTarget = scroll.getChaseTarget();
 		float max = 40 - (3 + AllGuiTextures.STOCK_KEEPER_CATEGORY.getHeight() * slices);
 		max += schedule.size() * CARD_HEADER + 24;
 		if (max > 0) {
-			chaseTarget -= pDelta * 12;
+			chaseTarget -= (float) (scrollY * 12);
 			chaseTarget = Mth.clamp(chaseTarget, 0, max);
 			scroll.chase((int) chaseTarget, 0.7f, Chaser.EXP);
 		} else
 			scroll.chase(0, 0.7f, Chaser.EXP);
 
-		return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 	}
 
 	@Override
@@ -494,8 +494,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 	@Override
 	public void removed() {
 		super.removed();
-		AllPackets.getChannel()
-			.sendToServer(new StockKeeperCategoryEditPacket(menu.contentHolder.getBlockPos(), schedule));
+		CatnipServices.NETWORK.sendToServer(new StockKeeperCategoryEditPacket(menu.contentHolder.getBlockPos(), schedule));
 	}
 
 	@Override

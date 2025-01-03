@@ -1,7 +1,7 @@
 package com.simibubi.create.content.equipment.toolbox;
 
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class ToolboxSlot extends SlotItemHandler {
 
@@ -11,7 +11,7 @@ public class ToolboxSlot extends SlotItemHandler {
 		super(itemHandler, index, xPosition, yPosition);
 		this.toolboxMenu = menu;
 	}
-	
+
 	@Override
 	public boolean isActive() {
 		return !toolboxMenu.renderPass && super.isActive();

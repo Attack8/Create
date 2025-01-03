@@ -5,11 +5,14 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.AllTags.AllFluidTags;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.Tags;
+import net.neoforged.neoforge.common.Tags;
+
+import java.util.concurrent.CompletableFuture;
 
 public class CompactingRecipeGen extends ProcessingRecipeGen {
 
@@ -41,7 +44,7 @@ public class CompactingRecipeGen extends ProcessingRecipeGen {
 			.require(AllItems.CINDER_FLOUR.get())
 			.output(AllItems.BLAZE_CAKE_BASE.get(), 1)),
 
-		HONEY = create("honey", b -> b.require(AllFluidTags.HONEY.tag, 1000)
+		HONEY = create("honey", b -> b.require(Tags.Fluids.HONEY, 1000)
 			.output(Items.HONEY_BLOCK, 1)),
 
 		ICE = create("ice", b -> b
@@ -52,8 +55,8 @@ public class CompactingRecipeGen extends ProcessingRecipeGen {
 
 	;
 
-	public CompactingRecipeGen(PackOutput output) {
-		super(output);
+	public CompactingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+		super(output, registries);
 	}
 
 	@Override

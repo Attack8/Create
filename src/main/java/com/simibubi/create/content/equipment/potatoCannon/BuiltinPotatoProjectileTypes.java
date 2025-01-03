@@ -8,6 +8,7 @@ import com.simibubi.create.foundation.mixin.accessor.FallingBlockEntityAccessor;
 import net.createmod.catnip.utility.WorldAttached;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -34,11 +35,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.EntityTeleportEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.SpecialPlantable;
+import net.neoforged.neoforge.common.util.FakePlayer;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 
 import java.util.UUID;
 import java.util.function.BiPredicate;
@@ -262,12 +263,12 @@ public class BuiltinPotatoProjectileTypes {
 	private static Predicate<EntityHitResult> setFire(int seconds) {
 		return ray -> {
 			ray.getEntity()
-				.setSecondsOnFire(seconds);
+				.igniteForSeconds(seconds);
 			return false;
 		};
 	}
 
-	private static Predicate<EntityHitResult> potion(MobEffect effect, int level, int ticks, boolean recoverable) {
+	private static Predicate<EntityHitResult> potion(Holder<MobEffect> effect, int level, int ticks, boolean recoverable) {
 		return ray -> {
 			Entity entity = ray.getEntity();
 			if (entity.level().isClientSide)
@@ -285,9 +286,9 @@ public class BuiltinPotatoProjectileTypes {
 				return true;
 
 			if (entity instanceof LivingEntity) {
-				for (Pair<MobEffectInstance, Float> effect : food.getEffects()) {
-					if (Create.RANDOM.nextFloat() < effect.getSecond())
-						applyEffect((LivingEntity) entity, new MobEffectInstance(effect.getFirst()));
+				for (FoodProperties.PossibleEffect effect : food.effects()) {
+					if (Create.RANDOM.nextFloat() < effect.probability())
+						applyEffect((LivingEntity) entity, effect.effectSupplier().get());
 				}
 			}
 			return !recoverable;
@@ -295,9 +296,9 @@ public class BuiltinPotatoProjectileTypes {
 	}
 
 	private static void applyEffect(LivingEntity entity, MobEffectInstance effect) {
-		if (effect.getEffect()
+		if (effect.getEffect().value()
 			.isInstantenous())
-			effect.getEffect()
+			effect.getEffect().value()
 				.applyInstantenousEffect(null, null, entity, effect.getDuration(), 1.0);
 		else
 			entity.addEffect(effect);
@@ -318,10 +319,10 @@ public class BuiltinPotatoProjectileTypes {
 			if (!world.getBlockState(placePos)
 				.canBeReplaced())
 				return false;
-			if (!(cropBlock.get() instanceof IPlantable))
+			if (!(cropBlock.get() instanceof SpecialPlantable))
 				return false;
 			BlockState blockState = world.getBlockState(hitPos);
-			if (!blockState.canSustainPlant(world, hitPos, face, (IPlantable) cropBlock.get()))
+			if (blockState.canSustainPlant(world, hitPos, face, cropBlock.get().defaultBlockState()) == TriState.FALSE)
 				return false;
 			world.setBlock(placePos, cropBlock.get()
 				.defaultBlockState(), 3);
@@ -330,11 +331,10 @@ public class BuiltinPotatoProjectileTypes {
 	}
 
 	private static BiPredicate<LevelAccessor, BlockHitResult> plantCrop(Block cropBlock) {
-		return plantCrop(ForgeRegistries.BLOCKS.getDelegateOrThrow(cropBlock));
+		return plantCrop(() -> cropBlock);
 	}
 
-	private static BiPredicate<LevelAccessor, BlockHitResult> placeBlockOnGround(
-		Supplier<? extends Block> block) {
+	private static BiPredicate<LevelAccessor, BlockHitResult> placeBlockOnGround(Supplier<? extends Block> block) {
 		return (world, ray) -> {
 			if (world.isClientSide())
 				return true;
@@ -369,7 +369,7 @@ public class BuiltinPotatoProjectileTypes {
 	}
 
 	private static BiPredicate<LevelAccessor, BlockHitResult> placeBlockOnGround(Block block) {
-		return placeBlockOnGround(ForgeRegistries.BLOCKS.getDelegateOrThrow(block));
+		return placeBlockOnGround(() -> block);
 	}
 
 	private static Predicate<EntityHitResult> chorusTeleport(double teleportDiameter) {
@@ -395,7 +395,7 @@ public class BuiltinPotatoProjectileTypes {
 					.nextDouble() - 0.5D) * teleportDiameter;
 
 				EntityTeleportEvent.ChorusFruit event =
-					ForgeEventFactory.onChorusFruitTeleport(livingEntity, teleportX, teleportY, teleportZ);
+					EventHooks.onChorusFruitTeleport(livingEntity, teleportX, teleportY, teleportZ);
 				if (event.isCanceled())
 					return false;
 				if (livingEntity.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true)) {

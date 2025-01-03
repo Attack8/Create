@@ -1,6 +1,9 @@
 package com.simibubi.create.content.equipment.armor;
 
 import com.simibubi.create.foundation.advancement.AllAdvancements;
+
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -15,9 +18,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -27,31 +30,23 @@ public class DivingHelmetItem extends BaseArmorItem {
 	public static final EquipmentSlot SLOT = EquipmentSlot.HEAD;
 	public static final ArmorItem.Type TYPE = ArmorItem.Type.HELMET;
 
-	public DivingHelmetItem(ArmorMaterial material, Properties properties, ResourceLocation textureLoc) {
+	public DivingHelmetItem(Holder<ArmorMaterial> material, Properties properties, ResourceLocation textureLoc) {
 		super(material, TYPE, properties, textureLoc);
 	}
 
 	@Override
-	public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
-		if (enchantment == Enchantments.AQUA_AFFINITY) {
+	public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+		if (enchantment.is(Enchantments.AQUA_AFFINITY))
 			return false;
-		}
-		return super.canApplyAtEnchantingTable(stack, enchantment);
+		return super.supportsEnchantment(stack, enchantment);
 	}
 
 	@Override
-	public int getEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
-		if (enchantment == Enchantments.AQUA_AFFINITY) {
+	public int getEnchantmentLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+		if (enchantment.is(Enchantments.AQUA_AFFINITY)) {
 			return 1;
 		}
 		return super.getEnchantmentLevel(stack, enchantment);
-	}
-
-	@Override
-	public Map<Enchantment, Integer> getAllEnchantments(ItemStack stack) {
-		Map<Enchantment, Integer> map = super.getAllEnchantments(stack);
-		map.put(Enchantments.AQUA_AFFINITY, 1);
-		return map;
 	}
 
 	public static boolean isWornBy(Entity entity) {
@@ -69,9 +64,12 @@ public class DivingHelmetItem extends BaseArmorItem {
 		return stack;
 	}
 
+	// FIXME 1.21: should this be pre or post?
 	@SubscribeEvent
-	public static void breatheUnderwater(LivingTickEvent event) {
-		LivingEntity entity = event.getEntity();
+	public static void breatheUnderwater(EntityTickEvent.Pre event) {
+		if (!(event.getEntity() instanceof LivingEntity entity))
+			return;
+
 		Level world = entity.level();
 		boolean second = world.getGameTime() % 20 == 0;
 		boolean drowning = entity.getAirSupply() == 0;
@@ -85,8 +83,7 @@ public class DivingHelmetItem extends BaseArmorItem {
 			return;
 
 		boolean lavaDiving = entity.isInLava();
-		if (!helmet.getItem()
-			.isFireResistant() && lavaDiving)
+		if (!helmet.has(DataComponents.FIRE_RESISTANT) && lavaDiving)
 			return;
 
 		if (!entity.canDrownInFluidType(entity.getEyeInFluidType()) && !lavaDiving)
@@ -102,8 +99,7 @@ public class DivingHelmetItem extends BaseArmorItem {
 			if (entity instanceof ServerPlayer sp)
 				AllAdvancements.DIVING_SUIT_LAVA.awardTo(sp);
 			if (backtanks.stream()
-				.noneMatch(backtank -> backtank.getItem()
-					.isFireResistant()))
+				.noneMatch(backtank -> backtank.has(DataComponents.FIRE_RESISTANT)))
 				return;
 		}
 
@@ -114,7 +110,7 @@ public class DivingHelmetItem extends BaseArmorItem {
 			entity.getPersistentData()
 				.putInt("VisualBacktankAir", Math.round(backtanks.stream()
 					.map(BacktankUtil::getAir)
-					.reduce(0f, Float::sum)));
+					.reduce(0, Integer::sum)));
 
 		if (!second)
 			return;

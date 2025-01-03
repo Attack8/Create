@@ -3,7 +3,6 @@ package com.simibubi.create.content.logistics.filter;
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.logistics.AddressEditBox;
 import com.simibubi.create.content.logistics.box.PackageStyles;
 import com.simibubi.create.content.logistics.filter.FilterScreenPacket.Option;
@@ -12,15 +11,15 @@ import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Indicator;
 
 import net.createmod.catnip.gui.element.GuiGameElement;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
 public class PackageFilterScreen extends AbstractFilterScreen<PackageFilterMenu> {
 
-	private EditBox addressBox;
+	private AddressEditBox addressBox;
 	private boolean deferFocus;
 
 	public PackageFilterScreen(PackageFilterMenu menu, Inventory inv, Component title) {
@@ -70,8 +69,7 @@ public class PackageFilterScreen extends AbstractFilterScreen<PackageFilterMenu>
 		menu.address = s;
 		CompoundTag tag = new CompoundTag();
 		tag.putString("Address", s);
-		AllPackets.getChannel()
-			.sendToServer(new FilterScreenPacket(Option.UPDATE_ADDRESS, tag));
+		CatnipServices.NETWORK.sendToServer(new FilterScreenPacket(Option.UPDATE_ADDRESS, tag));
 	}
 
 	@Override

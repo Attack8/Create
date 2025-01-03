@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
 
 public class SchematicannonBlock extends Block implements IBE<SchematicannonBlockEntity> {
 
@@ -46,12 +45,11 @@ public class SchematicannonBlock extends Block implements IBE<SchematicannonBloc
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn,
-			BlockHitResult hit) {
-		if (worldIn.isClientSide)
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+		if (level.isClientSide)
 			return InteractionResult.SUCCESS;
-		withBlockEntityDo(worldIn, pos,
-				be -> NetworkHooks.openScreen((ServerPlayer) player, be, be::sendToMenu));
+		withBlockEntityDo(level, pos,
+				be -> player.openMenu(be, be::sendToMenu));
 		return InteractionResult.SUCCESS;
 	}
 

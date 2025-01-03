@@ -1,12 +1,16 @@
 package com.simibubi.create.content.kinetics.crusher;
 
+import net.createmod.catnip.utility.NBTHelper;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.mojang.serialization.MapCodec;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.item.ItemHelper;
-
 import net.createmod.catnip.utility.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -44,6 +48,8 @@ public class CrushingWheelControllerBlock extends DirectionalBlock implements IB
 	}
 
 	public static final BooleanProperty VALID = BooleanProperty.create("valid");
+
+	public static final MapCodec<CrushingWheelControllerBlock> CODEC = simpleCodec(CrushingWheelControllerBlock::new);
 
 	@Override
 	public boolean canBeReplaced(BlockState state, BlockPlaceContext useContext) {
@@ -89,7 +95,7 @@ public class CrushingWheelControllerBlock extends DirectionalBlock implements IB
 //			((ItemEntity) entityIn).setPickUpDelay(10);
 		CompoundTag data = entityIn.getPersistentData();
 		if (data.contains("BypassCrushingWheel")) {
-			if (pos.equals(NbtUtils.readBlockPos(data.getCompound("BypassCrushingWheel"))))
+			if (pos.equals(NbtUtils.readBlockPos(data, "BypassCrushingWheel").orElse(null)))
 				return;
 		}
 		if (be.isOccupied())
@@ -172,11 +178,9 @@ public class CrushingWheelControllerBlock extends DirectionalBlock implements IB
 			return standardShape;
 
 		CompoundTag data = entity.getPersistentData();
-		if (data.contains("BypassCrushingWheel"))
-			if (pos.equals(NbtUtils.readBlockPos(data.getCompound("BypassCrushingWheel"))))
-				if (state.getValue(FACING) != Direction.UP) // Allow output items to land on top of the block rather
-															// than falling back through.
-					return Shapes.empty();
+		if (pos.equals(NbtUtils.readBlockPos(data, "BypassCrushingWheel").orElse(null)))
+			if (state.getValue(FACING) != Direction.UP) // Allow output items to land on top of the block rather
+				return Shapes.empty();					// than falling back through.
 
 		CrushingWheelControllerBlockEntity be = getBlockEntity(worldIn, pos);
 		if (be != null && be.processingEntity == entity)
@@ -205,8 +209,12 @@ public class CrushingWheelControllerBlock extends DirectionalBlock implements IB
 	}
 
 	@Override
-	public boolean isPathfindable(BlockState state, BlockGetter reader, BlockPos pos, PathComputationType type) {
+	protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
 		return false;
 	}
 
+	@Override
+	protected @NotNull MapCodec<? extends DirectionalBlock> codec() {
+		return CODEC;
+	}
 }

@@ -91,7 +91,7 @@ public class MovementContext {
 	public FilterItemStack getFilterFromBE() {
 		if (filter != null)
 			return filter;
-		return filter = FilterItemStack.of(blockEntityData.getCompound("Filter"));
+		return filter = FilterItemStack.of(world.registryAccess(), blockEntityData.getCompound("Filter"));
 	}
 
 }

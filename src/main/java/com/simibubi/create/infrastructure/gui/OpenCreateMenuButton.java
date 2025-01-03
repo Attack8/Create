@@ -22,10 +22,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 
 public class OpenCreateMenuButton extends Button {
 
@@ -39,7 +39,7 @@ public class OpenCreateMenuButton extends Button {
 	public void renderString(GuiGraphics graphics, Font pFont, int pColor) {
 		graphics.renderItem(ICON, getX() + 2, getY() + 2);
 	}
-	
+
 	public static void click(Button b) {
 		ScreenOpener.open(new CreateMainMenuScreen(Minecraft.getInstance().screen));
 	}
@@ -77,8 +77,9 @@ public class OpenCreateMenuButton extends Button {
 	@EventBusSubscriber(value = Dist.CLIENT)
 	public static class OpenConfigButtonHandler {
 
+		// FIXME 1.21: check if this should be Pre or Post
 		@SubscribeEvent
-		public static void onGuiInit(ScreenEvent.Init event) {
+		public static void onGuiInit(ScreenEvent.Init.Post event) {
 			Screen screen = event.getScreen();
 
 			MenuRows menu;

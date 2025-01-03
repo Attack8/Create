@@ -2,9 +2,12 @@ package com.simibubi.create.foundation.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.simibubi.create.Create;
 import com.tterrag.registrate.AbstractRegistrate;
@@ -14,19 +17,17 @@ import com.tterrag.registrate.util.OneTimeEventReceiver;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 
 import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.util.NonNullPredicate;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
 public class CreateBlockEntityBuilder<T extends BlockEntity, P> extends BlockEntityBuilder<T, P> {
 
 	@Nullable
 	private NonNullSupplier<SimpleBlockEntityVisualizer.Factory<T>> visualFactory;
-	private NonNullPredicate<T> renderNormally;
+	private Predicate<@NotNull T> renderNormally;
 
 	private Collection<NonNullSupplier<? extends Collection<NonNullSupplier<? extends Block>>>> deferredValidBlocks =
 		new ArrayList<>();
@@ -69,9 +70,9 @@ public class CreateBlockEntityBuilder<T extends BlockEntity, P> extends BlockEnt
 
 	public CreateBlockEntityBuilder<T, P> visual(
 		NonNullSupplier<SimpleBlockEntityVisualizer.Factory<T>> visualFactory,
-		NonNullPredicate<T> renderNormally) {
+		Predicate<@NotNull T> renderNormally) {
 		if (this.visualFactory == null) {
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> this::registerVisualizer);
+			CatnipServices.PLATFORM.executeOnClientOnly(() -> this::registerVisualizer);
 		}
 
 		this.visualFactory = visualFactory;
@@ -84,7 +85,7 @@ public class CreateBlockEntityBuilder<T extends BlockEntity, P> extends BlockEnt
 		OneTimeEventReceiver.addModListener(Create.REGISTRATE, FMLClientSetupEvent.class, $ -> {
 			var visualFactory = this.visualFactory;
 			if (visualFactory != null) {
-				NonNullPredicate<T> renderNormally = this.renderNormally;
+				Predicate<@NotNull T> renderNormally = this.renderNormally;
 				SimpleBlockEntityVisualizer.builder(getEntry())
 					.factory(visualFactory.get())
 					.skipVanillaRender(be -> !renderNormally.test(be))

@@ -1,15 +1,16 @@
 package com.simibubi.create.foundation.item;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.foundation.utility.AttachedRegistry;
 
 import net.minecraft.world.item.Item;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 public interface TooltipModifier {
-	AttachedRegistry<Item, TooltipModifier> REGISTRY = new AttachedRegistry<>(ForgeRegistries.ITEMS);
+	AttachedRegistry<Item, TooltipModifier> REGISTRY = new AttachedRegistry<>(BuiltInRegistries.ITEM);
 
 	TooltipModifier EMPTY = new TooltipModifier() {
 		@Override

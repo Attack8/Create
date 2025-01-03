@@ -26,7 +26,7 @@ import com.simibubi.create.foundation.utility.TickBasedCache;
 
 import net.createmod.catnip.utility.Pair;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class LogisticsManager {
 
@@ -63,10 +63,10 @@ public class LogisticsManager {
 	}
 
 	public static boolean broadcastPackageRequest(UUID freqId, RequestType type, PackageOrder order,
-		IItemHandler ignoredHandler, String address) {
+												  IItemHandler ignoredHandler, String address) {
 		if (order.isEmpty())
 			return false;
-		
+
 		Multimap<PackagerBlockEntity, PackagingRequest> requests =
 			findPackagersForRequest(freqId, order, null, ignoredHandler, address);
 

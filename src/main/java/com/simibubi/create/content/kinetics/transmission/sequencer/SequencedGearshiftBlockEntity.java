@@ -3,25 +3,24 @@ package com.simibubi.create.content.kinetics.transmission.sequencer;
 import java.util.List;
 import java.util.Vector;
 
-import javax.annotation.Nullable;
-
-import org.jetbrains.annotations.NotNull;
-
+import com.simibubi.create.AllBlockEntityTypes;
+import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.transmission.SplitShaftBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
+import dan200.computercraft.api.peripheral.PeripheralCapability;
 import net.createmod.catnip.utility.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
 public class SequencedGearshiftBlockEntity extends SplitShaftBlockEntity {
 
@@ -71,6 +70,16 @@ public class SequencedGearshiftBlockEntity extends SplitShaftBlockEntity {
 		currentInstructionProgress = 0;
 		timer = 0;
 		poweredPreviously = false;
+	}
+
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		if (Mods.COMPUTERCRAFT.isLoaded()) {
+			event.registerBlockEntity(
+					PeripheralCapability.get(),
+					AllBlockEntityTypes.SEQUENCED_GEARSHIFT.get(),
+					(be, context) -> be.computerBehaviour.getPeripheralCapability()
+			);
+		}
 	}
 
 	@Override
@@ -192,38 +201,30 @@ public class SequencedGearshiftBlockEntity extends SplitShaftBlockEntity {
 	protected void copySequenceContextFrom(KineticBlockEntity sourceBE) {}
 
 	@Override
-	public void write(CompoundTag compound, boolean clientPacket) {
+	public void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		compound.putInt("InstructionIndex", currentInstruction);
 		compound.putInt("InstructionDuration", currentInstructionDuration);
 		compound.putFloat("InstructionProgress", currentInstructionProgress);
 		compound.putInt("Timer", timer);
 		compound.putBoolean("PrevPowered", poweredPreviously);
 		compound.put("Instructions", Instruction.serializeAll(instructions));
-		super.write(compound, clientPacket);
+		super.write(compound, registries, clientPacket);
 	}
 
 	@Override
-	protected void read(CompoundTag compound, boolean clientPacket) {
+	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		currentInstruction = compound.getInt("InstructionIndex");
 		currentInstructionDuration = compound.getInt("InstructionDuration");
 		currentInstructionProgress = compound.getFloat("InstructionProgress");
 		poweredPreviously = compound.getBoolean("PrevPowered");
 		timer = compound.getInt("Timer");
 		instructions = Instruction.deserializeAll(compound.getList("Instructions", Tag.TAG_COMPOUND));
-		super.read(compound, clientPacket);
-	}
-
-	@NotNull
-	@Override
-	public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-		if (computerBehaviour.isPeripheralCap(cap))
-			return computerBehaviour.getPeripheralCapability();
-		return super.getCapability(cap, side);
+		super.read(compound, registries, clientPacket);
 	}
 
 	@Override
-	public void invalidateCaps() {
-		super.invalidateCaps();
+	public void invalidate() {
+		super.invalidate();
 		computerBehaviour.removePeripheral();
 	}
 

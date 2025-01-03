@@ -23,10 +23,9 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 public class ConnectivityHandler {
 
@@ -215,7 +214,7 @@ public class ConnectivityHandler {
 					}
 					if (controller instanceof IMultiBlockEntityContainer.Fluid ifluidCon && ifluidCon.hasTank()) {
 						FluidStack otherFluid = ifluidCon.getFluid(0);
-						if (!fluid.isEmpty() && !otherFluid.isEmpty() && !fluid.isFluidEqual(otherFluid))
+						if (!fluid.isEmpty() && !otherFluid.isEmpty() && !FluidStack.isSameFluidSameComponents(fluid, otherFluid))
 							break Search;
 					}
 				}
@@ -361,11 +360,9 @@ public class ConnectivityHandler {
 		}
 
 		if (be instanceof IMultiBlockEntityContainer.Inventory inv && inv.hasInventory())
-			be.getCapability(ForgeCapabilities.ITEM_HANDLER)
-				.invalidate();
+			be.getLevel().invalidateCapabilities(be.getBlockPos());
 		if (be instanceof IMultiBlockEntityContainer.Fluid fluid && fluid.hasTank())
-			be.getCapability(ForgeCapabilities.FLUID_HANDLER)
-				.invalidate();
+			be.getLevel().invalidateCapabilities(be.getBlockPos());
 
 		if (tryReconnect)
 			formMulti(be.getType(), level, cache == null ? new SearchCache<>() : cache, frontier);

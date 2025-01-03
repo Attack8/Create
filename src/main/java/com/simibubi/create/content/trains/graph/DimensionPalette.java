@@ -4,20 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.createmod.catnip.utility.NBTHelper;
+
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 public class DimensionPalette {
+	public static StreamCodec<ByteBuf, DimensionPalette> STREAM_CODEC = StreamCodec.composite(
+			CatnipStreamCodecBuilders.list(ResourceKey.streamCodec(Registries.DIMENSION)), packet -> packet.gatheredDims,
+			DimensionPalette::new
+	);
 
-	List<ResourceKey<Level>> gatheredDims;
+	private final List<ResourceKey<Level>> gatheredDims;
 
 	public DimensionPalette() {
 		gatheredDims = new ArrayList<>();
+	}
+
+	public DimensionPalette(List<ResourceKey<Level>> gatheredDims) {
+		this.gatheredDims = gatheredDims;
 	}
 
 	public int encode(ResourceKey<Level> dimension) {
@@ -60,7 +72,7 @@ public class DimensionPalette {
 	public static DimensionPalette read(CompoundTag tag) {
 		DimensionPalette palette = new DimensionPalette();
 		NBTHelper.iterateCompoundList(tag.getList("DimensionPalette", Tag.TAG_COMPOUND), c -> palette.gatheredDims
-			.add(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(c.getString("Id")))));
+			.add(ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(c.getString("Id")))));
 		return palette;
 	}
 
