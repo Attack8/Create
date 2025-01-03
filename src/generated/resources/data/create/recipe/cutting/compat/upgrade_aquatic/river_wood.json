@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "upgrade_aquatic"
+    }
+  ],
+  "type": "create:cutting",
+  "ingredients": [
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "upgrade_aquatic:river_wood"
+        }
+      ]
+    }
+  ],
+  "processingTime": 50,
+  "results": [
+    {
+      "item": "upgrade_aquatic:stripped_river_wood"
+    }
+  ]
+}

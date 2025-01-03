@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "byg"
+    }
+  ],
+  "type": "create:cutting",
+  "ingredients": [
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "byg:palo_verde_log"
+        }
+      ]
+    }
+  ],
+  "processingTime": 50,
+  "results": [
+    {
+      "item": "byg:stripped_palo_verde_log"
+    }
+  ]
+}

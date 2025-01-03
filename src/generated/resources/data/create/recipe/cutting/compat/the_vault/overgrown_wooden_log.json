@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "the_vault"
+    }
+  ],
+  "type": "create:cutting",
+  "ingredients": [
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "the_vault:overgrown_wooden_log"
+        }
+      ]
+    }
+  ],
+  "processingTime": 50,
+  "results": [
+    {
+      "item": "the_vault:stripped_overgrown_wooden_log"
+    }
+  ]
+}

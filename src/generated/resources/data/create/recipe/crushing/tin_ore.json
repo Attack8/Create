@@ -1,0 +1,67 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:not",
+      "value": {
+        "type": "neoforge:tag_empty",
+        "tag": "c:ores/tin"
+      }
+    }
+  ],
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "tag": "c:ores/tin"
+    }
+  ],
+  "processingTime": 400,
+  "results": [
+    {
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "common",
+        "minecraft:repair_cost": 0
+      },
+      "item": "create:crushed_raw_tin"
+    },
+    {
+      "chance": 0.75,
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "common",
+        "minecraft:repair_cost": 0
+      },
+      "item": "create:crushed_raw_tin"
+    },
+    {
+      "chance": 0.75,
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "uncommon",
+        "minecraft:repair_cost": 0
+      },
+      "item": "create:experience_nugget"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "tag": "c:dusts/obsidian"
+  },
+  "loops": 1,
+  "results": [
+    {
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "common",
+        "minecraft:repair_cost": 0
+      },
+      "item": "create:sturdy_sheet"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:filling",
+      "ingredients": [
+        {
+          "item": "create:unprocessed_obsidian_sheet"
+        },
+        {
+          "type": "fluid_stack",
+          "amount": 500,
+          "fluid": "minecraft:lava"
+        }
+      ],
+      "results": [
+        {
+          "components": {
+            "minecraft:attribute_modifiers": {
+              "modifiers": []
+            },
+            "minecraft:enchantments": {
+              "levels": {}
+            },
+            "minecraft:lore": [],
+            "minecraft:max_stack_size": 1,
+            "minecraft:rarity": "common",
+            "minecraft:repair_cost": 0
+          },
+          "item": "create:unprocessed_obsidian_sheet"
+        }
+      ]
+    },
+    {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "item": "create:unprocessed_obsidian_sheet"
+        }
+      ],
+      "results": [
+        {
+          "components": {
+            "minecraft:attribute_modifiers": {
+              "modifiers": []
+            },
+            "minecraft:enchantments": {
+              "levels": {}
+            },
+            "minecraft:lore": [],
+            "minecraft:max_stack_size": 1,
+            "minecraft:rarity": "common",
+            "minecraft:repair_cost": 0
+          },
+          "item": "create:unprocessed_obsidian_sheet"
+        }
+      ]
+    },
+    {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "item": "create:unprocessed_obsidian_sheet"
+        }
+      ],
+      "results": [
+        {
+          "components": {
+            "minecraft:attribute_modifiers": {
+              "modifiers": []
+            },
+            "minecraft:enchantments": {
+              "levels": {}
+            },
+            "minecraft:lore": [],
+            "minecraft:max_stack_size": 1,
+            "minecraft:rarity": "common",
+            "minecraft:repair_cost": 0
+          },
+          "item": "create:unprocessed_obsidian_sheet"
+        }
+      ]
+    }
+  ],
+  "transitionalItem": {
+    "components": {
+      "minecraft:attribute_modifiers": {
+        "modifiers": []
+      },
+      "minecraft:enchantments": {
+        "levels": {}
+      },
+      "minecraft:lore": [],
+      "minecraft:max_stack_size": 1,
+      "minecraft:rarity": "common",
+      "minecraft:repair_cost": 0
+    },
+    "item": "create:unprocessed_obsidian_sheet"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "elementaryores"
+    }
+  ],
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "elementaryores:ore_copper_nether"
+        }
+      ]
+    }
+  ],
+  "processingTime": 350,
+  "results": [
+    {
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "common",
+        "minecraft:repair_cost": 0
+      },
+      "count": 5,
+      "item": "create:crushed_raw_copper"
+    },
+    {
+      "chance": 0.25,
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "common",
+        "minecraft:repair_cost": 0
+      },
+      "item": "create:crushed_raw_copper"
+    },
+    {
+      "chance": 0.75,
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "uncommon",
+        "minecraft:repair_cost": 0
+      },
+      "item": "create:experience_nugget"
+    },
+    {
+      "chance": 0.12,
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "common",
+        "minecraft:repair_cost": 0
+      },
+      "item": "minecraft:netherrack"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "aether"
+    }
+  ],
+  "type": "create:crushing",
+  "ingredients": [
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "aether:ambrosium_ore"
+        }
+      ]
+    }
+  ],
+  "processingTime": 150,
+  "results": [
+    {
+      "item": "aether:ambrosium_shard"
+    },
+    {
+      "chance": 0.75,
+      "item": "aether:ambrosium_shard"
+    },
+    {
+      "chance": 0.125,
+      "item": "aether:holystone"
+    },
+    {
+      "chance": 0.75,
+      "components": {
+        "minecraft:attribute_modifiers": {
+          "modifiers": []
+        },
+        "minecraft:enchantments": {
+          "levels": {}
+        },
+        "minecraft:lore": [],
+        "minecraft:max_stack_size": 64,
+        "minecraft:rarity": "uncommon",
+        "minecraft:repair_cost": 0
+      },
+      "item": "create:experience_nugget"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "nethers_exoticism"
+    }
+  ],
+  "type": "create:cutting",
+  "ingredients": [
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "nethers_exoticism:jabuticaba_log"
+        }
+      ]
+    }
+  ],
+  "processingTime": 50,
+  "results": [
+    {
+      "item": "nethers_exoticism:stripped_jabuticaba_log"
+    }
+  ]
+}

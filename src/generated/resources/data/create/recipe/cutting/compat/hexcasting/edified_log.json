@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "hexcasting"
+    }
+  ],
+  "type": "create:cutting",
+  "ingredients": [
+    {
+      "type": "neoforge:compound",
+      "ingredients": [
+        {
+          "item": "hexcasting:edified_log"
+        }
+      ]
+    }
+  ],
+  "processingTime": 50,
+  "results": [
+    {
+      "item": "hexcasting:stripped_edified_log"
+    }
+  ]
+}
