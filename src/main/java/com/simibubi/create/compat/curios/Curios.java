@@ -14,12 +14,8 @@ import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.InterModComms;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import top.theillusivec4.curios.api.CuriosCapability;
-import top.theillusivec4.curios.api.SlotTypeMessage;
-import top.theillusivec4.curios.api.SlotTypePreset;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
@@ -38,7 +34,6 @@ public class Curios {
 	}
 
 	public static void init(IEventBus modEventBus) {
-		modEventBus.addListener(Curios::onInterModEnqueue);
 		modEventBus.addListener(Curios::onClientSetup);
 
 		GogglesItem.addIsWearingPredicate(player -> resolveCuriosMap(player)
@@ -74,11 +69,6 @@ public class Curios {
 			}).orElse(new ArrayList<>()));
 
 		CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> modEventBus.addListener(CuriosRenderers::onLayerRegister));
-	}
-
-	private static void onInterModEnqueue(final InterModEnqueueEvent event) {
-		InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> SlotTypePreset.HEAD.getMessageBuilder()
-			.build());
 	}
 
 	private static void onClientSetup(final FMLClientSetupEvent event) {

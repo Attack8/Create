@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.Create;
+import com.simibubi.create.compat.curios.CuriosDataGenerator;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.data.CreateDatamapProvider;
 import com.simibubi.create.foundation.data.DamageTypeTagGen;
@@ -48,8 +49,9 @@ public class CreateDatagen {
 		generator.addProvider(event.includeServer(), new StandardRecipeGen(output, lookupProvider));
 		generator.addProvider(event.includeServer(), new MechanicalCraftingRecipeGen(output, lookupProvider));
 		generator.addProvider(event.includeServer(), new SequencedAssemblyRecipeGen(output, lookupProvider));
-			generator.addProvider(true, new CreateDatamapProvider(output, lookupProvider));
+		generator.addProvider(event.includeServer(), new CreateDatamapProvider(output, lookupProvider));
 		generator.addProvider(event.includeServer(), new VanillaHatOffsetGenerator(output));
+		generator.addProvider(event.includeServer(), new CuriosDataGenerator(output, lookupProvider, existingFileHelper));
 
 		if (event.includeServer()) {
 			ProcessingRecipeGen.registerAll(generator, output, lookupProvider);

@@ -94,18 +94,18 @@ repositories {
     maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
     maven { url = "https://maven.blamejared.com" } // JEI, Vazkii's Mods
     maven { url = "https://harleyoconnor.com/maven" } // Dynamic Trees
-    maven { url = "https://maven.theillusivec4.top/" } // Curios API
-    maven { url = "https://maven.squiddev.cc/" } // CC: Tweaked
+    maven { url = "https://maven.squiddev.cc" } // CC: Tweaked
     maven { url = "https://www.cursemaven.com" }
     maven { url = "https://api.modrinth.com/maven" }
     maven { url = "https://maven.saps.dev/releases" } // FTB Mods
-    maven { url = "https://maven.architectury.dev/" } // Arch API
-    maven { url = "https://jm.gserv.me/repository/maven-public/" // JourneyMap
+    maven { url = "https://maven.architectury.dev" } // Arch API
+    maven { url = "https://jm.gserv.me/repository/maven-public" // JourneyMap
         content {
             includeGroup "info.journeymap"
             includeGroup "mysticdrew"
         }
     }
+    maven { url = "https://maven.octo-studios.com/releases" } // Curios API Continuation
 
     // Mirror of maven.createmod.net
     if (System.getProperty("os.name").contains("Mac") && System.getenv("USER") == "ithundxr") {
@@ -114,9 +114,6 @@ repositories {
 
     // todo - temp
     maven { url = "https://maven.ithundxr.dev/hidden" } // Flywheel 1.21 PR
-    flatDir {
-        dirs "libs"
-    }
 }
 
 dependencies {
@@ -132,9 +129,7 @@ dependencies {
     //compileOnly("mezz.jei:jei-${jei_minecraft_version}-neoforge-api:${jei_version}")
     implementation("mezz.jei:jei-${jei_minecraft_version}-neoforge:${jei_version}")
 
-    compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}+${curios_minecraft_version}:api")
-    // FIXME: Look into what to replace this with
-    //runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}+${curios_minecraft_version}")
+    implementation("top.theillusivec4.curios:curios-neoforge:${curios_version}+${curios_minecraft_version}")
 
     if (cc_tweaked_enable.toBoolean()) {
         compileOnly("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-core-api:${cc_tweaked_version}")
