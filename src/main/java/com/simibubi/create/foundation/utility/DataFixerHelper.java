@@ -26,14 +26,14 @@ public class DataFixerHelper {
 		addBlockPosFixer(References.ENTITY, "stationary_contraption", Set.of("ControllerRelative"));
 
 		addBlockPosFixer(References.BLOCK_ENTITY,
-				Set.of("adjustable_chain_gearshift", "backtank", "belt", "clockwork_bearing", "cuckoo_clock", "deployer",
-						"drill", "elevator_pulley", "encased_fan", "flap_display", "fluid_valve", "flywheel",
-						"gantry_pinion", "hand_crank", "hose_pulley", "large_water_wheel", "mechanical_arm",
-						"mechanical_bearing", "mechanical_crafter", "mechanical_mixer", "mechanical_piston",
-						"mechanical_press", "millstone", "powered_shaft", "rope_pulley", "saw", "sequenced_gearshift",
-						"speedometer", "stressometer", "valve_handle", "water_wheel", "weighted_ejector",
-						"windmill_bearing"
-				), Set.of("Source")
+			Set.of("adjustable_chain_gearshift", "backtank", "belt", "clockwork_bearing", "clutch", "cuckoo_clock",
+				"deployer", "drill", "elevator_pulley", "encased_fan", "flap_display", "fluid_valve", "flywheel",
+				"gantry_pinion", "gearbox", "gearshift", "hand_crank", "hose_pulley", "large_water_wheel", "mechanical_arm",
+				"mechanical_bearing", "mechanical_crafter", "mechanical_mixer", "mechanical_piston", "mechanical_press",
+				"mechanical_pump", "millstone", "powered_shaft", "rope_pulley", "saw", "sequenced_gearshift",
+				"simple_kinetic", "speedometer", "stressometer", "valve_handle", "water_wheel", "weighted_ejector",
+				"windmill_bearing"
+			), Set.of("Source")
 		);
 		addBlockPosFixer(References.BLOCK_ENTITY, "belt", Set.of("Controller"));
 		addBlockPosFixer(References.BLOCK_ENTITY, Set.of("item_vault", "fluid_tank"), Set.of("LastKnownPos", "Controller"));
