@@ -20,7 +20,6 @@ import net.minecraft.server.level.ServerPlayer;
 import io.netty.buffer.ByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public abstract class HonkPacket implements CustomPacketPayload {
 	protected final UUID trainId;

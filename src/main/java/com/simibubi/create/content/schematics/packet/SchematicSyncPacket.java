@@ -16,7 +16,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SchematicSyncPacket(int slot, boolean deployed, BlockPos anchor, Rotation rotation, Mirror mirror) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, SchematicSyncPacket> STREAM_CODEC = StreamCodec.composite(

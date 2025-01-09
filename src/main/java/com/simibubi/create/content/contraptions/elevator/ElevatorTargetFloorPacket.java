@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ElevatorTargetFloorPacket(int entityId, int targetY) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ElevatorTargetFloorPacket> STREAM_CODEC = StreamCodec.composite(

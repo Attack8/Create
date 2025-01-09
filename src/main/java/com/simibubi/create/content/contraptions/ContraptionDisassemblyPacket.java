@@ -9,7 +9,6 @@ import net.minecraft.network.codec.StreamCodec;
 import io.netty.buffer.ByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ContraptionDisassemblyPacket(int entityId, StructureTransform transform) implements ClientboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ContraptionDisassemblyPacket> STREAM_CODEC = StreamCodec.composite(

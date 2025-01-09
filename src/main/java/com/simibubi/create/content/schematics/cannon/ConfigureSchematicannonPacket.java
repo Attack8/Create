@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 
 import io.netty.buffer.ByteBuf;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ConfigureSchematicannonPacket(Option option, boolean set) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ConfigureSchematicannonPacket> STREAM_CODEC = StreamCodec.composite(

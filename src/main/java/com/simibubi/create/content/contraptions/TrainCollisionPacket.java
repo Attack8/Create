@@ -12,7 +12,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record TrainCollisionPacket(int damage, int contraptionEntityId) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, TrainCollisionPacket> STREAM_CODEC = StreamCodec.composite(

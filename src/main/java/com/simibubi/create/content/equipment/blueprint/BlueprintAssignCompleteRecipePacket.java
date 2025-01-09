@@ -6,7 +6,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record BlueprintAssignCompleteRecipePacket(ResourceLocation recipeId) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, BlueprintAssignCompleteRecipePacket> STREAM_CODEC = ResourceLocation.STREAM_CODEC.map(

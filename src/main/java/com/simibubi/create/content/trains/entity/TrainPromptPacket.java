@@ -12,7 +12,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record TrainPromptPacket(Component text, boolean shadow) implements ClientboundPacketPayload {
 	public static final StreamCodec<RegistryFriendlyByteBuf, TrainPromptPacket> STREAM_CODEC = StreamCodec.composite(

@@ -9,7 +9,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record EjectorElytraPacket(BlockPos pos) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, EjectorElytraPacket> STREAM_CODEC = BlockPos.STREAM_CODEC.map(

@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import io.netty.buffer.ByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ContraptionBlockChangedPacket(int entityId, BlockPos localPos, BlockState newState) implements ClientboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ContraptionBlockChangedPacket> STREAM_CODEC = StreamCodec.composite(

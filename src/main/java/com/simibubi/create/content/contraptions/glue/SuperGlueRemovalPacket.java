@@ -10,7 +10,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SuperGlueRemovalPacket(int entityId, BlockPos soundSource) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, SuperGlueRemovalPacket> STREAM_CODEC = StreamCodec.composite(

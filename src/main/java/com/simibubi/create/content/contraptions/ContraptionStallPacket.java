@@ -9,7 +9,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ContraptionStallPacket(int entityId, double x, double y, double z, float angle) implements ClientboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ContraptionStallPacket> STREAM_CODEC = StreamCodec.composite(

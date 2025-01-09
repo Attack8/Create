@@ -12,7 +12,6 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record FluidSplashPacket(BlockPos pos, FluidStack fluid) implements ClientboundPacketPayload {
 	public static final StreamCodec<RegistryFriendlyByteBuf, FluidSplashPacket> STREAM_CODEC = StreamCodec.composite(

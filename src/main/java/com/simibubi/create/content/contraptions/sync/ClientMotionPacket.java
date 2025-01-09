@@ -9,7 +9,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ClientMotionPacket(Vec3 motion, boolean onGround, float limbSwing) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ClientMotionPacket> STREAM_CODEC = StreamCodec.composite(

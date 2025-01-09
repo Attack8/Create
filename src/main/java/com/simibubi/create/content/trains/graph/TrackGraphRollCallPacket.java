@@ -23,7 +23,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record TrackGraphRollCallPacket(List<Entry> entries) implements ClientboundPacketPayload {
 	public static final StreamCodec<ByteBuf, TrackGraphRollCallPacket> STREAM_CODEC = CatnipStreamCodecBuilders.list(Entry.STREAM_CODEC).map(

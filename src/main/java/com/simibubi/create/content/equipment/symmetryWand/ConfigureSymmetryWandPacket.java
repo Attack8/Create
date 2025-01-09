@@ -11,7 +11,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ConfigureSymmetryWandPacket(InteractionHand hand, SymmetryMirror mirror) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ConfigureSymmetryWandPacket> STREAM_CODEC = StreamCodec.composite(

@@ -7,7 +7,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record CouplingCreationPacket(int id1, int id2) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, CouplingCreationPacket> STREAM_CODEC = StreamCodec.composite(

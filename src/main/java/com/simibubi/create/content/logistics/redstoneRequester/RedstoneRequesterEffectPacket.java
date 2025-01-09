@@ -10,6 +10,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
 public record RedstoneRequesterEffectPacket(BlockPos pos, boolean success) implements ClientboundPacketPayload {
 	public static StreamCodec<ByteBuf, RedstoneRequesterEffectPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, RedstoneRequesterEffectPacket::pos,
@@ -23,6 +26,7 @@ public record RedstoneRequesterEffectPacket(BlockPos pos, boolean success) imple
 	}
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void handle(LocalPlayer player) {
 		if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof RedstoneRequesterBlockEntity plbe)
 			plbe.playEffect(success);

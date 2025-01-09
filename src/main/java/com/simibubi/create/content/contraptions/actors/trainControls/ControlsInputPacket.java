@@ -17,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ControlsInputPacket(List<Integer> activatedButtons, boolean press, int contraptionEntityId,
 								  BlockPos controlsPos, boolean stopControlling) implements ServerboundPacketPayload {

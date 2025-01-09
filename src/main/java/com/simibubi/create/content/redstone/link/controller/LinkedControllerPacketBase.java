@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public abstract class LinkedControllerPacketBase implements ServerboundPacketPayload {
 	@Nullable

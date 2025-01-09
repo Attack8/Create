@@ -15,7 +15,9 @@ import net.createmod.catnip.utility.Pair;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 public class TrainMapSyncPacket implements ClientboundPacketPayload {
 	public static final StreamCodec<FriendlyByteBuf, TrainMapSyncPacket> STREAM_CODEC = StreamCodec.composite(
@@ -41,6 +43,7 @@ public class TrainMapSyncPacket implements ClientboundPacketPayload {
 	}
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void handle(LocalPlayer player) {
 		TrainMapSyncClient.receive(this);
 	}

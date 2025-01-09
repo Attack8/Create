@@ -18,7 +18,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SignalEdgeGroupPacket(List<UUID> ids, List<EdgeGroupColor> colors, boolean add) implements ClientboundPacketPayload {
 	public static final StreamCodec<FriendlyByteBuf, SignalEdgeGroupPacket> STREAM_CODEC = StreamCodec.composite(

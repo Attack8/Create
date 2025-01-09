@@ -13,7 +13,6 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ContraptionFluidPacket(int entityId, BlockPos localPos, FluidStack fluid) implements ClientboundPacketPayload {
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContraptionFluidPacket> STREAM_CODEC = StreamCodec.composite(

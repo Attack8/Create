@@ -9,6 +9,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
 
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+
 public record PackagerLinkEffectPacket(BlockPos pos) implements ClientboundPacketPayload {
 	public static StreamCodec<ByteBuf, PackagerLinkEffectPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, PackagerLinkEffectPacket::pos,
@@ -21,6 +24,7 @@ public record PackagerLinkEffectPacket(BlockPos pos) implements ClientboundPacke
 	}
 
 	@Override
+	@OnlyIn(Dist.CLIENT)
 	public void handle(LocalPlayer player) {
 		if (Minecraft.getInstance().level.getBlockEntity(pos) instanceof PackagerLinkBlockEntity plbe)
 			plbe.playEffect();

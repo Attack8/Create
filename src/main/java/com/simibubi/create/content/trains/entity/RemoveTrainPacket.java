@@ -9,7 +9,6 @@ import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import io.netty.buffer.ByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;

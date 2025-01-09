@@ -9,7 +9,6 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record GantryContraptionUpdatePacket(int entityID, double coord, double motion, double sequenceLimit) implements ClientboundPacketPayload {
 	public static StreamCodec<ByteBuf, GantryContraptionUpdatePacket> STREAM_CODEC = StreamCodec.composite(

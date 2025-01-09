@@ -6,7 +6,6 @@ import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class TrainMapSyncRequestPacket implements ServerboundPacketPayload {
 	public static final TrainMapSyncRequestPacket INSTANCE = new TrainMapSyncRequestPacket();

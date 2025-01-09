@@ -18,7 +18,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ArmPlacementPacket(ListTag tag, BlockPos pos) implements ServerboundPacketPayload {
 	public static final StreamCodec<FriendlyByteBuf, ArmPlacementPacket> STREAM_CODEC = StreamCodec.composite(

@@ -13,7 +13,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record SymmetryEffectPacket(BlockPos mirror, List<BlockPos> positions) implements ClientboundPacketPayload {
 	public static final StreamCodec<ByteBuf, SymmetryEffectPacket> STREAM_CODEC = StreamCodec.composite(

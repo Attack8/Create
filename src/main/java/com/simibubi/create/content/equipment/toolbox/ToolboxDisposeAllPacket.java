@@ -15,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ToolboxDisposeAllPacket(BlockPos toolboxPos) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ToolboxDisposeAllPacket> STREAM_CODEC = BlockPos.STREAM_CODEC.map(

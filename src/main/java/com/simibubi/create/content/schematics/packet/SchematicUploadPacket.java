@@ -16,7 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 
 import io.netty.buffer.ByteBuf;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 
 public record SchematicUploadPacket(int code, long size, String schematic, byte[] data) implements ServerboundPacketPayload {

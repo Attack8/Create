@@ -24,7 +24,6 @@ import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 import io.netty.buffer.ByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public abstract class TrainHUDUpdatePacket implements CustomPacketPayload {
 	protected final UUID trainId;

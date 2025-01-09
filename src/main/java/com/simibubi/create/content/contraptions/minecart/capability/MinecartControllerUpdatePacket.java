@@ -21,7 +21,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record MinecartControllerUpdatePacket(int entityId, @Nullable CompoundTag nbt) implements ClientboundPacketPayload {
 	public static final StreamCodec<ByteBuf, MinecartControllerUpdatePacket> STREAM_CODEC = StreamCodec.composite(

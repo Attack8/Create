@@ -12,7 +12,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ExtendoGripInteractionPacket(InteractionHand hand, int target, Vec3 point) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ExtendoGripInteractionPacket> STREAM_CODEC = StreamCodec.composite(

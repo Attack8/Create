@@ -8,7 +8,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public enum ControlsStopControllingPacket implements ClientboundPacketPayload {
 	INSTANCE;

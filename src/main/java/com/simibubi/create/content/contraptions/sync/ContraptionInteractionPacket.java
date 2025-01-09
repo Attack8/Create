@@ -16,7 +16,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public record ContraptionInteractionPacket(InteractionHand hand, int target, BlockPos localPos, Direction face) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ContraptionInteractionPacket> STREAM_CODEC = StreamCodec.composite(
