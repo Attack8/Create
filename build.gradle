@@ -9,6 +9,8 @@ plugins {
 boolean dev = System.getenv('RELEASE') == null || System.getenv('RELEASE').equals('false');
 String buildNumber = System.getenv('BUILD_NUMBER')
 
+String archivesBaseName = "$mod_id-$minecraft_version";
+
 version = project.mod_version + (dev && buildNumber != null ? "-${buildNumber}" : '')
 group = project.maven_group
 
@@ -17,7 +19,7 @@ repositories {
 }
 
 base {
-    archivesName = "$mod_id-$minecraft_version"
+    archivesName = archivesBaseName
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
@@ -173,7 +175,7 @@ sourceSets.main.resources {
 
 jar {
     from('LICENSE') {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${archivesBaseName}" }
     }
 }
 
