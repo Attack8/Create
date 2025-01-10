@@ -11,6 +11,7 @@ import com.simibubi.create.foundation.blockEntity.ComparatorUtil;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.particle.AirParticleData;
 
+import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.utility.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
@@ -18,7 +19,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Nameable;
@@ -123,7 +123,7 @@ public class BacktankBlockEntity extends KineticBlockEntity implements Nameable 
 		if (this.customName != null)
 			compound.putString("CustomName", Component.Serializer.toJson(this.customName, registries));
 
-		compound.put("Components", DataComponentPatch.CODEC.encodeStart(NbtOps.INSTANCE, componentPatch).getOrThrow());
+		compound.put("Components", CatnipCodecUtils.encode(DataComponentPatch.CODEC, componentPatch).orElseThrow());
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class BacktankBlockEntity extends KineticBlockEntity implements Nameable 
 		if (compound.contains("CustomName", 8))
 			this.customName = Component.Serializer.fromJson(compound.getString("CustomName"), registries);
 
-		componentPatch = DataComponentPatch.CODEC.decode(NbtOps.INSTANCE, compound).getOrThrow().getFirst();
+		componentPatch = CatnipCodecUtils.decode(DataComponentPatch.CODEC, compound).orElse(DataComponentPatch.EMPTY);
 		if (prev != 0 && prev != airLevel && airLevel == BacktankUtil.maxAir(capacityEnchantLevel) && clientPacket)
 			playFilledEffect();
 	}

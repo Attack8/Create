@@ -107,13 +107,13 @@ public class RequestPromiseQueue {
 
 	public CompoundTag write() {
 		CompoundTag tag = new CompoundTag();
-		tag.put("List", CatnipCodecUtils.encodeOrThrow(Codec.list(RequestPromise.CODEC), flatten(false)));
+		tag.put("List", CatnipCodecUtils.encode(Codec.list(RequestPromise.CODEC), flatten(false)).orElseThrow());
 		return tag;
 	}
 
 	public static RequestPromiseQueue read(CompoundTag tag, Runnable onChanged) {
 		RequestPromiseQueue queue = new RequestPromiseQueue(onChanged);
-		List<RequestPromise> promises = CatnipCodecUtils.decodeOrThrow(Codec.list(RequestPromise.CODEC), tag.get("List"));
+		List<RequestPromise> promises = CatnipCodecUtils.decode(Codec.list(RequestPromise.CODEC), tag.get("List")).orElseThrow();
 		for (RequestPromise promise : promises) {
 			queue.add(promise);
 		}

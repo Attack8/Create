@@ -316,7 +316,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 		super.write(tag, registries, clientPacket);
 		tag.put("Items", NBTHelper.writeItemList(manuallyAddedItems, registries));
 		tag.putInt("Facing", facing.get2DDataValue());
-		tag.put("RequestData", CatnipCodecUtils.encodeOrThrow(AutoRequestData.CODEC, requestData));
+		tag.put("RequestData", CatnipCodecUtils.encode(AutoRequestData.CODEC, requestData).orElseThrow());
 		if (owner != null)
 			tag.putUUID("OwnerUUID", owner);
 	}
@@ -325,7 +325,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(tag, registries, clientPacket);
 		manuallyAddedItems = NBTHelper.readItemList(tag.getList("Items", Tag.TAG_COMPOUND), registries);
-		requestData = CatnipCodecUtils.decodeOrThrow(AutoRequestData.CODEC, tag.get("RequestData"));
+		requestData = CatnipCodecUtils.decode(AutoRequestData.CODEC, tag.get("RequestData")).orElseThrow();
 		owner = tag.contains("OwnerUUID") ? tag.getUUID("OwnerUUID") : null;
 		facing = Direction.from2DDataValue(Mth.positiveModulo(tag.getInt("Facing"), 4));
 	}

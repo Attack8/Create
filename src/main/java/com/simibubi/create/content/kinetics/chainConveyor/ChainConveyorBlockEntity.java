@@ -665,7 +665,7 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 	@Override
 	public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
 		super.writeSafe(tag, registries);
-		tag.put("Connections", CatnipCodecUtils.encodeOrThrow(CatnipCodecs.set(BlockPos.CODEC), connections));
+		tag.put("Connections", CatnipCodecUtils.encode(CatnipCodecs.set(BlockPos.CODEC), connections).orElseThrow());
 	}
 
 	@Override
@@ -676,7 +676,7 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 			chainDestroyedEffectToSend = null;
 		}
 
-		compound.put("Connections", CatnipCodecUtils.encodeOrThrow(CatnipCodecs.set(BlockPos.CODEC), connections));
+		compound.put("Connections", CatnipCodecUtils.encode(CatnipCodecs.set(BlockPos.CODEC), connections).orElseThrow());
 		compound.put("TravellingPackages", NBTHelper.writeCompoundList(travellingPackages.entrySet(), entry -> {
 			CompoundTag compoundTag = new CompoundTag();
 			compoundTag.put("Target", NbtUtils.writeBlockPos(entry.getKey()));
@@ -696,7 +696,7 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 
 		int sizeBefore = connections.size();
 		connections.clear();
-		connections.addAll(CatnipCodecUtils.decodeOrThrow(CatnipCodecs.set(BlockPos.CODEC), compound.get("Connections")));
+		CatnipCodecUtils.decode(CatnipCodecs.set(BlockPos.CODEC), compound.get("Connections")).ifPresent(connections::addAll);
 		travellingPackages.clear();
 		NBTHelper.iterateCompoundList(compound.getList("TravellingPackages", Tag.TAG_COMPOUND),
 			c -> travellingPackages.put(NbtUtils.readBlockPos(c, "Target").orElseThrow(),
@@ -706,7 +706,7 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 		connectionStats = null;
 		updateBoxWorldPositions();
 		updateChainShapes();
-		
+
 		if (connections.size() != sizeBefore && level != null && level.isClientSide)
 			invalidateRenderBoundingBox();
 	}

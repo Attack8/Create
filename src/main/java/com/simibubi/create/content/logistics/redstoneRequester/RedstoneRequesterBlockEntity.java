@@ -90,7 +90,7 @@ public class RedstoneRequesterBlockEntity extends StockCheckingBlockEntity imple
 		redstonePowered = tag.getBoolean("Powered");
 		lastRequestSucceeded = tag.getBoolean("Success");
 		allowPartialRequests = tag.getBoolean("AllowPartial");
-		encodedRequest = CatnipCodecUtils.decodeOrThrow(PackageOrder.CODEC, tag.getCompound("EncodedRequest"));
+		encodedRequest = CatnipCodecUtils.decode(PackageOrder.CODEC, tag.getCompound("EncodedRequest")).orElse(PackageOrder.empty());
 		encodedTargetAdress = tag.getString("EncodedAddress");
 	}
 
@@ -99,7 +99,7 @@ public class RedstoneRequesterBlockEntity extends StockCheckingBlockEntity imple
 		super.writeSafe(tag, registries);
 		tag.putBoolean("AllowPartial", allowPartialRequests);
 		tag.putString("EncodedAddress", encodedTargetAdress);
-		tag.put("EncodedRequest", CatnipCodecUtils.encodeOrThrow(PackageOrder.CODEC, encodedRequest));
+		tag.put("EncodedRequest", CatnipCodecUtils.encode(PackageOrder.CODEC, encodedRequest).orElseThrow());
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class RedstoneRequesterBlockEntity extends StockCheckingBlockEntity imple
 		tag.putBoolean("Success", lastRequestSucceeded);
 		tag.putBoolean("AllowPartial", allowPartialRequests);
 		tag.putString("EncodedAddress", encodedTargetAdress);
-		tag.put("EncodedRequest", CatnipCodecUtils.encodeOrThrow(PackageOrder.CODEC, encodedRequest));
+		tag.put("EncodedRequest", CatnipCodecUtils.encode(PackageOrder.CODEC, encodedRequest).orElseThrow());
 	}
 
 	public InteractionResult use(Player player) {

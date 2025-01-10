@@ -126,16 +126,13 @@ public class FactoryPanelSupportBehaviour extends BlockEntityBehaviour {
 
 	@Override
 	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-		nbt.put("LinkedGauges", CatnipCodecUtils.encodeOrThrow(Codec.list(FactoryPanelPosition.CODEC), linkedPanels));
+		nbt.put("LinkedGauges", CatnipCodecUtils.encode(Codec.list(FactoryPanelPosition.CODEC), linkedPanels).orElseThrow());
 	}
 
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		linkedPanels.clear();
-
-		List<FactoryPanelPosition> list = CatnipCodecUtils.decode(Codec.list(FactoryPanelPosition.CODEC), nbt.get("LinkedGauges"));
-		if (list != null)
-			linkedPanels.addAll(list);
+		CatnipCodecUtils.decode(Codec.list(FactoryPanelPosition.CODEC), nbt.get("LinkedGauges")).ifPresent(linkedPanels::addAll);
 	}
 
 	@Override

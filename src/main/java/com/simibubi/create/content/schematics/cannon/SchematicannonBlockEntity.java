@@ -174,7 +174,7 @@ public class SchematicannonBlockEntity extends SmartBlockEntity implements MenuP
 		}
 
 		// Settings
-		SchematicannonOptions options = CatnipCodecUtils.decodeOrThrow(SchematicannonOptions.CODEC, compound.getCompound("Options"));
+		SchematicannonOptions options = CatnipCodecUtils.decode(SchematicannonOptions.CODEC, compound.getCompound("Options")).orElseThrow();
 		replaceMode = options.replaceMode;
 		skipMissing = options.skipMissing;
 		replaceBlockEntities = options.replaceBlockEntities;

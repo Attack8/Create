@@ -181,13 +181,13 @@ public class InventorySummary {
 		List<BigItemStack> all = new ArrayList<>();
 		items.forEach((key, list) -> all.addAll(list));
 		CompoundTag tag = new CompoundTag();
-		tag.put("List", CatnipCodecUtils.encodeOrThrow(Codec.list(BigItemStack.CODEC), all));
+		tag.put("List", CatnipCodecUtils.encode(Codec.list(BigItemStack.CODEC), all).orElseThrow());
 		return tag;
 	}
 
 	public static InventorySummary read(CompoundTag tag) {
 		InventorySummary summary = new InventorySummary();
-		summary.addAllBigItemStacks(CatnipCodecUtils.decodeOrThrow(Codec.list(BigItemStack.CODEC), tag.getCompound("List")));
+		summary.addAllBigItemStacks(CatnipCodecUtils.decode(Codec.list(BigItemStack.CODEC), tag.getCompound("List")).orElseThrow());
 		return summary;
 	}
 
