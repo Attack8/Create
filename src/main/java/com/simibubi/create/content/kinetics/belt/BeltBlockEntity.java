@@ -221,7 +221,7 @@ public class BeltBlockEntity extends KineticBlockEntity {
 
 		if (!wasMoved) {
 			if (!isController())
-				controller = NbtUtils.readBlockPos(compound, "Controller").orElseThrow();
+				controller = NbtUtils.readBlockPos(compound, "Controller").orElse(BlockPos.ZERO);
 			trackerUpdateTag = compound;
 			index = compound.getInt("Index");
 			beltLength = compound.getInt("Length");

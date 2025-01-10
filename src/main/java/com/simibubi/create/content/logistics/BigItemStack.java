@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class BigItemStack {
 	public static Codec<BigItemStack> CODEC = RecordCodecBuilder.create(i -> i.group(
-		ItemStack.CODEC.fieldOf("item_stack").forGetter(s -> s.stack),
+		ItemStack.OPTIONAL_CODEC.fieldOf("item_stack").forGetter(s -> s.stack),
 		ExtraCodecs.POSITIVE_INT.fieldOf("count").forGetter(s -> s.count)
 	).apply(i, BigItemStack::new));
 

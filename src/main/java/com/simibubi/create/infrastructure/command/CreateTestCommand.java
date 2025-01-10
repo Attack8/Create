@@ -33,7 +33,7 @@ import net.neoforged.fml.loading.FMLPaths;
 public class CreateTestCommand {
 	private static final Path gametests = FMLPaths.GAMEDIR.get()
 			.getParent()
-			.resolve("src/main/resources/data/create/structures/gametest")
+			.resolve("src/main/resources/data/create/structure/gametest")
 			.toAbsolutePath();
 
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
