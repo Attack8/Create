@@ -148,7 +148,7 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 
 		float value = animationProgress.getValue();
 		if (currentlyDepositing) {
-			if (!level.isClientSide()) {
+			if (!level.isClientSide() || isVirtual()) {
 				if (value > 0.5 && animatedPackage != null) {
 					if (target == null
 						|| !target.depositImmediately() && !target.export(level, worldPosition, animatedPackage, false))

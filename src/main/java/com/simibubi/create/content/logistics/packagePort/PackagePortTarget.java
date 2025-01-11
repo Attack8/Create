@@ -208,7 +208,7 @@ public abstract class PackagePortTarget {
 
 		@Override
 		public Vec3 getExactTargetLocation(PackagePortBlockEntity ppbe, LevelAccessor level, BlockPos portPos) {
-			return Vec3.atCenterOf(portPos);
+			return Vec3.atCenterOf(portPos.offset(relativePos));
 		}
 
 		@Override

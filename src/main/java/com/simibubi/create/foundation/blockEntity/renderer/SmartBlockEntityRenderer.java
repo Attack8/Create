@@ -32,6 +32,8 @@ public class SmartBlockEntityRenderer<T extends SmartBlockEntity> extends SafeBl
 	protected void renderNameplateOnHover(T blockEntity, Component tag, float yOffset, PoseStack ms,
 		MultiBufferSource buffer, int light) {
 		Minecraft mc = Minecraft.getInstance();
+		if (blockEntity.isVirtual())
+			return;
 		if (mc.player.distanceToSqr(Vec3.atCenterOf(blockEntity.getBlockPos())) > 4096.0f)
 			return;
 		HitResult hitResult = mc.hitResult;

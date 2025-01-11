@@ -416,6 +416,10 @@ public class TrackGraph {
 
 					if (edge == otherEdge)
 						continue;
+					if (otherEdge.isInterDimensional() || edge.isInterDimensional())
+						continue;
+					if (node1.location.dimension != otherNode1.location.dimension)
+						continue;
 					if (!bezier && !otherEdge.isTurn())
 						continue;
 					if (otherEdge.isTurn() && otherEdge.turn.isPrimary())

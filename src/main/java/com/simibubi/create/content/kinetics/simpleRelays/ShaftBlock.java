@@ -127,7 +127,8 @@ public class ShaftBlock extends AbstractSimpleShaftBlock implements EncasableBlo
 			PlacementOffset offset = super.getOffset(player, world, state, pos, ray);
 			if (offset.isSuccessful())
 				offset.withTransform(offset.getTransform()
-					.andThen(s -> ShaftBlock.pickCorrectShaftType(s, world, offset.getBlockPos())));
+					.andThen(s -> world.isClientSide() ? s
+						: ShaftBlock.pickCorrectShaftType(s, world, offset.getBlockPos())));
 			return offset;
 		}
 

@@ -96,7 +96,7 @@ public class SchematicPrinter {
 			return;
 
 		StructureTemplate activeTemplate =
-			SchematicItem.loadSchematic(originalWorld.holderLookup(Registries.BLOCK), blueprint);
+			SchematicItem.loadSchematic(originalWorld, blueprint);
 		StructurePlaceSettings settings = SchematicItem.getSettings(blueprint, processNBT);
 
 		schematicAnchor = blueprint.get(AllDataComponents.SCHEMATIC_ANCHOR);

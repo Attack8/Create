@@ -25,6 +25,7 @@ public class AllCreatePonderTags {
 	KINETIC_APPLIANCES = loc("kinetic_appliances"),
 	FLUIDS = loc("fluids"),
 	LOGISTICS = loc("logistics"),
+	HIGH_LOGISTICS = loc("high_logistics"),
 	REDSTONE = loc("redstone"),
 	DECORATION = loc("decoration"),
 	CREATIVE = loc("creative"),
@@ -34,72 +35,10 @@ public class AllCreatePonderTags {
 	SAILS = loc("windmill_sails"),
 	ARM_TARGETS = loc("arm_targets"),
 	TRAIN_RELATED = loc("train_related"),
-	RECENTLY_UPDATED = loc("recently_updated"),
+//	RECENTLY_UPDATED = loc("recently_updated"),
 	DISPLAY_SOURCES = loc("display_sources"),
 	DISPLAY_TARGETS = loc("display_targets"),
 	THRESHOLD_SWITCH_TARGETS = loc("threshold_switch_targets");
-
-	/*public static final PonderTag
-
-	KINETIC_RELAYS = create("kinetic_relays").item(AllBlocks.COGWHEEL.get())
-			.defaultLang("Kinetic Blocks", "Components which help relaying Rotational Force elsewhere"),
-
-	KINETIC_SOURCES = create("kinetic_sources").item(AllBlocks.WATER_WHEEL.get())
-			.defaultLang("Kinetic Sources", "Components which generate Rotational Force"),
-
-	KINETIC_APPLIANCES = create("kinetic_appliances").item(AllBlocks.MECHANICAL_PRESS.get())
-			.defaultLang("Kinetic Appliances", "Components which make use of Rotational Force"),
-
-	FLUIDS = create("fluids").item(AllBlocks.FLUID_PIPE.get())
-			.defaultLang("Fluid Manipulators", "Components which help relaying and making use of Fluids"),
-
-	LOGISTICS = create("logistics").item(Blocks.CHEST)
-			.defaultLang("Item Transportation", "Components which help moving items around"),
-
-	REDSTONE = create("redstone").item(Items.REDSTONE)
-			.defaultLang("Logic Components", "Components which help with redstone engineering"),
-
-	DECORATION = create("decoration").item(Items.ROSE_BUSH)
-			.defaultLang("Aesthetics", "Components used mostly for decorative purposes"),
-
-	CREATIVE = create("creative").item(AllBlocks.CREATIVE_CRATE.get())
-			.defaultLang("Creative Mode", "Components not usually available for Survival Mode"),
-
-	MOVEMENT_ANCHOR = create("movement_anchor").item(AllBlocks.MECHANICAL_PISTON.get())
-			.defaultLang("Movement Anchors",
-						 "Components which allow the creation of moving contraptions, animating an attached structure in a variety of ways"),
-
-	CONTRAPTION_ACTOR = create("contraption_actor").item(AllBlocks.MECHANICAL_HARVESTER.get())
-			.defaultLang("Contraption Actors",
-						 "Components which expose special behaviour when attached to a moving contraption"),
-
-	CONTRAPTION_ASSEMBLY = create("contraption_assembly").item(AllItems.SUPER_GLUE.get())
-			.defaultLang("Block Attachment Utility",
-						 "Tools and Components used to assemble structures moved as an animated Contraption"),
-
-	SAILS = create("windmill_sails").item(AllBlocks.WINDMILL_BEARING.get(), true, true)
-			.defaultLang("Sails for Windmill Bearings",
-						 "Blocks that count towards the strength of a Windmill Contraption when assembled. Each of these have equal efficiency in doing so."),
-
-	ARM_TARGETS = create("arm_targets").item(AllBlocks.MECHANICAL_ARM.get(), true, true)
-			.defaultLang("Targets for Mechanical Arms",
-						 "Components which can be selected as inputs or outputs to the Mechanical Arm"),
-
-	TRAIN_RELATED = create("train_related").item(AllBlocks.TRACK.get())
-			.defaultLang("Railway Equipment",
-						 "Components used in the construction or management of Train Contraptions"),
-
-	RECENTLY_UPDATED = create("recently_updated").item(AllBlocks.CLIPBOARD.get())
-			.defaultLang("Recent Changes",
-						 "Components that have been added or changed significantly in the latest versions of Create"),
-
-	DISPLAY_SOURCES = create("display_sources").item(AllBlocks.DISPLAY_LINK.get(), true, true)
-			.defaultLang("Sources for Display Links",
-						 "Components or Blocks which offer some data that can be read with a Display Link"),
-
-	DISPLAY_TARGETS = create("display_targets").item(AllBlocks.DISPLAY_LINK.get(), true, true)
-			.defaultLang("Targets for Display Links",
-						 "Components or Blocks which can process and display the data received from a Display Link");*/
 
 	private static ResourceLocation loc(String id) {
 		return Create.asResource(id);
@@ -145,6 +84,13 @@ public class AllCreatePonderTags {
 				.item(Blocks.CHEST)
 				.title("Item Transportation")
 				.description("Components which help moving items around")
+				.register();
+		
+		helper.registerTag(HIGH_LOGISTICS)
+				.addToIndex()
+				.item(AllBlocks.STOCK_TICKER.get())
+				.title("High Logistics")
+				.description("Components which help managing distributed item storage and automated requests around your factory")
 				.register();
 
 		helper.registerTag(REDSTONE)
@@ -208,12 +154,12 @@ public class AllCreatePonderTags {
 				.description("Components used in the construction or management of Train Contraptions")
 				.register();
 
-		helper.registerTag(RECENTLY_UPDATED)
-				.addToIndex()
-				.item(AllBlocks.CLIPBOARD.get())
-				.title("Recent Changes")
-				.description("Components that have been added or changed significantly in the latest versions of Create")
-				.register();
+//		helper.registerTag(RECENTLY_UPDATED)
+//				.addToIndex()
+//				.item(AllBlocks.CLIPBOARD.get())
+//				.title("Recent Changes")
+//				.description("Components that have been added or changed significantly in the latest versions of Create")
+//				.register();
 
 		helper.registerTag(DISPLAY_SOURCES)
 				.item(AllBlocks.DISPLAY_LINK.get())
@@ -233,19 +179,7 @@ public class AllCreatePonderTags {
 			.description("Threshold Switches can read from these blocks, as well as most item and fluid containers.")
 			.register();
 
-		HELPER.addToTag(RECENTLY_UPDATED)
-				.add(AllBlocks.WATER_WHEEL)
-				.add(AllBlocks.LARGE_WATER_WHEEL)
-				.add(AllBlocks.COPPER_VALVE_HANDLE)
-				.add(AllBlocks.ELEVATOR_PULLEY)
-				.add(AllBlocks.CONTRAPTION_CONTROLS)
-				.add(AllBlocks.MECHANICAL_ROLLER)
-				.add(AllBlocks.MECHANICAL_PUMP)
-				.add(AllBlocks.SMART_OBSERVER)
-				.add(AllBlocks.THRESHOLD_SWITCH)
-				.add(AllItems.NETHERITE_BACKTANK)
-				.add(AllBlocks.COPYCAT_PANEL)
-				.add(AllBlocks.COPYCAT_STEP);
+//		HELPER.addToTag(RECENTLY_UPDATED);
 
 		HELPER.addToTag(KINETIC_RELAYS)
 				.add(AllBlocks.SHAFT)
@@ -253,10 +187,12 @@ public class AllCreatePonderTags {
 				.add(AllBlocks.LARGE_COGWHEEL)
 				.add(AllItems.BELT_CONNECTOR)
 				.add(AllBlocks.GEARBOX)
+				.add(AllItems.VERTICAL_GEARBOX)
 				.add(AllBlocks.CLUTCH)
 				.add(AllBlocks.GEARSHIFT)
 				.add(AllBlocks.ENCASED_CHAIN_DRIVE)
 				.add(AllBlocks.ADJUSTABLE_CHAIN_GEARSHIFT)
+				.add(AllBlocks.CHAIN_CONVEYOR)
 				.add(AllBlocks.SEQUENCED_GEARSHIFT)
 				.add(AllBlocks.ROTATION_SPEED_CONTROLLER);
 
@@ -391,6 +327,7 @@ public class AllCreatePonderTags {
 				.add(AllBlocks.REDSTONE_LINK)
 				.add(AllBlocks.PULSE_EXTENDER)
 				.add(AllBlocks.PULSE_REPEATER)
+				.add(AllBlocks.PULSE_TIMER)
 				.add(AllBlocks.POWERED_LATCH)
 				.add(AllBlocks.POWERED_TOGGLE_LATCH)
 				.add(AllBlocks.ROSE_QUARTZ_LAMP);
@@ -417,6 +354,18 @@ public class AllCreatePonderTags {
 				.add(Blocks.SLIME_BLOCK)
 				.add(Blocks.HONEY_BLOCK);
 
+		HELPER.addToTag(HIGH_LOGISTICS)
+				.add(AllBlocks.PACKAGER)
+				.add(AllBlocks.PACKAGE_FROGPORT)
+				.add(AllBlocks.PACKAGE_POSTBOXES.get(DyeColor.WHITE))
+				.add(AllBlocks.STOCK_LINK)
+				.add(AllBlocks.STOCK_TICKER)
+				.add(AllBlocks.REDSTONE_REQUESTER)
+				.add(AllBlocks.TABLE_CLOTHS.get(DyeColor.WHITE))
+				.add(AllBlocks.FACTORY_GAUGE)
+				.add(AllBlocks.REPACKAGER)
+				.add(AllItems.PACKAGE_FILTER);
+		
 		HELPER.addToTag(CONTRAPTION_ACTOR)
 				.add(AllBlocks.MECHANICAL_HARVESTER)
 				.add(AllBlocks.MECHANICAL_PLOUGH)
@@ -452,6 +401,7 @@ public class AllCreatePonderTags {
 				.add(AllBlocks.STRESSOMETER)
 				.add(AllBlocks.SPEEDOMETER)
 				.add(AllBlocks.FLUID_TANK)
+				.add(AllBlocks.FACTORY_GAUGE)
 				.add(AllItems.BELT_CONNECTOR);
 
 		itemHelper.addToTag(DISPLAY_SOURCES)

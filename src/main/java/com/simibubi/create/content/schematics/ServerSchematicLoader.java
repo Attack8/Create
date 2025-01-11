@@ -270,7 +270,7 @@ public class ServerSchematicLoader {
 				if (table == null)
 					return;
 				table.finishUpload();
-				table.inventory.setStackInSlot(1, SchematicItem.create(world.holderLookup(Registries.BLOCK), schematic, player.getGameProfile()
+				table.inventory.setStackInSlot(1, SchematicItem.create(world, schematic, player.getGameProfile()
 					.getName()));
 
 			} catch (IOException e) {
@@ -319,7 +319,7 @@ public class ServerSchematicLoader {
 		);
 		if (result != null)
 			player.setItemInHand(InteractionHand.MAIN_HAND,
-				SchematicItem.create(world.holderLookup(Registries.BLOCK), schematic, playerName));
+				SchematicItem.create(world, schematic, playerName));
 		else
 			CreateLang.translate("schematicAndQuill.instant_failed")
 				.style(ChatFormatting.RED)

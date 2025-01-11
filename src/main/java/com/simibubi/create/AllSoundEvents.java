@@ -148,19 +148,10 @@ public class AllSoundEvents {
 			.category(SoundSource.BLOCKS)
 			.build(),
 
-		FROGPORT_CATCH_1 = create("frogport_catch_1").subtitle("Frogport catches package")
-			.category(SoundSource.BLOCKS)
-			.build(),
-
-		FROGPORT_CATCH_2 = create("frogport_catch_2").subtitle("Frogport catches package")
-			.category(SoundSource.BLOCKS)
-			.build(),
-
-		FROGPORT_CATCH_3 = create("frogport_catch_3").subtitle("Frogport catches package")
-			.category(SoundSource.BLOCKS)
-			.build(),
-
-		FROGPORT_CATCH_4 = create("frogport_catch_4").subtitle("Frogport catches package")
+		FROGPORT_CATCH = create("frogport_catch").subtitle("Frogport catches package")
+			.addVariant("frogport_catch_1")
+			.addVariant("frogport_catch_2")
+			.addVariant("frogport_catch_3")
 			.category(SoundSource.BLOCKS)
 			.build(),
 			

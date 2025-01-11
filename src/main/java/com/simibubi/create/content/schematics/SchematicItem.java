@@ -16,6 +16,8 @@ import com.simibubi.create.foundation.utility.DistExecutor;
 
 import net.createmod.catnip.platform.CatnipServices;
 
+import net.minecraft.core.registries.Registries;
+
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -58,7 +60,7 @@ public class SchematicItem extends Item {
 		super(properties);
 	}
 
-	public static ItemStack create(HolderGetter<Block> lookup, String schematic, String owner) {
+	public static ItemStack create(Level level, String schematic, String owner) {
 		ItemStack blueprint = AllItems.SCHEMATIC.asStack();
 
 		blueprint.set(AllDataComponents.SCHEMATIC_DEPLOYED, false);
@@ -68,7 +70,7 @@ public class SchematicItem extends Item {
 		blueprint.set(AllDataComponents.SCHEMATIC_ROTATION, Rotation.NONE);
 		blueprint.set(AllDataComponents.SCHEMATIC_MIRROR, Mirror.NONE);
 
-		writeSize(lookup, blueprint);
+		writeSize(level, blueprint);
 		return blueprint;
 	}
 
@@ -83,8 +85,8 @@ public class SchematicItem extends Item {
 		super.appendHoverText(stack, context, tooltip, flagIn);
 	}
 
-	public static void writeSize(HolderGetter<Block> lookup, ItemStack blueprint) {
-		StructureTemplate t = loadSchematic(lookup, blueprint);
+	public static void writeSize(Level level, ItemStack blueprint) {
+		StructureTemplate t = loadSchematic(level, blueprint);
 		blueprint.set(AllDataComponents.SCHEMATIC_BOUNDS, t.getSize());
 		SchematicInstances.clearHash(blueprint);
 	}
@@ -102,7 +104,7 @@ public class SchematicItem extends Item {
 		return settings;
 	}
 
-	public static StructureTemplate loadSchematic(HolderGetter<Block> lookup, ItemStack blueprint) {
+	public static StructureTemplate loadSchematic(Level level, ItemStack blueprint) {
 		StructureTemplate t = new StructureTemplate();
 		String owner = blueprint.get(AllDataComponents.SCHEMATIC_OWNER);
 		String schematic = blueprint.get(AllDataComponents.SCHEMATIC_FILE);
@@ -113,7 +115,7 @@ public class SchematicItem extends Item {
 		Path dir;
 		Path file;
 
-		if (CatnipServices.PLATFORM.getEnv().isServer()) {
+		if (!level.isClientSide()) {
 			dir = Paths.get("schematics", "uploaded").toAbsolutePath();
 			file = Paths.get(owner, schematic);
 		} else {
@@ -128,7 +130,7 @@ public class SchematicItem extends Item {
 		try (DataInputStream stream = new DataInputStream(new BufferedInputStream(
 				new GZIPInputStream(Files.newInputStream(path, StandardOpenOption.READ))))) {
 			CompoundTag nbt = NbtIo.read(stream, NbtAccounter.create(0x20000000L));
-			t.load(lookup, nbt);
+			t.load(level.holderLookup(Registries.BLOCK), nbt);
 		} catch (IOException e) {
 			LOGGER.warn("Failed to read schematic", e);
 		}

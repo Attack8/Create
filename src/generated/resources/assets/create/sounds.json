@@ -235,41 +235,26 @@
     ],
     "subtitle": "create.subtitle.desk_bell"
   },
-  "frogport_catch_1": {
+  "frogport_catch": {
     "sounds": [
+      {
+        "type": "file",
+        "name": "create:frogport_catch"
+      },
       {
         "type": "file",
         "name": "create:frogport_catch_1"
-      }
-    ],
-    "subtitle": "create.subtitle.frogport_catch_1"
-  },
-  "frogport_catch_2": {
-    "sounds": [
+      },
       {
         "type": "file",
         "name": "create:frogport_catch_2"
-      }
-    ],
-    "subtitle": "create.subtitle.frogport_catch_2"
-  },
-  "frogport_catch_3": {
-    "sounds": [
+      },
       {
         "type": "file",
         "name": "create:frogport_catch_3"
       }
     ],
-    "subtitle": "create.subtitle.frogport_catch_3"
-  },
-  "frogport_catch_4": {
-    "sounds": [
-      {
-        "type": "file",
-        "name": "create:frogport_catch_4"
-      }
-    ],
-    "subtitle": "create.subtitle.frogport_catch_4"
+    "subtitle": "create.subtitle.frogport_catch"
   },
   "frogport_close": {
     "sounds": [

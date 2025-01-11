@@ -19,6 +19,7 @@ import com.simibubi.create.infrastructure.ponder.scenes.DisplayScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.EjectorScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.ElevatorScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.FanScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.FrogAndConveyorScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.FunnelScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.GantryScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.ItemVaultScenes;
@@ -340,12 +341,20 @@ public class AllCreatePonderScenes {
 			.addStoryBoard("redstone_link", RedstoneScenes::redstoneLink);
 		HELPER.forComponents(AllBlocks.ROSE_QUARTZ_LAMP)
 			.addStoryBoard("rose_quartz_lamp", RedstoneScenes2::roseQuartzLamp);
+		HELPER.forComponents(AllBlocks.PULSE_TIMER)
+			.addStoryBoard("pulse_timer", RedstoneScenes2::pulseTimer);
 
 		HELPER.forComponents(AllBlocks.SMART_OBSERVER)
 			.addStoryBoard("smart_observer", DetectorScenes::smartObserver);
 		HELPER.forComponents(AllBlocks.THRESHOLD_SWITCH)
 			.addStoryBoard("threshold_switch", DetectorScenes::thresholdSwitch);
 
+		// Hilo
+		HELPER.forComponents(AllBlocks.CHAIN_CONVEYOR)
+			.addStoryBoard("chain_conveyor", FrogAndConveyorScenes::conveyor);
+		HELPER.forComponents(AllBlocks.PACKAGE_FROGPORT)
+			.addStoryBoard("package_frogport", FrogAndConveyorScenes::frogPort);
+		
 		// Trains
 		HELPER.forComponents(TrackMaterial.allBlocks()
 				.stream()
