@@ -17,7 +17,9 @@ import com.simibubi.create.foundation.utility.BlockHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.CatnipClient;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.createmod.catnip.utility.Couple;
 import net.createmod.catnip.utility.Iterate;
 import net.createmod.catnip.utility.Pair;
@@ -33,7 +35,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
@@ -52,10 +53,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-
-import org.jetbrains.annotations.NotNull;
 
 public class TrackPlacement {
 	public record ConnectingFrom(BlockPos pos, Vec3 axis, Vec3 end, Vec3 normal) {
@@ -66,23 +66,13 @@ public class TrackPlacement {
 				Vec3.CODEC.fieldOf("normal").forGetter(ConnectingFrom::normal)
 		).apply(i, ConnectingFrom::new));
 
-		public static StreamCodec<FriendlyByteBuf, ConnectingFrom> STREAM_CODEC = new StreamCodec<>() {
-			public @NotNull ConnectingFrom decode(@NotNull FriendlyByteBuf buffer) {
-				BlockPos pos = FriendlyByteBuf.readBlockPos(buffer);
-				Vec3 axis = buffer.readVec3();
-				Vec3 end = buffer.readVec3();
-				Vec3 normal = buffer.readVec3();
-
-				return new ConnectingFrom(pos, axis, end, normal);
-			}
-
-			public void encode(@NotNull FriendlyByteBuf buffer, ConnectingFrom connectingFrom) {
-				FriendlyByteBuf.writeBlockPos(buffer, connectingFrom.pos());
-				buffer.writeVec3(connectingFrom.axis());
-				buffer.writeVec3(connectingFrom.end());
-				buffer.writeVec3(connectingFrom.normal());
-			}
-		};
+		public static StreamCodec<ByteBuf, ConnectingFrom> STREAM_CODEC = StreamCodec.composite(
+		    BlockPos.STREAM_CODEC, ConnectingFrom::pos,
+			CatnipStreamCodecs.VEC3, ConnectingFrom::axis,
+			CatnipStreamCodecs.VEC3, ConnectingFrom::end,
+			CatnipStreamCodecs.VEC3, ConnectingFrom::normal,
+		    ConnectingFrom::new
+		);
 	}
 
 	public static class PlacementInfo {

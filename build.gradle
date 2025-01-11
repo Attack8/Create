@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '2.0.9-beta'
+    id 'net.neoforged.moddev' version '2.0.74'
 }
 
 boolean dev = System.getenv('RELEASE') == null || System.getenv('RELEASE').equals('false');
@@ -96,6 +96,7 @@ repositories {
     maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
     maven { url = "https://maven.blamejared.com" } // JEI, Vazkii's Mods
     maven { url = "https://harleyoconnor.com/maven" } // Dynamic Trees
+    maven { url = "https://maven.theillusivec4.top/" } // Curios API
     maven { url = "https://maven.squiddev.cc" } // CC: Tweaked
     maven { url = "https://www.cursemaven.com" }
     maven { url = "https://api.modrinth.com/maven" }
@@ -107,7 +108,6 @@ repositories {
             includeGroup "mysticdrew"
         }
     }
-    maven { url = "https://maven.octo-studios.com/releases" } // Curios API Continuation
 
     // Mirror of maven.createmod.net
     if (System.getProperty("os.name").contains("Mac") && System.getenv("USER") == "ithundxr") {

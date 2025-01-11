@@ -19,14 +19,13 @@ import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.animal.frog.Frog;
-import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.monster.Spider;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
@@ -76,7 +75,7 @@ public class SeatEntity extends Entity implements IEntityWithComplexSpawn {
 		if (entity instanceof Wolf)
 			return 1 / 16f;
 		if (entity instanceof Frog)
-			return 1 / 16f + 1.75 / 64f;
+			return 12 / 16f;
 		if (entity instanceof Spider)
 			return 1 / 8.0;
 		if (entity instanceof PackageEntity)
