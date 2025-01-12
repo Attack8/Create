@@ -3,6 +3,7 @@ package com.simibubi.create.content.logistics.depot;
 import java.util.List;
 
 import com.simibubi.create.AllBlockEntityTypes;
+import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
@@ -38,4 +39,12 @@ public class DepotBlockEntity extends SmartBlockEntity {
 	public ItemStack getHeldItem() {
 		return depotBehaviour.getHeldItemStack();
 	}
+
+	public void setHeldItem(ItemStack item) {
+		TransportedItemStack newStack = new TransportedItemStack(item);
+		if (depotBehaviour.heldItem != null)
+			newStack.angle = depotBehaviour.heldItem.angle;
+		depotBehaviour.setHeldItem(newStack);
+	}
+
 }

@@ -790,6 +790,20 @@
 	"create.schedule.instruction.throttle.summary": "Change Max Speed to %1$s",
 	"create.schedule.instruction.throttle_edit_box": "Throttle",
 	"create.schedule.instruction.throttle_edit_box_1": "Affects the top speed of the Train",
+	
+	"create.schedule.instruction.package_delivery": "Deliver Package",
+	"create.schedule.instruction.package_delivery.summary": "Deliver first package in cargo",
+	"create.schedule.instruction.package_delivery.summary_1": "Drives to the station with",
+	"create.schedule.instruction.package_delivery.summary_2": "the correct postbox",
+	
+	"create.schedule.instruction.package_retrieval": "Retrieve Package",
+	"create.schedule.instruction.package_retrieval.summary": "Fetch a package addressed to:",
+	"create.schedule.instruction.package_retrieval.summary_1": "Drives to a postbox with",
+	"create.schedule.instruction.package_retrieval.summary_2": "an undelivered package",
+	"create.schedule.instruction.address_filter_edit_box": "Retrieve Packages with this Address",
+	"create.schedule.instruction.address_filter_edit_box_1": "Use * as a text wildcard",
+	"create.schedule.instruction.address_filter_edit_box_2": "Train may navigate anywhere to collect it",
+	"create.schedule.instruction.address_filter_edit_box_3": "Add another instruction to make it return",
 
 	"create.schedule.condition_type": "Continue if/after:",
 	"create.schedule.condition.editor": "Condition Editor",

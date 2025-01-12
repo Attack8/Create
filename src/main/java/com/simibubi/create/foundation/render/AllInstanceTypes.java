@@ -7,7 +7,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 import org.lwjgl.system.MemoryUtil;
 
-import com.simibubi.create.content.contraptions.actors.ActorInstance;
 import com.simibubi.create.content.kinetics.base.RotatingInstance;
 import com.simibubi.create.content.processing.burner.ScrollInstance;
 
@@ -27,6 +26,7 @@ public class AllInstanceTypes {
 					.vector("color", FloatRepr.NORMALIZED_UNSIGNED_BYTE, 4)
 					.vector("light", IntegerRepr.SHORT, 2)
 					.vector("overlay", IntegerRepr.SHORT, 2)
+					.vector("rotation", FloatRepr.FLOAT, 4)
 					.vector("pos", FloatRepr.FLOAT, 3)
 					.scalar("speed", FloatRepr.FLOAT)
 					.scalar("offset", FloatRepr.FLOAT)
@@ -39,14 +39,15 @@ public class AllInstanceTypes {
 				MemoryUtil.memPutByte(ptr + 3, instance.alpha);
 				ExtraMemoryOps.put2x16(ptr + 4, instance.light);
 				ExtraMemoryOps.put2x16(ptr + 8, instance.overlay);
-				MemoryUtil.memPutFloat(ptr + 12, instance.x);
-				MemoryUtil.memPutFloat(ptr + 16, instance.y);
-				MemoryUtil.memPutFloat(ptr + 20, instance.z);
-				MemoryUtil.memPutFloat(ptr + 24, instance.rotationalSpeed);
-				MemoryUtil.memPutFloat(ptr + 28, instance.rotationOffset);
-				MemoryUtil.memPutByte(ptr + 32, instance.rotationAxisX);
-				MemoryUtil.memPutByte(ptr + 33, instance.rotationAxisY);
-				MemoryUtil.memPutByte(ptr + 34, instance.rotationAxisZ);
+				ExtraMemoryOps.putQuaternionf(ptr + 12, instance.rotation);
+				MemoryUtil.memPutFloat(ptr + 28, instance.x);
+				MemoryUtil.memPutFloat(ptr + 32, instance.y);
+				MemoryUtil.memPutFloat(ptr + 36, instance.z);
+				MemoryUtil.memPutFloat(ptr + 40, instance.rotationalSpeed);
+				MemoryUtil.memPutFloat(ptr + 44, instance.rotationOffset);
+				MemoryUtil.memPutByte(ptr + 48, instance.rotationAxisX);
+				MemoryUtil.memPutByte(ptr + 49, instance.rotationAxisY);
+				MemoryUtil.memPutByte(ptr + 50, instance.rotationAxisZ);
 			})
 			.build();
 
@@ -83,36 +84,6 @@ public class AllInstanceTypes {
 				MemoryUtil.memPutFloat(ptr + 60, instance.scaleV);
 				MemoryUtil.memPutFloat(ptr + 64, instance.offsetU);
 				MemoryUtil.memPutFloat(ptr + 68, instance.offsetV);
-			})
-			.build();
-
-	public static final InstanceType<ActorInstance> ACTOR = SimpleInstanceType.builder(ActorInstance::new)
-			.cullShader(asResource("instance/cull/actor.glsl"))
-			.vertexShader(asResource("instance/actor.vert"))
-			.layout(LayoutBuilder.create()
-					.vector("pos", FloatRepr.FLOAT, 3)
-					.vector("light", IntegerRepr.SHORT, 2)
-					.scalar("offset", FloatRepr.FLOAT)
-					.vector("axis", FloatRepr.NORMALIZED_BYTE, 3)
-					.vector("rotation", FloatRepr.FLOAT, 4)
-					.vector("rotationCenter", FloatRepr.NORMALIZED_BYTE, 3)
-					.scalar("speed", FloatRepr.FLOAT)
-					.build())
-			.writer((ptr, instance) -> {
-				MemoryUtil.memPutFloat(ptr, instance.x);
-				MemoryUtil.memPutFloat(ptr + 4, instance.y);
-				MemoryUtil.memPutFloat(ptr + 8, instance.z);
-				MemoryUtil.memPutShort(ptr + 12, instance.blockLight);
-				MemoryUtil.memPutShort(ptr + 14, instance.skyLight);
-				MemoryUtil.memPutFloat(ptr + 16, instance.rotationOffset);
-				MemoryUtil.memPutByte(ptr + 20, instance.rotationAxisX);
-				MemoryUtil.memPutByte(ptr + 21, instance.rotationAxisY);
-				MemoryUtil.memPutByte(ptr + 22, instance.rotationAxisZ);
-				ExtraMemoryOps.putQuaternionf(ptr + 24, instance.rotation);
-				MemoryUtil.memPutByte(ptr + 40, instance.rotationCenterX);
-				MemoryUtil.memPutByte(ptr + 41, instance.rotationCenterY);
-				MemoryUtil.memPutByte(ptr + 42, instance.rotationCenterZ);
-				MemoryUtil.memPutFloat(ptr + 44, instance.speed);
 			})
 			.build();
 

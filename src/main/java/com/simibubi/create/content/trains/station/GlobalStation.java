@@ -187,6 +187,37 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 			if (carriageInventory == null)
 				continue;
 
+			// Import from station
+			for (Entry<BlockPos, GlobalPackagePort> entry : connectedPorts.entrySet()) {
+				GlobalPackagePort port = entry.getValue();
+				BlockPos pos = entry.getKey();
+				PostboxBlockEntity box = null;
+
+				IItemHandlerModifiable postboxInventory = port.offlineBuffer;
+				if (level != null && level.isLoaded(pos)
+					&& level.getBlockEntity(pos) instanceof PostboxBlockEntity ppbe) {
+					postboxInventory = ppbe.inventory;
+					box = ppbe;
+				}
+
+				for (int slot = 0; slot < postboxInventory.getSlots(); slot++) {
+					ItemStack stack = postboxInventory.getStackInSlot(slot);
+					if (!PackageItem.isPackage(stack))
+						continue;
+					if (PackageItem.matchAddress(stack, port.address))
+						continue;
+
+					ItemStack result = ItemHandlerHelper.insertItemStacked(carriageInventory, stack, false);
+					if (!result.isEmpty())
+						continue;
+
+					postboxInventory.setStackInSlot(slot, ItemStack.EMPTY);
+					Create.RAILWAYS.markTracksDirty();
+					if (box != null)
+						box.spawnParticles();
+				}
+			}
+			
 			// Export to station
 			for (int slot = 0; slot < carriageInventory.getSlots(); slot++) {
 				ItemStack stack = carriageInventory.getStackInSlot(slot);
@@ -218,37 +249,6 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 						box.spawnParticles();
 
 					break;
-				}
-			}
-
-			// Import from station
-			for (Entry<BlockPos, GlobalPackagePort> entry : connectedPorts.entrySet()) {
-				GlobalPackagePort port = entry.getValue();
-				BlockPos pos = entry.getKey();
-				PostboxBlockEntity box = null;
-
-				IItemHandlerModifiable postboxInventory = port.offlineBuffer;
-				if (level != null && level.isLoaded(pos)
-					&& level.getBlockEntity(pos) instanceof PostboxBlockEntity ppbe) {
-					postboxInventory = ppbe.inventory;
-					box = ppbe;
-				}
-
-				for (int slot = 0; slot < postboxInventory.getSlots(); slot++) {
-					ItemStack stack = postboxInventory.getStackInSlot(slot);
-					if (!PackageItem.isPackage(stack))
-						continue;
-					if (PackageItem.matchAddress(stack, port.address))
-						continue;
-
-					ItemStack result = ItemHandlerHelper.insertItemStacked(carriageInventory, stack, false);
-					if (!result.isEmpty())
-						continue;
-
-					postboxInventory.setStackInSlot(slot, ItemStack.EMPTY);
-					Create.RAILWAYS.markTracksDirty();
-					if (box != null)
-						box.spawnParticles();
 				}
 			}
 

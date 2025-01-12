@@ -60,7 +60,7 @@ public class MixerVisual extends EncasedCogVisual implements SimpleDynamicVisual
 
 		mixerHead.setPosition(getVisualPosition())
 				.nudge(0, -renderedHeadOffset, 0)
-				.setRotationalSpeed(speed * 2)
+				.setRotationalSpeed(speed * 2 * RotatingInstance.SPEED_MULTIPLIER)
 				.setChanged();
 	}
 

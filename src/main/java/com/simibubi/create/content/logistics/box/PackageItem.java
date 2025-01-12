@@ -188,7 +188,7 @@ public class PackageItem extends Item {
 		super.appendHoverText(stack, tooltipContext, tooltipComponents, tooltipFlag);
 
 		if (stack.has(AllDataComponents.PACKAGE_ADDRESS))
-			tooltipComponents.add(Components.literal("-> " + stack.get(AllDataComponents.PACKAGE_ADDRESS))
+			tooltipComponents.add(Components.literal("\u2192 " + stack.get(AllDataComponents.PACKAGE_ADDRESS))
 				.withStyle(ChatFormatting.GOLD));
 
 		/*

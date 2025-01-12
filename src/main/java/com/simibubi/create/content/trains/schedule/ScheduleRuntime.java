@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.PatternSyntaxException;
 
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
@@ -12,10 +11,8 @@ import com.simibubi.create.content.trains.display.GlobalTrainDisplayData.TrainDe
 import com.simibubi.create.content.trains.entity.Carriage;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.graph.DiscoveredPath;
-import com.simibubi.create.content.trains.graph.EdgePointType;
 import com.simibubi.create.content.trains.schedule.condition.ScheduleWaitCondition;
 import com.simibubi.create.content.trains.schedule.condition.ScheduledDelay;
-import com.simibubi.create.content.trains.schedule.destination.ChangeThrottleInstruction;
 import com.simibubi.create.content.trains.schedule.destination.ChangeTitleInstruction;
 import com.simibubi.create.content.trains.schedule.destination.DestinationInstruction;
 import com.simibubi.create.content.trains.schedule.destination.ScheduleInstruction;
@@ -40,29 +37,34 @@ public class ScheduleRuntime {
 		PRE_TRANSIT, IN_TRANSIT, POST_TRANSIT
 	}
 
-	Train train;
-	Schedule schedule;
+	public Train train;
+	public Schedule schedule;
 
 	public boolean isAutoSchedule;
 	public boolean paused;
 	public boolean completed;
 	public int currentEntry;
 	public State state;
+	
+	public List<Integer> conditionProgress;
+	public List<CompoundTag> conditionContext;
+	public String currentTitle;
 
-	static final int INTERVAL = 40;
-	int cooldown;
-	List<Integer> conditionProgress;
-	List<CompoundTag> conditionContext;
-	String currentTitle;
-
-	int ticksInTransit;
-	List<Integer> predictionTicks;
+	public int ticksInTransit;
+	public List<Integer> predictionTicks;
 
 	public boolean displayLinkUpdateRequested;
+	
+	private static final int INTERVAL = 40;
+	private int cooldown;
 
 	public ScheduleRuntime(Train train) {
 		this.train = train;
 		reset();
+	}
+	
+	public void startCooldown() {
+		cooldown = INTERVAL;
 	}
 
 	public void destinationReached() {
@@ -144,7 +146,15 @@ public class ScheduleRuntime {
 	}
 
 	public void tickConditions(Level level) {
-		List<List<ScheduleWaitCondition>> conditions = schedule.entries.get(currentEntry).conditions;
+		ScheduleEntry entry = schedule.entries.get(currentEntry);
+		List<List<ScheduleWaitCondition>> conditions = entry.conditions;
+		
+		if (!entry.instruction.supportsConditions()) {
+			state = State.PRE_TRANSIT;
+			currentEntry++;
+			return;
+		}
+		
 		for (int i = 0; i < conditions.size(); i++) {
 			List<ScheduleWaitCondition> list = conditions.get(i);
 			int progress = conditionProgress.get(i);
@@ -175,55 +185,7 @@ public class ScheduleRuntime {
 	public DiscoveredPath startCurrentInstruction() {
 		ScheduleEntry entry = schedule.entries.get(currentEntry);
 		ScheduleInstruction instruction = entry.instruction;
-
-		if (instruction instanceof DestinationInstruction destination) {
-			String regex = destination.getFilterForRegex();
-			boolean anyMatch = false;
-			ArrayList<GlobalStation> validStations = new ArrayList<>();
-
-			if (!train.hasForwardConductor() && !train.hasBackwardConductor()) {
-				train.status.missingConductor();
-				cooldown = INTERVAL;
-				return null;
-			}
-
-			try {
-				for (GlobalStation globalStation : train.graph.getPoints(EdgePointType.STATION)) {
-					if (!globalStation.name.matches(regex))
-						continue;
-					anyMatch = true;
-					validStations.add(globalStation);
-				}
-			} catch (PatternSyntaxException ignored) {}
-
-			DiscoveredPath best = train.navigation.findPathTo(validStations, Double.MAX_VALUE);
-			if (best == null) {
-				if (anyMatch)
-					train.status.failedNavigation();
-				else
-					train.status.failedNavigationNoTarget(destination.getFilter());
-				cooldown = INTERVAL;
-				return null;
-			}
-
-			return best;
-		}
-
-		if (instruction instanceof ChangeTitleInstruction title) {
-			currentTitle = title.getScheduleTitle();
-			state = State.PRE_TRANSIT;
-			currentEntry++;
-			return null;
-		}
-
-		if (instruction instanceof ChangeThrottleInstruction throttle) {
-			train.throttle = throttle.getThrottle();
-			state = State.PRE_TRANSIT;
-			currentEntry++;
-			return null;
-		}
-
-		return null;
+		return instruction.start(this);
 	}
 
 	public void setSchedule(Schedule schedule, boolean auto) {

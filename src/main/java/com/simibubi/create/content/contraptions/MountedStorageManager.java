@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.simibubi.create.content.contraptions.Contraption.ContraptionInvWrapper;
 import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
+import com.simibubi.create.content.logistics.depot.DepotBlockEntity;
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
 
 import net.createmod.catnip.utility.NBTHelper;
@@ -54,7 +56,9 @@ public class MountedStorageManager {
 	}
 
 	public void entityTick(AbstractContraptionEntity entity) {
-		fluidStorage.forEach((pos, mfs) -> mfs.tick(entity, pos, entity.level().isClientSide));
+		boolean isClientSide = entity.level().isClientSide;
+		storage.forEach((pos, mfs) -> mfs.tick(entity, pos, isClientSide));
+		fluidStorage.forEach((pos, mfs) -> mfs.tick(entity, pos, isClientSide));
 	}
 
 	public void createHandlers() {
@@ -100,7 +104,7 @@ public class MountedStorageManager {
 			.put(NbtUtils.readBlockPos(c, "Pos").orElseThrow(), MountedFluidStorage.deserialize(c.getCompound("Data"), registries)));
 
 		if (clientPacket && presentBlockEntities != null)
-			bindTanks(presentBlockEntities);
+			bindTanksAndDepots(presentBlockEntities);
 
 		List<IItemHandlerModifiable> handlers = new ArrayList<>();
 		List<IItemHandlerModifiable> fuelHandlers = new ArrayList<>();
@@ -119,33 +123,41 @@ public class MountedStorageManager {
 			.toList());
 	}
 
-	public void bindTanks(Map<BlockPos, BlockEntity> presentBlockEntities) {
-		fluidStorage.forEach((pos, mfs) -> {
-			BlockEntity blockEntity = presentBlockEntities.get(pos);
-			if (!(blockEntity instanceof FluidTankBlockEntity))
+	public void bindTanksAndDepots(Map<BlockPos, BlockEntity> presentBlockEntities) {
+		for (Entry<BlockPos, MountedStorage> entry : storage.entrySet()) {
+			BlockEntity blockEntity = presentBlockEntities.get(entry.getKey());
+			if (!(blockEntity instanceof DepotBlockEntity depot))
 				return;
-			FluidTankBlockEntity tank = (FluidTankBlockEntity) blockEntity;
+			depot.setHeldItem(entry.getValue().handler.getStackInSlot(0));
+			entry.getValue().blockEntity = depot;
+		}
+		for (Entry<BlockPos, MountedFluidStorage> entry : fluidStorage.entrySet()) {
+			BlockEntity blockEntity = presentBlockEntities.get(entry.getKey());
+			if (!(blockEntity instanceof FluidTankBlockEntity tank))
+				return;
 			IFluidTank tankInventory = tank.getTankInventory();
+			MountedFluidStorage mfs = entry.getValue();
 			if (tankInventory instanceof FluidTank)
 				((FluidTank) tankInventory).setFluid(mfs.tank.getFluid());
 			tank.getFluidLevel()
 				.startWithValue(tank.getFillState());
 			mfs.assignBlockEntity(tank);
-		});
+		}
 	}
 
 	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		ListTag storageNBT = new ListTag();
-		if (!clientPacket)
-			for (BlockPos pos : storage.keySet()) {
-				CompoundTag c = new CompoundTag();
-				MountedStorage mountedStorage = storage.get(pos);
-				if (!mountedStorage.isValid())
-					continue;
-				c.put("Pos", NbtUtils.writeBlockPos(pos));
-				c.put("Data", mountedStorage.serialize(registries));
-				storageNBT.add(c);
-			}
+		for (BlockPos pos : storage.keySet()) {
+			CompoundTag c = new CompoundTag();
+			MountedStorage mountedStorage = storage.get(pos);
+			if (!mountedStorage.isValid())
+				continue;
+			if (clientPacket && !mountedStorage.needsSync())
+				continue;
+			c.put("Pos", NbtUtils.writeBlockPos(pos));
+			c.put("Data", mountedStorage.serialize(registries));
+			storageNBT.add(c);
+		}
 
 		ListTag fluidStorageNBT = new ListTag();
 		for (BlockPos pos : fluidStorage.keySet()) {
@@ -197,6 +209,12 @@ public class MountedStorageManager {
 			mountedFluidStorage.updateFluid(containedFluid);
 	}
 
+	public void updateContainedItem(BlockPos localPos, List<ItemStack> containedItems) {
+		MountedStorage mountedStorage = storage.get(localPos);
+		if (mountedStorage != null)
+			mountedStorage.updateItems(containedItems);
+	}
+
 	public void attachExternal(IItemHandlerModifiable externalStorage) {
 		inventory = new ContraptionInvWrapper(externalStorage, inventory);
 		fuelInventory = new ContraptionInvWrapper(externalStorage, fuelInventory);
@@ -212,6 +230,14 @@ public class MountedStorageManager {
 
 	public IFluidHandler getFluids() {
 		return fluidInventory;
+	}
+
+	public Map<BlockPos, MountedStorage> getMountedItemStorage() {
+		return storage;
+	}
+
+	public Map<BlockPos, MountedFluidStorage> getMountedFluidStorage() {
+		return fluidStorage;
 	}
 
 	public boolean handlePlayerStorageInteraction(Contraption contraption, Player player, BlockPos localPos) {

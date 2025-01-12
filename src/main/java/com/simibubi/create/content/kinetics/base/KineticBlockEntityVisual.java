@@ -6,9 +6,9 @@ import com.simibubi.create.content.kinetics.simpleRelays.ShaftBlock;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class KineticBlockEntityVisual<T extends KineticBlockEntity> extends AbstractBlockEntityVisual<T> {
@@ -32,7 +32,7 @@ public abstract class KineticBlockEntityVisual<T extends KineticBlockEntity> ext
 	protected final void updateRotation(RotatingInstance instance, Direction.Axis axis, float speed) {
 		instance.setRotationAxis(axis)
 			.setRotationOffset(getRotationOffset(axis))
-			.setRotationalSpeed(speed)
+			.setRotationalSpeed(speed * RotatingInstance.SPEED_MULTIPLIER)
 			.setColor(blockEntity)
 			.setChanged();
 	}
@@ -51,7 +51,7 @@ public abstract class KineticBlockEntityVisual<T extends KineticBlockEntity> ext
 
 	protected final RotatingInstance setup(RotatingInstance key, Direction.Axis axis, float speed) {
 		key.setRotationAxis(axis)
-			.setRotationalSpeed(speed)
+			.setRotationalSpeed(speed * RotatingInstance.SPEED_MULTIPLIER)
 			.setRotationOffset(getRotationOffset(axis))
 			.setColor(blockEntity)
 			.setPosition(getVisualPosition())
@@ -76,7 +76,7 @@ public abstract class KineticBlockEntityVisual<T extends KineticBlockEntity> ext
 		return shaft(rotationAxis());
 	}
 
-	public static float rotationOffset(BlockState state, Axis axis, BlockPos pos) {
+	public static float rotationOffset(BlockState state, Axis axis, Vec3i pos) {
 		if (shouldOffset(axis, pos)) {
 			return 22.5f;
 		} else {
@@ -84,7 +84,7 @@ public abstract class KineticBlockEntityVisual<T extends KineticBlockEntity> ext
 		}
 	}
 
-	public static boolean shouldOffset(Axis axis, BlockPos pos) {
+	public static boolean shouldOffset(Axis axis, Vec3i pos) {
 		// Sum the components of the other 2 axes.
 		int x = (axis == Axis.X) ? 0 : pos.getX();
 		int y = (axis == Axis.Y) ? 0 : pos.getY();

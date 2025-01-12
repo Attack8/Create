@@ -19,7 +19,6 @@ import com.simibubi.create.infrastructure.ponder.scenes.DisplayScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.EjectorScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.ElevatorScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.FanScenes;
-import com.simibubi.create.infrastructure.ponder.scenes.FrogAndConveyorScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.FunnelScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.GantryScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.ItemVaultScenes;
@@ -42,6 +41,8 @@ import com.simibubi.create.infrastructure.ponder.scenes.fluid.HosePulleyScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.fluid.PipeScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.fluid.PumpScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.fluid.SpoutScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.FrogAndConveyorScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.PackagerScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.trains.TrackObserverScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.trains.TrackScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.trains.TrainScenes;
@@ -351,10 +352,13 @@ public class AllCreatePonderScenes {
 
 		// Hilo
 		HELPER.forComponents(AllBlocks.CHAIN_CONVEYOR)
-			.addStoryBoard("chain_conveyor", FrogAndConveyorScenes::conveyor);
+			.addStoryBoard("high_logistics/chain_conveyor", FrogAndConveyorScenes::conveyor);
 		HELPER.forComponents(AllBlocks.PACKAGE_FROGPORT)
-			.addStoryBoard("package_frogport", FrogAndConveyorScenes::frogPort);
-		
+			.addStoryBoard("high_logistics/package_frogport", FrogAndConveyorScenes::frogPort);
+		HELPER.forComponents(AllBlocks.PACKAGER)
+			.addStoryBoard("high_logistics/packager", PackagerScenes::packager)
+			.addStoryBoard("high_logistics/packager_address", PackagerScenes::packagerAddress);
+
 		// Trains
 		HELPER.forComponents(TrackMaterial.allBlocks()
 				.stream()

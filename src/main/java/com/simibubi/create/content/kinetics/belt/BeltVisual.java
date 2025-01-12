@@ -7,7 +7,6 @@ import org.joml.Quaternionf;
 
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityVisual;
-import com.simibubi.create.content.kinetics.base.KineticInstance;
 import com.simibubi.create.content.kinetics.base.RotatingInstance;
 import com.simibubi.create.content.processing.burner.ScrollInstance;
 import com.simibubi.create.foundation.render.AllInstanceTypes;
@@ -158,7 +157,7 @@ public class BeltVisual extends KineticBlockEntityVisual<BeltBlockEntity> {
 				.rotation(q)
 				.speed(0, speed * MAGIC_SCROLL_MULTIPLIER)
 				.offset(0, bottom ? SCROLL_OFFSET_BOTTOM : SCROLL_OFFSET_OTHERWISE)
-				.colorRgb(KineticInstance.colorFromBE(blockEntity))
+				.colorRgb(RotatingInstance.colorFromBE(blockEntity))
 				.setChanged();
 
         return key;

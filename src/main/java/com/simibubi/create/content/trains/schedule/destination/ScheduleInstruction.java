@@ -3,8 +3,11 @@ package com.simibubi.create.content.trains.schedule.destination;
 import java.util.function.Supplier;
 
 import com.simibubi.create.Create;
+import com.simibubi.create.content.trains.graph.DiscoveredPath;
 import com.simibubi.create.content.trains.schedule.Schedule;
 import com.simibubi.create.content.trains.schedule.ScheduleDataEntry;
+
+import com.simibubi.create.content.trains.schedule.ScheduleRuntime;
 import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 
 import net.createmod.catnip.utility.Pair;
@@ -14,12 +17,17 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 
+import javax.annotation.Nullable;
+
 public abstract class ScheduleInstruction extends ScheduleDataEntry {
 	public static final StreamCodec<RegistryFriendlyByteBuf, ScheduleInstruction> STREAM_CODEC = CreateStreamCodecs.ofLegacyNbtWithRegistries(
 			ScheduleInstruction::write, ScheduleInstruction::fromTag
 	);
 
 	public abstract boolean supportsConditions();
+
+	@Nullable
+	public abstract DiscoveredPath start(ScheduleRuntime runtime);
 
 	public final CompoundTag write(HolderLookup.Provider registries) {
 		CompoundTag tag = new CompoundTag();

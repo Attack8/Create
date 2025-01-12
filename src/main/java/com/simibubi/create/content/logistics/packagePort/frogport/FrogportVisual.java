@@ -3,6 +3,7 @@ package com.simibubi.create.content.logistics.packagePort.frogport;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import com.simibubi.create.AllPartialModels;
 
@@ -25,6 +26,12 @@ public class FrogportVisual extends AbstractBlockEntityVisual<FrogportBlockEntit
 	private final TransformedInstance tongue;
 	private final TransformedInstance rig;
 	private final TransformedInstance box;
+
+	private final Matrix4f basePose = new Matrix4f();
+	private float lastYaw = Float.NaN;
+	private float lastHeadPitch = Float.NaN;
+	private float lastTonguePitch = Float.NaN;
+	private float lastTongueLength = Float.NaN;
 
 	public FrogportVisual(VisualizationContext ctx, FrogportBlockEntity blockEntity, float partialTick) {
 		super(ctx, blockEntity, partialTick);
@@ -112,40 +119,55 @@ public class FrogportVisual extends AbstractBlockEntityVisual<FrogportBlockEntit
 			float anticipation = blockEntity.anticipationProgress.getValue(partialTicks);
 			headPitchModifier =
 				anticipation > 0 ? (float) Math.max(0, 1 - Math.pow((anticipation * 1.25) * 2 - 1, 4)) : 0;
+			rig.handle()
+				.setVisible(false);
+			box.handle()
+				.setVisible(false);
 		}
 
 		headPitch *= headPitchModifier;
 
 		headPitch = Math.max(headPitch, blockEntity.manualOpenAnimationProgress.getValue(partialTicks) * 60);
 		tongueLength = Math.max(tongueLength, blockEntity.manualOpenAnimationProgress.getValue(partialTicks) * 0.25f);
+if (yaw != lastYaw) {
+			body.setIdentityTransform()
+				.translate(getVisualPosition())
+				.center()
+				.rotateYDegrees(yaw)
+				.uncenter()
+				.setChanged();
 
-		body.setIdentityTransform()
-			.translate(getVisualPosition())
-			.center()
-			.rotateYDegrees(yaw)
-			.uncenter()
-			.setChanged();
+			// Save the base pose to avoid recalculating it twice every frame
+			basePose.set(body.pose)
+				.translate(8 / 16f, 10 / 16f, 11 / 16f);
 
-		head.setIdentityTransform()
-			.translate(getVisualPosition())
-			.center()
-			.rotateYDegrees(yaw)
-			.uncenter()
-			.translate(8 / 16f, 10 / 16f, 11 / 16f)
-			.rotateXDegrees(headPitch)
-			.translateBack(8 / 16f, 10 / 16f, 11 / 16f)
-			.setChanged();
+			// I'm not entirely sure that yaw ever changes
+			lastYaw = yaw;
 
-		tongue.setIdentityTransform()
-			.translate(getVisualPosition())
-			.center()
-			.rotateYDegrees(yaw)
-			.uncenter()
-			.translate(8 / 16f, 10 / 16f, 11 / 16f)
-			.rotateXDegrees(tonguePitch)
-			.scale(1f, 1f, tongueLength / (7 / 16f))
-			.translateBack(8 / 16f, 10 / 16f, 11 / 16f)
-			.setChanged();
+			// Force the head and tongue to update
+			lastTonguePitch = Float.NaN;
+			lastHeadPitch = Float.NaN;
+		}
+
+		if (headPitch != lastHeadPitch) {
+			head.setTransform(basePose)
+				.rotateXDegrees(headPitch)
+				.translateBack(8 / 16f, 10 / 16f, 11 / 16f)
+				.setChanged();
+
+			lastHeadPitch = headPitch;
+		}
+
+		if (tonguePitch != lastTonguePitch || tongueLength != lastTongueLength) {
+			tongue.setTransform(basePose)
+				.rotateXDegrees(tonguePitch)
+				.scale(1f, 1f, tongueLength / (7 / 16f))
+				.translateBack(8 / 16f, 10 / 16f, 11 / 16f)
+				.setChanged();
+
+			lastTonguePitch = tonguePitch;
+			lastTongueLength = tongueLength;
+		}
 	}
 
 	private void renderPackage(Vec3 diff, float scale, float itemDistance) {

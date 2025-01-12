@@ -44,6 +44,13 @@ public class TrainStatus {
 		displayInformation("no_match", false, filter);
 		navigation = true;
 	}
+	
+	public void failedPackageNoTarget(String address) {
+		if (navigation)
+			return;
+		displayInformation("no_package_target", false, address);
+		navigation = true;
+	}
 
 	public void successfulNavigation() {
 		if (!navigation)

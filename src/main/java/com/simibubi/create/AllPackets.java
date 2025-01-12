@@ -27,6 +27,7 @@ import com.simibubi.create.content.contraptions.minecart.capability.MinecartCont
 import com.simibubi.create.content.contraptions.sync.ClientMotionPacket;
 import com.simibubi.create.content.contraptions.sync.ContraptionFluidPacket;
 import com.simibubi.create.content.contraptions.sync.ContraptionInteractionPacket;
+import com.simibubi.create.content.contraptions.sync.ContraptionItemPacket;
 import com.simibubi.create.content.contraptions.sync.ContraptionSeatMappingPacket;
 import com.simibubi.create.content.contraptions.sync.LimbSwingUpdatePacket;
 import com.simibubi.create.content.contraptions.wrench.RadialWrenchMenuSubmitPacket;
@@ -201,6 +202,7 @@ public enum AllPackets implements BasePacketPayload.PacketTypeProvider {
 	MINECART_CONTROLLER(MinecartControllerUpdatePacket.class, MinecartControllerUpdatePacket.STREAM_CODEC),
 	FLUID_SPLASH(FluidSplashPacket.class, FluidSplashPacket.STREAM_CODEC),
 	CONTRAPTION_FLUID(ContraptionFluidPacket.class, ContraptionFluidPacket.STREAM_CODEC),
+	CONTRAPTION_ITEM(ContraptionItemPacket.class, ContraptionItemPacket.STREAM_CODEC),
 	GANTRY_UPDATE(GantryContraptionUpdatePacket.class, GantryContraptionUpdatePacket.STREAM_CODEC),
 	BLOCK_HIGHLIGHT(HighlightPacket.class, HighlightPacket.STREAM_CODEC),
 	TUNNEL_FLAP(TunnelFlapPacket.class, TunnelFlapPacket.STREAM_CODEC),

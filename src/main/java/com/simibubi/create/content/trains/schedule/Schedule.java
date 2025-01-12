@@ -17,7 +17,9 @@ import com.simibubi.create.content.trains.schedule.condition.StationUnloadedCond
 import com.simibubi.create.content.trains.schedule.condition.TimeOfDayCondition;
 import com.simibubi.create.content.trains.schedule.destination.ChangeThrottleInstruction;
 import com.simibubi.create.content.trains.schedule.destination.ChangeTitleInstruction;
+import com.simibubi.create.content.trains.schedule.destination.DeliverPackagesInstruction;
 import com.simibubi.create.content.trains.schedule.destination.DestinationInstruction;
+import com.simibubi.create.content.trains.schedule.destination.FetchPackagesInstruction;
 import com.simibubi.create.content.trains.schedule.destination.ScheduleInstruction;
 
 import net.createmod.catnip.utility.NBTHelper;
@@ -49,6 +51,8 @@ public class Schedule {
 
 	static {
 		registerInstruction("destination", DestinationInstruction::new);
+		registerInstruction("package_delivery", DeliverPackagesInstruction::new);
+		registerInstruction("package_retrieval", FetchPackagesInstruction::new);
 		registerInstruction("rename", ChangeTitleInstruction::new);
 		registerInstruction("throttle", ChangeThrottleInstruction::new);
 		registerCondition("delay", ScheduledDelay::new);

@@ -14,6 +14,7 @@ import com.simibubi.create.content.logistics.chute.ChuteBlock;
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.math.AngleHelper;
+import net.createmod.ponder.api.level.PonderLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -164,6 +165,13 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 			verifyInitialEntity();
 			originalEntity = null;
 		}
+
+		if (level() instanceof PonderLevel) {
+			setDeltaMovement(getDeltaMovement().add(0, -0.06, 0));
+			if (position().y < 0.125)
+				discard();
+		}
+
 		insertionDelay = Math.min(insertionDelay + 1, 30);
 		super.tick();
 

@@ -1,4 +1,4 @@
-package com.simibubi.create.infrastructure.ponder.scenes;
+package com.simibubi.create.infrastructure.ponder.scenes.highLogistics;
 
 import java.util.Iterator;
 import java.util.function.Supplier;
@@ -564,10 +564,19 @@ public class FrogAndConveyorScenes {
 		scene.world()
 			.multiplyKineticSpeed(util.select()
 				.fromTo(9, 0, 1, 5, 1, 0), 1 / 32f);
-		scene.idle(5);
 
 		scene.overlay()
-			.showText(75)
+			.showText(60)
+			.attachKeyFrame()
+			.text("If a package is addressed to a different name..")
+			.pointAt(util.vector()
+				.topOf(5, 0, 3))
+			.placeNearTarget();
+
+		scene.idle(70);
+
+		scene.overlay()
+			.showText(40)
 			.colored(PonderPalette.BLUE)
 			.text("Albert")
 			.pointAt(util.vector()
@@ -575,24 +584,15 @@ public class FrogAndConveyorScenes {
 			.placeNearTarget();
 		scene.idle(5);
 		scene.overlay()
-			.showText(70)
+			.showText(40)
 			.colored(PonderPalette.OUTPUT)
-			.text("Peter")
+			.text("\u2192 Peter")
 			.pointAt(util.vector()
 				.centerOf(util.grid()
 					.at(5, 2, 0)))
 			.placeNearTarget();
-		scene.idle(30);
 
-		scene.overlay()
-			.showText(80)
-			.attachKeyFrame()
-			.text("If a package is addressed to a different name..")
-			.pointAt(util.vector()
-				.topOf(5, 0, 3))
-			.placeNearTarget();
-
-		scene.idle(60);
+		scene.idle(50);
 
 		scene.world()
 			.multiplyKineticSpeed(util.select()
@@ -712,7 +712,7 @@ public class FrogAndConveyorScenes {
 		scene.overlay()
 			.showText(55)
 			.colored(PonderPalette.OUTPUT)
-			.text("Peter")
+			.text("\u2192 Peter")
 			.pointAt(util.vector()
 				.centerOf(util.grid()
 					.at(0, 2, 5)))
@@ -775,7 +775,7 @@ public class FrogAndConveyorScenes {
 		scene.world()
 			.showIndependentSection(fromPackager, Direction.WEST);
 		ElementLink<WorldSectionElement> toPackagerE = scene.world()
-			.showIndependentSection(toPackager, Direction.WEST);
+			.showIndependentSection(toPackager, Direction.EAST);
 		scene.world()
 			.moveSection(toPackagerE, util.vector()
 				.of(0, 0, 1), 0);
@@ -849,14 +849,8 @@ public class FrogAndConveyorScenes {
 				.fromTo(5, 1, 2, 6, 1, 1));
 		scene.idle(5);
 
-		scene.world()
-			.modifyBlockEntity(util.grid()
-				.at(5, 1, 2), PackagerBlockEntity.class, be -> {
-					be.animationTicks = PackagerBlockEntity.CYCLE;
-					be.animationInward = false;
-					be.heldBox = box;
-				});
-
+		PonderHilo.packagerCreate(scene, util.grid()
+			.at(5, 1, 2), box);
 		scene.idle(30);
 
 		scene.world()
@@ -873,15 +867,10 @@ public class FrogAndConveyorScenes {
 			.modifyBlockEntity(conv2, ChainConveyorBlockEntity.class, be -> boxTransfer(conv1, conv2, be));
 		scene.idle(50);
 
-		scene.world()
-			.modifyBlockEntity(util.grid()
-				.at(2, 1, 4), PackagerBlockEntity.class, be -> {
-					be.animationTicks = PackagerBlockEntity.CYCLE;
-					be.animationInward = true;
-					be.previouslyUnwrapped = box;
-				});
-
+		PonderHilo.packagerUnpack(scene, util.grid()
+			.at(2, 1, 4), box);
 		scene.idle(20);
+
 		scene.overlay()
 			.showControls(util.vector()
 				.blockSurface(util.grid()

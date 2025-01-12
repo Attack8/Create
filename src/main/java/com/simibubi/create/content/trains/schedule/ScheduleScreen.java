@@ -58,6 +58,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
@@ -989,8 +990,15 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 
 		for (int i = 0; i < Math.max(1, rendered.slotsTargeted()); i++) {
 			List<Component> secondLineTooltip = rendered.getSecondLineTooltip(i);
-			if (secondLineTooltip == null || (hoveredSlot != menu.getSlot(36 + i) || !hoveredSlot.getItem()
-				.isEmpty()))
+			if (secondLineTooltip == null)
+				continue;
+			Slot slot = menu.getSlot(36 + i);
+			if (slot == null || !slot.getItem()
+				.isEmpty())
+				continue;
+			if (mouseX < leftPos + slot.x || mouseX > leftPos + slot.x + 18)
+				continue;
+			if (mouseY < topPos + slot.y || mouseY > topPos + slot.y + 18)
 				continue;
 			renderActionTooltip(graphics, secondLineTooltip, mouseX, mouseY);
 		}

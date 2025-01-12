@@ -1,12 +1,21 @@
 package com.simibubi.create.content.trains.schedule.destination;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
+
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.Create;
+import com.simibubi.create.content.trains.entity.Train;
+import com.simibubi.create.content.trains.graph.DiscoveredPath;
+import com.simibubi.create.content.trains.graph.EdgePointType;
+import com.simibubi.create.content.trains.schedule.ScheduleRuntime;
+import com.simibubi.create.content.trains.station.GlobalStation;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.utility.Pair;
@@ -67,6 +76,42 @@ public class DestinationInstruction extends TextScheduleInstruction {
 	@OnlyIn(Dist.CLIENT)
 	protected void modifyEditBox(EditBox box) {
 		box.setFilter(s -> StringUtils.countMatches(s, '*') <= 3);
+	}
+
+	@Override
+	@Nullable
+	public DiscoveredPath start(ScheduleRuntime runtime) {
+		String regex = getFilterForRegex();
+		boolean anyMatch = false;
+		ArrayList<GlobalStation> validStations = new ArrayList<>();
+		Train train = runtime.train;
+
+		if (!train.hasForwardConductor() && !train.hasBackwardConductor()) {
+			train.status.missingConductor();
+			runtime.startCooldown();
+			return null;
+		}
+
+		try {
+			for (GlobalStation globalStation : train.graph.getPoints(EdgePointType.STATION)) {
+				if (!globalStation.name.matches(regex))
+					continue;
+				anyMatch = true;
+				validStations.add(globalStation);
+			}
+		} catch (PatternSyntaxException ignored) {}
+
+		DiscoveredPath best = train.navigation.findPathTo(validStations, Double.MAX_VALUE);
+		if (best == null) {
+			if (anyMatch)
+				train.status.failedNavigation();
+			else
+				train.status.failedNavigationNoTarget(getFilter());
+			runtime.startCooldown();
+			return null;
+		}
+
+		return best;
 	}
 
 }

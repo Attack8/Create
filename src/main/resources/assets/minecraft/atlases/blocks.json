@@ -26,10 +26,6 @@
     },
     {
       "type": "single",
-      "resource": "create:entity/display_cloth"
-    },
-    {
-      "type": "single",
       "resource": "create:entity/coupling"
     },
     {
