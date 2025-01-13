@@ -119,6 +119,22 @@ repositories {
         name = "squiddev"
         url = "https://squiddev.cc/maven/"
     }
+    maven {
+        name = "ftb"
+        url = "https://maven.saps.dev/releases"
+    }
+	maven {
+        name = "architectury"
+        url = "https://maven.architectury.dev/"
+    }
+	maven {
+        url = "https://jm.gserv.me/repository/maven-public/"
+        content {
+            includeGroup "info.journeymap"
+            includeGroup "mysticdrew"
+        }
+    }
+
 
     maven {
         url = 'https://www.cursemaven.com'
@@ -155,6 +171,11 @@ dependencies {
         jarJar.ranged(it, '[1.0,2.0)')
     }
 
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")) {
+        jarJar.ranged(it, "[0.4.1,)")
+    }
+
     implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
 
     compileOnly fg.deobf("dev.engine_room.flywheel:flywheel-forge-api-${flywheel_minecraft_version}:${flywheel_version}")
@@ -179,12 +200,20 @@ dependencies {
 
     // implementation fg.deobf("curse.maven:ic2-classic-242942:5555152") not updated to 1.20
     // implementation fg.deobf("curse.maven:druidcraft-340991:3101903") not updated to 1.20
-    // implementation fg.deobf("com.railwayteam.railways:Steam_Rails-forge-1.20.1:1.6.4+forge-mc1.20.1") { transitive = false }
-    //
+    // implementation fg.deobf("com.railwayteam.railways:railways-1.19.2-1.6.4:all") { transitive = false }
+
+	  // implementation fg.deobf("dev.architectury:architectury-forge:9.1.12")
+	  // implementation fg.deobf("dev.ftb.mods:ftb-chunks-forge:2001.3.1")
+	  // implementation fg.deobf("dev.ftb.mods:ftb-teams-forge:2001.3.0")
+	  // implementation fg.deobf("dev.ftb.mods:ftb-library-forge:2001.2.4")
+
+	  // implementation fg.deobf("curse.maven:journeymap-32274:5457831")
+	  // implementation fg.deobf("ignored:journeymap-1.20.1-5.10.1-forge")
+    
     // runtimeOnly fg.deobf("curse.maven:framedblocks-441647:5629578")
     // runtimeOnly fg.deobf("curse.maven:galosphere-631098:4983871")
-    runtimeOnly fg.deobf("curse.maven:elementary-ores-332609:4622524")
-    runtimeOnly fg.deobf("curse.maven:flib-661261:5495793")
+    // runtimeOnly fg.deobf("curse.maven:elementary-ores-332609:4622524")
+    // runtimeOnly fg.deobf("curse.maven:flib-661261:5495793")
     // runtimeOnly fg.deobf("curse.maven:infernal-expansion-395078:4002091") not updated to 1.20
     // runtimeOnly fg.deobf("org.violetmoon.zeta:Zeta:1.0-9.44")
     // runtimeOnly fg.deobf("org.violetmoon.quark:Quark:4.0-461.3475")
@@ -214,14 +243,13 @@ dependencies {
     // runtimeOnly fg.deobf("curse.maven:blueprint-382216:5292242")
     // runtimeOnly fg.deobf("curse.maven:windsweptmod-636321:4817132") not updated to 1.20
     // runtimeOnly fg.deobf("curse.maven:good-ending-690161:5024405")
-    runtimeOnly fg.deobf("curse.maven:terrablender-563928:5378180")
-    runtimeOnly fg.deobf("curse.maven:regions-unexplored-659110:5558225")
-    runtimeOnly fg.deobf("curse.maven:vampirism-become-a-vampire-233029:5526512")
-    runtimeOnly fg.deobf("curse.maven:applied-energistics-2-223794:5641282")
-    runtimeOnly fg.deobf("curse.maven:silent-lib-242998:4585754")
-    runtimeOnly fg.deobf("curse.maven:silents-gems-220311:5193708")
-    runtimeOnly fg.deobf("curse.maven:project-vibrant-journeys-300297:5676296")
-
+    // runtimeOnly fg.deobf("curse.maven:terrablender-563928:5378180")
+    // runtimeOnly fg.deobf("curse.maven:regions-unexplored-659110:5558225")
+    // runtimeOnly fg.deobf("curse.maven:vampirism-become-a-vampire-233029:5526512")
+    // runtimeOnly fg.deobf("curse.maven:applied-energistics-2-223794:5641282")
+    // runtimeOnly fg.deobf("curse.maven:silent-lib-242998:4585754")
+    // runtimeOnly fg.deobf("curse.maven:silents-gems-220311:5193708")
+    // runtimeOnly fg.deobf("curse.maven:project-vibrant-journeys-300297:5676296")
 
     // https://discord.com/channels/313125603924639766/725850371834118214/910619168821354497
     // Prevent Mixin annotation processor from getting into IntelliJ's annotation processor settings
