@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import net.createmod.catnip.platform.CatnipServices;
-
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.google.common.collect.Lists;
@@ -179,6 +177,7 @@ public class InventorySummary {
 			CatnipServices.NETWORK.sendToClient(player, new LogisticalStockResponsePacket(true, pos, currentList));
 	}
 
+	// TODO - Create codec for this
 	public CompoundTag write() {
 		List<BigItemStack> all = new ArrayList<>();
 		items.forEach((key, list) -> all.addAll(list));
@@ -189,7 +188,7 @@ public class InventorySummary {
 
 	public static InventorySummary read(CompoundTag tag) {
 		InventorySummary summary = new InventorySummary();
-		summary.addAllBigItemStacks(CatnipCodecUtils.decode(Codec.list(BigItemStack.CODEC), tag.getCompound("List")).orElseThrow());
+		summary.addAllBigItemStacks(CatnipCodecUtils.decode(Codec.list(BigItemStack.CODEC), tag.getCompound("List")).orElse(Collections.emptyList()));
 		return summary;
 	}
 
