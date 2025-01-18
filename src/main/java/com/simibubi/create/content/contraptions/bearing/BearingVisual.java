@@ -6,8 +6,8 @@ import org.joml.Quaternionf;
 
 import com.mojang.math.Axis;
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.content.kinetics.base.BackHalfShaftVisual;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
+import com.simibubi.create.content.kinetics.base.OrientedRotatingVisual;
 
 import dev.engine_room.flywheel.api.instance.Instance;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
@@ -21,14 +21,14 @@ import net.createmod.catnip.utility.math.AngleHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-public class BearingVisual<B extends KineticBlockEntity & IBearingBlockEntity> extends BackHalfShaftVisual<B> implements SimpleDynamicVisual {
+public class BearingVisual<B extends KineticBlockEntity & IBearingBlockEntity> extends OrientedRotatingVisual<B> implements SimpleDynamicVisual {
 	final OrientedInstance topInstance;
 
 	final Axis rotationAxis;
 	final Quaternionf blockOrientation;
 
 	public BearingVisual(VisualizationContext context, B blockEntity, float partialTick) {
-		super(context, blockEntity, partialTick);
+		super(context, blockEntity, partialTick, Direction.SOUTH, blockEntity.getBlockState().getValue(BlockStateProperties.FACING).getOpposite(), Models.partial(AllPartialModels.SHAFT_HALF));
 
 		Direction facing = blockState.getValue(BlockStateProperties.FACING);
 		rotationAxis = Axis.of(Direction.get(Direction.AxisDirection.POSITIVE, rotationAxis()).step());

@@ -4,6 +4,8 @@ import java.util.Random;
 
 import org.slf4j.Logger;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.api.behaviour.BlockSpoutingBehaviour;
 import com.simibubi.create.compat.Mods;
@@ -48,6 +50,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -59,12 +62,14 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(Create.ID)
 public class Create {
-
 	public static final String ID = "create";
 	public static final String NAME = "Create";
-	public static final String VERSION = "0.5.2-experimental";
 
 	public static final Logger LOGGER = LogUtils.getLogger();
+
+	public static final Gson GSON = new GsonBuilder().setPrettyPrinting()
+		.disableHtmlEscaping()
+		.create();
 
 	/** Use the {@link Random} of a local {@link Level} or {@link Entity} or create one */
 	@Deprecated
@@ -96,6 +101,7 @@ public class Create {
 	}
 
 	public static void onCtor(IEventBus modEventBus, ModContainer modContainer) {
+		LOGGER.info("{} {} initializing! Commit hash: {}", NAME, CreateBuildInfo.VERSION, CreateBuildInfo.GIT_COMMIT);
 		ModLoadingContext modLoadingContext = ModLoadingContext.get();
 
 		REGISTRATE.registerEventListeners(modEventBus);
@@ -185,5 +191,4 @@ public class Create {
 	public static ResourceLocation asResource(String path) {
 		return ResourceLocation.fromNamespaceAndPath(ID, path);
 	}
-
 }

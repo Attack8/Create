@@ -8,7 +8,9 @@ import dev.engine_room.flywheel.api.instance.InstanceType;
 import dev.engine_room.flywheel.lib.instance.ColoredLitInstance;
 import net.createmod.catnip.utility.theme.Color;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class RotatingInstance extends ColoredLitInstance {
 	public static final float SPEED_MULTIPLIER = 6;
@@ -41,6 +43,58 @@ public class RotatingInstance extends ColoredLitInstance {
 		if (be.hasNetwork())
 			return Color.generateFromLong(be.network).getRGB();
 		return 0xFFFFFF;
+	}
+
+	public RotatingInstance setup(KineticBlockEntity blockEntity) {
+		var blockState = blockEntity.getBlockState();
+		var axis = KineticBlockEntityVisual.rotationAxis(blockState);
+		return setup(blockEntity, axis, blockEntity.getSpeed());
+	}
+
+	public RotatingInstance setup(KineticBlockEntity blockEntity, Axis axis) {
+		return setup(blockEntity, axis, blockEntity.getSpeed());
+	}
+
+	public RotatingInstance setup(KineticBlockEntity blockEntity, float speed) {
+		var blockState = blockEntity.getBlockState();
+		var axis = KineticBlockEntityVisual.rotationAxis(blockState);
+		return setup(blockEntity, axis, speed);
+	}
+
+	public RotatingInstance setup(KineticBlockEntity blockEntity, Axis axis, float speed) {
+		var blockState = blockEntity.getBlockState();
+		var pos = blockEntity.getBlockPos();
+		return setRotationAxis(axis)
+			.setRotationalSpeed(speed * RotatingInstance.SPEED_MULTIPLIER)
+			.setRotationOffset(KineticBlockEntityVisual.rotationOffset(blockState, axis, pos) + blockEntity.getRotationAngleOffset(axis))
+			.setColor(blockEntity);
+	}
+
+	public RotatingInstance rotateToFace(Direction.Axis axis) {
+		Direction orientation = Direction.get(Direction.AxisDirection.POSITIVE, axis);
+		return rotateToFace(orientation);
+	}
+
+	public RotatingInstance rotateToFace(Direction from, Direction.Axis axis) {
+		Direction orientation = Direction.get(Direction.AxisDirection.POSITIVE, axis);
+		return rotateToFace(from, orientation);
+	}
+
+	public RotatingInstance rotateToFace(Direction orientation) {
+		return rotateToFace(orientation.getStepX(), orientation.getStepY(), orientation.getStepZ());
+	}
+
+	public RotatingInstance rotateToFace(Direction from, Direction orientation) {
+		return rotateTo(from.getStepX(), from.getStepY(), from.getStepZ(), orientation.getStepX(), orientation.getStepY(), orientation.getStepZ());
+	}
+
+	public RotatingInstance rotateToFace(float stepX, float stepY, float stepZ) {
+		return rotateTo(0, 1, 0, stepX, stepY, stepZ);
+	}
+
+	public RotatingInstance rotateTo(float fromX, float fromY, float fromZ, float toX, float toY, float toZ) {
+		rotation.rotateTo(fromX, fromY, fromZ, toX, toY, toZ);
+		return this;
 	}
 
 	public RotatingInstance setRotationAxis(Direction.Axis axis) {

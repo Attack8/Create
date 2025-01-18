@@ -171,6 +171,11 @@ public class ItemHatchBlock extends HorizontalDirectionalBlock
 	}
 
 	@Override
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+		IBE.onRemove(state, level, pos, newState);
+	}
+
+	@Override
 	public Class<ItemHatchBlockEntity> getBlockEntityClass() {
 		return ItemHatchBlockEntity.class;
 	}

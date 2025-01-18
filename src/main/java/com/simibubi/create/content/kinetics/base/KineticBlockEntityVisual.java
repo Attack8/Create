@@ -1,8 +1,6 @@
 package com.simibubi.create.content.kinetics.base;
 
-import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
-import com.simibubi.create.content.kinetics.simpleRelays.ShaftBlock;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
@@ -18,45 +16,37 @@ public abstract class KineticBlockEntityVisual<T extends KineticBlockEntity> ext
 	}
 
 	protected final void updateRotation(RotatingInstance instance) {
-		updateRotation(instance, rotationAxis(), getBlockEntitySpeed());
+		instance.setup(blockEntity)
+			.setChanged();
 	}
 
 	protected final void updateRotation(RotatingInstance instance, Direction.Axis axis) {
-		updateRotation(instance, axis, getBlockEntitySpeed());
+		instance.setup(blockEntity, axis)
+			.setChanged();
 	}
 
 	protected final void updateRotation(RotatingInstance instance, float speed) {
-		updateRotation(instance, rotationAxis(), speed);
+		instance.setup(blockEntity, speed)
+			.setChanged();
 	}
 
 	protected final void updateRotation(RotatingInstance instance, Direction.Axis axis, float speed) {
-		instance.setRotationAxis(axis)
-			.setRotationOffset(getRotationOffset(axis))
-			.setRotationalSpeed(speed * RotatingInstance.SPEED_MULTIPLIER)
-			.setColor(blockEntity)
+		instance.setup(blockEntity, axis, speed)
 			.setChanged();
 	}
 
 	protected final RotatingInstance setup(RotatingInstance key) {
-		return setup(key, rotationAxis(), getBlockEntitySpeed());
+		key.setup(blockEntity).setPosition(getVisualPosition()).setChanged();
+		return key;
 	}
 
 	protected final RotatingInstance setup(RotatingInstance key, Direction.Axis axis) {
-		return setup(key, axis, getBlockEntitySpeed());
+		key.setup(blockEntity, axis).setPosition(getVisualPosition()).setChanged();
+		return key;
 	}
 
 	protected final RotatingInstance setup(RotatingInstance key, float speed) {
-		return setup(key, rotationAxis(), speed);
-	}
-
-	protected final RotatingInstance setup(RotatingInstance key, Direction.Axis axis, float speed) {
-		key.setRotationAxis(axis)
-			.setRotationalSpeed(speed * RotatingInstance.SPEED_MULTIPLIER)
-			.setRotationOffset(getRotationOffset(axis))
-			.setColor(blockEntity)
-			.setPosition(getVisualPosition())
-			.setChanged();
-
+		key.setup(blockEntity, speed).setPosition(getVisualPosition()).setChanged();
 		return key;
 	}
 
@@ -66,14 +56,6 @@ public abstract class KineticBlockEntityVisual<T extends KineticBlockEntity> ext
 
 	protected Direction.Axis rotationAxis() {
 		return rotationAxis(blockState);
-	}
-
-	protected float getBlockEntitySpeed() {
-		return blockEntity.getSpeed();
-	}
-
-	protected BlockState shaft() {
-		return shaft(rotationAxis());
 	}
 
 	public static float rotationOffset(BlockState state, Axis axis, Vec3i pos) {
@@ -94,14 +76,5 @@ public abstract class KineticBlockEntityVisual<T extends KineticBlockEntity> ext
 
 	public static Axis rotationAxis(BlockState blockState) {
 		return (blockState.getBlock() instanceof IRotate irotate) ? irotate.getRotationAxis(blockState) : Axis.Y;
-	}
-
-	public static BlockState shaft(Direction.Axis axis) {
-		return AllBlocks.SHAFT.getDefaultState()
-			.setValue(ShaftBlock.AXIS, axis);
-	}
-
-	public static BlockState shaft(BlockState blockState) {
-		return shaft(rotationAxis(blockState));
 	}
 }

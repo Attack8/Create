@@ -1,4 +1,4 @@
-// 1.20.1	2025-01-11T18:12:51.5905299	Registrate Provider for create [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
+// 1.20.1	2025-01-17T00:09:44.5040448	Registrate Provider for create [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
 60bbdf92d2ac9824ea6144955c74043a6005f79d assets/create/blockstates/acacia_window.json
 6a67703c2697d81b7dc83e9d72a66f9c9ff08383 assets/create/blockstates/acacia_window_pane.json
 c3ae87b62e81d8e9476eccd793bb1548d74c66a1 assets/create/blockstates/adjustable_chain_gearshift.json
@@ -642,8 +642,8 @@ b0d8f08968763a5f74e5cd5644377a76a9f39753 assets/create/blockstates/yellow_toolbo
 fe8c497aacc641c2f01cec90bba9f19e59cc2ed2 assets/create/blockstates/yellow_valve_handle.json
 e819e93fdcbe9fd9c050a052d2718ff3b3539365 assets/create/blockstates/zinc_block.json
 64121dcb216381c83b4fe28aa361ea07c24c9ad0 assets/create/blockstates/zinc_ore.json
-913f3794fb772a0736ae66dff722b3c468bcde79 assets/create/lang/en_ud.json
-1f6031cb19932ad54d645fbca1f2773385dd47ed assets/create/lang/en_us.json
+7c975eddc8318d59bb77fa5667d4358f1bd168c5 assets/create/lang/en_ud.json
+5bb378436e68d5a1428ac801c3bc5a4443f8b657 assets/create/lang/en_us.json
 a97e1060e00ae701a02e39cd4ef8054cf345fac4 assets/create/models/block/acacia_window.json
 103e032c0b1a0a6a27c67da8c91179a564bd281c assets/create/models/block/acacia_window_pane_noside.json
 fb00b627abda76ad4fea867ca57dbfadd24fffa3 assets/create/models/block/acacia_window_pane_noside_alt.json
@@ -1825,12 +1825,12 @@ cf8477d6c7558ceba38416fae755567086a856a6 assets/create/models/block/yellow_sail.
 23d6852eca1bf1480dc74ed51d15c098e26a520f assets/create/models/block/zinc_block.json
 617330267f01a08062b05b8516082d7ebdab3d0b assets/create/models/block/zinc_ore.json
 86b835fa8d2264feb2159262b069c6c2cf68e818 assets/create/models/item/acacia_window.json
-697eda24a3a1c79401d7d073a503804cb589e2f5 assets/create/models/item/acacia_window_pane.json
+ab7e40e22fedad4ae69281eb6137e699110327a2 assets/create/models/item/acacia_window_pane.json
 feb7bd45dc6ec0542c7af648b371e54168641d1e assets/create/models/item/adjustable_chain_gearshift.json
 be9e4a7937dcb87bce696e6ad234c9eff8cd299e assets/create/models/item/analog_lever.json
 626cc26c8a7a2742b991b432c5104981183f1eb6 assets/create/models/item/andesite_alloy.json
 158270c9fa3022d1afb56002d0ea1db3366467aa assets/create/models/item/andesite_alloy_block.json
-d497fcfe54f9caddf1925cc303f9f9a62015e0ae assets/create/models/item/andesite_bars.json
+0a79ae7caa46f64085e0bd7d94018a46f53920b3 assets/create/models/item/andesite_bars.json
 11c747281cbe2d96324db27fec020100b50977d0 assets/create/models/item/andesite_casing.json
 ab09b7886916048add1fa0ea9e87c4644a781031 assets/create/models/item/andesite_door.json
 944cbae9f7c4bf7d1734d25645cfa6b0d0f2c33d assets/create/models/item/andesite_encased_cogwheel.json
@@ -1846,12 +1846,12 @@ d6eb7105dd9b42adde48bd70e3f2fba70751c1db assets/create/models/item/asurine.json
 8b61987c61ae461e4bea0fccf5b1bb3399ac9226 assets/create/models/item/asurine_pillar.json
 a8e9fab6ce8dc5da29b451c827663fb553669a23 assets/create/models/item/attribute_filter.json
 2a57b4e07c5a853d4875fae7916cdb71f3b3f378 assets/create/models/item/bamboo_window.json
-69f07020d66498909df3bd37fa6e1a09cb06788e assets/create/models/item/bamboo_window_pane.json
+3baee1bf202692d9e14865b7ba1e2606f761774f assets/create/models/item/bamboo_window_pane.json
 6913f9acbb272de28387918ce92984fa767b4389 assets/create/models/item/bar_of_chocolate.json
 def88cd2c79a1f0ed40bbf5a0332187dd1d6006e assets/create/models/item/basin.json
 35a1e2cb2645a8386dfee2697b47547b3f9a1dd2 assets/create/models/item/belt_connector.json
 f5dcb9096a52d5d2eab1e4204fbd1222e0d5094d assets/create/models/item/birch_window.json
-eccafeec52e4195fbe211c602b4fc71a260d8a64 assets/create/models/item/birch_window_pane.json
+9589b0f3d31028c1499a49298600eede6d84f7bb assets/create/models/item/birch_window_pane.json
 641b85751f91c0b4931307548c12034fc56286bc assets/create/models/item/black_postbox.json
 7ca635d45fef81e6681a492be6c7bb71fd0f4574 assets/create/models/item/black_seat.json
 67256e7c62c3ed2cee1dc88c2437083966165f92 assets/create/models/item/black_table_cloth.json
@@ -1866,7 +1866,7 @@ b1059dd00b8b4102e345a3d4f3e903a92c372ea1 assets/create/models/item/blue_table_cl
 a82bc56a503cd15d2354c86a49fc6d1d4ed22767 assets/create/models/item/blue_toolbox.json
 2f90f781cd9b5d144a6cfd4748ae3a87c9f12ba8 assets/create/models/item/blue_valve_handle.json
 d16ce54ed4e2546f168d3bcf7d748ff749565316 assets/create/models/item/bound_cardboard_block.json
-4e711f64e0ab7d16c550cc4aa8b876d604dfb2af assets/create/models/item/brass_bars.json
+8facd82128e77ed41de3bb92d7714e56fc58ada6 assets/create/models/item/brass_bars.json
 136f97f26217c51c932d79bf715b2a1a92e6595e assets/create/models/item/brass_block.json
 c876713c3b8ed6511679d1e3186e6d6031190dd5 assets/create/models/item/brass_casing.json
 378a2f1820c9abdc1080c940e5a01e30c25ea5cb assets/create/models/item/brass_door.json
@@ -1943,7 +1943,7 @@ ca37276063d58483994ab51e3f72ef20521902c2 assets/create/models/item/cardboard_leg
 1cdb2b8801551c1540bb9b2a9cc3d725a2b433e7 assets/create/models/item/cart_assembler.json
 390a06d81c8c2a0ff83196bd0154dd292206e3b6 assets/create/models/item/chain_conveyor.json
 74c265b6ea2df76ae1b2e8e920eaa91749f74c1a assets/create/models/item/cherry_window.json
-30395c9018e273105b20cc35737f501696529acf assets/create/models/item/cherry_window_pane.json
+7aecdbca8bc44bdf9a6926889bdbf4e74c4407a7 assets/create/models/item/cherry_window_pane.json
 a197d08618f4035182c91a6b16031eb681ab8a7c assets/create/models/item/chest_minecart_contraption.json
 293cfa8b1073f8641a2c623b73a90907576c36ed assets/create/models/item/chocolate_bucket.json
 77654cbd16cdfa95181ea3f85fcfa3cd352b69fd assets/create/models/item/chocolate_glazed_berries.json
@@ -1962,7 +1962,7 @@ de48f4b6fa26928ebc7d5d60e6a0767093430d65 assets/create/models/item/contraption_c
 6a4e8aa37120fa8238be72fb2c732f9ab5670d53 assets/create/models/item/controls.json
 68d0bd260e5062448ca9008f7cf44e963d941653 assets/create/models/item/copper_backtank.json
 6c53b1a6ed28929b7a0a090edf6101e610f842fc assets/create/models/item/copper_backtank_placeable.json
-2a0b31d76ab8a74c458475640d17de15ad314fcd assets/create/models/item/copper_bars.json
+aaac7663d062731433c920d94a24b9b3a521dd8c assets/create/models/item/copper_bars.json
 688e4dee99126b7507761de618d6788c18f17153 assets/create/models/item/copper_casing.json
 68890c027cd6a094b484a237d3ff5daeb09622af assets/create/models/item/copper_diving_boots.json
 23499699c6ea6a30673835056f5d0039519413fa assets/create/models/item/copper_diving_helmet.json
@@ -1990,7 +1990,7 @@ ad620bd5eb32a41b0a8a130f49ab3dbb398907e5 assets/create/models/item/creative_moto
 612778c4a390c3fc9de7ef40713375dc7be85270 assets/create/models/item/crimsite.json
 e432e359b77e7129e18c1d4daf68d11c4a661110 assets/create/models/item/crimsite_pillar.json
 9c77e6d7d56310b34468a6d52080e477e893494d assets/create/models/item/crimson_window.json
-43625514f941a61cfbae339419d0de4b22db9662 assets/create/models/item/crimson_window_pane.json
+cfad32c8024f9f1479aed6916735a4d75b16dc4e assets/create/models/item/crimson_window_pane.json
 189ddf2f3c83608ddfe9e8d2fe88d8b4610ade13 assets/create/models/item/crushed_raw_aluminum.json
 4e74e066349d0311064e21fd72aa40e249e2e830 assets/create/models/item/crushed_raw_copper.json
 513ccb83879e523f8df66a4ad8aee0ecab1ba003 assets/create/models/item/crushed_raw_gold.json
@@ -2124,7 +2124,7 @@ fb3660aa1b33ef63361d91598c2b46dd5b1c30d7 assets/create/models/item/cyan_table_cl
 265d5d6de4238442bb9b161dba0a2fc2f063df0b assets/create/models/item/cyan_toolbox.json
 8beb6459822efe59d0f60749143d73c5390e39f2 assets/create/models/item/cyan_valve_handle.json
 2e0a1bb3f3498454eb23dab5d4eb6fad98fe586c assets/create/models/item/dark_oak_window.json
-34088ac6ee20cd56c309ad687e2b721fc6070b0b assets/create/models/item/dark_oak_window_pane.json
+e30c50f79332cb2cd2815554af84747c58545a39 assets/create/models/item/dark_oak_window_pane.json
 5b90f8778ae1c2dbd99da89407f12bfb4775b123 assets/create/models/item/deepslate_pillar.json
 9b5b804fe75a3e748a0d9a6761ab46178e5f3850 assets/create/models/item/deepslate_zinc_ore.json
 7ff5075e907b57d6b0f6fd0a31d0e46464afe634 assets/create/models/item/deployer.json
@@ -2159,7 +2159,7 @@ dad31483f65baaf187e6553e3cd301c5d69e9db4 assets/create/models/item/filter.json
 37dcb8911cd29d883849b655e3e388dbba5df6c0 assets/create/models/item/flywheel.json
 ddeba2ef1d185629be5c88aeb2105fe0aaae3951 assets/create/models/item/framed_glass.json
 02a88f5c9aab6fc2f6cbbdaa871fd67476c9a9c2 assets/create/models/item/framed_glass_door.json
-c27e10488bd56237af75b1fd8742a5e633d7ec4a assets/create/models/item/framed_glass_pane.json
+3ed4300d2fb60b4e2761fd7a2d1f116fecea150a assets/create/models/item/framed_glass_pane.json
 127386f4dee6c305023e45ad6b2f04fd6d4e5009 assets/create/models/item/framed_glass_trapdoor.json
 b17d9fd1a92db0965f2e5da6215956b0451af29e assets/create/models/item/furnace_minecart_contraption.json
 7b3a197eed9dec75f95aaed8e438d49d46948f1d assets/create/models/item/gantry_carriage.json
@@ -2185,19 +2185,19 @@ dac0331061c464e6d3e2070b232781c632840191 assets/create/models/item/hand_crank.js
 81d67fb0e59f25762a412990884813c72d399d55 assets/create/models/item/honeyed_apple.json
 2e97629313eab1a4ac4b38785dbe7ed45346e625 assets/create/models/item/honey_bucket.json
 70185e640169d6253f06fb98f31b240f4807a53e assets/create/models/item/horizontal_framed_glass.json
-e623c9541adc0fa877c5615e3211f47886383f2d assets/create/models/item/horizontal_framed_glass_pane.json
+d47884b13fadf545bd585cd9ae347368924b04b0 assets/create/models/item/horizontal_framed_glass_pane.json
 58b6f4ec2af3a69ae7145fb25d73451b6e8a2834 assets/create/models/item/hose_pulley.json
 14ae1ba5e842715fc4526b19e20c74d10102eb4a assets/create/models/item/incomplete_precision_mechanism.json
 ae5c5925ecf775a4f5c3dc3c79d9766d7dd34ab6 assets/create/models/item/incomplete_track.json
 43173d18384817288a9ba687da77a4fab31b1957 assets/create/models/item/industrial_iron_block.json
 4596b83d7da43a670f2274c8389cca9897ae379d assets/create/models/item/industrial_iron_window.json
-b023f505f851799e7212531402e788e927cf6033 assets/create/models/item/industrial_iron_window_pane.json
+199e1b60315fc2d016b69d2d60fcb790a6e075fc assets/create/models/item/industrial_iron_window_pane.json
 c6e3e4ca8b3dfdaaa943faa3dc89c0b2e6f2b5c4 assets/create/models/item/iron_sheet.json
 d1fbf1be53208c3ab5384dfd6be4d980c858941c assets/create/models/item/item_drain.json
 5adda29ca25d00eb41884d0b7ad4a471e250ae10 assets/create/models/item/item_hatch.json
 908dd0a4eafd868d280e25cfb7721f20b649560f assets/create/models/item/item_vault.json
 5fba1fa33e360c2744ec74d7ccb63f9baa295546 assets/create/models/item/jungle_window.json
-b3a0c9664465f49a2f53e4ded6c29710a357e6ca assets/create/models/item/jungle_window_pane.json
+1a76bf2c7cf1036c458651536a7be8511a39d551 assets/create/models/item/jungle_window_pane.json
 26c3f75074779ec0286e19219bd277147bfb9e96 assets/create/models/item/large_cogwheel.json
 23f9028ae83a1723071c67cb6a1742731969e21e assets/create/models/item/large_water_wheel.json
 33978f928e1f548a2b53081d6a7517e41d875ec3 assets/create/models/item/layered_andesite.json
@@ -2239,7 +2239,7 @@ c50cb6b0285ee3a2b7d7f592ee48672d66e02af3 assets/create/models/item/magenta_table
 7c0e3f91e5ab029473736deffb2b2aab9d4763c7 assets/create/models/item/magenta_toolbox.json
 6d82582e5afea919927606b20a74cbda5223956f assets/create/models/item/magenta_valve_handle.json
 a4ecba2ee36699401de661b89065bf0738487a87 assets/create/models/item/mangrove_window.json
-474c896c4ca4e6547fac225cc204bbc0b287c5ea assets/create/models/item/mangrove_window_pane.json
+a8d3d6f1329c75d4d5a1db3e7fad40eaeca53716 assets/create/models/item/mangrove_window_pane.json
 d5b1665cdcf03baef41a8d3fbbdcc747cd6867f8 assets/create/models/item/mechanical_arm.json
 95d437fffd455e5a22d288bb7683fbdce211fa8a assets/create/models/item/mechanical_bearing.json
 08dcab9d0cdb7fb6426b8dee508eecc3f5d71fb1 assets/create/models/item/mechanical_crafter.json
@@ -2265,7 +2265,7 @@ c11656a940ef54a023634376c742b3fb17201f92 assets/create/models/item/netherite_bac
 f80358eba19bc8d1741e4e25753866799631a118 assets/create/models/item/nixie_tube.json
 33c5dfa7ef718fb29cf59bb0c04ebd88cf20eb1c assets/create/models/item/nozzle.json
 39626402ba637abced828902d9d657ab09edcadb assets/create/models/item/oak_window.json
-061587faf0e53e4fac0c8f2f3bd6b22020b2a3ee assets/create/models/item/oak_window_pane.json
+7d9eef77eb18dd5c768e48b5871ca2dcdd1a136c assets/create/models/item/oak_window_pane.json
 af50363d603d61340b336569d58c1febde253665 assets/create/models/item/ochrum.json
 62ec1afee14f9de3f5b02ee930d002a240a3c337 assets/create/models/item/ochrum_pillar.json
 226f99c241b1d8b03d8fc57db32c1bee0721b64f assets/create/models/item/orange_postbox.json
@@ -2274,7 +2274,7 @@ af50363d603d61340b336569d58c1febde253665 assets/create/models/item/ochrum.json
 96cc543d5afed90a022ece7b8671cd47a9b6fb68 assets/create/models/item/orange_toolbox.json
 7e767ca9e0ddb769b38fabd9289648ac63f5413d assets/create/models/item/orange_valve_handle.json
 82152bca4310111d91584a2a78f05e158bb4bd90 assets/create/models/item/ornate_iron_window.json
-f9064c1f199bcd8db321078e2363ed91cb2acc09 assets/create/models/item/ornate_iron_window_pane.json
+ca749a88faeef441c55c0527d81257187938b6b0 assets/create/models/item/ornate_iron_window_pane.json
 09b3cd8ff7b29a6dd59f739a95bb708646d23537 assets/create/models/item/oxidized_copper_shingles.json
 c9c7ccdb68de2e77cd9f7053fab19493dd30a985 assets/create/models/item/oxidized_copper_shingle_slab.json
 89c5f7a0a28f238ebed2641e243a47e4be2ad5ab assets/create/models/item/oxidized_copper_shingle_stairs.json
@@ -2471,7 +2471,7 @@ ab4e7695e99548f83a89f3d5ad7690a576bafcc0 assets/create/models/item/small_veridiu
 67804bdd890f167010f6101a700e85a3245f4cc3 assets/create/models/item/speedometer.json
 4bc463849e2309aa7bb996c403bfb565e950aa49 assets/create/models/item/spout.json
 09784bf20529fdc5bb76892c10cea14187748a82 assets/create/models/item/spruce_window.json
-368bc939a79864c4bce0fa05d91760bd75c9e5cd assets/create/models/item/spruce_window_pane.json
+693cdacb67b28b5d69c8541fd1e0c246b26260ae assets/create/models/item/spruce_window_pane.json
 b82ab0c69df330f6f938ed1beee7b4add67d2e50 assets/create/models/item/steam_engine.json
 24acc593a5e910b6301afcb3f23cba526d23a0ab assets/create/models/item/steam_whistle.json
 54f200be903e056e5cf9e2186f0a0a51f8f0f84e assets/create/models/item/sticker.json
@@ -2484,7 +2484,7 @@ c04a4ef6debb04d305d74d9b034c1e95c6b9e956 assets/create/models/item/stock_link.js
 a10bb4d6d1a4483a806e3aaa086d48c0e20aaefe assets/create/models/item/super_glue.json
 dddac09bb9dd962d99502ab10929ae6886fbd831 assets/create/models/item/sweet_roll.json
 6264be89eb998566b171beb073594393041780ca assets/create/models/item/tiled_glass.json
-0ef4d2df2a4096b87b86506efc5c9404944fe982 assets/create/models/item/tiled_glass_pane.json
+20fde7ab92e521fe861374148b240378990e9e12 assets/create/models/item/tiled_glass_pane.json
 4683ab824d93cd96a82143eb9c62c9777f278f18 assets/create/models/item/track.json
 c4bd1224b988ca10708fe9538a0baa8b88272eb5 assets/create/models/item/track_observer.json
 236d89ebd8ae45344b374264d39947d82a2d1914 assets/create/models/item/track_signal.json
@@ -2499,11 +2499,11 @@ ba7a9f542e9f65bdce3d3330a95f1166a0be0673 assets/create/models/item/tree_fertiliz
 63a159b54de6a31ee265750e4af4b1990820eda6 assets/create/models/item/veridium.json
 38970acde350735e00b53e6836ccee428c630fcc assets/create/models/item/veridium_pillar.json
 9b2e4da1ab7e20cd744adb469dd3690e33cc905f assets/create/models/item/vertical_framed_glass.json
-63d94954704691fccde1b13b320ec62a4e12a13a assets/create/models/item/vertical_framed_glass_pane.json
+1eda3a4bc309eb9f125c583c1d398a1cb9e3a4e7 assets/create/models/item/vertical_framed_glass_pane.json
 b0f6d37aa695395e28a23d36775092f63ab3f5a5 assets/create/models/item/vertical_gearbox.json
 011ef16e912638b4095d34c8c711ebd67cb85fba assets/create/models/item/wand_of_symmetry.json
 9c5087114e35052c5e56bb752252de5d092408c5 assets/create/models/item/warped_window.json
-83502f4b8d0134e793611b36a56cca59af097ed5 assets/create/models/item/warped_window_pane.json
+cdc1226f8a098adbc420fe50c98466507c3a3157 assets/create/models/item/warped_window_pane.json
 e5939b47bf7440dc101c667e68ef6bf750a3290f assets/create/models/item/water_wheel.json
 be2f058a7ecb015599ee052ec27c4360d636999a assets/create/models/item/waxed_copper_shingles.json
 adc188e4e48bea80607c6e0c7076c9bdd7236cb0 assets/create/models/item/waxed_copper_shingle_slab.json
@@ -2537,7 +2537,7 @@ dadc7b65a4527e288c21a20df978796a8c444fd2 assets/create/models/item/waxed_weather
 0c3989b44fde934ba8b88b071887e5ede522c417 assets/create/models/item/weathered_copper_tile_stairs.json
 b5d591fbb40e062efe301b3b3b49580e5ad64566 assets/create/models/item/weathered_iron_block.json
 a569ddd725898a86f8745e46723edeff7fe7f2e9 assets/create/models/item/weathered_iron_window.json
-a262cbdf9aa0c240f623dcadd42864d280d36978 assets/create/models/item/weathered_iron_window_pane.json
+68ca3316942b2df1623893cda722402238ab7724 assets/create/models/item/weathered_iron_window_pane.json
 79431edb868e6560f4f6d5b3441c0176c7699f5e assets/create/models/item/weighted_ejector.json
 0fd2214cdff8a92e05d9d5ee888329b3235143c0 assets/create/models/item/wheat_flour.json
 aacced59d21212090d508a9684bb46c9472a8a2f assets/create/models/item/whisk.json
@@ -4710,6 +4710,7 @@ d371dfd35e49a7bef19f59c03e7f4ae20992f03d data/create/tags/items/create_ingots.js
 910d0f5ccbc4c84b224eca1f1588b1695f41447b data/create/tags/items/crushed_raw_materials.json
 0fa526e7e742573b603ad26b09526cf724efa1dc data/create/tags/items/deployable_drink.json
 ebd7b09daf2f64c0c04d821696b0e145683d8693 data/create/tags/items/dyed_table_cloths.json
+d2bb65d893d71d2d9871f81f430c233a93adb4bb data/create/tags/items/invalid_for_track_paving.json
 1cebeb92bd514b75d54ac6d5708047801f0501c5 data/create/tags/items/modded_stripped_logs.json
 586f8fc5a8b8559c9dc0017e13c78ad918688fae data/create/tags/items/modded_stripped_wood.json
 b96668734c9b7a90348235217512d49193e4ea7f data/create/tags/items/packages.json

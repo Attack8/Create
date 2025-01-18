@@ -11,7 +11,7 @@ import com.simibubi.create.content.contraptions.pulley.PulleyRenderer;
 import com.simibubi.create.content.kinetics.base.ShaftVisual;
 import com.simibubi.create.content.processing.burner.ScrollInstance;
 import com.simibubi.create.foundation.render.AllInstanceTypes;
-import com.simibubi.create.foundation.render.ShaderLightPartial;
+import com.simibubi.create.foundation.render.SpecialModels;
 
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visual.ShaderLightVisual;
@@ -54,13 +54,13 @@ public class ElevatorPulleyVisual extends ShaftVisual<ElevatorPulleyBlockEntity>
 		topSection = SectionPos.of(pos).asLong();
 
 		belt = new InstanceRecycler<>(() -> context.instancerProvider()
-			.instancer(AllInstanceTypes.SCROLLING, ShaderLightPartial.flat(AllPartialModels.ELEVATOR_BELT))
+			.instancer(AllInstanceTypes.SCROLLING, SpecialModels.flatLit(AllPartialModels.ELEVATOR_BELT))
 			.createInstance()
 			.rotation(rotation)
 			.setSpriteShift(AllSpriteShifts.ELEVATOR_BELT));
 
 		halfBelt = context.instancerProvider()
-			.instancer(AllInstanceTypes.SCROLLING, ShaderLightPartial.flat(AllPartialModels.ELEVATOR_BELT_HALF))
+			.instancer(AllInstanceTypes.SCROLLING, SpecialModels.flatLit(AllPartialModels.ELEVATOR_BELT_HALF))
 			.createInstance()
 			.rotation(rotation)
 			.setSpriteShift(AllSpriteShifts.ELEVATOR_BELT);
@@ -75,7 +75,7 @@ public class ElevatorPulleyVisual extends ShaftVisual<ElevatorPulleyBlockEntity>
 		coil.setChanged();
 
 		magnet = context.instancerProvider()
-			.instancer(InstanceTypes.TRANSFORMED, ShaderLightPartial.flat(AllPartialModels.ELEVATOR_MAGNET))
+			.instancer(InstanceTypes.TRANSFORMED, SpecialModels.flatLit(AllPartialModels.ELEVATOR_MAGNET))
 			.createInstance();
 
 		// Cache the magnet's transform to avoid recalculating this unchanging bit every frame

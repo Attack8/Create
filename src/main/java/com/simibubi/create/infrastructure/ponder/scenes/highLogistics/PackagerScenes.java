@@ -250,7 +250,7 @@ public class PackagerScenes {
 		scene.idle(40);
 
 		PonderHilo.packageHopsOffBelt(scene, util.grid()
-			.at(0, 1, 2), Direction.WEST);
+			.at(0, 1, 2), Direction.WEST, box);
 		scene.idle(40);
 
 	}
@@ -497,7 +497,7 @@ public class PackagerScenes {
 
 		scene.idle(40);
 		PonderHilo.packageHopsOffBelt(scene, util.grid()
-			.at(4, 1, 0), Direction.NORTH);
+			.at(4, 1, 0), Direction.NORTH, warehouseBox);
 		scene.idle(40);
 		scene.world()
 			.multiplyKineticSpeed(util.select()
@@ -547,7 +547,7 @@ public class PackagerScenes {
 
 		scene.overlay()
 			.showText(100)
-			.text("Aside from those filters, Frogports and Postboxes have package routing capabilities")
+			.text("Aside from filters, Frogports and Postboxes have package routing abilities")
 			.attachKeyFrame()
 			.placeNearTarget()
 			.pointAt(util.vector()

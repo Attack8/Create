@@ -41,8 +41,15 @@ import com.simibubi.create.infrastructure.ponder.scenes.fluid.HosePulleyScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.fluid.PipeScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.fluid.PumpScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.fluid.SpoutScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.FactoryGaugeScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.FrogAndConveyorScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.PackagerScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.PostboxScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.RepackagerScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.RequesterAndShopScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.StockLinkScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.StockTickerScenes;
+import com.simibubi.create.infrastructure.ponder.scenes.highLogistics.TableClothScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.trains.TrackObserverScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.trains.TrackScenes;
 import com.simibubi.create.infrastructure.ponder.scenes.trains.TrainScenes;
@@ -355,9 +362,29 @@ public class AllCreatePonderScenes {
 			.addStoryBoard("high_logistics/chain_conveyor", FrogAndConveyorScenes::conveyor);
 		HELPER.forComponents(AllBlocks.PACKAGE_FROGPORT)
 			.addStoryBoard("high_logistics/package_frogport", FrogAndConveyorScenes::frogPort);
+		HELPER.forComponents(AllBlocks.PACKAGE_POSTBOXES.toArray())
+			.addStoryBoard("high_logistics/package_postbox", PostboxScenes::postbox);
 		HELPER.forComponents(AllBlocks.PACKAGER)
 			.addStoryBoard("high_logistics/packager", PackagerScenes::packager)
 			.addStoryBoard("high_logistics/packager_address", PackagerScenes::packagerAddress);
+		HELPER.forComponents(AllBlocks.STOCK_LINK)
+			.addStoryBoard("high_logistics/stock_link", StockLinkScenes::stockLink);
+		HELPER.forComponents(AllBlocks.STOCK_TICKER)
+			.addStoryBoard("high_logistics/stock_ticker", StockTickerScenes::stockTicker)
+			.addStoryBoard("high_logistics/stock_ticker_address", StockTickerScenes::stockTickerAddress);
+		HELPER.forComponents(AllBlocks.REDSTONE_REQUESTER)
+			.addStoryBoard("high_logistics/redstone_requester", RequesterAndShopScenes::requester);
+		HELPER.forComponents(AllBlocks.REPACKAGER)
+			.addStoryBoard("high_logistics/repackager", RepackagerScenes::repackager);
+		HELPER.forComponents(AllBlocks.TABLE_CLOTHS.toArray())
+			.addStoryBoard("high_logistics/table_cloth", TableClothScenes::tableCloth);
+		HELPER.forComponents(AllBlocks.ANDESITE_TABLE_CLOTH, AllBlocks.BRASS_TABLE_CLOTH, AllBlocks.COPPER_TABLE_CLOTH)
+			.addStoryBoard("high_logistics/table_cloth", TableClothScenes::tableCloth);
+		HELPER.forComponents(AllBlocks.FACTORY_GAUGE)
+			.addStoryBoard("high_logistics/factory_gauge_restocker", FactoryGaugeScenes::restocker)
+			.addStoryBoard("high_logistics/factory_gauge_recipe", FactoryGaugeScenes::recipe)
+			.addStoryBoard("high_logistics/factory_gauge_crafting", FactoryGaugeScenes::crafting)
+			.addStoryBoard("high_logistics/factory_gauge_links", FactoryGaugeScenes::links);
 
 		// Trains
 		HELPER.forComponents(TrackMaterial.allBlocks()

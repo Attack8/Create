@@ -26,12 +26,13 @@ import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class ProcessingRecipeBuilder<T extends ProcessingRecipe<?>> {
-
+	protected ResourceLocation recipeId;
 	protected ProcessingRecipeFactory<T> factory;
 	protected ProcessingRecipeParams params;
 	protected List<ICondition> recipeConditions;
 
 	public ProcessingRecipeBuilder(ProcessingRecipeFactory<T> factory, ResourceLocation recipeId) {
+		this.recipeId = recipeId;
 		params = new ProcessingRecipeParams(recipeId);
 		recipeConditions = new ArrayList<>();
 		this.factory = factory;
@@ -173,6 +174,10 @@ public class ProcessingRecipeBuilder<T extends ProcessingRecipe<?>> {
 
 	public ProcessingRecipeBuilder<T> output(float chance, Mods mod, String id, int amount) {
 		return output(new ProcessingOutput(Pair.of(mod.asResource(id), amount), chance));
+	}
+
+	public ProcessingRecipeBuilder<T> output(ResourceLocation id) {
+		return output(1, id, 1);
 	}
 
 	public ProcessingRecipeBuilder<T> output(Mods mod, String id) {

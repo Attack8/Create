@@ -5,10 +5,9 @@ import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.content.kinetics.base.SingleRotatingVisual;
+import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 
 import dev.engine_room.flywheel.api.instance.Instance;
-import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.AbstractInstance;
@@ -24,11 +23,12 @@ import net.createmod.catnip.utility.theme.Color;
 import net.createmod.ponder.utility.LevelTickHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 
-public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements SimpleDynamicVisual {
+public class ArmVisual extends SingleAxisRotatingVisual<ArmBlockEntity> implements SimpleDynamicVisual {
 
 	final TransformedInstance base;
 	final TransformedInstance lowerBody;
@@ -48,7 +48,7 @@ public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements S
 	private float headAngle = Float.NaN;
 
 	public ArmVisual(VisualizationContext context, ArmBlockEntity blockEntity, float partialTick) {
-		super(context, blockEntity, partialTick);
+		super(context, blockEntity, partialTick, Models.partial(AllPartialModels.ARM_COG));
 
 		base = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.ARM_BASE))
 			.createInstance();
@@ -190,11 +190,6 @@ public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements S
 		super.updateLight(partialTick);
 
 		relight(models.toArray(FlatLit[]::new));
-	}
-
-	@Override
-	protected Model model() {
-		return Models.partial(AllPartialModels.ARM_COG);
 	}
 
 	@Override

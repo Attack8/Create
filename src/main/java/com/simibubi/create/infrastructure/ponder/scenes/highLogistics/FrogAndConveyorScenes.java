@@ -376,7 +376,7 @@ public class FrogAndConveyorScenes {
 
 	public static void frogPort(SceneBuilder builder, SceneBuildingUtil util) {
 		CreateSceneBuilder scene = new CreateSceneBuilder(builder);
-		scene.title("package_frogport", "Transporting packages with Frogports");
+		scene.title("package_frogport", "Transporting packages between Frogports");
 		scene.configureBasePlate(0, 0, 9);
 		scene.scaleSceneView(.75f);
 		scene.setSceneOffsetY(-1);
@@ -526,7 +526,7 @@ public class FrogAndConveyorScenes {
 				.position(fromFrog.below()), 70)
 			.attachKeyFrame()
 			.colored(PonderPalette.BLUE)
-			.text("They can be given a name in their inventory UI")
+			.text("Assign it an address in the inventory UI")
 			.pointAt(util.vector()
 				.topOf(fromFrog.below()))
 			.placeNearTarget();
@@ -568,7 +568,7 @@ public class FrogAndConveyorScenes {
 		scene.overlay()
 			.showText(60)
 			.attachKeyFrame()
-			.text("If a package is addressed to a different name..")
+			.text("If the address of an inserted package does not match it..")
 			.pointAt(util.vector()
 				.topOf(5, 0, 3))
 			.placeNearTarget();

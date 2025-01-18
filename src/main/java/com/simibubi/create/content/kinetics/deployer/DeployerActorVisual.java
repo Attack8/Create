@@ -19,7 +19,6 @@ import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
-import net.createmod.catnip.render.VirtualRenderHelper;
 import net.createmod.catnip.utility.AnimationTickHolder;
 import net.createmod.catnip.utility.NBTHelper;
 import net.createmod.catnip.utility.VecHelper;
@@ -60,8 +59,9 @@ public class DeployerActorVisual extends ActorVisual {
         hand = instancerProvider.instancer(InstanceTypes.TRANSFORMED, Models.partial(handPose)).createInstance();
 
         Direction.Axis axis = KineticBlockEntityVisual.rotationAxis(state);
-        shaft = instancerProvider.instancer(AllInstanceTypes.ROTATING, VirtualRenderHelper.blockModel(KineticBlockEntityVisual.shaft(axis)))
-				.createInstance();
+        shaft = instancerProvider.instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT))
+			.createInstance()
+			.rotateToFace(axis);
 
         int blockLight = localBlockLight();
 

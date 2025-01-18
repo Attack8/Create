@@ -1,27 +1,11 @@
 # This workflow will run Crowdin Action that will upload new texts to Crowdin, download the newest translations and create a PR
 # For more information see: https://github.com/crowdin/github-action
-
 name: Crowdin Action
-
-# Controls when the action will run.
 on: workflow_dispatch
-  # Only run when started manually
-
-  #:
-  #    inputs:
-  #        uploadTranslations:
-  #            description: "Set to true to upload (changed) translations to Crowdin"
-  #            type: boolean
-  #            required: true
-  #            default: false
-
-#schedule:
-#- cron: '0 */6 * * *' # Every 6 hours - https://crontab.guru/#0_*/6_*_*_*
 
 jobs:
   synchronize-with-crowdin:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2

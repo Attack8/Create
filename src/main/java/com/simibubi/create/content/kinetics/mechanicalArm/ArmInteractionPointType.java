@@ -14,14 +14,18 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
+import org.jetbrains.annotations.UnmodifiableView;
+
 public abstract class ArmInteractionPointType {
 	private static List<ArmInteractionPointType> sortedTypes = null;
+	@UnmodifiableView
 	private static List<ArmInteractionPointType> sortedTypesView = null;
 
 	public static void forEach(Consumer<ArmInteractionPointType> action) {
 		getSorted().forEach(action);
 	}
 
+	@UnmodifiableView
 	public static List<ArmInteractionPointType> getSorted() {
 		if (sortedTypes == null) {
 			sortedTypes = new ReferenceArrayList<>();

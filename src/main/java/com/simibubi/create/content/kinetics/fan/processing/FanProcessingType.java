@@ -34,11 +34,11 @@ public interface FanProcessingType {
 	static FanProcessingType parse(String str) {
 		ResourceLocation id = ResourceLocation.tryParse(str);
 		if (id == null) {
-			return AllFanProcessingTypes.NONE.get();
+			return AllFanProcessingTypes.NONE;
 		}
 		FanProcessingType type = AllRegistries.FAN_PROCESSING_TYPES.get(id);
 		if (type == null) {
-			return AllFanProcessingTypes.NONE.get();
+			return AllFanProcessingTypes.NONE;
 		}
 		return type;
 	}
@@ -49,7 +49,7 @@ public interface FanProcessingType {
 				return type;
 			}
 		}
-		return AllFanProcessingTypes.NONE.get();
+		return AllFanProcessingTypes.NONE;
 	}
 
 	interface AirFlowParticleAccess {

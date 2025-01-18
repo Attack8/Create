@@ -386,8 +386,7 @@ public class SawBlockEntity extends BlockBreakingKineticBlockEntity {
 			return ImmutableList.of(assemblyRecipe.get());
 
 		Predicate<RecipeHolder<? extends Recipe<?>>> types = RecipeConditions.isOfType(AllRecipeTypes.CUTTING.getType(),
-			AllConfigs.server().recipes.allowStonecuttingOnSaw.get() ? RecipeType.STONECUTTING : null,
-			AllConfigs.server().recipes.allowWoodcuttingOnSaw.get() ? woodcuttingRecipeType.get() : null);
+			AllConfigs.server().recipes.allowStonecuttingOnSaw.get() ? RecipeType.STONECUTTING : null);
 
 		List<RecipeHolder<? extends Recipe<?>>> startedSearch = RecipeFinder.get(cuttingRecipesKey, level, types);
 		return startedSearch.stream()

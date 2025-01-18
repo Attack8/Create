@@ -33,10 +33,15 @@ public class SplitShaftVisual extends KineticBlockEntityVisual<SplitShaftBlockEn
 
             float splitSpeed = speed * blockEntity.getRotationSpeedModifier(dir);
 
-			var instance = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF, dir))
+			var instance = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF))
                 .createInstance();
 
-			keys.add(setup(instance, splitSpeed));
+			instance.setup(blockEntity, splitSpeed)
+				.setPosition(getVisualPosition())
+				.rotateToFace(Direction.SOUTH, dir)
+				.setChanged();
+
+			keys.add(instance);
 		}
     }
 
@@ -48,7 +53,9 @@ public class SplitShaftVisual extends KineticBlockEntityVisual<SplitShaftBlockEn
         Direction[] directions = Iterate.directionsInAxis(boxAxis);
 
         for (int i : Iterate.zeroAndOne) {
-            updateRotation(keys.get(i), blockEntity.getSpeed() * blockEntity.getRotationSpeedModifier(directions[i]));
+            keys.get(i)
+				.setup(blockEntity, blockEntity.getSpeed() * blockEntity.getRotationSpeedModifier(directions[i]))
+				.setChanged();
         }
     }
 

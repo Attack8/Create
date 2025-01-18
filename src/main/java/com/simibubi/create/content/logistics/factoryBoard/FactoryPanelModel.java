@@ -15,6 +15,7 @@ import com.simibubi.create.foundation.model.BakedQuadHelper;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.utility.VecHelper;
+import net.createmod.ponder.api.level.PonderLevel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
@@ -48,6 +49,7 @@ public class FactoryPanelModel extends BakedModelWrapperWithData {
 			data.states.put(slot, behaviour.count == 0 ? PanelState.PASSIVE : PanelState.ACTIVE);
 			data.type = behaviour.panelBE().restocker ? PanelType.PACKAGER : PanelType.NETWORK;
 		}
+		data.ponder = world instanceof PonderLevel;
 		return builder.with(PANEL_PROPERTY, data);
 	}
 
@@ -61,12 +63,12 @@ public class FactoryPanelModel extends BakedModelWrapperWithData {
 		for (PanelSlot panelSlot : PanelSlot.values())
 			if (modelData.states.containsKey(panelSlot))
 				addPanel(quads, state, panelSlot, modelData.type, modelData.states.get(panelSlot), rand, data,
-					renderType);
+					renderType, modelData.ponder);
 		return quads;
 	}
 
 	public void addPanel(List<BakedQuad> quads, BlockState state, PanelSlot slot, PanelType type, PanelState panelState,
-		RandomSource rand, ModelData data, RenderType renderType) {
+		RandomSource rand, ModelData data, RenderType renderType, boolean ponder) {
 		PartialModel factoryPanel = panelState == PanelState.PASSIVE
 			? type == PanelType.NETWORK ? AllPartialModels.FACTORY_PANEL : AllPartialModels.FACTORY_PANEL_RESTOCKER
 			: type == PanelType.NETWORK ? AllPartialModels.FACTORY_PANEL_WITH_BULB
@@ -77,7 +79,7 @@ public class FactoryPanelModel extends BakedModelWrapperWithData {
 
 		float xRot = Mth.RAD_TO_DEG * FactoryPanelBlock.getXRot(state);
 		float yRot = Mth.RAD_TO_DEG * FactoryPanelBlock.getYRot(state);
-		
+
 		for (BakedQuad bakedQuad : quadsToAdd) {
 			int[] vertices = bakedQuad.getVertices();
 			int[] transformedVertices = Arrays.copyOf(vertices, vertices.length);
@@ -108,7 +110,7 @@ public class FactoryPanelModel extends BakedModelWrapperWithData {
 			Direction newNormal = Direction.fromDelta((int) Math.round(quadNormal.x), (int) Math.round(quadNormal.y),
 				(int) Math.round(quadNormal.z));
 			quads.add(new BakedQuad(transformedVertices, bakedQuad.getTintIndex(), newNormal, bakedQuad.getSprite(),
-				bakedQuad.isShade()));
+				!ponder && bakedQuad.isShade()));
 		}
 
 	}
@@ -116,6 +118,7 @@ public class FactoryPanelModel extends BakedModelWrapperWithData {
 	private static class FactoryPanelModelData {
 		public PanelType type;
 		public EnumMap<PanelSlot, PanelState> states = new EnumMap<>(PanelSlot.class);
+		private boolean ponder;
 	}
 
 }

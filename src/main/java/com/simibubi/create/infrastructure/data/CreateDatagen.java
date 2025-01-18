@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.simibubi.create.AllKeys;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.Create;
 import com.simibubi.create.compat.curios.CuriosDataGenerator;
@@ -70,6 +71,7 @@ public class CreateDatagen {
 			provideDefaultLang("tooltips", langConsumer);
 			AllAdvancements.provideLang(langConsumer);
 			AllSoundEvents.provideLang(langConsumer);
+			AllKeys.provideLang(langConsumer);
 			providePonderLang(langConsumer);
 		});
 	}

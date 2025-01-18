@@ -361,7 +361,7 @@ public class AllCreatePonderTags {
 				.add(AllBlocks.STOCK_LINK)
 				.add(AllBlocks.STOCK_TICKER)
 				.add(AllBlocks.REDSTONE_REQUESTER)
-				.add(AllBlocks.TABLE_CLOTHS.get(DyeColor.WHITE))
+				.add(AllBlocks.TABLE_CLOTHS.get(DyeColor.RED))
 				.add(AllBlocks.FACTORY_GAUGE)
 				.add(AllBlocks.REPACKAGER)
 				.add(AllItems.PACKAGE_FILTER);

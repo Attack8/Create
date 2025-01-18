@@ -10,6 +10,7 @@ import com.simibubi.create.content.kinetics.base.RotatingInstance;
 import com.simibubi.create.foundation.render.AllInstanceTypes;
 
 import dev.engine_room.flywheel.api.instance.Instance;
+import dev.engine_room.flywheel.api.instance.Instancer;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.AbstractInstance;
 import dev.engine_room.flywheel.lib.instance.FlatLit;
@@ -22,36 +23,32 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class GearboxVisual extends KineticBlockEntityVisual<GearboxBlockEntity> {
 
-    protected final EnumMap<Direction, RotatingInstance> keys;
+    protected final EnumMap<Direction, RotatingInstance> keys = new EnumMap<>(Direction.class);
     protected Direction sourceFacing;
 
     public GearboxVisual(VisualizationContext context, GearboxBlockEntity blockEntity, float partialTick) {
         super(context, blockEntity, partialTick);
 
-        keys = new EnumMap<>(Direction.class);
+		final Direction.Axis boxAxis = blockState.getValue(BlockStateProperties.AXIS);
 
-        final Direction.Axis boxAxis = blockState.getValue(BlockStateProperties.AXIS);
-
-        int blockLight = level.getBrightness(LightLayer.BLOCK, pos);
-        int skyLight = level.getBrightness(LightLayer.SKY, pos);
         updateSourceFacing();
 
-        for (Direction direction : Iterate.directions) {
+		var instancer = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF));
+
+		for (Direction direction : Iterate.directions) {
 			final Direction.Axis axis = direction.getAxis();
-			if (boxAxis == axis)
+			if (boxAxis == axis) {
 				continue;
+			}
 
-			RotatingInstance key = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF, direction))
-					.createInstance();
+			RotatingInstance instance = instancer.createInstance();
 
-			key.setRotationAxis(axis)
-					.setRotationalSpeed(getSpeed(direction) * RotatingInstance.SPEED_MULTIPLIER)
-					.setRotationOffset(getRotationOffset(axis)).setColor(blockEntity)
-					.setPosition(getVisualPosition())
-					.light(blockLight, skyLight)
-					.setChanged();
+			instance.setup(blockEntity, axis, getSpeed(direction))
+				.setPosition(getVisualPosition())
+				.rotateToFace(Direction.SOUTH, direction)
+				.setChanged();
 
-            keys.put(direction, key);
+            keys.put(direction, instance);
         }
     }
 
@@ -83,8 +80,10 @@ public class GearboxVisual extends KineticBlockEntityVisual<GearboxBlockEntity> 
             Direction direction = key.getKey();
             Direction.Axis axis = direction.getAxis();
 
-            updateRotation(key.getValue(), axis, getSpeed(direction));
-        }
+			key.getValue()
+				.setup(blockEntity, axis, getSpeed(direction))
+				.setChanged();
+		}
     }
 
     @Override

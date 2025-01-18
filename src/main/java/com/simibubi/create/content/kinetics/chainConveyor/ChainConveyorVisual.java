@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.content.kinetics.base.SingleRotatingVisual;
+import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 import com.simibubi.create.content.logistics.box.PackageItem;
+import com.simibubi.create.foundation.render.SpecialModels;
 
-import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visual.TickableVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
@@ -30,7 +30,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 
-public class ChainConveyorVisual extends SingleRotatingVisual<ChainConveyorBlockEntity> implements SimpleDynamicVisual, SimpleTickableVisual {
+public class ChainConveyorVisual extends SingleAxisRotatingVisual<ChainConveyorBlockEntity> implements SimpleDynamicVisual, SimpleTickableVisual {
 
 	private final List<TransformedInstance> guards = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public class ChainConveyorVisual extends SingleRotatingVisual<ChainConveyorBlock
 	private final SmartRecycler<ResourceLocation, TransformedInstance> rigging;
 
 	public ChainConveyorVisual(VisualizationContext context, ChainConveyorBlockEntity blockEntity, float partialTick) {
-		super(context, blockEntity, partialTick);
+		super(context, blockEntity, partialTick, Models.partial(AllPartialModels.CHAIN_CONVEYOR_SHAFT));
 
 		setupGuards();
 
@@ -147,7 +147,7 @@ public class ChainConveyorVisual extends SingleRotatingVisual<ChainConveyorBlock
 	private void setupGuards() {
 		deleteGuards();
 
-		var guardInstancer = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.CHAIN_CONVEYOR_GUARD));
+		var guardInstancer = instancerProvider().instancer(InstanceTypes.TRANSFORMED, SpecialModels.chunkDiffuse(AllPartialModels.CHAIN_CONVEYOR_GUARD));
 
 		for (BlockPos blockPos : blockEntity.connections) {
 			ChainConveyorBlockEntity.ConnectionStats stats = blockEntity.connectionStats.get(blockPos);
@@ -169,11 +169,6 @@ public class ChainConveyorVisual extends SingleRotatingVisual<ChainConveyorBlock
 
 			guards.add(guard);
 		}
-	}
-
-	@Override
-	protected Model model() {
-		return Models.partial(AllPartialModels.CHAIN_CONVEYOR_SHAFT);
 	}
 
 	@Override

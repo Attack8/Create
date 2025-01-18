@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.platform.GlUtil;
 import com.simibubi.create.Create;
+import com.simibubi.create.CreateBuildInfo;
 import com.simibubi.create.foundation.mixin.accessor.SystemReportAccessor;
 import com.simibubi.create.infrastructure.debugInfo.element.DebugInfoSection;
 import com.simibubi.create.infrastructure.debugInfo.element.InfoElement;
@@ -67,7 +68,7 @@ public class DebugInformation {
 
 	static {
 		DebugInfoSection.builder(Create.NAME)
-				.put("Mod Version", Create.VERSION)
+				.put("Mod Version", CreateBuildInfo.VERSION)
 				.put("NeoForge Version", getVersionOfMod("neoforge"))
 				.put("Minecraft Version", SharedConstants.getCurrentVersion().getName())
 				.buildTo(DebugInformation::registerBothInfo);

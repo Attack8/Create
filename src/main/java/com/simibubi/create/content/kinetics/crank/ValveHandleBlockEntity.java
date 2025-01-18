@@ -1,6 +1,7 @@
 package com.simibubi.create.content.kinetics.crank;
 
 import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -15,10 +16,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import dev.engine_room.flywheel.api.model.Model;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.render.VirtualRenderHelper;
 import net.createmod.catnip.utility.VecHelper;
 import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.ChatFormatting;
@@ -145,12 +144,6 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 	@OnlyIn(Dist.CLIENT)
 	public SuperByteBuffer getRenderedHandle() {
 		return CachedBuffers.block(getBlockState());
-	}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public Model getRenderedHandleInstance() {
-		return VirtualRenderHelper.blockModel(getBlockState());
 	}
 
 	@Override

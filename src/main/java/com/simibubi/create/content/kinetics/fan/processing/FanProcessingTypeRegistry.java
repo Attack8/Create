@@ -8,10 +8,14 @@ import com.simibubi.create.AllRegistries;
 
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
+import org.jetbrains.annotations.UnmodifiableView;
+
 public class FanProcessingTypeRegistry {
 	private static List<FanProcessingType> sortedTypes = null;
+	@UnmodifiableView
 	private static List<FanProcessingType> sortedTypesView = null;
 
+	@UnmodifiableView
 	public static List<FanProcessingType> getSortedTypesView() {
 		if (sortedTypes == null) {
 			sortedTypes = new ReferenceArrayList<>();

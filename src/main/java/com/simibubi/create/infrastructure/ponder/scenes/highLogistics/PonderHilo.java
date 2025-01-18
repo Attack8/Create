@@ -1,7 +1,6 @@
 package com.simibubi.create.infrastructure.ponder.scenes.highLogistics;
 
 import com.simibubi.create.content.logistics.box.PackageEntity;
-import com.simibubi.create.content.logistics.box.PackageStyles;
 import com.simibubi.create.content.logistics.packager.PackagerBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 
@@ -9,7 +8,10 @@ import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.EntityElement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.VibrationParticleOption;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.phys.Vec3;
 
 public class PonderHilo {
@@ -38,17 +40,34 @@ public class PonderHilo {
 	}
 
 	public static ElementLink<EntityElement> packageHopsOffBelt(CreateSceneBuilder scene, BlockPos beltPos,
-		Direction side) {
+		Direction side, ItemStack box) {
 		scene.world()
 			.removeItemsFromBelt(beltPos);
 		return scene.world()
 			.createEntity(l -> {
-				PackageEntity packageEntity = new PackageEntity(l, beltPos.getX() + 0.5 + side.getStepX() * 0.25,
-					beltPos.getY() + 0.875, beltPos.getZ() + 0.5 + side.getStepZ() * 0.25);
-				packageEntity.setDeltaMovement(new Vec3(side.getStepX(), 0.5f, side.getStepZ()).scale(0.25f));
-				packageEntity.box = PackageStyles.getDefaultBox();
+				PackageEntity packageEntity = new PackageEntity(l, beltPos.getX() + 0.5 + side.getStepX() * 0.675,
+					beltPos.getY() + 0.875, beltPos.getZ() + 0.5 + side.getStepZ() * 0.675);
+				packageEntity.setDeltaMovement(new Vec3(side.getStepX(), 1f, side.getStepZ()).scale(0.125f));
+				packageEntity.box = box;
 				return packageEntity;
 			});
+	}
+
+	public static void linkEffect(CreateSceneBuilder scene, BlockPos pos) {
+		scene.addInstruction(s -> {
+			Vec3 vec3 = Vec3.atCenterOf(pos);
+			s.getWorld()
+				.addParticle(new VibrationParticleOption(new BlockPositionSource(pos.above(3)), 6), vec3.x, vec3.y,
+					vec3.z, 1, 1, 1);
+		});
+	}
+
+	public static void requesterEffect(CreateSceneBuilder scene, BlockPos pos) {
+		scene.addInstruction(s -> {
+			Vec3 vec3 = Vec3.atCenterOf(pos);
+			s.getWorld()
+				.addParticle(ParticleTypes.NOTE, vec3.x, vec3.y + 1, vec3.z, 0, 0, 0);
+		});
 	}
 
 }

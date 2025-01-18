@@ -237,15 +237,6 @@ public class CreateJEI implements IModPlugin {
 				.emptyBackground(177, 70)
 				.build("block_cutting", BlockCuttingCategory::new),
 
-		woodCutting = builder(CondensedBlockCuttingRecipe.class)
-				.enableIf(c -> c.allowWoodcuttingOnSaw.get() && ModList.get()
-						.isLoaded("druidcraft"))
-				.addRecipes(() -> BlockCuttingCategory.condenseRecipes(getTypedRecipesExcluding(SawBlockEntity.woodcuttingRecipeType.get(), AllRecipeTypes::shouldIgnoreInAutomation)))
-				.catalyst(AllBlocks.MECHANICAL_SAW::get)
-				.doubleItemIcon(AllBlocks.MECHANICAL_SAW.get(), Items.OAK_STAIRS)
-				.emptyBackground(177, 70)
-				.build("wood_cutting", BlockCuttingCategory::new),
-
 		polishing = builder(SandPaperPolishingRecipe.class)
 				.addTypedRecipes(AllRecipeTypes.SANDPAPER_POLISHING)
 				.catalyst(AllItems.SAND_PAPER::get)

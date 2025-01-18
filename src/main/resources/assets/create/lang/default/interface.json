@@ -114,12 +114,6 @@
 	"create.action.saveToFile": "Save",
 	"create.action.discard": "Discard",
 
-	"create.keyinfo.toolmenu": "Focus Schematic Overlay",
-	"create.keyinfo.toolbelt": "Access Nearby Toolboxes",
-	"create.keyinfo.scrollup": "Simulate Mousewheel Up (inworld)",
-  "create.keyinfo.scrolldown": "Simulate Mousewheel Down (inworld)",
-  "create.keyinfo.ponder": "Ponder",
-
 	"create.gui.scrollInput.defaultTitle": "Choose an Option:",
 	"create.gui.scrollInput.scrollToModify": "Scroll to Modify",
 	"create.gui.scrollInput.scrollToAdjustAmount": "Scroll to Adjust Amount",
@@ -342,7 +336,7 @@
 	"create.gui.stock_keeper.not_in_stock": "Required items are not in Stock",
 	"create.gui.stock_keeper.schematic_list.no_results": "No items from your checklist are in stock",
 	"create.gui.stock_keeper.schematic_list.requesting": "Click 'Send' to request all available items from your checklist",
-	
+
 	"create.stock_keeper.shopping_list_empty_hand": "Empty hand required to start a shopping list",
 	"create.stock_keeper.no_price_set": "Shop owner must set a price first",
 	"create.stock_keeper.keeper_missing": "Stock keeper missing",
@@ -353,10 +347,10 @@
 	"create.stock_keeper.stock_level_too_low": "Purchase cancelled: Stock levels lower than expected",
 	"create.stock_keeper.cash_register_full": "Purchase cancelled: Not enough space in Cash Register",
 	"create.stock_keeper.too_broke": "You cannot afford this purchase",
-	
+
 	"create.stock_ticker.contains_payments": "Contains payments:",
 	"create.stock_ticker.click_to_retrieve": "Click to retrieve",
-	
+
 	"create.gui.stock_ticker.category_editor": "Category Editor",
 	"create.gui.stock_ticker.shift_moves_top": "Shift moves to top",
 	"create.gui.stock_ticker.shift_moves_bottom": "Shift moves to bottom",
@@ -367,7 +361,7 @@
 	"create.gui.stock_ticker.category_name": "Category Name",
 	"create.gui.stock_ticker.delete_category": "Delete Category",
 	"create.gui.stock_ticker.empty_category_name_placeholder": "(Empty)",
-	
+
 	"create.table_cloth.price_per_order": "Price per Order",
 	"create.table_cloth.amount": "Amount",
 	"create.table_cloth.shop_configured": "Item shop configured",
@@ -375,7 +369,7 @@
 	"create.table_cloth.hand_to_shop_keeper": "Hand this to a shop keeper",
 	"create.table_cloth.sneak_click_discard": "Sneak-Click to discard",
 	"create.table_cloth.shopping_list_discarded": "Shopping list discarded",
-	
+
 	"create.gui.address_box.clipboard_tip": "Keeping Track",
 	"create.gui.address_box.clipboard_tip_1": "Entries starting with '#' on",
 	"create.gui.address_box.clipboard_tip_2": "held or nearby clipboards will",
@@ -790,12 +784,12 @@
 	"create.schedule.instruction.throttle.summary": "Change Max Speed to %1$s",
 	"create.schedule.instruction.throttle_edit_box": "Throttle",
 	"create.schedule.instruction.throttle_edit_box_1": "Affects the top speed of the Train",
-	
+
 	"create.schedule.instruction.package_delivery": "Deliver Package",
 	"create.schedule.instruction.package_delivery.summary": "Deliver first package in cargo",
 	"create.schedule.instruction.package_delivery.summary_1": "Drives to the station with",
 	"create.schedule.instruction.package_delivery.summary_2": "the correct postbox",
-	
+
 	"create.schedule.instruction.package_retrieval": "Retrieve Package",
 	"create.schedule.instruction.package_retrieval.summary": "Fetch a package addressed to:",
 	"create.schedule.instruction.package_retrieval.summary_1": "Drives to a postbox with",
@@ -1047,14 +1041,14 @@
 	"create.display_link.information_type": "Type of Information",
 	"create.display_link.display_on": "Write data to:",
 	"create.display_link.display_on_multiline": "Start writing at:",
-	
+
 	"create.logistically_linked.tuned": "Tuned to this link",
 	"create.logistically_linked.new_network_started": "New link network started",
 	"create.logistically_linked.connected": "Connected to existing network successfully",
 	"create.logistically_linked.tooltip": "Frequency configured",
 	"create.logistically_linked.tooltip_clear": "Place in crafting grid to reset",
 	"create.logistically_linked.protected": "Logistics Network is Protected",
-	
+
 	"create.gui.factory_panel.title_as_recipe": "Recipe Settings",
 	"create.gui.factory_panel.title_as_restocker": "Restocker Settings",
 	"create.gui.factory_panel.connect_input": "Add new connection",
@@ -1097,18 +1091,18 @@
 	"create.gui.factory_panel.address_missing": "Inactive: missing a target address",
 	"create.gui.factory_panel.no_target_amount_set": "Inactive: no target amount set",
 	"create.gui.factory_panel.has_link_connections": "Gauge has connected links",
-	
+
 	"create.gui.redstone_requester.allow_partial": "Allow partial orders",
 	"create.gui.redstone_requester.dont_allow_partial": "Must send all items",
 	"create.gui.redstone_requester.requester_address": "Send order to...",
 	"create.gui.redstone_requester.requester_address_given": "Sending order to",
 	"create.gui.redstone_requester.requester_address_tip": "Enter the address this",
 	"create.gui.redstone_requester.requester_address_tip_1": "order should be send to.",
-	
+
 	"create.gui.factory_panel.expected_output_tip": "The amount of output returning",
 	"create.gui.factory_panel.expected_output_tip_1": "after each successful request",
 	"create.gui.factory_panel.expected_output_tip_2": "Scroll to change",
-	
+
 	"create.factory_panel.click_to_configure": "Click to configure",
 	"create.factory_panel.hold_to_set_amount": "Click and hold for target amount",
 	"create.factory_panel.target_amount": "Target Amount in Storage",
@@ -1129,7 +1123,7 @@
 	"create.factory_panel.connection_aborted": "Input connection aborted",
 	"create.factory_panel.cannot_add_more_inputs": "Cannot add more inputs to this gauge",
 	"create.factory_panel.already_connected": "Gauges are already connected",
-	
+
 	"create.display_source.label": "Attached Label",
 	"create.display_source.combine_item_names": "Combine Item Names",
 	"create.display_source.count_items": "Amount of matching Items",

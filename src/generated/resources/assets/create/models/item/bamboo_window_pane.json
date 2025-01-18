@@ -1,7 +1,6 @@
 {
-  "parent": "create:item/pane",
+  "parent": "minecraft:item/generated",
   "textures": {
-    "edge": "minecraft:block/bamboo_planks",
-    "pane": "create:block/palettes/bamboo_window"
+    "layer0": "create:block/palettes/bamboo_window"
   }
 }

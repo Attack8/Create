@@ -3,9 +3,6 @@ package com.simibubi.create.content.logistics.item.filter.attribute;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes.HauntingType;
-import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes.SplashingType;
-
 import org.jetbrains.annotations.ApiStatus;
 
 import com.simibubi.create.AllRecipeTypes;
@@ -35,6 +32,7 @@ import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -60,14 +58,8 @@ public class AllItemAttributeTypes {
 			return type != EquipmentSlot.Type.HAND;
 		}),
 		FURNACE_FUEL = singleton("furnace_fuel", AbstractFurnaceBlockEntity::isFuel),
-		WASHABLE = singleton("washable", (s, l) -> {
-			SplashingType type = AllFanProcessingTypes.SPLASHING.get();
-			return type != null && type.canProcess(s, l);
-		}),
-		HAUNTABLE = singleton("hauntable", (s, l) -> {
-			HauntingType type = AllFanProcessingTypes.HAUNTING.get();
-			return type != null && type.canProcess(s, l);
-		}),
+		WASHABLE = singleton("washable", AllFanProcessingTypes.SPLASHING::canProcess),
+		HAUNTABLE = singleton("hauntable", AllFanProcessingTypes.HAUNTING::canProcess),
 		CRUSHABLE = singleton("crushable", (s, w) -> testRecipe(s, w, AllRecipeTypes.CRUSHING.getType())
 			|| testRecipe(s, w, AllRecipeTypes.MILLING.getType())),
 		SMELTABLE = singleton("smeltable", (s, w) -> testRecipe(s, w, RecipeType.SMELTING)),

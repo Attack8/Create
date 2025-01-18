@@ -4,18 +4,19 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
+import com.simibubi.create.foundation.blockEntity.LegacyRecipeWrapper;
 import com.simibubi.create.foundation.blockEntity.SyncedBlockEntity;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
+
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
-public class SmartInventory extends RecipeWrapper
+public class SmartInventory extends LegacyRecipeWrapper
 	implements IItemHandlerModifiable, INBTSerializable<CompoundTag> {
 
 	protected boolean extractionAllowed;

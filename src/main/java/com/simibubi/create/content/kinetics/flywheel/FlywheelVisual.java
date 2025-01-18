@@ -2,7 +2,10 @@ package com.simibubi.create.content.kinetics.flywheel;
 
 import java.util.function.Consumer;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+
+import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityVisual;
 import com.simibubi.create.content.kinetics.base.RotatingInstance;
 import com.simibubi.create.foundation.render.AllInstanceTypes;
@@ -12,9 +15,8 @@ import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
-import dev.engine_room.flywheel.lib.transform.TransformStack;
+import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
-import net.createmod.catnip.render.VirtualRenderHelper;
 import net.createmod.catnip.utility.math.AngleHelper;
 import net.minecraft.core.Direction;
 
@@ -24,13 +26,26 @@ public class FlywheelVisual extends KineticBlockEntityVisual<FlywheelBlockEntity
 	protected final TransformedInstance wheel;
 	protected float lastAngle = Float.NaN;
 
+	protected final Matrix4f baseTransform = new Matrix4f();
+
 	public FlywheelVisual(VisualizationContext context, FlywheelBlockEntity blockEntity, float partialTick) {
 		super(context, blockEntity, partialTick);
 
-		shaft = setup(instancerProvider().instancer(AllInstanceTypes.ROTATING, VirtualRenderHelper.blockModel(shaft()))
-			.createInstance());
-		wheel = instancerProvider().instancer(InstanceTypes.TRANSFORMED, VirtualRenderHelper.blockModel(blockState))
+		var axis = rotationAxis();
+		shaft = setup(instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT))
+			.createInstance())
+			.rotateToFace(axis);
+		wheel = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.FLYWHEEL))
 			.createInstance();
+
+
+		Direction align = Direction.fromAxisAndDirection(axis, Direction.AxisDirection.POSITIVE);
+
+		wheel.translate(getVisualPosition())
+			.center()
+			.rotate(new Quaternionf().rotateTo(0, 1, 0, align.getStepX(), align.getStepY(), align.getStepZ()));
+
+		baseTransform.set(wheel.pose);
 
 		animate(blockEntity.angle);
 	}
@@ -52,16 +67,10 @@ public class FlywheelVisual extends KineticBlockEntityVisual<FlywheelBlockEntity
 	}
 
 	private void animate(float angle) {
-		PoseStack ms = new PoseStack();
-		var msr = TransformStack.of(ms);
-
-		msr.translate(getVisualPosition());
-		msr.center()
-			.rotate(AngleHelper.rad(angle), Direction.get(Direction.AxisDirection.POSITIVE, rotationAxis()))
-			.uncenter();
-
-		wheel.setTransform(ms)
-				.setChanged();
+		wheel.setTransform(baseTransform)
+			.rotateY(AngleHelper.rad(angle))
+			.uncenter()
+			.setChanged();
 	}
 
 	@Override

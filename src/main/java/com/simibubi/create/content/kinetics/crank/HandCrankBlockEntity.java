@@ -102,14 +102,6 @@ public class HandCrankBlockEntity extends GeneratingKineticBlockEntity {
 	}
 
 	@OnlyIn(Dist.CLIENT)
-	public Model getRenderedHandleInstance() {
-		BlockState blockState = getBlockState();
-		Direction facing = blockState.getOptionalValue(HandCrankBlock.FACING)
-			.orElse(Direction.UP);
-		return Models.partial(AllPartialModels.HAND_CRANK_HANDLE, facing.getOpposite());
-	}
-
-	@OnlyIn(Dist.CLIENT)
 	public boolean shouldRenderShaft() {
 		return true;
 	}
