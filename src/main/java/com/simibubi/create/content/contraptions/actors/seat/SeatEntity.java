@@ -75,7 +75,7 @@ public class SeatEntity extends Entity implements IEntityWithComplexSpawn {
 		if (entity instanceof Wolf)
 			return 1 / 16f;
 		if (entity instanceof Frog)
-			return 12 / 16f;
+			return 1.5 / 16f;
 		if (entity instanceof Spider)
 			return 1 / 8.0;
 		if (entity instanceof PackageEntity)
