@@ -32,9 +32,14 @@ public class FlywheelVisual extends KineticBlockEntityVisual<FlywheelBlockEntity
 		super(context, blockEntity, partialTick);
 
 		var axis = rotationAxis();
-		shaft = setup(instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT))
-			.createInstance())
-			.rotateToFace(axis);
+		shaft = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT))
+			.createInstance();
+
+		shaft.setup(FlywheelVisual.this.blockEntity)
+			.setPosition(getVisualPosition())
+			.rotateToFace(axis)
+			.setChanged();
+
 		wheel = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.FLYWHEEL))
 			.createInstance();
 
@@ -75,7 +80,8 @@ public class FlywheelVisual extends KineticBlockEntityVisual<FlywheelBlockEntity
 
 	@Override
 	public void update(float pt) {
-		updateRotation(shaft);
+		shaft.setup(blockEntity)
+			.setChanged();
 	}
 
 	@Override

@@ -35,7 +35,7 @@ public class TransportedItemStack implements Comparable<TransportedItemStack> {
 		boolean centered = BeltHelper.isItemUpright(stack);
 		angle = centered ? 180 : R.nextInt(360);
 		if (PackageItem.isPackage(stack))
-			angle = 180 + R.nextInt(10);
+			angle = R.nextInt(4) * 90 + R.nextInt(20) - 10;
 		sideOffset = prevSideOffset = getTargetSideOffset();
 		insertedFrom = Direction.UP;
 	}

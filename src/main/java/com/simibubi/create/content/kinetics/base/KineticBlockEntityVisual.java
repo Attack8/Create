@@ -15,45 +15,6 @@ public abstract class KineticBlockEntityVisual<T extends KineticBlockEntity> ext
 		super(context, blockEntity, partialTick);
 	}
 
-	protected final void updateRotation(RotatingInstance instance) {
-		instance.setup(blockEntity)
-			.setChanged();
-	}
-
-	protected final void updateRotation(RotatingInstance instance, Direction.Axis axis) {
-		instance.setup(blockEntity, axis)
-			.setChanged();
-	}
-
-	protected final void updateRotation(RotatingInstance instance, float speed) {
-		instance.setup(blockEntity, speed)
-			.setChanged();
-	}
-
-	protected final void updateRotation(RotatingInstance instance, Direction.Axis axis, float speed) {
-		instance.setup(blockEntity, axis, speed)
-			.setChanged();
-	}
-
-	protected final RotatingInstance setup(RotatingInstance key) {
-		key.setup(blockEntity).setPosition(getVisualPosition()).setChanged();
-		return key;
-	}
-
-	protected final RotatingInstance setup(RotatingInstance key, Direction.Axis axis) {
-		key.setup(blockEntity, axis).setPosition(getVisualPosition()).setChanged();
-		return key;
-	}
-
-	protected final RotatingInstance setup(RotatingInstance key, float speed) {
-		key.setup(blockEntity, speed).setPosition(getVisualPosition()).setChanged();
-		return key;
-	}
-
-	protected float getRotationOffset(final Direction.Axis axis) {
-		return rotationOffset(blockState, axis, pos) + blockEntity.getRotationAngleOffset(axis);
-	}
-
 	protected Direction.Axis rotationAxis() {
 		return rotationAxis(blockState);
 	}

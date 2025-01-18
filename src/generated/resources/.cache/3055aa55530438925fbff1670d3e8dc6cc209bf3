@@ -1,4 +1,4 @@
-// 1.20.1	2025-01-18T13:14:26.2262033	Registrate Provider for create [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
+// 1.20.1	2025-01-18T17:58:23.8133105	Registrate Provider for create [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
 60bbdf92d2ac9824ea6144955c74043a6005f79d assets/create/blockstates/acacia_window.json
 6a67703c2697d81b7dc83e9d72a66f9c9ff08383 assets/create/blockstates/acacia_window_pane.json
 c3ae87b62e81d8e9476eccd793bb1548d74c66a1 assets/create/blockstates/adjustable_chain_gearshift.json
@@ -2369,9 +2369,15 @@ ebffb05119f499fcec051a4337aadc47654baed2 assets/create/models/item/purple_valve_
 f91405b9aec1e0142c1b90582e03a1973251da05 assets/create/models/item/radial_chassis.json
 1c984ea9dbaec02e88dba1b81906c9acca7ed672 assets/create/models/item/railway_casing.json
 87c4c0e13441cf0238103ca065c0c16f80f60f26 assets/create/models/item/rare_creeper_package.json
+f15145349b717dbd58b696019d38c7c8c506dee2 assets/create/models/item/rare_darcy_package.json
+8bb602b530ac2c1301776b83673ef062b7b0ace6 assets/create/models/item/rare_evan_package.json
 f982794c2e01a70fcc2bb009bcb8cd06a2ea5510 assets/create/models/item/rare_jinx_package.json
 9f4de06da4d9c2b54b758b2b01e0595811338b94 assets/create/models/item/rare_kryppers_package.json
 7830b48ef4292922f0ef13f9a7c2ee7d47366169 assets/create/models/item/rare_simi_package.json
+fd2345d4e4012ba238501985962cf9d34ab2cd34 assets/create/models/item/rare_starlotte_package.json
+d3274003067a943d749ba5d23b5abc0fee8727a2 assets/create/models/item/rare_thunder_package.json
+95aae4907a2435e31f079411dd1b3625ab2689c4 assets/create/models/item/rare_up_package.json
+48ceaaead35ae1422542a615c9db55bd88f464e6 assets/create/models/item/rare_vector_package.json
 5f8e5283fbebb452f1a1141b33ee73f08879c75d assets/create/models/item/raw_zinc.json
 4631d67976cef148c346a7016baaa6703e4f243e assets/create/models/item/raw_zinc_block.json
 9dc6c52e258b00cac6ed23147983045c43218b5d assets/create/models/item/redstone_contact.json
@@ -4713,7 +4719,7 @@ ebd7b09daf2f64c0c04d821696b0e145683d8693 data/create/tags/items/dyed_table_cloth
 d2bb65d893d71d2d9871f81f430c233a93adb4bb data/create/tags/items/invalid_for_track_paving.json
 1cebeb92bd514b75d54ac6d5708047801f0501c5 data/create/tags/items/modded_stripped_logs.json
 586f8fc5a8b8559c9dc0017e13c78ad918688fae data/create/tags/items/modded_stripped_wood.json
-b96668734c9b7a90348235217512d49193e4ea7f data/create/tags/items/packages.json
+cebf5fd98eddf5c14befdd47052be678eea79542 data/create/tags/items/packages.json
 f400870b8dbcd14238be3ec99c419093073ba3a6 data/create/tags/items/postboxes.json
 695d75b352fd190b303c724d1aaee9bb786a903b data/create/tags/items/pressurized_air_sources.json
 22c4d4e033a61942b170aa309ed46a89a0ba0c65 data/create/tags/items/pulpifiable.json

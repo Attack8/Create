@@ -25,6 +25,7 @@ public class PlayerSkyhookRenderer {
 			return;
 
 		model.head.resetPose();
+		model.hat.resetPose();
 		model.body.resetPose();
 		model.leftArm.resetPose();
 		model.rightArm.resetPose();
@@ -39,6 +40,7 @@ public class PlayerSkyhookRenderer {
 
 	private static void setHangingPose(HumanoidModel<?> model) {
 		model.head.x = 0;
+		model.hat.x = 0;
 		model.body.resetPose();
 		model.leftArm.resetPose();
 		model.rightArm.resetPose();
@@ -53,6 +55,7 @@ public class PlayerSkyhookRenderer {
 
 		model.body.zRot = bodySwing;
 		model.head.zRot = bodySwing;
+		model.hat.zRot = bodySwing;
 
 		model.rightArm.y -= 3;
 
@@ -87,12 +90,14 @@ public class PlayerSkyhookRenderer {
 		model.leftLeg.xRot = AngleHelper.rad(10);
 		model.leftLeg.zRot = -AngleHelper.rad(10) + 0.5f * bodySwing + limbSwing;
 
+		model.hat.x -= armPivotX;
 		model.head.x -= armPivotX;
 		model.body.x -= armPivotX;
 		model.leftArm.x -= armPivotX;
 		model.leftLeg.x -= armPivotX;
 		model.rightLeg.x -= armPivotX;
 
+		model.hat.y -= armPivotY;
 		model.head.y -= armPivotY;
 		model.body.y -= armPivotY;
 		model.leftArm.y -= armPivotY;

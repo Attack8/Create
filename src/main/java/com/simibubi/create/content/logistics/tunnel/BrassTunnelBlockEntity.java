@@ -76,6 +76,7 @@ public class BrassTunnelBlockEntity extends BeltTunnelBlockEntity implements IHa
 	// <filtered, non-filtered>
 	Couple<List<Pair<BlockPos, Direction>>> distributionTargets;
 
+	private boolean newItemArrived;
 	private boolean syncedOutputActive;
 	private Set<BrassTunnelBlockEntity> syncSet;
 
@@ -183,11 +184,16 @@ public class BrassTunnelBlockEntity extends BeltTunnelBlockEntity implements IHa
 					.isEmpty())
 				return;
 
-			if (selectionMode.get() != SelectionMode.SYNCHRONIZE || syncedOutputActive) {
-				distributionProgress = AllConfigs.server().logistics.brassTunnelTimer.get();
-				sendData();
+			if (newItemArrived) {
+				newItemArrived = false;
+				distributionProgress = 2;
+			} else {
+				if (selectionMode.get() != SelectionMode.SYNCHRONIZE || syncedOutputActive) {
+					distributionProgress = AllConfigs.server().logistics.brassTunnelTimer.get();
+					sendData();
+				}
+				return;
 			}
-			return;
 		}
 
 		if (distributionProgress != 0)
@@ -336,6 +342,8 @@ public class BrassTunnelBlockEntity extends BeltTunnelBlockEntity implements IHa
 		stackToDistribute = stack;
 		stackEnteredFrom = enteredFrom;
 		distributionProgress = -1;
+		if (!stack.isEmpty())
+			newItemArrived = true;
 		sendData();
 		setChanged();
 	}

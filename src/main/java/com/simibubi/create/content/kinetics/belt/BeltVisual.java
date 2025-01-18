@@ -60,9 +60,13 @@ public class BeltVisual extends KineticBlockEntityVisual<BeltBlockEntity> {
         }
 
         if (blockEntity.hasPulley()) {
-            pulley = setup(instancerProvider()
+			pulley = instancerProvider()
 				.instancer(AllInstanceTypes.ROTATING, getPulleyModel())
-				.createInstance());
+				.createInstance();
+
+			pulley.setup(BeltVisual.this.blockEntity)
+				.setPosition(getVisualPosition())
+				.setChanged();
         } else {
 			pulley = null;
 		}
@@ -82,8 +86,9 @@ public class BeltVisual extends KineticBlockEntityVisual<BeltBlockEntity> {
         }
 
         if (pulley != null) {
-            updateRotation(pulley);
-        }
+			pulley.setup(blockEntity)
+				.setChanged();
+		}
     }
 
     @Override

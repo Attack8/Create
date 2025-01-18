@@ -11,6 +11,7 @@ import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.foundation.model.BakedModelHelper;
 
+import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.StitchedSprite;
@@ -37,7 +38,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends KineticBlockEntityRenderer<T> {
-	public static final SuperByteBufferCache.Compartment<WaterWheelModelKey> WATER_WHEEL = new SuperByteBufferCache.Compartment<>();
+	public static final SuperByteBufferCache.Compartment<ModelKey> WATER_WHEEL = new SuperByteBufferCache.Compartment<>();
 
 	public static final StitchedSprite OAK_PLANKS_TEMPLATE = new StitchedSprite(ResourceLocation.withDefaultNamespace("block/oak_planks"));
 	public static final StitchedSprite OAK_LOG_TEMPLATE = new StitchedSprite(ResourceLocation.withDefaultNamespace("block/oak_log"));
@@ -60,7 +61,7 @@ public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends Kinetic
 
 	@Override
 	protected SuperByteBuffer getRotatedModel(T be, BlockState state) {
-		WaterWheelModelKey key = new WaterWheelModelKey(large, state, be.material);
+		ModelKey key = new ModelKey(large, state, be.material);
 		return SuperByteBufferCache.getInstance().get(WATER_WHEEL, key, () -> {
 			BakedModel model = generateModel(key);
 			BlockState state1 = key.state();
@@ -75,21 +76,12 @@ public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends Kinetic
 		});
 	}
 
-	public static BakedModel generateModel(WaterWheelModelKey key) {
-		BakedModel template;
-		if (key.large()) {
-			boolean extension = key.state()
-				.getValue(LargeWaterWheelBlock.EXTENSION);
-			if (extension) {
-				template = AllPartialModels.LARGE_WATER_WHEEL_EXTENSION.get();
-			} else {
-				template = AllPartialModels.LARGE_WATER_WHEEL.get();
-			}
-		} else {
-			template = AllPartialModels.WATER_WHEEL.get();
-		}
+	public static BakedModel generateModel(ModelKey key) {
+		return generateModel(Variant.of(key.large(), key.state()), key.material());
+	}
 
-		return generateModel(template, key.material());
+	public static BakedModel generateModel(Variant variant, BlockState material) {
+		return generateModel(variant.model(), material);
 	}
 
 	public static BakedModel generateModel(BakedModel template, BlockState planksBlockState) {
@@ -170,4 +162,36 @@ public class WaterWheelRenderer<T extends WaterWheelBlockEntity> extends Kinetic
 		return model.getParticleIcon(ModelData.EMPTY);
 	}
 
+	public enum Variant {
+		SMALL(AllPartialModels.WATER_WHEEL),
+		LARGE(AllPartialModels.LARGE_WATER_WHEEL),
+		LARGE_EXTENSION(AllPartialModels.LARGE_WATER_WHEEL_EXTENSION),
+		;
+
+		private final PartialModel partial;
+
+		Variant(PartialModel partial) {
+			this.partial = partial;
+		}
+
+		public BakedModel model() {
+			return partial.get();
+		}
+
+		public static Variant of(boolean large, BlockState blockState) {
+			if (large) {
+				boolean extension = blockState.getValue(LargeWaterWheelBlock.EXTENSION);
+				if (extension) {
+					return LARGE_EXTENSION;
+				} else {
+					return LARGE;
+				}
+			} else {
+				return SMALL;
+			}
+		}
+	}
+
+	public record ModelKey(boolean large, BlockState state, BlockState material) {
+	}
 }

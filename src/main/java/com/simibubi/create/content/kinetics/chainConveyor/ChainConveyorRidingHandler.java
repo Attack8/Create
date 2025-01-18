@@ -1,5 +1,6 @@
 package com.simibubi.create.content.kinetics.chainConveyor;
 
+import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity.ConnectionStats;
 import com.simibubi.create.foundation.utility.ServerSpeedProvider;
 
@@ -45,6 +46,10 @@ public class ChainConveyorRidingHandler {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.isPaused())
 			return;
+		if (!AllItemTags.WRENCH.matches(mc.player.getMainHandItem())) {
+			stopRiding();
+			return;
+		}
 		BlockEntity blockEntity = mc.level.getBlockEntity(ridingChainConveyor);
 		if (mc.player.isShiftKeyDown() || !(blockEntity instanceof ChainConveyorBlockEntity clbe)) {
 			stopRiding();

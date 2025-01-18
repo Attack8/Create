@@ -56,9 +56,9 @@ public class BracketedKineticBlockEntityVisual {
 		@Override
 		public void update(float pt) {
 			super.update(pt);
-			updateRotation(additionalShaft);
-			additionalShaft.setRotationOffset(BracketedKineticBlockEntityRenderer.getShaftAngleOffset(rotationAxis(), pos))
-					.setChanged();
+			additionalShaft.setup(blockEntity)
+				.setRotationOffset(BracketedKineticBlockEntityRenderer.getShaftAngleOffset(rotationAxis(), pos))
+				.setChanged();
 		}
 
 		@Override

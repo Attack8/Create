@@ -10,7 +10,6 @@ import com.simibubi.create.content.kinetics.base.RotatingInstance;
 import com.simibubi.create.foundation.render.AllInstanceTypes;
 
 import dev.engine_room.flywheel.api.instance.Instance;
-import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
@@ -33,9 +32,12 @@ public class HandCrankVisual extends KineticBlockEntityVisual<HandCrankBlockEnti
 		rotateCrank(partialTick);
 
 		rotatingModel = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.HAND_CRANK_BASE))
-			.createInstance()
-			.rotateToFace(blockState.getValue(BlockStateProperties.FACING));
-		setup(rotatingModel);
+			.createInstance();
+
+		rotatingModel.setup(HandCrankVisual.this.blockEntity)
+			.setPosition(getVisualPosition())
+			.rotateToFace(blockState.getValue(BlockStateProperties.FACING))
+			.setChanged();
 	}
 
 	@Override
@@ -64,7 +66,8 @@ public class HandCrankVisual extends KineticBlockEntityVisual<HandCrankBlockEnti
 
 	@Override
 	public void update(float pt) {
-		updateRotation(rotatingModel);
+		rotatingModel.setup(blockEntity)
+			.setChanged();
 	}
 
 	@Override
