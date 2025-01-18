@@ -6,7 +6,7 @@ import java.util.Vector;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 
 import io.netty.buffer.ByteBuf;
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.codec.ByteBufCodecs;

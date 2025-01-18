@@ -6,9 +6,9 @@ import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.ponder.utility.LevelTickHolder;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -41,7 +41,7 @@ public class MechanicalMixerRenderer extends KineticBlockEntityRenderer<Mechanic
 
 		float renderedHeadOffset = be.getRenderedHeadOffset(partialTicks);
 		float speed = be.getRenderedHeadRotationSpeed(partialTicks);
-		float time = LevelTickHolder.getRenderTime(be.getLevel());
+		float time = AnimationTickHolder.getRenderTime(be.getLevel());
 		float angle = ((time * speed * 6 / 10f) % 360) / 180 * (float) Math.PI;
 
 		SuperByteBuffer poleRender = CachedBuffers.partial(AllPartialModels.MECHANICAL_MIXER_POLE, blockState);

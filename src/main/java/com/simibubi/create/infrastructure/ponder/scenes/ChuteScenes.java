@@ -9,7 +9,7 @@ import com.simibubi.create.content.logistics.chute.ChuteBlock.Shape;
 import com.simibubi.create.content.logistics.chute.SmartChuteBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 
-import net.createmod.catnip.utility.Pointing;
+import net.createmod.catnip.math.Pointing;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.EntityElement;

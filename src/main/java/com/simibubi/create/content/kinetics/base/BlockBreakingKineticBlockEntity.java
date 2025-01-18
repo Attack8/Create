@@ -4,8 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.simibubi.create.foundation.utility.BlockHelper;
 
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

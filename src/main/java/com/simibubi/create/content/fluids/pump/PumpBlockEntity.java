@@ -23,10 +23,10 @@ import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
-import net.createmod.catnip.utility.BlockFace;
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.math.BlockFace;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;

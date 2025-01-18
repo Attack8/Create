@@ -8,11 +8,12 @@ import com.simibubi.create.content.fluids.particle.FluidParticleData;
 import com.simibubi.create.content.kinetics.base.RotationIndicatorParticleData;
 import com.simibubi.create.content.kinetics.fan.AirFlowParticleData;
 import com.simibubi.create.content.kinetics.steamEngine.SteamJetParticleData;
+import com.simibubi.create.content.logistics.packagerLink.WiFiParticle;
 import com.simibubi.create.content.trains.CubeParticleData;
 import com.simibubi.create.foundation.particle.AirParticleData;
 import com.simibubi.create.foundation.particle.ICustomParticleData;
 
-import net.createmod.catnip.utility.lang.Lang;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
@@ -32,6 +33,7 @@ public enum AllParticleTypes {
 	FLUID_PARTICLE(FluidParticleData::new),
 	BASIN_FLUID(FluidParticleData::new),
 	FLUID_DRIP(FluidParticleData::new),
+	WIFI(WiFiParticle.Data::new),
 	SOUL(SoulParticle.Data::new),
 	SOUL_BASE(SoulBaseParticle.Data::new),
 	SOUL_PERIMETER(SoulParticle.PerimeterData::new),

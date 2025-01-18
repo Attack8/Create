@@ -8,7 +8,7 @@ import static com.simibubi.create.foundation.data.recipe.Mods.MEK;
 import static com.simibubi.create.foundation.data.recipe.Mods.OREGANIZED;
 import static com.simibubi.create.foundation.data.recipe.Mods.TH;
 
-import net.createmod.catnip.utility.lang.Lang;
+import net.createmod.catnip.lang.Lang;
 
 public enum CompatMetals {
 	ALUMINUM(IE, IC2),
@@ -32,7 +32,7 @@ public enum CompatMetals {
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getName(Mods mod) {
 		if (this == ALUMINUM && mod == IC2) // include in mods.builder if this happens again
 			return "aluminium";

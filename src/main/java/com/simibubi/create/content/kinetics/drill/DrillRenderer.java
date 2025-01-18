@@ -8,9 +8,9 @@ import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.math.AngleHelper;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

@@ -1,7 +1,5 @@
 package com.simibubi.create.content.logistics.chute;
 
-import java.util.function.Consumer;
-
 import javax.annotation.Nullable;
 
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -10,17 +8,15 @@ import com.simibubi.create.content.logistics.box.PackageEntity;
 import com.simibubi.create.foundation.advancement.AdvancementBehaviour;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.block.IBE;
-import com.simibubi.create.foundation.block.render.ReducedDestroyEffects;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.item.ItemHelper;
 
-import net.createmod.catnip.utility.Iterate;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,19 +32,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 
 public abstract class AbstractChuteBlock extends Block implements IWrenchable, IBE<ChuteBlockEntity> {
 
 	public AbstractChuteBlock(Properties p_i48440_1_) {
 		super(p_i48440_1_);
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public void initializeClient(Consumer<IClientBlockExtensions> consumer) {
-		consumer.accept(new ReducedDestroyEffects());
 	}
 
 	public static boolean isChute(BlockState state) {

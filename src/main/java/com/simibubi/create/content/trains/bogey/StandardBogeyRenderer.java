@@ -8,8 +8,8 @@ import com.simibubi.create.content.kinetics.simpleRelays.ShaftBlock;
 
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.math.AngleHelper;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;

@@ -35,7 +35,7 @@ public class AnimatedItemDrain extends AnimatedKinetics {
 		matrixStack.scale(scale, scale, scale);
 		float from = 2/16f;
 		float to = 1f - from;
-		FluidRenderer.renderFluidBox(fluid.getFluid(), fluid.getAmount(), from, from, from, to, 3/4f, to, graphics.bufferSource(), matrixStack, LightTexture.FULL_BRIGHT, false, true, fluid.getComponents());
+		FluidRenderer.renderFluidBox(fluid.getFluid(), fluid.getAmount(), from, from, from, to, 3/4f, to, graphics.bufferSource(), matrixStack, LightTexture.FULL_BRIGHT, false, true, fluid.getComponentsPatch());
 		graphics.flush();
 
 		matrixStack.popPose();

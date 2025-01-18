@@ -36,10 +36,10 @@ import com.simibubi.create.content.trains.station.GlobalStation;
 import com.simibubi.create.content.trains.track.BezierConnection;
 import com.simibubi.create.content.trains.track.TrackMaterial;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
@@ -265,7 +265,7 @@ public class Navigation {
 		if (targetDistance < 10) {
 			double maxApproachSpeed = topSpeed * ((targetDistance) / 10);
 			double speedRelativeToStation = train.speed * speedMod;
-			
+
 			if (speedRelativeToStation > maxApproachSpeed) {
 				train.speed += (maxApproachSpeed - Math.abs(train.speed)) * .5f * speedMod;
 				return;

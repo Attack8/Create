@@ -32,10 +32,10 @@ import com.simibubi.create.content.trains.track.TrackBlockOutline.BezierPointSel
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.CatnipClient;
+import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -50,6 +50,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.InputEvent;
@@ -122,7 +123,7 @@ public class TrainRelocator {
 			for (int i = 0; i < toVisualise.size() - 1; i++) {
 				Vec3 vec1 = toVisualise.get(i).add(offset);
 				Vec3 vec2 = toVisualise.get(i + 1).add(offset);
-				CatnipClient.OUTLINER.showLine(Pair.of(relocating, i), vec1.add(0, -.925f, 0), vec2.add(0, -.925f, 0))
+				Outliner.getInstance().showLine(Pair.of(relocating, i), vec1.add(0, -.925f, 0), vec2.add(0, -.925f, 0))
 					.colored(lastHoveredResult || i != toVisualise.size() - 2 ? 0x95CD41 : 0xEA5C2B)
 					.disableLineNormals()
 					.lineWidth(i % 2 == 1 ? 1 / 6f : 1 / 4f);
@@ -270,7 +271,7 @@ public class TrainRelocator {
 
 	@OnlyIn(Dist.CLIENT)
 	public static void visualise(Train train, int i, Vec3 v1, Vec3 v2, boolean valid) {
-		CatnipClient.OUTLINER.showLine(Pair.of(train, i), v1.add(0, -.825f, 0), v2.add(0, -.825f, 0))
+		Outliner.getInstance().showLine(Pair.of(train, i), v1.add(0, -.825f, 0), v2.add(0, -.825f, 0))
 			.colored(valid ? 0x95CD41 : 0xEA5C2B)
 			.disableLineNormals()
 			.lineWidth(i % 2 == 1 ? 1 / 6f : 1 / 4f);

@@ -6,7 +6,7 @@ import java.util.List;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 
-import net.createmod.catnip.utility.IntAttached;
+import net.createmod.catnip.data.IntAttached;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.CommandSuggestions;
@@ -81,7 +81,7 @@ public class DestinationSuggestions extends CommandSuggestions {
 		int x = Mth.clamp(textBox.getScreenX(0), 0, textBox.getScreenX(0) + textBox.getInnerWidth() - width);
 		suggestions = new CommandSuggestions.SuggestionsList(x, 72 + yOffset, width, currentSuggestions, false);
 	}
-	
+
 	public boolean isEmpty() {
 		return viableStations.isEmpty();
 	}

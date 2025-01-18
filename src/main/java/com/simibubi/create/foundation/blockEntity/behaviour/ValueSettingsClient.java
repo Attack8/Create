@@ -6,7 +6,7 @@ import com.simibubi.create.AllBlocks;
 
 import net.createmod.catnip.gui.ScreenOpener;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.theme.Color;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

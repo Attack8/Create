@@ -11,9 +11,9 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBox;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.CatnipClient;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -80,7 +80,7 @@ public class EdgeInteractionRenderer {
 		ValueBox box = new ValueBox(Components.immutableEmpty(), bb, pos).passive(!hit)
 			.transform(new EdgeValueBoxTransform(offset))
 			.wideOutline();
-		CatnipClient.OUTLINER.showOutline("edge", box)
+		Outliner.getInstance().showOutline("edge", box)
 			.highlightFace(face);
 
 		if (!hit)

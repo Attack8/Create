@@ -13,8 +13,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBox.IconValueBo
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBox.TextValueBox;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.CatnipClient;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -50,7 +50,7 @@ public class ScrollValueRenderer {
 				continue;
 
 			if (!behaviour.isActive()) {
-				CatnipClient.OUTLINER.remove(behaviour);
+				Outliner.getInstance().remove(behaviour);
 				continue;
 			}
 
@@ -98,7 +98,7 @@ public class ScrollValueRenderer {
 		box.passive(!highlight)
 			.wideOutline();
 
-		CatnipClient.OUTLINER.showOutline(behaviour, box.transform(behaviour.slotPositioning))
+		Outliner.getInstance().showOutline(behaviour, box.transform(behaviour.slotPositioning))
 			.highlightFace(face);
 	}
 

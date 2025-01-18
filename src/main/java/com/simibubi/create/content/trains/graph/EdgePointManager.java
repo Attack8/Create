@@ -3,8 +3,8 @@ package com.simibubi.create.content.trains.graph;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.signal.TrackEdgePoint;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.Iterate;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
 
 public class EdgePointManager {
 

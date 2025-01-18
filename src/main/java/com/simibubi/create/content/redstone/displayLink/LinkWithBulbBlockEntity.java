@@ -2,14 +2,16 @@ package com.simibubi.create.content.redstone.displayLink;
 
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.animation.LerpedFloat;
-import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class LinkWithBulbBlockEntity extends SmartBlockEntity {
 
@@ -56,6 +58,14 @@ public abstract class LinkWithBulbBlockEntity extends SmartBlockEntity {
 		super.read(tag, registries, clientPacket);
 		if (clientPacket && tag.contains("Pulse"))
 			pulse();
+	}
+
+	public Vec3 getBulbOffset(BlockState state) {
+		return Vec3.ZERO;
+	}
+
+	public Direction getBulbFacing(BlockState state) {
+		return state.getValue(DisplayLinkBlock.FACING);
 	}
 
 }

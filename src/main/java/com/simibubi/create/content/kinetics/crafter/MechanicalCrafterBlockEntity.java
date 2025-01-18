@@ -24,9 +24,9 @@ import com.simibubi.create.foundation.blockEntity.behaviour.edgeInteraction.Edge
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.InvManipulationBehaviour;
 import com.simibubi.create.foundation.item.SmartInventory;
 
-import net.createmod.catnip.utility.BlockFace;
-import net.createmod.catnip.utility.Pointing;
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.math.BlockFace;
+import net.createmod.catnip.math.Pointing;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -331,7 +331,7 @@ public class MechanicalCrafterBlockEntity extends KineticBlockEntity {
 				groupedItems = new GroupedItems();
 
 				float pitch = targetingCrafter.groupedItems.grid.size() * 1 / 16f + .5f;
-				
+
 				if (!empty)
 					AllSoundEvents.CRAFTER_CLICK.playOnServer(level, worldPosition, 1, pitch);
 

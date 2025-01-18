@@ -2,6 +2,7 @@ package com.simibubi.create.content.trains.display;
 
 import java.util.List;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.font.GlyphInfo;
@@ -14,8 +15,7 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.math.AngleHelper;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.font.FontSet;
@@ -88,7 +88,7 @@ public class FlapDisplayRenderer extends KineticBlockEntityRenderer<FlapDisplayB
 			for (int i = 0; i < line.size(); i++) {
 				FlapDisplaySection section = line.get(i);
 				renderOutput.nextSection(section);
-				int ticks = LevelTickHolder.getTicks(be.getLevel());
+				int ticks = AnimationTickHolder.getTicks(be.getLevel());
 				String text = section.renderCharsIndividually() || !section.spinning[0] ? section.text
 					: section.cyclingOptions[((ticks / 3) + i * 13) % section.cyclingOptions.length];
 				StringDecomposer.iterateFormatted(text, Style.EMPTY, renderOutput);
@@ -142,8 +142,8 @@ public class FlapDisplayRenderer extends KineticBlockEntityRenderer<FlapDisplayB
 
 		public boolean accept(int charIndex, Style style, int glyph) {
 			FontSet fontset = getFontSet();
-			int ticks = paused ? 0 : LevelTickHolder.getTicks(level);
-			float time = paused ? 0 : LevelTickHolder.getRenderTime(level);
+			int ticks = paused ? 0 : AnimationTickHolder.getTicks(level);
+			float time = paused ? 0 : AnimationTickHolder.getRenderTime(level);
 			float dim = 1;
 
 			if (section.renderCharsIndividually() && section.spinning[Math.min(charIndex, section.spinning.length)]) {

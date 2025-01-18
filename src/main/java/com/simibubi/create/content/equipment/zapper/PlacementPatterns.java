@@ -9,7 +9,7 @@ import com.mojang.serialization.Codec;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.foundation.gui.AllIcons;
 
-import net.createmod.catnip.utility.lang.Lang;
+import net.createmod.catnip.lang.Lang;
 
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.minecraft.core.BlockPos;

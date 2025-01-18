@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
-
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import com.simibubi.create.AllDataComponents;
 
 import net.minecraft.core.RegistryAccess;

@@ -529,10 +529,11 @@ public class AllBlockEntityTypes {
 			.renderer(() -> TableClothRenderer::new)
 			.register();
 
-	public static final BlockEntityEntry<PackagerLinkBlockEntity> PACKAGER_LINK = REGISTRATE
-		.blockEntity("packager_link", PackagerLinkBlockEntity::new)
-		.validBlocks(AllBlocks.STOCK_LINK)
-		.register();
+	public static final BlockEntityEntry<PackagerLinkBlockEntity> PACKAGER_LINK =
+		REGISTRATE.blockEntity("packager_link", PackagerLinkBlockEntity::new)
+			.validBlocks(AllBlocks.STOCK_LINK)
+			.renderer(() -> LinkBulbRenderer::new)
+			.register();
 
 	public static final BlockEntityEntry<StockTickerBlockEntity> STOCK_TICKER = REGISTRATE
 		.blockEntity("stock_ticker", StockTickerBlockEntity::new)

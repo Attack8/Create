@@ -2,7 +2,7 @@ package com.simibubi.create.foundation.particle;
 
 import com.simibubi.create.Create;
 
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;

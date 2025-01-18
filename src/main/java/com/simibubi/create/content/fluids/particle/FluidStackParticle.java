@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import com.simibubi.create.AllParticleTypes;
 import com.simibubi.create.content.fluids.potion.PotionFluid;
 
-import net.createmod.catnip.utility.theme.Color;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;

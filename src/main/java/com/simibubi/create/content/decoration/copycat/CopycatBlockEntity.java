@@ -1,16 +1,19 @@
 package com.simibubi.create.content.decoration.copycat;
 
+import java.util.List;
+
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.api.contraption.transformable.ITransformableBlockEntity;
+import com.simibubi.create.api.schematic.nbt.IPartialSafeNBT;
+import com.simibubi.create.api.schematic.requirement.ISpecialBlockEntityItemRequirement;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
-import com.simibubi.create.api.schematic.requirement.ISpecialBlockEntityItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement.ItemUseType;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.api.schematic.nbt.IPartialSafeNBT;
-import net.createmod.catnip.utility.Iterate;
+
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -22,9 +25,8 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.client.model.data.ModelData;
 
-import java.util.List;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class CopycatBlockEntity extends SmartBlockEntity
 	implements ISpecialBlockEntityItemRequirement, ITransformableBlockEntity, IPartialSafeNBT {

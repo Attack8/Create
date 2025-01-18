@@ -23,11 +23,10 @@ import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.math.AngleHelper;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -98,7 +97,7 @@ public class DeployerRenderer extends SafeBlockEntityRenderer<DeployerBlockEntit
 			ms.translate(0, isBlockItem ? 9 / 16f : 11 / 16f, 0);
 			ms.scale(scale, scale, scale);
 			transform = ItemDisplayContext.GROUND;
-			ms.mulPose(Axis.YP.rotationDegrees(LevelTickHolder.getRenderTime(be.getLevel())));
+			ms.mulPose(Axis.YP.rotationDegrees(AnimationTickHolder.getRenderTime(be.getLevel())));
 
 		} else {
 			float scale = punching ? .75f : isBlockItem ? .75f - 1 / 64f : .5f;
@@ -194,7 +193,7 @@ public class DeployerRenderer extends SafeBlockEntityRenderer<DeployerBlockEntit
 			axis = def.getRotationAxis(context.state);
 		}
 
-		float time = LevelTickHolder.getRenderTime(context.world) / 20;
+		float time = AnimationTickHolder.getRenderTime(context.world) / 20;
 		float angle = (time * speed) % 360;
 
 		TransformStack.of(m)

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;

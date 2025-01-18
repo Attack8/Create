@@ -6,10 +6,10 @@ import com.simibubi.create.content.trains.station.StationBlockEntity;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.CatnipClient;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.theme.Color;
+import net.createmod.catnip.outliner.Outliner;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -74,7 +74,7 @@ public class PackagePortTargetSelectionHandler {
 		LocalPlayer player = mc.player;
 		boolean isPostbox = AllItemTags.POSTBOXES.matches(player.getMainHandItem());
 		boolean isWrench = AllItemTags.WRENCH.matches(player.getMainHandItem());
-		
+
 		if (!isWrench) {
 			if (activePackageTarget == null)
 				return;
@@ -100,16 +100,16 @@ public class PackagePortTargetSelectionHandler {
 				return;
 			Color color = new Color(0x9ede73);
 			animateConnection(mc, source, target, color);
-			CatnipClient.OUTLINER.chaseAABB("ChainPointSelected", new AABB(target, target))
+			Outliner.getInstance().chaseAABB("ChainPointSelected", new AABB(target, target))
 				.colored(color)
 				.lineWidth(1 / 5f)
 				.disableLineNormals();
 			return;
 		}
-		
+
 		Vec3 target = exactPositionOfTarget;
 		if (blockRayTraceResult.getType() == Type.MISS) {
-			CatnipClient.OUTLINER.chaseAABB("ChainPointSelected", new AABB(target, target))
+			Outliner.getInstance().chaseAABB("ChainPointSelected", new AABB(target, target))
 				.colored(0x9ede73)
 				.lineWidth(1 / 5f)
 				.disableLineNormals();
@@ -130,7 +130,7 @@ public class PackagePortTargetSelectionHandler {
 			.color(color.getRGB())
 			.sendStatus(player);
 
-		CatnipClient.OUTLINER.chaseAABB("ChainPointSelected", new AABB(target, target))
+		Outliner.getInstance().chaseAABB("ChainPointSelected", new AABB(target, target))
 			.colored(color)
 			.lineWidth(1 / 5f)
 			.disableLineNormals();
@@ -139,7 +139,7 @@ public class PackagePortTargetSelectionHandler {
 			.canBeReplaced())
 			return;
 
-		CatnipClient.OUTLINER.chaseAABB("TargetedFrogPos", new AABB(pos).contract(0, 1, 0)
+		Outliner.getInstance().chaseAABB("TargetedFrogPos", new AABB(pos).contract(0, 1, 0)
 			.deflate(0.125, 0, 0.125))
 			.colored(color)
 			.lineWidth(1 / 16f)

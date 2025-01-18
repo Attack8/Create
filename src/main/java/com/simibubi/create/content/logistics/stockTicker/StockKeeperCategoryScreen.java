@@ -22,13 +22,13 @@ import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.gui.UIRenderHelper;
 import net.createmod.catnip.gui.element.GuiGameElement;
+import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.animation.LerpedFloat;
-import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
-import net.createmod.catnip.utility.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -42,6 +42,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<StockKeeperCategoryMenu>
@@ -121,7 +122,6 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 			return;
 
 		playUiSound(SoundEvents.UI_BUTTON_CLICK.value(), 1, 1);
-
 		removeWidget(editorConfirm);
 		removeWidget(editorEditBox);
 

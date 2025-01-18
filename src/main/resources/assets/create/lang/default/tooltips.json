@@ -205,23 +205,6 @@
 	"block.create.item_hatch.tooltip.condition1": "When R-Clicked",
 	"block.create.item_hatch.tooltip.behaviour1": "_Deposits_ your items into the _container_ it is placed on. _Hotbar items_ and items _with contents_ will _not_ be transferred.",
 
-	
-
-	"block.create.chain_conveyor.tooltip.summary": "[ponder] Connect with chains to form conveyor networks. Use frogports to transport packages on them. Use wrench to take a ride.",
-	"block.create.packager.tooltip.summary": "[ponder] Creates packages from attached inventory on redstone. Attach sign to specify target address. Alternatively, attach stock link to submit inventory contents to a logistics network.",
-	"block.create.package_frogport.tooltip.summary": "[ponder] Click a chain conveyor to link then place. Moves packages to and from chains based on their address. Set address filter in UI. Matching packages will be removed from chains and vice versa.",
-	"block.create.package_postbox.tooltip.summary": "[ponder] Click a train station to link then place. Moves packages to and from trains based on their address. Set address filter in UI. Matching packages will be removed from trains and vice versa.",
-	"block.create.stock_link.tooltip.summary": "[ponder] Attach to packager to make its target inventory available to request from. Click other links before placement to share their frequency. No range limitations",
-	"block.create.stock_ticker.tooltip.summary": "[ponder] Click stock link before placement to use its frequency. Needs an adjacent entity on a seat as its stock keeper. Click the entity to request items from any linked packagers to a given address. Click the stock ticker block to organise displayed items into categories.",
-	"block.create.redstone_requester.tooltip.summary": "[ponder] Click stock link before placement to use its frequency. Open UI to specify items requested to an address when a redstone pulse is received. Alternatively this request can be configured at a stock keeper before placement.",
-	"block.create.factory_gauge.tooltip.summary": "[ponder] Click stock link before placement to use its frequency. Place item to monitor in filter slot. Hold click to specify a target amount to maintain in storage.",
-	"block.create.factory_gauge.tooltip.condition1": "When attached to Packager",
-	"block.create.factory_gauge.tooltip.behaviour1": "Restocker mode: Panel requests items from the network to the specified address until the target amount is in the container. Short click the panel to set an address.",
-	"block.create.factory_gauge.tooltip.condition2": "When not attached to Packager",
-	"block.create.factory_gauge.tooltip.behaviour2": "Recipe mode: Panel requests ingredients to an address until the target amounted of the output item is found on the network (e.g. Send 1 Log to 'saw' and expect 6 Planks, until at least 64 Planks on network). Short click the panel to set an address and connect other panels as input items. Panels specifying an output item can also be reused as an input for other panels.",
-	"block.create.table_cloth.tooltip.summary": "[ponder] Can be used for decoration, click with item to display them. Alternatively, when used on a stock keeper, specify a request from your network that can be purchased by other players. The cost can be specified after placing the configured table cloth.",
-	"block.create.pulse_timer.tooltip.summary": "[ponder] Set a delay using the input slot. Repeatedly emits redstone pulses unless the input side is powered by a constant signal.",
-
 	"block.create.clipboard.tooltip.summary": "_Keeps your notes_ and makes you look more professional.",
 	"block.create.clipboard.tooltip.condition1": "When R-Clicked",
 	"block.create.clipboard.tooltip.behaviour1": "Opens the _Interface_. _Sneak-Click_ to _place_ it on a surface.",

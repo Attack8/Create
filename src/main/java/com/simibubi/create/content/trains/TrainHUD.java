@@ -11,10 +11,10 @@ import com.simibubi.create.foundation.utility.ControlsUtil;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.animation.LerpedFloat;
-import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
-import net.createmod.catnip.utility.math.AngleHelper;
-import net.createmod.catnip.utility.placement.PlacementClient;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.placement.PlacementClient;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

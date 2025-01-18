@@ -12,8 +12,8 @@ import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.foundation.utility.RaycastHelper;
 
-import net.createmod.catnip.CatnipClient;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
@@ -29,6 +29,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 public class SuperGlueSelectionHandler {
@@ -64,7 +65,7 @@ public class SuperGlueSelectionHandler {
 		if (clusterCooldown > 0) {
 			if (clusterCooldown == 25)
 				player.displayClientMessage(Components.immutableEmpty(), true);
-			CatnipClient.OUTLINER.keep(clusterOutlineSlot);
+			Outliner.getInstance().keep(clusterOutlineSlot);
 			clusterCooldown--;
 		}
 
@@ -97,7 +98,7 @@ public class SuperGlueSelectionHandler {
 			for (SuperGlueEntity glueEntity : glueNearby) {
 				boolean h = clusterCooldown == 0 && glueEntity == selected;
 				AllSpecialTextures faceTex = h ? AllSpecialTextures.GLUE : null;
-				CatnipClient.OUTLINER.showAABB(glueEntity, glueEntity.getBoundingBox())
+				Outliner.getInstance().showAABB(glueEntity, glueEntity.getBoundingBox())
 					.colored(h ? HIGHLIGHT : PASSIVE)
 					.withFaceTextures(faceTex, faceTex)
 					.disableLineNormals()
@@ -152,13 +153,13 @@ public class SuperGlueSelectionHandler {
 					.sendStatus(player);
 
 				if (currentSelectionBox != null)
-					CatnipClient.OUTLINER.showAABB(bbOutlineSlot, currentSelectionBox)
+					Outliner.getInstance().showAABB(bbOutlineSlot, currentSelectionBox)
 						.colored(canReach && canAfford && !cancel ? HIGHLIGHT : FAIL)
 						.withFaceTextures(AllSpecialTextures.GLUE, AllSpecialTextures.GLUE)
 						.disableLineNormals()
 						.lineWidth(1 / 16f);
 
-				CatnipClient.OUTLINER.showCluster(clusterOutlineSlot, currentCluster)
+				Outliner.getInstance().showCluster(clusterOutlineSlot, currentCluster)
 					.colored(0x4D9162)
 					.disableLineNormals()
 					.lineWidth(1 / 64f);
@@ -258,7 +259,7 @@ public class SuperGlueSelectionHandler {
 		player.level().playSound(player, hoveredPos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.75f, 1);
 
 		if (currentCluster != null)
-			CatnipClient.OUTLINER.showCluster(clusterOutlineSlot, currentCluster)
+			Outliner.getInstance().showCluster(clusterOutlineSlot, currentCluster)
 				.colored(0xB5F2C6)
 				.withFaceTextures(AllSpecialTextures.GLUE, AllSpecialTextures.HIGHLIGHT_CHECKERED)
 				.disableLineNormals()

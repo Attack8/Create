@@ -5,8 +5,8 @@ import com.simibubi.create.content.contraptions.render.ActorVisual;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.animation.LerpedFloat;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.animation.LerpedFloat;
 
 public class PSIActorVisual extends ActorVisual {
 

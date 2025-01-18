@@ -1,21 +1,22 @@
 package com.simibubi.create.content.decoration.palettes;
 
+import static com.simibubi.create.content.decoration.palettes.PaletteBlockPattern.STANDARD_RANGE;
+import static com.simibubi.create.content.decoration.palettes.PaletteBlockPattern.VANILLA_RANGE;
+
+import java.util.function.Function;
+
 import com.simibubi.create.AllTags;
 import com.simibubi.create.Create;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
-import net.createmod.catnip.utility.lang.Lang;
+
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.MapColor;
-
-import java.util.function.Function;
-
-import static com.simibubi.create.content.decoration.palettes.PaletteBlockPattern.STANDARD_RANGE;
-import static com.simibubi.create.content.decoration.palettes.PaletteBlockPattern.VANILLA_RANGE;
 
 public enum AllPaletteStoneTypes {
 

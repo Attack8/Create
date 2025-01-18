@@ -4,7 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.simibubi.create.AllBlocks;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.IntAttached;
+import net.createmod.catnip.data.IntAttached;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;

@@ -4,7 +4,6 @@ import com.simibubi.create.AllPartialModels;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.model.Models;
-import net.minecraft.core.Direction;
 
 public class ShaftVisual<T extends KineticBlockEntity> extends SingleAxisRotatingVisual<T> {
 	public ShaftVisual(VisualizationContext context, T blockEntity, float partialTick) {

@@ -7,8 +7,8 @@ import com.simibubi.create.content.equipment.clipboard.ClipboardOverrides.Clipbo
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.utility.Pointing;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.math.Pointing;
+import net.createmod.catnip.lang.Components;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.WorldSectionElement;

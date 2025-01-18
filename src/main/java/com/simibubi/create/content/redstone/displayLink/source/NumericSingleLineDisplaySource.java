@@ -3,7 +3,7 @@ package com.simibubi.create.content.redstone.displayLink.source;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
 import com.simibubi.create.content.trains.display.FlapDisplaySection;
 
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.network.chat.Component;
 
 public abstract class NumericSingleLineDisplaySource extends SingleLineDisplaySource {

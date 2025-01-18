@@ -1,6 +1,6 @@
 package com.simibubi.create.content.trains.graph;
 
-import net.createmod.catnip.utility.Couple;
+import net.createmod.catnip.data.Couple;
 
 public class TrackGraphLocation {
 

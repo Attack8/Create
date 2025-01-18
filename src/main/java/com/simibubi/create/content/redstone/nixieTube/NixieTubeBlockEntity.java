@@ -11,8 +11,8 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.utility.DynamicComponent;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;

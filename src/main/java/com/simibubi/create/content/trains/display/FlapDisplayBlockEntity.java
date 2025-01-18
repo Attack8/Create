@@ -10,8 +10,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.utility.DyeHelper;
 import com.simibubi.create.foundation.utility.DynamicComponent;
 
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.Direction;

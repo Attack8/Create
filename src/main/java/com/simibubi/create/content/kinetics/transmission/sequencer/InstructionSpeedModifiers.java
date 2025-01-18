@@ -9,8 +9,8 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import io.netty.buffer.ByteBuf;
 
-import net.createmod.catnip.utility.lang.Components;
-import net.createmod.catnip.utility.lang.Lang;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 

@@ -11,9 +11,9 @@ import javax.annotation.Nullable;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.mixin.accessor.FluidInteractionRegistryAccessor;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.Pair;
-import net.createmod.catnip.utility.levelWrappers.PlacementSimulationServerLevel;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.levelWrappers.PlacementSimulationServerLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

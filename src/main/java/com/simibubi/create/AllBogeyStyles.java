@@ -12,7 +12,7 @@ import com.simibubi.create.content.trains.bogey.BogeyStyle.SizeRenderer;
 import com.simibubi.create.content.trains.bogey.StandardBogeyRenderer;
 import com.simibubi.create.content.trains.bogey.StandardBogeyVisual;
 
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.resources.ResourceLocation;
 
 public class AllBogeyStyles {

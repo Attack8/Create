@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.common.cache.Cache;
 import com.simibubi.create.foundation.utility.TickBasedCache;
 
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.WorldAttached;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.data.WorldAttached;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +25,7 @@ public class ChainConveyorPackage {
 	private static final int ticksUntilExpired = 30;
 	public static final WorldAttached<Cache<Integer, ChainConveyorPackagePhysicsData>> physicsDataCache =
 		new WorldAttached<>($ -> new TickBasedCache<>(ticksUntilExpired, true));
-	
+
 	public class ChainConveyorPackagePhysicsData {
 		public Vec3 targetPos;
 		public Vec3 prevTargetPos;

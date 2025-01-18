@@ -13,12 +13,12 @@ import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRender
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SpriteShiftEntry;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.animation.LerpedFloat;
-import net.createmod.catnip.utility.math.AngleHelper;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -64,7 +64,7 @@ public class BlazeBurnerRenderer extends SafeBlockEntityRenderer<BlazeBurnerBloc
 			heatLevel = HeatLevel.FADING;
 
 		Level level = context.world;
-		float horizontalAngle = AngleHelper.rad(headAngle.getValue(LevelTickHolder.getPartialTicks(level)));
+		float horizontalAngle = AngleHelper.rad(headAngle.getValue(AnimationTickHolder.getPartialTicks(level)));
 		boolean drawGoggles = context.blockEntityData.contains("Goggles");
 		boolean drawHat = conductor || context.blockEntityData.contains("TrainHat");
 		int hashCode = context.hashCode();
@@ -79,7 +79,7 @@ public class BlazeBurnerRenderer extends SafeBlockEntityRenderer<BlazeBurnerBloc
 									 boolean canDrawFlame, boolean drawGoggles, PartialModel drawHat, int hashCode) {
 
 		boolean blockAbove = animation > 0.125f;
-		float time = LevelTickHolder.getRenderTime(level);
+		float time = AnimationTickHolder.getRenderTime(level);
 		float renderTick = time + (hashCode % 13) * 16f;
 		float offsetMult = heatLevel.isAtLeast(HeatLevel.FADING) ? 64 : 16;
 		float offset = Mth.sin((float) ((renderTick / 16f) % (2 * Math.PI))) / offsetMult;

@@ -13,8 +13,8 @@ import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.decoration.steamWhistle.WhistleBlock;
 import com.simibubi.create.content.decoration.steamWhistle.WhistleBlock.WhistleSize;
 
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;

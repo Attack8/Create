@@ -5,11 +5,12 @@ import com.simibubi.create.AllSpecialTextures;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 
 import io.netty.buffer.ByteBuf;
-import net.createmod.catnip.CatnipClient;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.shapes.Shapes;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -23,7 +24,7 @@ public record HighlightPacket(BlockPos pos) implements ClientboundPacketPayload 
 			return;
 		}
 
-		CatnipClient.OUTLINER.showAABB("highlightCommand", Shapes.block()
+		Outliner.getInstance().showAABB("highlightCommand", Shapes.block()
 						.bounds()
 						.move(pos), 200)
 				.lineWidth(1 / 32f)

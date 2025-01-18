@@ -24,19 +24,14 @@ base {
 }
 
 boolean inMultiModWorkspace = rootProject.hasProperty('multiModWorkspace.enabled')
-boolean catnipInWorkspace = rootProject.hasProperty('multiModWorkspace.catnip')
 boolean ponderInWorkspace = rootProject.hasProperty('multiModWorkspace.ponder')
-
-if (catnipInWorkspace) {
-    evaluationDependsOn(":catnip:NeoForge")
-}
 
 if (ponderInWorkspace) {
     evaluationDependsOn(":ponder:NeoForge")
 }
 
 project.logger.lifecycle("MultiModWorkspace ${inMultiModWorkspace ? 'enabled' : 'disabled'} for project ${project.name}.")
-project.logger.lifecycle("Dependencies included in Workspace: [Catnip: ${catnipInWorkspace}], [Ponder: ${ponderInWorkspace}]")
+project.logger.lifecycle("Dependencies included in Workspace: [Ponder: ${ponderInWorkspace}]")
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
@@ -60,13 +55,6 @@ neoForge {
     mods {
         "${mod_id}" {
             sourceSet(sourceSets.main)
-        }
-
-        if (catnipInWorkspace) {
-            catnip {
-                sourceSet(project(":catnip:Common").sourceSets.main)
-                sourceSet(project(":catnip:NeoForge").sourceSets.main)
-            }
         }
 
         if (ponderInWorkspace) {
@@ -159,13 +147,6 @@ dependencies {
     compileOnly("dev.engine_room.flywheel:flywheel-neoforge-api-${flywheel_minecraft_version}:${flywheel_version}")
     jarJar(runtimeOnly("dev.engine_room.flywheel:flywheel-neoforge-${flywheel_minecraft_version}:${flywheel_version}"))
 
-    if (catnipInWorkspace) {
-        implementation(project(":catnip:Common"))
-        implementation(project(":catnip:NeoForge"))
-    } else {
-        implementation("net.createmod.catnip:Catnip-NeoForge-${minecraft_version}:${catnip_version}")
-    }
-
     if (ponderInWorkspace) {
         implementation(project(":ponder:Common"))
         implementation(project(":ponder:NeoForge"))
@@ -173,7 +154,6 @@ dependencies {
         implementation("net.createmod.ponder:Ponder-NeoForge-${minecraft_version}:${ponder_version}")
     }
 
-    jarJar("net.createmod.catnip:Catnip-NeoForge-${catnip_and_ponder_mc_ver}:${catnip_version}")
     jarJar("net.createmod.ponder:Ponder-NeoForge-${catnip_and_ponder_mc_ver}:${ponder_version}")
 
     //compileOnly("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")

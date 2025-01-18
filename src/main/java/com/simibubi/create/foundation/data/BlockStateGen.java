@@ -30,8 +30,8 @@ import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import com.tterrag.registrate.util.nullness.NonNullBiConsumer;
 import com.tterrag.registrate.util.nullness.NonnullType;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.Pointing;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.Pointing;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;

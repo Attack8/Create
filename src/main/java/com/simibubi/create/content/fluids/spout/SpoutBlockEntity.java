@@ -26,8 +26,8 @@ import com.simibubi.create.foundation.fluid.FluidHelper;
 
 import com.simibubi.create.impl.behaviour.BlockSpoutingBehaviourImpl;
 
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;

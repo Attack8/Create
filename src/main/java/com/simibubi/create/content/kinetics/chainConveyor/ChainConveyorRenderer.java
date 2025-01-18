@@ -3,6 +3,8 @@ package com.simibubi.create.content.kinetics.chainConveyor;
 import java.util.List;
 import java.util.Map.Entry;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
+
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -18,9 +20,8 @@ import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.math.AngleHelper;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -128,7 +129,7 @@ public class ChainConveyorRenderer extends KineticBlockEntityRenderer<ChainConve
 
 	private void renderChains(ChainConveyorBlockEntity be, PoseStack ms, MultiBufferSource buffer, int light,
 		int overlay) {
-		float time = LevelTickHolder.getRenderTime(be.getLevel()) / (360f / Math.abs(be.getSpeed()));
+		float time = AnimationTickHolder.getRenderTime(be.getLevel()) / (360f / Math.abs(be.getSpeed()));
 		time %= 1;
 		if (time < 0)
 			time += 1;

@@ -1,9 +1,10 @@
 package com.simibubi.create.content.contraptions.minecart;
 
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartController;
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.VecHelper;
+
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;

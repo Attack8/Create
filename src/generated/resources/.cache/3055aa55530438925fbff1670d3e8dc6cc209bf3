@@ -1,4 +1,4 @@
-// 1.20.1	2025-01-17T00:09:44.5040448	Registrate Provider for create [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
+// 1.20.1	2025-01-18T13:14:26.2262033	Registrate Provider for create [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
 60bbdf92d2ac9824ea6144955c74043a6005f79d assets/create/blockstates/acacia_window.json
 6a67703c2697d81b7dc83e9d72a66f9c9ff08383 assets/create/blockstates/acacia_window_pane.json
 c3ae87b62e81d8e9476eccd793bb1548d74c66a1 assets/create/blockstates/adjustable_chain_gearshift.json
@@ -569,7 +569,7 @@ a60c9c8241e40c2e28f5760c0ca6e80cfe9d59f3 assets/create/blockstates/steam_whistle
 8865500bcd2e4d467e74edb3509850fa92a5809f assets/create/blockstates/sticker.json
 bed0534e618105184bc877b104230403ca85bb58 assets/create/blockstates/sticky_mechanical_piston.json
 c7c17ff17b98ce85d355f2f9b4509271bc283843 assets/create/blockstates/stockpile_switch.json
-2d66ca4b6916eac170b3b8552705b699f569bae2 assets/create/blockstates/stock_link.json
+d17e6ac368278bd60442e2f19eb064a31c4106d2 assets/create/blockstates/stock_link.json
 9989bda294fbffc5f659d2e608e01dea424c7694 assets/create/blockstates/stock_ticker.json
 a70c025de5d85180f371ff05bbdc531d8bdfaab1 assets/create/blockstates/stressometer.json
 8086f80c532fad42b37fcdc590b890ed7e8c3fe9 assets/create/blockstates/tiled_glass.json
@@ -642,8 +642,8 @@ b0d8f08968763a5f74e5cd5644377a76a9f39753 assets/create/blockstates/yellow_toolbo
 fe8c497aacc641c2f01cec90bba9f19e59cc2ed2 assets/create/blockstates/yellow_valve_handle.json
 e819e93fdcbe9fd9c050a052d2718ff3b3539365 assets/create/blockstates/zinc_block.json
 64121dcb216381c83b4fe28aa361ea07c24c9ad0 assets/create/blockstates/zinc_ore.json
-7c975eddc8318d59bb77fa5667d4358f1bd168c5 assets/create/lang/en_ud.json
-5bb378436e68d5a1428ac801c3bc5a4443f8b657 assets/create/lang/en_us.json
+1c24597f2b10409d8b8cf6819dd8dfe41f2861f2 assets/create/lang/en_ud.json
+575042f88772cd1553c19a924aa1d95d38cd93ba assets/create/lang/en_us.json
 a97e1060e00ae701a02e39cd4ef8054cf345fac4 assets/create/models/block/acacia_window.json
 103e032c0b1a0a6a27c67da8c91179a564bd281c assets/create/models/block/acacia_window_pane_noside.json
 fb00b627abda76ad4fea867ca57dbfadd24fffa3 assets/create/models/block/acacia_window_pane_noside_alt.json
@@ -2477,7 +2477,7 @@ b82ab0c69df330f6f938ed1beee7b4add67d2e50 assets/create/models/item/steam_engine.
 54f200be903e056e5cf9e2186f0a0a51f8f0f84e assets/create/models/item/sticker.json
 0f88de164439640cc175ceef2017f7416b5a7018 assets/create/models/item/sticky_mechanical_piston.json
 4b640b66765b206f8c2884b7c1a1ef860b81d841 assets/create/models/item/stockpile_switch.json
-c04a4ef6debb04d305d74d9b034c1e95c6b9e956 assets/create/models/item/stock_link.json
+97222d9eb36944a89b8047423eafa6af3da82b0b assets/create/models/item/stock_link.json
 67c98c6c7f2122850acfbee34688572934fdd226 assets/create/models/item/stock_ticker.json
 6ee792277b9fd980c40e18e841afa63fc500ed0b assets/create/models/item/stressometer.json
 8d4ce1ccf180016506292f63188c10d0dabe0ee3 assets/create/models/item/sturdy_sheet.json

@@ -2,8 +2,8 @@ package com.simibubi.create.content.trains;
 
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.animation.LerpedFloat;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.animation.LerpedFloat;
 
 public class CameraDistanceModifier {
 

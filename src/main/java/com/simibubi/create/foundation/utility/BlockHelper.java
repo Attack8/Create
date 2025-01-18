@@ -18,7 +18,7 @@ import com.simibubi.create.foundation.blockEntity.IMergeableBE;
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
 import com.simibubi.create.impl.schematic.nbt.SchematicSafeNBTRegistryImpl;
 
-import net.createmod.catnip.utility.NBTProcessors;
+import net.createmod.catnip.nbt.NBTProcessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;

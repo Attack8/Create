@@ -9,7 +9,7 @@ import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.foundation.block.connected.CTSpriteShiftEntry;
 
-import net.createmod.catnip.utility.Couple;
+import net.createmod.catnip.data.Couple;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

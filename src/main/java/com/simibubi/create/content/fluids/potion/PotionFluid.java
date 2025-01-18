@@ -4,11 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
-import io.netty.buffer.ByteBuf;
-
-import net.createmod.catnip.utility.lang.Lang;
-
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
@@ -17,6 +12,9 @@ import com.simibubi.create.AllFluids;
 import com.simibubi.create.AllFluids.TintedFluidType;
 import com.simibubi.create.content.fluids.VirtualFluid;
 
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,6 +26,7 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.FluidState;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class PotionFluid extends VirtualFluid {

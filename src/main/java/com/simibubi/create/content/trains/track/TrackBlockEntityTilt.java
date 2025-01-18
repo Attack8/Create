@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import com.simibubi.create.content.trains.graph.TrackNodeLocation;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;

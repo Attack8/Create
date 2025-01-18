@@ -8,7 +8,7 @@ import java.util.Random;
 import com.google.common.base.Strings;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;

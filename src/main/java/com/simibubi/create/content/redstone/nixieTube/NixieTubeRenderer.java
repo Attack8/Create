@@ -10,12 +10,12 @@ import com.simibubi.create.foundation.render.RenderTypes;
 import com.simibubi.create.foundation.utility.DyeHelper;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.render.CachedBuffers;
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.math.AngleHelper;
-import net.createmod.catnip.utility.theme.Color;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
@@ -143,7 +143,7 @@ public class NixieTubeRenderer extends SafeBlockEntityRenderer<NixieTubeBlockEnt
 
 		ms.pushPose();
 		ms.translate(1 / 2f, 7.5f / 16f, 1 / 2f);
-		float renderTime = LevelTickHolder.getRenderTime(be.getLevel());
+		float renderTime = AnimationTickHolder.getRenderTime(be.getLevel());
 
 		for (boolean first : Iterate.trueAndFalse) {
 			Vec3 lampVec = Vec3.atCenterOf(be.getBlockPos());

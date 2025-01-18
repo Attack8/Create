@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.simibubi.create.AllBlockEntityTypes;
 
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.NBTProcessors;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.nbt.NBTProcessors;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;

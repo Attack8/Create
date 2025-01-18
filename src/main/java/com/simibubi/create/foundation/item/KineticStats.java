@@ -19,10 +19,10 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CKinetics;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.lang.Components;
-import net.createmod.catnip.utility.lang.Lang;
-import net.createmod.catnip.utility.lang.LangBuilder;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.lang.Lang;
+import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;

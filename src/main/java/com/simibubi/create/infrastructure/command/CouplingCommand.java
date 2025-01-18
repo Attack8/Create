@@ -14,8 +14,8 @@ import com.simibubi.create.content.contraptions.minecart.CouplingHandler;
 import com.simibubi.create.content.contraptions.minecart.capability.CapabilityMinecartController;
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartController;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;

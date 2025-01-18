@@ -1,7 +1,7 @@
 package com.simibubi.create.content.equipment;
 
 
-import net.createmod.catnip.utility.levelWrappers.PlacementSimulationServerLevel;
+import net.createmod.catnip.levelWrappers.PlacementSimulationServerLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;

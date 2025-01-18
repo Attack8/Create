@@ -18,9 +18,9 @@ import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import dev.engine_room.flywheel.lib.util.RecyclingPoseStack;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.theme.Color;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.Direction;
@@ -111,7 +111,7 @@ public class ArmVisual extends SingleAxisRotatingVisual<ArmBlockEntity> implemen
 	}
 
 	private void animateRave(float partialTick) {
-		var ticks = LevelTickHolder.getTicks(blockEntity.getLevel());
+		var ticks = AnimationTickHolder.getTicks(blockEntity.getLevel());
 		float renderTick = ticks + partialTick + (blockEntity.hashCode() % 64);
 
 		float baseAngle = (renderTick * 10) % 360;

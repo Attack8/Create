@@ -9,7 +9,7 @@ import com.simibubi.create.Create;
 
 import net.createmod.catnip.gui.element.DelegatedStencilElement;
 import net.createmod.catnip.gui.element.ScreenElement;
-import net.createmod.catnip.utility.theme.Color;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -162,7 +162,7 @@ public class AllIcons implements ScreenElement {
 		I_FX_FIELD_ON = next(),
 		I_FX_BLEND = next(),
 		I_FX_BLEND_OFF = next(),
-		
+
 		I_SEND_ONLY = newRow(),
 		I_SEND_AND_RECEIVE = next(),
 		I_PARTIAL_REQUESTS = next(),

@@ -15,7 +15,7 @@ import com.simibubi.create.content.logistics.vault.ItemVaultBlockEntity;
 import com.simibubi.create.content.processing.recipe.ProcessingInventory;
 
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -115,7 +115,6 @@ public class MountedStorage {
 		}
 
 		RegistryAccess registryAccess = level.registryAccess();
-
 		if (blockEntity instanceof ChestBlockEntity) {
 			CompoundTag tag = blockEntity.saveWithFullMetadata(registryAccess);
 			if (tag.contains("LootTable", 8))

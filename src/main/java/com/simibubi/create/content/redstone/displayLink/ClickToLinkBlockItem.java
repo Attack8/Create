@@ -8,8 +8,8 @@ import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import io.netty.buffer.ByteBuf;
-import net.createmod.catnip.CatnipClient;
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -164,7 +165,7 @@ public abstract class ClickToLinkBlockItem extends BlockItem {
 			lastShownPos = selectedPos;
 		}
 
-		CatnipClient.OUTLINER.showAABB("target", lastShownAABB)
+		Outliner.getInstance().showAABB("target", lastShownAABB)
 			.colored(0xffcb74)
 			.lineWidth(1 / 16f);
 	}

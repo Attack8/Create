@@ -13,7 +13,7 @@ import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
 import net.createmod.catnip.render.SpriteShiftEntry;
-import net.createmod.catnip.render.VirtualRenderHelper;
+import net.createmod.ponder.render.VirtualRenderHelper;
 
 public class RopePulleyVisual extends AbstractPulleyVisual<PulleyBlockEntity> {
 	public RopePulleyVisual(VisualizationContext context, PulleyBlockEntity blockEntity, float partialTick) {

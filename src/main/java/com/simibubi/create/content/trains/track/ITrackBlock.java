@@ -14,8 +14,8 @@ import com.simibubi.create.content.trains.graph.TrackNodeLocation.DiscoveredLoca
 import com.simibubi.create.content.trains.track.TrackTargetingBehaviour.RenderedTrackOverlayType;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.AxisDirection;

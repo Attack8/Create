@@ -2,8 +2,8 @@ package com.simibubi.create.foundation.block;
 
 import com.simibubi.create.foundation.utility.RaycastHelper;
 
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -32,7 +32,7 @@ public class BigOutlines {
 
 		result = null;
 
-		Vec3 origin = player.getEyePosition(LevelTickHolder.getPartialTicks(mc.level));
+		Vec3 origin = player.getEyePosition(AnimationTickHolder.getPartialTicks(mc.level));
 
 		double maxRange = mc.hitResult == null ? Double.MAX_VALUE
 			: mc.hitResult.getLocation()

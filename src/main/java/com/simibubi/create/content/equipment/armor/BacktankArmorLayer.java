@@ -4,10 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.foundation.mixin.accessor.EntityRenderDispatcherAccessor;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.math.AngleHelper;
-import net.createmod.ponder.utility.LevelTickHolder;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -70,7 +70,7 @@ public class BacktankArmorLayer<T extends LivingEntity, M extends EntityModel<T>
 			.rotateYDegrees(180)
 			.uncenter()
 			.translate(0, 6.5f / 16, 11f / 16)
-			.rotate(AngleHelper.rad(2 * LevelTickHolder.getRenderTime(entity.level()) % 360), Direction.EAST)
+			.rotate(AngleHelper.rad(2 * AnimationTickHolder.getRenderTime(entity.level()) % 360), Direction.EAST)
 			.translate(0, -6.5f / 16, -11f / 16);
 
 		cogs.disableDiffuse()

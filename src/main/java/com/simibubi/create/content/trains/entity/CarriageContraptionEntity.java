@@ -28,10 +28,10 @@ import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.lang.Components;
-import net.createmod.catnip.utility.theme.Color;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;

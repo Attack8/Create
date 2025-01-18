@@ -4,7 +4,7 @@ import com.simibubi.create.Create;
 import com.simibubi.create.foundation.block.connected.ConnectedTextureBehaviour.CTContext;
 import com.simibubi.create.foundation.block.connected.ConnectedTextureBehaviour.ContextRequirement;
 
-import net.createmod.catnip.utility.lang.Lang;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.resources.ResourceLocation;
 
 public enum AllCTTypes implements CTType {
@@ -104,7 +104,7 @@ public enum AllCTTypes implements CTType {
 					return context.bottomLeft ? 2 : 5;
 				return 1;
 			}
-			
+
 			if (downDrops) {
 				if (leftDrops)
 					return context.topRight ? 8 : 5;
@@ -112,15 +112,15 @@ public enum AllCTTypes implements CTType {
 					return context.topLeft ? 10 : 5;
 				return 9;
 			}
-			
+
 			if (leftDrops)
 				return 4;
 			if (rightDrops)
 				return 6;
-			
+
 			if (!context.up || !context.down || !context.left || !context.right)
 				return 5;
-			
+
 			if (context.bottomLeft && context.topRight) {
 				if (context.topLeft && !context.bottomRight)
 					return 12;
@@ -129,7 +129,7 @@ public enum AllCTTypes implements CTType {
 				if (!context.bottomRight && !context.topLeft)
 					return 7;
 			}
-			
+
 			if (context.bottomRight && context.topLeft) {
 				if (context.topRight && !context.bottomLeft)
 					return 13;
@@ -138,7 +138,7 @@ public enum AllCTTypes implements CTType {
 				if (!context.bottomLeft && !context.topRight)
 					return 11;
 			}
-			
+
 			return 5;
 		}
 	},

@@ -64,7 +64,7 @@ import com.simibubi.create.content.logistics.filter.FilterScreenPacket;
 import com.simibubi.create.content.logistics.funnel.FunnelFlapPacket;
 import com.simibubi.create.content.logistics.packagePort.PackagePortConfigurationPacket;
 import com.simibubi.create.content.logistics.packagePort.PackagePortPlacementPacket;
-import com.simibubi.create.content.logistics.packagerLink.PackagerLinkEffectPacket;
+import com.simibubi.create.content.logistics.packagerLink.WiFiEffectPacket;
 import com.simibubi.create.content.logistics.redstoneRequester.RedstoneRequesterConfigurationPacket;
 import com.simibubi.create.content.logistics.redstoneRequester.RedstoneRequesterEffectPacket;
 import com.simibubi.create.content.logistics.stockTicker.LogisticalStockRequestPacket;
@@ -234,7 +234,7 @@ public enum AllPackets implements BasePacketPayload.PacketTypeProvider {
 	PACKAGE_DESTROYED(PackageDestroyPacket.class, PackageDestroyPacket.STREAM_CODEC),
 	LOGISTICS_STOCK_RESPONSE(LogisticalStockResponsePacket.class, LogisticalStockResponsePacket.STREAM_CODEC),
 	FACTORY_PANEL_EFFECT(FactoryPanelEffectPacket.class, FactoryPanelEffectPacket.STREAM_CODEC),
-	PACKAGER_LINK_EFFECT(PackagerLinkEffectPacket.class, PackagerLinkEffectPacket.STREAM_CODEC),
+	PACKAGER_LINK_EFFECT(WiFiEffectPacket.class, WiFiEffectPacket.STREAM_CODEC),
 	REDSTONE_REQUESTER_EFFECT(RedstoneRequesterEffectPacket.class, RedstoneRequesterEffectPacket.STREAM_CODEC),
 	KNOCKBACK(KnockbackPacket.class, KnockbackPacket.STREAM_CODEC),
 	TRAIN_MAP_SYNC(TrainMapSyncPacket.class, TrainMapSyncPacket.STREAM_CODEC),

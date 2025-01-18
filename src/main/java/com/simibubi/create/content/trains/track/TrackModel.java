@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.foundation.model.BakedQuadHelper;
 
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;

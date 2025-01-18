@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import com.simibubi.create.AllBogeyStyles;
 import com.simibubi.create.foundation.blockEntity.CachedRenderBBBlockEntity;
 
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.animation.LerpedFloat;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.animation.LerpedFloat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

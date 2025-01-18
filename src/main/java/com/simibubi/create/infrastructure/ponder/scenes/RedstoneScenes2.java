@@ -8,7 +8,7 @@ import com.simibubi.create.content.redstone.nixieTube.NixieTubeBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder.WorldInstructions;
 
-import net.createmod.catnip.utility.Pointing;
+import net.createmod.catnip.math.Pointing;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.WorldSectionElement;
 import net.createmod.ponder.api.scene.SceneBuilder;
@@ -360,9 +360,9 @@ public class RedstoneScenes2 {
 		scene.idle(1);
 		world.toggleRedstonePower(select.position(0, 1, 2));
 		scene.idle(10);
-		
+
 		scene.markAsFinished();
-		
+
 		scene.idle(86);
 		world.cycleBlockProperty(circuitPos, BrassDiodeBlock.POWERING);
 		world.toggleRedstonePower(select.fromTo(1, 1, 2, 0, 1, 2));

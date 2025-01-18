@@ -6,7 +6,7 @@ import com.simibubi.create.Create;
 import com.simibubi.create.compat.Mods;
 import com.tterrag.registrate.util.entry.RegistryEntry;
 
-import net.createmod.catnip.utility.RegisteredObjectsHelper;
+import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -85,7 +85,7 @@ public class AllCreatePonderTags {
 				.title("Item Transportation")
 				.description("Components which help moving items around")
 				.register();
-		
+
 		helper.registerTag(HIGH_LOGISTICS)
 				.addToIndex()
 				.item(AllBlocks.STOCK_TICKER.get())
@@ -365,7 +365,7 @@ public class AllCreatePonderTags {
 				.add(AllBlocks.FACTORY_GAUGE)
 				.add(AllBlocks.REPACKAGER)
 				.add(AllItems.PACKAGE_FILTER);
-		
+
 		HELPER.addToTag(CONTRAPTION_ACTOR)
 				.add(AllBlocks.MECHANICAL_HARVESTER)
 				.add(AllBlocks.MECHANICAL_PLOUGH)

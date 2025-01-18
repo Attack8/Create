@@ -9,10 +9,10 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.CatnipClient;
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.theme.Color;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.outliner.Outliner;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -34,6 +34,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -213,7 +214,7 @@ public class EjectorTargetHandler {
 		ClientLevel world = mc.level;
 
 		AABB bb = new AABB(0, 0, 0, 1, 0, 1).move(currentSelection.offset(-validX, -yDiff, -validZ));
-		CatnipClient.OUTLINER.chaseAABB("valid", bb)
+		Outliner.getInstance().chaseAABB("valid", bb)
 			.colored(intColor)
 			.lineWidth(1 / 16f);
 
@@ -263,7 +264,7 @@ public class EjectorTargetHandler {
 		BlockState state = world.getBlockState(pos);
 		VoxelShape shape = state.getShape(world, pos);
 		AABB boundingBox = shape.isEmpty() ? new AABB(BlockPos.ZERO) : shape.bounds();
-		CatnipClient.OUTLINER.showAABB("target", boundingBox.move(pos))
+		Outliner.getInstance().showAABB("target", boundingBox.move(pos))
 			.colored(0xffcb74)
 			.lineWidth(1 / 16f);
 	}

@@ -6,7 +6,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
@@ -41,7 +41,7 @@ public class TableClothFilteringBehaviour extends FilteringBehaviour {
 		return dbe().owner == null || player.getUUID()
 			.equals(dbe().owner);
 	}
-	
+
 	@Override
 	public boolean isSafeNBT() {
 		return false;
@@ -55,7 +55,7 @@ public class TableClothFilteringBehaviour extends FilteringBehaviour {
 	public boolean isCountVisible() {
 		return !filter.isEmpty();
 	}
-	
+
 	@Override
 	public boolean setFilter(ItemStack stack) {
 		int before = count;
@@ -63,7 +63,7 @@ public class TableClothFilteringBehaviour extends FilteringBehaviour {
 		count = before;
 		return result;
 	}
-	
+
 	@Override
 	public void setValueSettings(Player player, ValueSettings settings, boolean ctrlDown) {
 		if (getValueSettings().equals(settings))

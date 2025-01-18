@@ -3,7 +3,7 @@ package com.simibubi.create.content.equipment.zapper.terrainzapper;
 import com.mojang.serialization.Codec;
 import com.simibubi.create.foundation.gui.AllIcons;
 
-import net.createmod.catnip.utility.lang.Lang;
+import net.createmod.catnip.lang.Lang;
 
 import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 

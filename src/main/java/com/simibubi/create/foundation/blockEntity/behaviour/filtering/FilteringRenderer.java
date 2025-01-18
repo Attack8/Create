@@ -16,10 +16,10 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxRenderer;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform.Sided;
 
-import net.createmod.catnip.CatnipClient;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.Pair;
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -89,7 +89,7 @@ public class FilteringRenderer {
 			ValueBox box = new ItemValueBox(label, bb, pos, filter, behaviour.getCountLabelForValueBox());
 			box.passive(!hit || behaviour.bypassesInput(mainhandItem));
 
-			CatnipClient.OUTLINER
+			Outliner.getInstance()
 				.showOutline(Pair.of("filter" + behaviour.netId(), pos), box.transform(behaviour.slotPositioning))
 				.lineWidth(1 / 64f)
 				.withFaceTexture(hit ? AllSpecialTextures.THIN_CHECKERED : null)

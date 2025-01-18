@@ -2,7 +2,6 @@ package com.simibubi.create.content.equipment.potatoCannon;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
@@ -14,13 +13,12 @@ import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.equipment.armor.BacktankUtil;
 import com.simibubi.create.content.equipment.zapper.ShootableGadgetItemMethods;
 import com.simibubi.create.foundation.item.CustomArmPoseItem;
-import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel.ArmPose;
@@ -51,9 +49,9 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmPoseItem {
 
@@ -302,12 +300,6 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 	@Override
 	public int getDefaultProjectileRange() {
 		return 15;
-	}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-		consumer.accept(SimpleCustomRenderer.create(this, new PotatoCannonItemRenderer()));
 	}
 
 }

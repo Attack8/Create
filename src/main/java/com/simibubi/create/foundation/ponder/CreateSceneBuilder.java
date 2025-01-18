@@ -28,9 +28,9 @@ import com.simibubi.create.foundation.ponder.element.BeltItemElement;
 import com.simibubi.create.foundation.ponder.element.ExpandedParrotElement;
 import com.simibubi.create.foundation.ponder.instruction.AnimateBlockEntityInstruction;
 
-import net.createmod.catnip.utility.FunctionalHelper;
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.data.FunctionalHelper;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.ParrotElement;
 import net.createmod.ponder.api.element.ParrotPose;

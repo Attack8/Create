@@ -41,8 +41,8 @@ import net.createmod.catnip.platform.CatnipServices;
 
 import dev.engine_room.flywheel.api.backend.BackendManager;
 import io.netty.handler.codec.DecoderException;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.math.AngleHelper;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -75,6 +75,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;

@@ -13,7 +13,7 @@ import com.simibubi.create.foundation.utility.DistExecutor;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
@@ -29,6 +29,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+
 import net.neoforged.api.distmarker.Dist;
 
 public class BacktankUtil {

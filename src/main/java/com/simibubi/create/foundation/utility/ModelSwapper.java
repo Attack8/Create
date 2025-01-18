@@ -10,7 +10,7 @@ import com.simibubi.create.foundation.item.render.CustomItemModels;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModel;
 import com.simibubi.create.foundation.item.render.CustomRenderedItems;
 
-import net.createmod.catnip.utility.RegisteredObjectsHelper;
+import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;

@@ -8,9 +8,9 @@ import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.ponder.utility.LevelTickHolder;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -41,7 +41,7 @@ public class EncasedFanRenderer extends KineticBlockEntityRenderer<EncasedFanBlo
 		SuperByteBuffer fanInner =
 				CachedBuffers.partialFacing(AllPartialModels.ENCASED_FAN_INNER, be.getBlockState(), direction.getOpposite());
 
-		float time = LevelTickHolder.getRenderTime(be.getLevel());
+		float time = AnimationTickHolder.getRenderTime(be.getLevel());
 		float speed = be.getSpeed() * 5;
 		if (speed > 0)
 			speed = Mth.clamp(speed, 80, 64 * 20);

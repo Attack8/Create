@@ -18,7 +18,7 @@ import com.simibubi.create.foundation.item.TooltipHelper;
 import net.createmod.catnip.platform.CatnipServices;
 
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.utility.FontHelper.Palette;
+import net.createmod.catnip.lang.FontHelper.Palette;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;

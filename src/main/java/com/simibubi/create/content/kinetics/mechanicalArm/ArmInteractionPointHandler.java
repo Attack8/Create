@@ -12,7 +12,7 @@ import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPoint.Mo
 import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.CatnipClient;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -201,7 +202,7 @@ public class ArmInteractionPointHandler {
 
 			int color = point.getMode()
 				.getColor();
-			CatnipClient.OUTLINER.showAABB(point, shape.bounds()
+			Outliner.getInstance().showAABB(point, shape.bounds()
 				.move(pos))
 				.colored(color)
 				.lineWidth(1 / 16f);

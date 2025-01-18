@@ -20,14 +20,14 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CClient;
 
-import net.createmod.catnip.CatnipClient;
 import net.createmod.catnip.gui.element.BoxElement;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.lang.Components;
-import net.createmod.catnip.utility.outliner.Outline;
-import net.createmod.catnip.utility.outliner.Outliner.OutlineEntry;
-import net.createmod.catnip.utility.theme.Color;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.outliner.Outline;
+import net.createmod.catnip.outliner.Outliner;
+import net.createmod.catnip.outliner.Outliner.OutlineEntry;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
@@ -51,7 +51,7 @@ public class GoggleOverlayRenderer {
 
 	public static final LayeredDraw.Layer OVERLAY = GoggleOverlayRenderer::renderOverlay;
 
-	private static final Map<Object, OutlineEntry> outlines = CatnipClient.OUTLINER.getOutlines();
+	private static final Map<Object, OutlineEntry> outlines = Outliner.getInstance().getOutlines();
 
 	public static int hoverTicks = 0;
 	public static BlockPos lastHovered = null;

@@ -21,8 +21,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -388,23 +388,23 @@ public class PulleyBlockEntity extends LinearActuatorBlockEntity implements Thre
 	public void animateOffset(float forcedOffset) {
 		offset = forcedOffset;
 	}
-	
+
 	public BlockPos getMirrorParent() {
 		return mirrorParent;
 	}
 
 	// Threshold switch
-	
+
 	@Override
 	public int getCurrentValue() {
 		return worldPosition.getY() - (int) getInterpolatedOffset(.5f);
 	}
-	
+
 	@Override
 	public int getMinValue() {
 		return level.getMinBuildHeight();
 	}
-	
+
 	@Override
 	public int getMaxValue() {
 		return worldPosition.getY();
@@ -414,5 +414,5 @@ public class PulleyBlockEntity extends LinearActuatorBlockEntity implements Thre
 	public MutableComponent format(int value) {
 		return CreateLang.translateDirect("gui.threshold_switch.pulley_y_level", value);
 	}
-	
+
 }

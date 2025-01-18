@@ -15,11 +15,11 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.foundation.block.IBE;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.lang.Components;
-import net.createmod.catnip.utility.placement.IPlacementHelper;
-import net.createmod.catnip.utility.placement.PlacementHelpers;
-import net.createmod.catnip.utility.placement.PlacementOffset;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.placement.IPlacementHelper;
+import net.createmod.catnip.placement.PlacementHelpers;
+import net.createmod.catnip.placement.PlacementOffset;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;

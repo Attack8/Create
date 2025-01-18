@@ -8,7 +8,7 @@ import com.simibubi.create.foundation.networking.ISyncPersistentData.PersistentD
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.WorldAttached;
+import net.createmod.catnip.data.WorldAttached;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;

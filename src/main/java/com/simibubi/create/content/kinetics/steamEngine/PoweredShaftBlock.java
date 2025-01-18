@@ -7,9 +7,9 @@ import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.simpleRelays.AbstractShaftBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ShaftBlock;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.placement.IPlacementHelper;
-import net.createmod.catnip.utility.placement.PlacementHelpers;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.placement.IPlacementHelper;
+import net.createmod.catnip.placement.PlacementHelpers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

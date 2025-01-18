@@ -5,6 +5,8 @@ import java.util.Collection;
 
 import javax.annotation.Nullable;
 
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import com.simibubi.create.AllItems;
@@ -15,9 +17,9 @@ import com.simibubi.create.foundation.utility.RaycastHelper;
 import com.simibubi.create.foundation.utility.RaycastHelper.PredicateTraceResult;
 
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
@@ -32,12 +34,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 @EventBusSubscriber(Dist.CLIENT)
 public class ContraptionHandlerClient {

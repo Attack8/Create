@@ -6,8 +6,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 
-import net.createmod.catnip.CatnipClient;
-import net.createmod.catnip.utility.AnimationTickHolder;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.component.DataComponents;
@@ -46,7 +46,7 @@ public class LogisticallyLinkedClientHandler {
 				.size(); i++) {
 				AABB aabb = shape.toAabbs()
 					.get(i);
-				CatnipClient.OUTLINER.showAABB(Pair.of(behaviour, i), aabb.inflate(-1 / 128f)
+				Outliner.getInstance().showAABB(Pair.of(behaviour, i), aabb.inflate(-1 / 128f)
 					.move(be.getBlockPos()), 2)
 					.lineWidth(1 / 32f)
 					.disableLineNormals()

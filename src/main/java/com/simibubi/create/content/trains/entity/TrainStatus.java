@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import com.google.common.collect.Streams;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -44,7 +44,7 @@ public class TrainStatus {
 		displayInformation("no_match", false, filter);
 		navigation = true;
 	}
-	
+
 	public void failedPackageNoTarget(String address) {
 		if (navigation)
 			return;

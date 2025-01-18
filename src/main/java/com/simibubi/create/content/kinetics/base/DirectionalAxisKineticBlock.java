@@ -3,7 +3,7 @@ package com.simibubi.create.content.kinetics.base;
 import com.simibubi.create.api.contraption.transformable.ITransformableBlock;
 import com.simibubi.create.content.contraptions.StructureTransform;
 
-import net.createmod.catnip.utility.Iterate;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;

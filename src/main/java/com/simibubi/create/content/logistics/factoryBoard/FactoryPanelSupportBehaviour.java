@@ -14,6 +14,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
 public class FactoryPanelSupportBehaviour extends BlockEntityBehaviour {

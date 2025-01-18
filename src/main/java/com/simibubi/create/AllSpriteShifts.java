@@ -12,8 +12,8 @@ import com.simibubi.create.foundation.block.connected.CTType;
 
 import net.createmod.catnip.render.SpriteShiftEntry;
 import net.createmod.catnip.render.SpriteShifter;
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.lang.Lang;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.WeatheringCopper.WeatherState;
 import net.minecraft.world.level.block.state.properties.WoodType;
@@ -46,7 +46,7 @@ public class AllSpriteShifts {
 		VERTICAL_FRAMED_GLASS = getCT(AllCTTypes.VERTICAL, "palettes/framed_glass", "palettes/vertical_framed_glass"),
 		ORNATE_IRON_WINDOW = vertical("palettes/ornate_iron_window"),
 		INDUSTRIAL_IRON_WINDOW = getCT(AllCTTypes.RECTANGLE, "palettes/industrial_iron_window"),
-		
+
 		OLD_FACTORY_WINDOW_1 = getCT(AllCTTypes.RECTANGLE, "palettes/weathered_iron_window", "palettes/weathered_iron_window_1"),
 		OLD_FACTORY_WINDOW_2 = getCT(AllCTTypes.RECTANGLE, "palettes/weathered_iron_window", "palettes/weathered_iron_window_2"),
 		OLD_FACTORY_WINDOW_3 = getCT(AllCTTypes.RECTANGLE, "palettes/weathered_iron_window", "palettes/weathered_iron_window_3"),
@@ -160,5 +160,5 @@ public class AllSpriteShifts {
 	public static CTSpriteShiftEntry getWoodenWindow(WoodType woodType) {
 		return WOODEN_WINDOWS.get(woodType);
 	}
-	
+
 }

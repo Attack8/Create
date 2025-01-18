@@ -15,8 +15,8 @@ import com.simibubi.create.content.trains.signal.SignalEdgeGroupPacket;
 import com.simibubi.create.content.trains.signal.TrackEdgePoint;
 import net.createmod.catnip.platform.CatnipServices;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.server.level.ServerPlayer;
 
 public class TrackGraphSync {

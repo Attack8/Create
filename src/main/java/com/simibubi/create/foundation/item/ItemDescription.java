@@ -17,8 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.utility.FontHelper.Palette;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.FontHelper.Palette;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;

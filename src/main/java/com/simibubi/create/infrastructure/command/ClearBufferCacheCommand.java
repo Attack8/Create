@@ -3,11 +3,12 @@ package com.simibubi.create.infrastructure.command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.simibubi.create.CreateClient;
 
-import net.createmod.catnip.CatnipClient;
+import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.ponder.PonderClient;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -26,7 +27,7 @@ public class ClearBufferCacheCommand {
 
 	@OnlyIn(Dist.CLIENT)
 	private static void execute() {
-		CatnipClient.invalidateRenderers();
+		PonderClient.invalidateRenderers();
 		CreateClient.invalidateRenderers();
 	}
 }

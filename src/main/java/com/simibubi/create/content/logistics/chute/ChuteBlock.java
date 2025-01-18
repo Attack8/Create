@@ -8,8 +8,8 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.logistics.funnel.FunnelBlock;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.lang.Lang;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;

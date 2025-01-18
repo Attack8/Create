@@ -15,12 +15,12 @@ import com.simibubi.create.foundation.utility.DyeHelper;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.render.CachedBuffers;
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.math.AngleHelper;
-import net.createmod.catnip.utility.theme.Color;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -104,7 +104,7 @@ public class ContraptionControlsRenderer extends SmartBlockEntityRenderer<Contra
 
 		float buttondepth = -.25f;
 		if (ctx.contraption.presentBlockEntities.get(ctx.localPos) instanceof ContraptionControlsBlockEntity cbe)
-			buttondepth += -1 / 24f * cbe.button.getValue(LevelTickHolder.getPartialTicks(renderWorld));
+			buttondepth += -1 / 24f * cbe.button.getValue(AnimationTickHolder.getPartialTicks(renderWorld));
 
 		if (!text.isBlank() && playerDistance < 100) {
 			int actualWidth = fontRenderer.width(text);

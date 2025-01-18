@@ -19,9 +19,9 @@ import com.simibubi.create.content.redstone.link.RedstoneLinkBlock;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 
-import net.createmod.catnip.utility.IntAttached;
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.Pointing;
+import net.createmod.catnip.data.IntAttached;
+import net.createmod.catnip.math.Pointing;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.WorldSectionElement;

@@ -17,9 +17,9 @@ import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringB
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.TankManipulationBehaviour;
 import com.simibubi.create.foundation.utility.FluidFormatter;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.IntAttached;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.IntAttached;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;

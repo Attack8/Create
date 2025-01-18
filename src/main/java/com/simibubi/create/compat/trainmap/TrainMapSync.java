@@ -24,7 +24,7 @@ import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipLargerStreamCodecs;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -36,6 +36,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 public class TrainMapSync {

@@ -1,10 +1,13 @@
 package com.simibubi.create.content.equipment.armor;
 
+import java.util.List;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllItems;
+
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.utility.lang.Components;
-import net.createmod.catnip.utility.theme.Color;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,8 +19,6 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
-
-import java.util.List;
 
 public class RemainingAirOverlay implements LayeredDraw.Layer {
 	public static final RemainingAirOverlay INSTANCE = new RemainingAirOverlay();

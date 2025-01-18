@@ -18,8 +18,8 @@ import com.simibubi.create.content.trains.schedule.destination.DestinationInstru
 import com.simibubi.create.content.trains.schedule.destination.ScheduleInstruction;
 import com.simibubi.create.content.trains.station.GlobalStation;
 
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -45,7 +45,7 @@ public class ScheduleRuntime {
 	public boolean completed;
 	public int currentEntry;
 	public State state;
-	
+
 	public List<Integer> conditionProgress;
 	public List<CompoundTag> conditionContext;
 	public String currentTitle;
@@ -54,7 +54,7 @@ public class ScheduleRuntime {
 	public List<Integer> predictionTicks;
 
 	public boolean displayLinkUpdateRequested;
-	
+
 	private static final int INTERVAL = 40;
 	private int cooldown;
 
@@ -62,7 +62,7 @@ public class ScheduleRuntime {
 		this.train = train;
 		reset();
 	}
-	
+
 	public void startCooldown() {
 		cooldown = INTERVAL;
 	}
@@ -148,13 +148,13 @@ public class ScheduleRuntime {
 	public void tickConditions(Level level) {
 		ScheduleEntry entry = schedule.entries.get(currentEntry);
 		List<List<ScheduleWaitCondition>> conditions = entry.conditions;
-		
+
 		if (!entry.instruction.supportsConditions()) {
 			state = State.PRE_TRANSIT;
 			currentEntry++;
 			return;
 		}
-		
+
 		for (int i = 0; i < conditions.size(); i++) {
 			List<ScheduleWaitCondition> list = conditions.get(i);
 			int progress = conditionProgress.get(i);

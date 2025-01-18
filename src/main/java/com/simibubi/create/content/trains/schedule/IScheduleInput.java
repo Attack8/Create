@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 
-import net.createmod.catnip.utility.Pair;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

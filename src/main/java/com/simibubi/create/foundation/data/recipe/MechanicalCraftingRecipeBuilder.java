@@ -10,7 +10,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.simibubi.create.content.kinetics.crafter.MechanicalCraftingRecipe;
 
-import net.createmod.catnip.utility.RegisteredObjectsHelper;
+import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;

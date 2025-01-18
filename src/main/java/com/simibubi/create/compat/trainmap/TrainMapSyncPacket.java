@@ -11,8 +11,9 @@ import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.UUIDUtil;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.network.FriendlyByteBuf;
+
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 

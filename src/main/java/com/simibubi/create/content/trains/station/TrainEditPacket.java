@@ -11,7 +11,7 @@ import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
 
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.UUIDUtil;

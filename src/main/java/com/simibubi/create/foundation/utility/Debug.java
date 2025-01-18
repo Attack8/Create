@@ -2,7 +2,7 @@ package com.simibubi.create.foundation.utility;
 
 import com.simibubi.create.Create;
 
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;

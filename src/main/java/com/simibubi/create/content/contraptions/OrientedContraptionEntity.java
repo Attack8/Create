@@ -1,6 +1,6 @@
 package com.simibubi.create.content.contraptions;
 
-import static net.createmod.catnip.utility.math.AngleHelper.angleLerp;
+import static net.createmod.catnip.math.AngleHelper.angleLerp;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -19,10 +19,10 @@ import com.simibubi.create.content.contraptions.mounted.MountedContraption;
 import com.simibubi.create.foundation.item.ItemHelper;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.NBTHelper;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.math.AngleHelper;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -47,6 +47,7 @@ import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 

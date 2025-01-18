@@ -161,6 +161,7 @@ import com.simibubi.create.content.kinetics.waterwheel.LargeWaterWheelBlock;
 import com.simibubi.create.content.kinetics.waterwheel.LargeWaterWheelBlockItem;
 import com.simibubi.create.content.kinetics.waterwheel.WaterWheelBlock;
 import com.simibubi.create.content.kinetics.waterwheel.WaterWheelStructuralBlock;
+import com.simibubi.create.content.kinetics.waterwheel.WaterWheelStructuralBlock.RenderProperties;
 import com.simibubi.create.content.logistics.chute.ChuteBlock;
 import com.simibubi.create.content.logistics.chute.ChuteGenerator;
 import com.simibubi.create.content.logistics.chute.ChuteItem;
@@ -188,6 +189,7 @@ import com.simibubi.create.content.logistics.packager.PackagerBlock;
 import com.simibubi.create.content.logistics.packager.repackager.RepackagerBlock;
 import com.simibubi.create.content.logistics.packagerLink.LogisticallyLinkedBlockItem;
 import com.simibubi.create.content.logistics.packagerLink.PackagerLinkBlock;
+import com.simibubi.create.content.logistics.packagerLink.PackagerLinkGenerator;
 import com.simibubi.create.content.logistics.redstoneRequester.RedstoneRequesterBlock;
 import com.simibubi.create.content.logistics.redstoneRequester.RedstoneRequesterBlockItem;
 import com.simibubi.create.content.logistics.stockTicker.StockTickerBlock;
@@ -274,6 +276,7 @@ import com.simibubi.create.foundation.block.CopperBlockSet;
 import com.simibubi.create.foundation.block.DyedBlockList;
 import com.simibubi.create.foundation.block.ItemUseOverrides;
 import com.simibubi.create.foundation.block.WrenchableDirectionalBlock;
+import com.simibubi.create.foundation.block.render.ReducedDestroyEffects;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.BlockStateGen;
 import com.simibubi.create.foundation.data.BuilderTransformers;
@@ -290,7 +293,7 @@ import com.tterrag.registrate.providers.RegistrateRecipeProvider;
 import com.tterrag.registrate.util.DataIngredient;
 import com.tterrag.registrate.util.entry.BlockEntry;
 
-import net.createmod.catnip.utility.Couple;
+import net.createmod.catnip.data.Couple;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
@@ -329,6 +332,7 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.Tags;
@@ -550,6 +554,7 @@ public class AllBlocks {
 		.transform(BlockStressDefaults.setImpact(0))
 		.onRegister(assignDataBehaviour(new ItemNameDisplaySource(), "combine_item_names"))
 		.onRegister(CreateRegistrate.blockModel(() -> BeltModel::new))
+		.clientExtension(() -> BeltBlock.RenderProperties::new)
 		.register();
 
 	public static final BlockEntry<ChainConveyorBlock> CHAIN_CONVEYOR =
@@ -611,6 +616,7 @@ public class AllBlocks {
 	public static final BlockEntry<WaterWheelStructuralBlock> WATER_WHEEL_STRUCTURAL =
 		REGISTRATE.block("water_wheel_structure", WaterWheelStructuralBlock::new)
 			.initialProperties(SharedProperties::wooden)
+			.clientExtension(() -> RenderProperties::new)
 			.blockstate((c, p) -> p.getVariantBuilder(c.get())
 				.forAllStatesExcept(BlockStateGen.mapToAir(p), WaterWheelStructuralBlock.FACING))
 			.properties(p -> p.noOcclusion()
@@ -824,6 +830,7 @@ public class AllBlocks {
 			.isRedstoneConductor((level, pos, state) -> false))
 		.transform(pickaxeOnly())
 		.addLayer(() -> RenderType::cutoutMipped)
+		.clientExtension(() -> ReducedDestroyEffects::new)
 		.blockstate(new ChuteGenerator()::generate)
 		.item(ChuteItem::new)
 		.transform(customItemModel("_", "block"))
@@ -837,6 +844,7 @@ public class AllBlocks {
 			.isSuffocating((level, pos, state) -> false)
 			.isRedstoneConductor((level, pos, state) -> false))
 		.addLayer(() -> RenderType::cutoutMipped)
+		.clientExtension(() -> ReducedDestroyEffects::new)
 		.transform(pickaxeOnly())
 		.blockstate((c, p) -> BlockStateGen.simpleBlock(c, p, AssetLookup.forPowered(c, p)))
 		.item()
@@ -1619,6 +1627,7 @@ public class AllBlocks {
 			.forceSolidOn())
 		.addLayer(() -> RenderType::cutoutMipped)
 		.transform(pickaxeOnly())
+		.clientExtension(() -> TrackBlock.RenderProperties::new)
 		.onRegister(CreateRegistrate.blockModel(() -> TrackModel::new))
 		.blockstate(new TrackBlockStateGenerator()::generate)
 		.tag(AllBlockTags.RELOCATION_NOT_SUPPORTED.tag)
@@ -1727,6 +1736,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.STONE))
 			.transform(pickaxeOnly())
 			.tag(AllBlockTags.SAFE_NBT.tag)
+			.clientExtension(() -> ReducedDestroyEffects::new)
 			.onRegister(movementBehaviour(FunnelMovementBehaviour.andesite()))
 			.blockstate(new FunnelGenerator("andesite", false)::generate)
 			.item(FunnelItem::new)
@@ -1742,6 +1752,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.STONE))
 			.transform(pickaxeOnly())
 			.tag(AllBlockTags.SAFE_NBT.tag)
+			.clientExtension(() -> ReducedDestroyEffects::new)
 			.blockstate(new BeltFunnelGenerator("andesite")::generate)
 			.loot((p, b) -> p.dropOther(b, ANDESITE_FUNNEL.get()))
 			.register();
@@ -1753,6 +1764,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_YELLOW))
 			.transform(pickaxeOnly())
 			.tag(AllBlockTags.SAFE_NBT.tag)
+			.clientExtension(() -> ReducedDestroyEffects::new)
 			.onRegister(movementBehaviour(FunnelMovementBehaviour.brass()))
 			.blockstate(new FunnelGenerator("brass", true)::generate)
 			.item(FunnelItem::new)
@@ -1768,6 +1780,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_YELLOW))
 			.transform(pickaxeOnly())
 			.tag(AllBlockTags.SAFE_NBT.tag)
+			.clientExtension(() -> ReducedDestroyEffects::new)
 			.blockstate(new BeltFunnelGenerator("brass")::generate)
 			.loot((p, b) -> p.dropOther(b, BRASS_FUNNEL.get()))
 			.register();
@@ -1926,9 +1939,9 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_BLUE)
 				.sound(SoundType.NETHERITE_BLOCK))
 			.transform(pickaxeOnly())
-			.blockstate((c, p) -> p.horizontalFaceBlock(c.get(), AssetLookup.forPowered(c, p)))
+			.blockstate(new PackagerLinkGenerator()::generate)
 			.item(LogisticallyLinkedBlockItem::new)
-			.transform(customItemModel("_", "block"))
+			.transform(customItemModel("_", "block_vertical"))
 			.register();
 
 	public static final BlockEntry<StockTickerBlock> STOCK_TICKER =

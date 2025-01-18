@@ -14,7 +14,7 @@ import com.google.common.base.Predicates;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Train;
 
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 

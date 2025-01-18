@@ -18,8 +18,8 @@ import com.simibubi.create.api.schematic.requirement.ISpecialBlockItemRequiremen
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.VoxelShaper;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VoxelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;

@@ -2,7 +2,7 @@ package com.simibubi.create.compat.thresholdSwitch;
 
 import com.simibubi.create.compat.Mods;
 
-import net.createmod.catnip.utility.RegisteredObjectsHelper;
+import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;

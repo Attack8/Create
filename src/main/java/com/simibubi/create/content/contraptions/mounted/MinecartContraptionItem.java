@@ -1,5 +1,11 @@
 package com.simibubi.create.content.contraptions.mounted;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.tuple.MutablePair;
+
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllMovementBehaviours;
@@ -14,7 +20,8 @@ import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
-import net.createmod.catnip.utility.NBTHelper;
+
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -41,15 +48,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-
-import org.apache.commons.lang3.tuple.MutablePair;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 @EventBusSubscriber
 public class MinecartContraptionItem extends Item {

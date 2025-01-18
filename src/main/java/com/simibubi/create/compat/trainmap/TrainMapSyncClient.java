@@ -9,8 +9,8 @@ import java.util.UUID;
 import com.simibubi.create.compat.trainmap.TrainMapSync.TrainMapSyncEntry;
 
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.data.Pair;
 
 public class TrainMapSyncClient {
 

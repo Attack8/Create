@@ -10,10 +10,9 @@ import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.AnimationTickHolder;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.theme.Color;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -65,7 +64,7 @@ public class ArmRenderer extends KineticBlockEntityRenderer<ArmBlockEntity> {
 
 		boolean rave = be.phase == Phase.DANCING && be.getSpeed() != 0;
 		if (rave) {
-			float renderTick = LevelTickHolder.getRenderTime(be.getLevel()) + (be.hashCode() % 64);
+			float renderTick = AnimationTickHolder.getRenderTime(be.getLevel()) + (be.hashCode() % 64);
 			baseAngle = (renderTick * 10) % 360;
 			lowerArmAngle = Mth.lerp((Mth.sin(renderTick / 4) + 1) / 2, -45, 15);
 			upperArmAngle = Mth.lerp((Mth.sin(renderTick / 8) + 1) / 4, -45, 95);

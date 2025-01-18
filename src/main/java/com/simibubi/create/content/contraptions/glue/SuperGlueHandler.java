@@ -1,11 +1,15 @@
 package com.simibubi.create.content.contraptions.glue;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.contraptions.BlockMovementChecks;
+
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.levelWrappers.RayTraceLevel;
-import net.createmod.catnip.utility.placement.IPlacementHelper;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.levelWrappers.RayTraceLevel;
+import net.createmod.catnip.placement.IPlacementHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -24,12 +28,10 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @EventBusSubscriber
 public class SuperGlueHandler {

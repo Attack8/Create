@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import net.createmod.catnip.platform.CatnipServices;
+
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.google.common.collect.Lists;

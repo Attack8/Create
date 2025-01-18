@@ -4,7 +4,7 @@ import com.simibubi.create.AllParticleTypes;
 import com.simibubi.create.content.fluids.particle.FluidParticleData;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

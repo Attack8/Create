@@ -14,9 +14,9 @@ import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.IHaveBigOutline;
 
-import net.createmod.catnip.utility.placement.IPlacementHelper;
-import net.createmod.catnip.utility.placement.PlacementHelpers;
-import net.createmod.catnip.utility.placement.PlacementOffset;
+import net.createmod.catnip.placement.IPlacementHelper;
+import net.createmod.catnip.placement.PlacementHelpers;
+import net.createmod.catnip.placement.PlacementOffset;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;

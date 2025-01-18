@@ -5,8 +5,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.RegisteredObjectsHelper;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 

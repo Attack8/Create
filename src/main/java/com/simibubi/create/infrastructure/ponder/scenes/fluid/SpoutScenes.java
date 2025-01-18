@@ -9,8 +9,8 @@ import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import com.simibubi.create.foundation.ponder.element.BeltItemElement;
 
-import net.createmod.catnip.utility.Pointing;
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.math.Pointing;
+import net.createmod.catnip.math.VecHelper;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.WorldSectionElement;

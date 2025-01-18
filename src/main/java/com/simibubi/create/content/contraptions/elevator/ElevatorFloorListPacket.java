@@ -10,8 +10,9 @@ import net.createmod.catnip.net.base.ServerboundPacketPayload;
 
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import io.netty.buffer.ByteBuf;
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.IntAttached;
+
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.IntAttached;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -21,10 +22,10 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public record ElevatorFloorListPacket(int entityId, List<IntAttached<Couple<String>>> floors) implements ClientboundPacketPayload {
-	public static final StreamCodec<ByteBuf, ElevatorFloorListPacket> STREAM_CODEC = StreamCodec.composite(
-			ByteBufCodecs.INT, ElevatorFloorListPacket::entityId,
-			CatnipStreamCodecBuilders.list(IntAttached.streamCodec(Couple.streamCodec(ByteBufCodecs.STRING_UTF8))), ElevatorFloorListPacket::floors,
-			ElevatorFloorListPacket::new
+	public static final StreamCodec<ByteBuf, com.simibubi.create.content.contraptions.elevator.ElevatorFloorListPacket> STREAM_CODEC = StreamCodec.composite(
+			ByteBufCodecs.INT, com.simibubi.create.content.contraptions.elevator.ElevatorFloorListPacket::entityId,
+			CatnipStreamCodecBuilders.list(IntAttached.streamCodec(Couple.streamCodec(ByteBufCodecs.STRING_UTF8))), com.simibubi.create.content.contraptions.elevator.ElevatorFloorListPacket::floors,
+			com.simibubi.create.content.contraptions.elevator.ElevatorFloorListPacket::new
 	);
 
 	public ElevatorFloorListPacket(AbstractContraptionEntity entity, List<IntAttached<Couple<String>>> floors) {

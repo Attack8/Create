@@ -7,7 +7,7 @@ import com.simibubi.create.foundation.render.RenderTypes;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.render.CachedBuffers;
-import net.createmod.catnip.utility.math.AngleHelper;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -35,25 +35,22 @@ public class LinkBulbRenderer extends SafeBlockEntityRenderer<LinkWithBulbBlockE
 		BlockState blockState = be.getBlockState();
 		var msr = TransformStack.of(ms);
 
-		Direction face = blockState.getOptionalValue(DisplayLinkBlock.FACING)
-			.orElse(Direction.UP);
-
-		if (face.getAxis()
-			.isHorizontal())
-			face = face.getOpposite();
+		Direction face = be.getBulbFacing(blockState);
 
 		ms.pushPose();
 
 		msr.center()
-			.rotateYDegrees(AngleHelper.horizontalAngle(face))
+			.rotateYDegrees(AngleHelper.horizontalAngle(face) + 180)
 			.rotateXDegrees(-AngleHelper.verticalAngle(face) - 90)
 			.uncenter();
 
 		CachedBuffers.partial(AllPartialModels.DISPLAY_LINK_TUBE, blockState)
+			.translate(be.getBulbOffset(blockState))
 			.light(LightTexture.FULL_BRIGHT)
 			.renderInto(ms, buffer.getBuffer(RenderType.translucent()));
 
 		CachedBuffers.partial(AllPartialModels.DISPLAY_LINK_GLOW, blockState)
+			.translate(be.getBulbOffset(blockState))
 			.light(LightTexture.FULL_BRIGHT)
 			.color(color, color, color, 255)
 			.disableDiffuse()

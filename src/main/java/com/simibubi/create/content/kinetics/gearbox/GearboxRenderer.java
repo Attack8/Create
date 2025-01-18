@@ -5,10 +5,10 @@ import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -30,7 +30,7 @@ public class GearboxRenderer extends KineticBlockEntityRenderer<GearboxBlockEnti
 
 		final Axis boxAxis = be.getBlockState().getValue(BlockStateProperties.AXIS);
 		final BlockPos pos = be.getBlockPos();
-		float time = LevelTickHolder.getRenderTime(be.getLevel());
+		float time = AnimationTickHolder.getRenderTime(be.getLevel());
 
 		for (Direction direction : Iterate.directions) {
 			final Axis axis = direction.getAxis();

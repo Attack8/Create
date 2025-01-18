@@ -7,8 +7,8 @@ import com.simibubi.create.content.contraptions.bearing.SailBlock;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.Pointing;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.Pointing;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.WorldSectionElement;

@@ -14,9 +14,9 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.CatnipClient;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -64,7 +64,7 @@ public class LinkRenderer {
 			if (!empty)
 				box.wideOutline();
 
-			CatnipClient.OUTLINER.showOutline(Pair.of(Boolean.valueOf(first), pos), box.transform(transform))
+			Outliner.getInstance().showOutline(Pair.of(Boolean.valueOf(first), pos), box.transform(transform))
 				.highlightFace(result.getDirection());
 
 			if (!hit)

@@ -9,8 +9,8 @@ import java.util.Map;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.WorldAttached;
+import net.createmod.catnip.data.WorldAttached;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;

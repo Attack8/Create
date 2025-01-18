@@ -10,7 +10,7 @@ import com.mojang.serialization.DataResult;
 
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;

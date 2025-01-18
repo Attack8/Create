@@ -20,9 +20,9 @@ import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.ControlsUtil;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.CatnipClient;
-import net.createmod.catnip.utility.FontHelper.Palette;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.FontHelper.Palette;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
@@ -189,7 +189,7 @@ public class LinkedControllerClientHandler {
 			VoxelShape shape = mc.level.getBlockState(selectedLocation)
 				.getShape(mc.level, selectedLocation);
 			if (!shape.isEmpty())
-				CatnipClient.OUTLINER.showAABB("controller", shape.bounds()
+				Outliner.getInstance().showAABB("controller", shape.bounds()
 					.move(selectedLocation))
 					.colored(0xB73C2D)
 					.lineWidth(1 / 16f);

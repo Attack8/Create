@@ -19,13 +19,13 @@ import com.simibubi.create.foundation.render.ShadowRenderHelper;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SpriteShiftEntry;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.levelWrappers.WrappedLevel;
-import net.createmod.catnip.utility.math.AngleHelper;
-import net.createmod.ponder.utility.LevelTickHolder;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.levelWrappers.WrappedLevel;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -79,7 +79,7 @@ public class BeltRenderer extends SafeBlockEntityRenderer<BeltBlockEntity> {
 			PoseStack localTransforms = new PoseStack();
 			var msr = TransformStack.of(localTransforms);
 			VertexConsumer vb = buffer.getBuffer(RenderType.solid());
-			float renderTick = LevelTickHolder.getRenderTime(be.getLevel());
+			float renderTick = AnimationTickHolder.getRenderTime(be.getLevel());
 
 			msr.center()
 					.rotateYDegrees(AngleHelper.horizontalAngle(facing) + (upward ? 180 : 0) + (sideways ? 270 : 0))

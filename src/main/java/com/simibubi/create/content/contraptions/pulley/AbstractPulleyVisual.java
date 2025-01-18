@@ -22,8 +22,8 @@ import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.render.SpriteShiftEntry;
-import net.createmod.catnip.utility.math.AngleHelper;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -87,7 +87,7 @@ public abstract class AbstractPulleyVisual<T extends KineticBlockEntity> extends
 	protected abstract float getOffset(float pt);
 
 	protected abstract boolean isRunning();
-	
+
 	protected abstract SpriteShiftEntry getCoilAnimation();
 
 	private Instancer<TransformedInstance> magnetInstancer() {

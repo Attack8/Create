@@ -3,7 +3,7 @@ package com.simibubi.create.content.logistics.item.filter.attribute.attributes;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;

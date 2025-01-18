@@ -9,8 +9,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIc
 import com.simibubi.create.foundation.gui.AllIcons;
 
 import net.createmod.catnip.render.SuperRenderTypeBuffer;
-import net.createmod.catnip.utility.lang.Components;
-import net.createmod.catnip.utility.outliner.ChasingAABBOutline;
+import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.outliner.ChasingAABBOutline;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;

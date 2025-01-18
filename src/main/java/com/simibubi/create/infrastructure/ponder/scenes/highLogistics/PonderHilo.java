@@ -2,6 +2,7 @@ package com.simibubi.create.infrastructure.ponder.scenes.highLogistics;
 
 import com.simibubi.create.content.logistics.box.PackageEntity;
 import com.simibubi.create.content.logistics.packager.PackagerBlockEntity;
+import com.simibubi.create.content.logistics.packagerLink.WiFiParticle;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 
 import net.createmod.ponder.api.element.ElementLink;
@@ -9,9 +10,7 @@ import net.createmod.ponder.api.element.EntityElement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.particles.VibrationParticleOption;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.phys.Vec3;
 
 public class PonderHilo {
@@ -54,11 +53,12 @@ public class PonderHilo {
 	}
 
 	public static void linkEffect(CreateSceneBuilder scene, BlockPos pos) {
+		scene.world()
+			.flashDisplayLink(pos);
 		scene.addInstruction(s -> {
 			Vec3 vec3 = Vec3.atCenterOf(pos);
 			s.getWorld()
-				.addParticle(new VibrationParticleOption(new BlockPositionSource(pos.above(3)), 6), vec3.x, vec3.y,
-					vec3.z, 1, 1, 1);
+				.addParticle(new WiFiParticle.Data(), vec3.x, vec3.y, vec3.z, 1, 1, 1);
 		});
 	}
 

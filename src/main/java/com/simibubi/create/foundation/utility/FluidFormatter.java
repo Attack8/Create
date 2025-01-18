@@ -1,7 +1,7 @@
 package com.simibubi.create.foundation.utility;
 
-import net.createmod.catnip.utility.Couple;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.network.chat.MutableComponent;
 
 public class FluidFormatter {

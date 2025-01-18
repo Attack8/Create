@@ -16,11 +16,11 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
 import dev.engine_room.flywheel.api.backend.BackendManager;
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.animation.LerpedFloat;
-import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
-import net.createmod.catnip.utility.math.AngleHelper;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -121,7 +121,7 @@ public class BlazeBurnerBlockEntity extends SmartBlockEntity {
 		super.lazyTick();
 		stockKeeper = getStockTicker(level, worldPosition) != null;
 	}
-	
+
 	@Nullable
 	public static StockTickerBlockEntity getStockTicker(LevelAccessor level, BlockPos pos) {
 		for (Direction direction : Iterate.horizontalDirections) {
@@ -207,7 +207,7 @@ public class BlazeBurnerBlockEntity extends SmartBlockEntity {
 	public BlazeBurnerBlock.HeatLevel getHeatLevelFromBlock() {
 		return BlazeBurnerBlock.getHeatLevelOf(getBlockState());
 	}
-	
+
 	public BlazeBurnerBlock.HeatLevel getHeatLevelForRender() {
 		HeatLevel heatLevel = getHeatLevelFromBlock();
 		if (!heatLevel.isAtLeast(HeatLevel.FADING) && stockKeeper)

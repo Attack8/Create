@@ -10,7 +10,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 
-import net.createmod.catnip.enums.CatnipSpecialTextures;
+import net.createmod.ponder.enums.PonderSpecialTextures;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
@@ -47,7 +47,7 @@ public class CubeParticle extends Particle {
 
 		@Override
 		public @NotNull BufferBuilder begin(Tesselator tesselator, TextureManager textureManager) {
-			CatnipSpecialTextures.BLANK.bind();
+			PonderSpecialTextures.BLANK.bind();
 
 			// transparent, additive blending
 			RenderSystem.depthMask(false);

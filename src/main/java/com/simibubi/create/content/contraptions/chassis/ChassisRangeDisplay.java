@@ -14,7 +14,7 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.AllKeys;
 import com.simibubi.create.AllSpecialTextures;
 
-import net.createmod.catnip.CatnipClient;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -35,7 +35,7 @@ public class ChassisRangeDisplay {
 		public Entry(ChassisBlockEntity be) {
 			this.be = be;
 			timer = DISPLAY_TIME;
-			CatnipClient.OUTLINER.showCluster(getOutlineKey(), createSelection(be))
+			Outliner.getInstance().showCluster(getOutlineKey(), createSelection(be))
 				.colored(0xFFFFFF)
 				.disableLineNormals()
 				.lineWidth(1 / 16f)
@@ -97,7 +97,7 @@ public class ChassisRangeDisplay {
 			Entry entry = entries.get(pos);
 			if (tickEntry(entry, hasWrench))
 				iterator.remove();
-			CatnipClient.OUTLINER.keep(entry.getOutlineKey());
+			Outliner.getInstance().keep(entry.getOutlineKey());
 		}
 
 		for (Iterator<GroupEntry> iterator = groupEntries.iterator(); iterator.hasNext();) {
@@ -107,7 +107,7 @@ public class ChassisRangeDisplay {
 				if (group == lastHoveredGroup)
 					lastHoveredGroup = null;
 			}
-			CatnipClient.OUTLINER.keep(group.getOutlineKey());
+			Outliner.getInstance().keep(group.getOutlineKey());
 		}
 
 		if (!hasWrench)
@@ -173,9 +173,9 @@ public class ChassisRangeDisplay {
 			GroupEntry hoveredGroup = new GroupEntry(chassis);
 
 			for (ChassisBlockEntity included : hoveredGroup.includedBEs)
-				CatnipClient.OUTLINER.remove(Pair.of(included.getBlockPos(), 1));
+				Outliner.getInstance().remove(Pair.of(included.getBlockPos(), 1));
 
-			groupEntries.forEach(entry -> CatnipClient.OUTLINER.remove(entry.getOutlineKey()));
+			groupEntries.forEach(entry -> Outliner.getInstance().remove(entry.getOutlineKey()));
 			groupEntries.clear();
 			entries.clear();
 			groupEntries.add(hoveredGroup);
@@ -186,7 +186,7 @@ public class ChassisRangeDisplay {
 		BlockPos pos = chassis.getBlockPos();
 		GroupEntry entry = getExistingGroupForPos(pos);
 		if (entry != null)
-			CatnipClient.OUTLINER.remove(entry.getOutlineKey());
+			Outliner.getInstance().remove(entry.getOutlineKey());
 
 		groupEntries.clear();
 		entries.clear();

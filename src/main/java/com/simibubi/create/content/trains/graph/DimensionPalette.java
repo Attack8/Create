@@ -3,7 +3,7 @@ package com.simibubi.create.content.trains.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import io.netty.buffer.ByteBuf;

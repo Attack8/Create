@@ -9,12 +9,11 @@ import com.google.common.cache.CacheBuilder;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.content.contraptions.StructureTransform;
 
-import net.createmod.catnip.utility.WorldAttached;
-import net.createmod.catnip.utility.levelWrappers.SchematicLevel;
+import net.createmod.catnip.data.WorldAttached;
+import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
 
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;

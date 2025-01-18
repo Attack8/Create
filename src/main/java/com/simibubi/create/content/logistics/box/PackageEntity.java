@@ -12,8 +12,8 @@ import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.logistics.chute.ChuteBlock;
 
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.math.AngleHelper;
 import net.createmod.ponder.api.level.PonderLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -63,7 +63,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 	public int insertionDelay;
 
 	public Vec3 clientPosition, vec2 = Vec3.ZERO, vec3 = Vec3.ZERO;
-	
+
 	public WeakReference<Player> tossedBy = new WeakReference<>(null);
 
 	@SuppressWarnings("unchecked")
@@ -272,10 +272,10 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 	@Override
 	public void push(Entity entityIn) {
 		boolean isOtherPackage = entityIn instanceof PackageEntity;
-		
+
 		if (!isOtherPackage && tossedBy.get() != null)
 			tossedBy = new WeakReference<Player>(null); // no nudging
-		
+
 		if (isOtherPackage) {
 			if (entityIn.getBoundingBox().minY < this.getBoundingBox().maxY)
 				super.push(entityIn);

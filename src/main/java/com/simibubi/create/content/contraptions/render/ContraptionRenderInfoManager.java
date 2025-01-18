@@ -5,10 +5,11 @@ import com.simibubi.create.content.contraptions.Contraption;
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.createmod.catnip.utility.WorldAttached;
+import net.createmod.catnip.data.WorldAttached;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

@@ -2,7 +2,7 @@ package com.simibubi.create.content.schematics.client.tools;
 
 import com.simibubi.create.content.schematics.client.SchematicTransformation;
 
-import net.createmod.catnip.utility.VecHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.phys.Vec3;
 

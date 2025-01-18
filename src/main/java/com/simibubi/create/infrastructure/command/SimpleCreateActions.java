@@ -7,7 +7,7 @@ import com.simibubi.create.foundation.utility.CameraAngleAnimationService;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.gui.ScreenOpener;
-import net.createmod.catnip.utility.lang.Components;
+import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

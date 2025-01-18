@@ -22,8 +22,8 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.utility.IntAttached;
-import net.createmod.catnip.utility.NBTHelper;
+import net.createmod.catnip.data.IntAttached;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

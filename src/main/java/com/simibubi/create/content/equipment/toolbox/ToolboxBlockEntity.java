@@ -18,9 +18,9 @@ import com.simibubi.create.foundation.blockEntity.behaviour.animatedContainer.An
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.utility.ResetableLazy;
 
-import net.createmod.catnip.utility.VecHelper;
-import net.createmod.catnip.utility.animation.LerpedFloat;
-import net.createmod.catnip.utility.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import com.simibubi.create.AllBlocks;
 
-import net.createmod.catnip.utility.Iterate;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;

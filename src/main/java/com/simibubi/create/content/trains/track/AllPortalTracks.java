@@ -6,8 +6,8 @@ import com.simibubi.create.compat.Mods;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 import com.simibubi.create.foundation.utility.AttachedRegistry;
 
-import net.createmod.catnip.utility.BlockFace;
-import net.createmod.catnip.utility.Pair;
+import net.createmod.catnip.math.BlockFace;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;

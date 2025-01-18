@@ -17,8 +17,8 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.utility.Iterate;
-import net.createmod.catnip.utility.Pointing;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.Pointing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
