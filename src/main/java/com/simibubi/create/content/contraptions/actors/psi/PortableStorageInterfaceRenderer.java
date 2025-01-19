@@ -91,7 +91,7 @@ public class PortableStorageInterfaceRenderer extends SafeBlockEntityRenderer<Po
 		if (!context.data.contains(_workingPos_))
 			return null;
 
-		BlockPos pos = NbtUtils.readBlockPos(context.data, _workingPos_).orElseThrow();
+		BlockPos pos = NbtUtils.readBlockPos(context.data, _workingPos_).orElse(BlockPos.ZERO);
 		BlockEntity blockEntity = context.world.getBlockEntity(pos);
 		if (!(blockEntity instanceof PortableStorageInterfaceBlockEntity psi))
 			return null;

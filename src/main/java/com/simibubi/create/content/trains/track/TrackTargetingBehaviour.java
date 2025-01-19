@@ -104,7 +104,7 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		id = nbt.contains("Id") ? nbt.getUUID("Id") : UUID.randomUUID();
-		targetTrack = NbtUtils.readBlockPos(nbt, "TargetTrack").orElseThrow();
+		targetTrack = NbtUtils.readBlockPos(nbt, "TargetTrack").orElse(BlockPos.ZERO);
 		targetDirection = nbt.getBoolean("TargetDirection") ? AxisDirection.POSITIVE : AxisDirection.NEGATIVE;
 		orthogonal = nbt.getBoolean("Ortho");
 		if (nbt.contains("PrevAxis"))
@@ -117,7 +117,7 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 			edgePoint = null;
 		if (nbt.contains("Bezier")) {
 			CompoundTag bezierNbt = nbt.getCompound("Bezier");
-			BlockPos key = NbtUtils.readBlockPos(bezierNbt, "Key").orElseThrow();
+			BlockPos key = NbtUtils.readBlockPos(bezierNbt, "Key").orElse(BlockPos.ZERO);
 			targetBezier = new BezierTrackPointLocation(key.offset(getPos()),
 				bezierNbt.getInt("Segment"));
 		}

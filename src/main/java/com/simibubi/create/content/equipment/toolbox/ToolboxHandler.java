@@ -62,7 +62,7 @@ public class ToolboxHandler {
 				continue;
 
 			CompoundTag data = compound.getCompound(key);
-			BlockPos pos = NbtUtils.readBlockPos(data, "Pos").orElseThrow();
+			BlockPos pos = NbtUtils.readBlockPos(data, "Pos").orElse(BlockPos.ZERO);
 			int slot = data.getInt("Slot");
 
 			if (!world.isLoaded(pos))
@@ -123,7 +123,7 @@ public class ToolboxHandler {
 			return;
 
 		CompoundTag prevData = compound.getCompound(key);
-		BlockPos prevPos = NbtUtils.readBlockPos(prevData, "Pos").orElseThrow();
+		BlockPos prevPos = NbtUtils.readBlockPos(prevData, "Pos").orElse(BlockPos.ZERO);
 		int prevSlot = prevData.getInt("Slot");
 
 		BlockEntity prevBlockEntity = world.getBlockEntity(prevPos);

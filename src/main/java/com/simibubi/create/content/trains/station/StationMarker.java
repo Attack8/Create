@@ -31,8 +31,8 @@ public class StationMarker {
 	}
 
 	public static StationMarker load(CompoundTag tag, HolderLookup.Provider registries) {
-		BlockPos source = NbtUtils.readBlockPos(tag, "source").orElseThrow();
-		BlockPos target = NbtUtils.readBlockPos(tag, "target").orElseThrow();
+		BlockPos source = NbtUtils.readBlockPos(tag, "source").orElse(BlockPos.ZERO);
+		BlockPos target = NbtUtils.readBlockPos(tag, "target").orElse(BlockPos.ZERO);
 		Component name = Component.Serializer.fromJson(tag.getString("name"), registries);
 		if (name == null) name = Components.immutableEmpty();
 

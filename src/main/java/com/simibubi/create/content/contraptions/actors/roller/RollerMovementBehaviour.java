@@ -159,7 +159,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 		if (!context.data.contains("ReferencePos"))
 			return;
 
-		BlockPos referencePos = NbtUtils.readBlockPos(context.data, "ReferencePos").orElseThrow();
+		BlockPos referencePos = NbtUtils.readBlockPos(context.data, "ReferencePos").orElse(BlockPos.ZERO);
 		for (BlockPos otherPos : getPositionsToBreak(context, referencePos))
 			if (!otherPos.equals(pos))
 				destroyBlock(context, otherPos);

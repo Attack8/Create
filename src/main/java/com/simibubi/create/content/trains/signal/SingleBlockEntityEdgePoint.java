@@ -51,7 +51,7 @@ public abstract class SingleBlockEntityEdgePoint extends TrackEdgePoint {
 		super.read(nbt, registries, migration, dimensions);
 		if (migration)
 			return;
-		blockEntityPos = NbtUtils.readBlockPos(nbt, "BlockEntityPos").orElseThrow();
+		blockEntityPos = NbtUtils.readBlockPos(nbt, "BlockEntityPos").orElse(BlockPos.ZERO);
 		blockEntityDimension = dimensions.decode(nbt.contains("BlockEntityDimension") ? nbt.getInt("BlockEntityDimension") : -1);
 	}
 

@@ -69,7 +69,7 @@ public class ContactMovementBehaviour implements MovementBehaviour {
 		if (!context.data.contains("lastContact"))
 			return;
 
-		BlockPos last = NbtUtils.readBlockPos(context.data, "lastContact").orElseThrow();
+		BlockPos last = NbtUtils.readBlockPos(context.data, "lastContact").orElse(BlockPos.ZERO);
 		context.data.remove("lastContact");
 		BlockState blockState = context.world.getBlockState(last);
 

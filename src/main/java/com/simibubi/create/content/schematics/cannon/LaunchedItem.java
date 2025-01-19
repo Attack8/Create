@@ -83,7 +83,7 @@ public abstract class LaunchedItem {
 	abstract void place(Level world);
 
 	void readNBT(CompoundTag c, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
-		target = NbtUtils.readBlockPos(c, "Target").orElseThrow();
+		target = NbtUtils.readBlockPos(c, "Target").orElse(BlockPos.ZERO);
 		ticksRemaining = c.getInt("TicksLeft");
 		totalTicks = c.getInt("TotalTicks");
 		stack = ItemStack.parseOptional(registries, c.getCompound("Stack"));

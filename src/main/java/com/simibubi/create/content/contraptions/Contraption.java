@@ -728,9 +728,9 @@ public abstract class Contraption {
 				if (!tag.contains("Controller", Tag.TAG_COMPOUND) && !tag.contains("Parts", Tag.TAG_LIST))
 					return;
 
-				BlockPos controllerPos = NbtUtils.readBlockPos(tag, "Controller").orElseThrow();
+				BlockPos controllerPos = NbtUtils.readBlockPos(tag, "Controller").orElse(BlockPos.ZERO);
 				tag.getList("Parts", Tag.TAG_COMPOUND).forEach(part -> {
-					BlockPos partPos = NbtUtils.readBlockPos((CompoundTag) part, "Pos").orElseThrow();
+					BlockPos partPos = NbtUtils.readBlockPos((CompoundTag) part, "Pos").orElse(BlockPos.ZERO);
 					StructureBlockInfo partInfo = this.blocks.get(partPos);
 					capturedMultiblocks.put(controllerPos, partInfo);
 				});
@@ -768,7 +768,7 @@ public abstract class Contraption {
 
 		interactors.clear();
 		NBTHelper.iterateCompoundList(nbt.getList("Interactors", Tag.TAG_COMPOUND), c -> {
-			BlockPos pos = NbtUtils.readBlockPos(c, "Pos").orElseThrow();
+			BlockPos pos = NbtUtils.readBlockPos(c, "Pos").orElse(BlockPos.ZERO);
 			StructureBlockInfo structureBlockInfo = getBlocks().get(pos);
 			if (structureBlockInfo == null)
 				return;
@@ -784,7 +784,7 @@ public abstract class Contraption {
 
 		stalled = nbt.getBoolean("Stalled");
 		hasUniversalCreativeCrate = nbt.getBoolean("BottomlessSupply");
-		anchor = NbtUtils.readBlockPos(nbt, "Anchor").orElseThrow();
+		anchor = NbtUtils.readBlockPos(nbt, "Anchor").orElse(BlockPos.ZERO);
 	}
 
 	public CompoundTag writeNBT(HolderLookup.Provider registries, boolean spawnPacket) {

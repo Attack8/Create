@@ -58,11 +58,11 @@ public class SchematicPrinter {
 
 	public void fromTag(CompoundTag compound, boolean clientPacket) {
 		if (compound.contains("CurrentPos"))
-			currentPos = NbtUtils.readBlockPos(compound, "CurrentPos").orElseThrow();
+			currentPos = NbtUtils.readBlockPos(compound, "CurrentPos").orElse(BlockPos.ZERO);
 		if (clientPacket) {
 			schematicLoaded = false;
 			if (compound.contains("Anchor")) {
-				schematicAnchor = NbtUtils.readBlockPos(compound, "Anchor").orElseThrow();
+				schematicAnchor = NbtUtils.readBlockPos(compound, "Anchor").orElse(BlockPos.ZERO);
 				schematicLoaded = true;
 			}
 		}

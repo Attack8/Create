@@ -240,10 +240,10 @@ public abstract class FluidManipulationBehaviour extends BlockEntityBehaviour {
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		infinite = nbt.contains("Infinite");
 		if (nbt.contains("LastPos"))
-			rootPos = NbtUtils.readBlockPos(nbt, "LastPos").orElseThrow();
+			rootPos = NbtUtils.readBlockPos(nbt, "LastPos").orElse(BlockPos.ZERO);
 		if (nbt.contains("AffectedAreaFrom") && nbt.contains("AffectedAreaTo"))
-			affectedArea = BoundingBox.fromCorners(NbtUtils.readBlockPos(nbt, "AffectedAreaFrom").orElseThrow(),
-					NbtUtils.readBlockPos(nbt, "AffectedAreaTo").orElseThrow());
+			affectedArea = BoundingBox.fromCorners(NbtUtils.readBlockPos(nbt, "AffectedAreaFrom").orElse(BlockPos.ZERO),
+					NbtUtils.readBlockPos(nbt, "AffectedAreaTo").orElse(BlockPos.ZERO));
 		super.read(nbt, registries, clientPacket);
 	}
 

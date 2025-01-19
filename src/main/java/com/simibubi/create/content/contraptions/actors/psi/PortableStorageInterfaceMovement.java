@@ -88,7 +88,7 @@ public class PortableStorageInterfaceMovement implements MovementBehaviour {
 		if (!context.data.contains(_workingPos_))
 			return;
 
-		BlockPos pos = NbtUtils.readBlockPos(context.data, _workingPos_).orElseThrow();
+		BlockPos pos = NbtUtils.readBlockPos(context.data, _workingPos_).orElse(BlockPos.ZERO);
 		Vec3 target = VecHelper.getCenterOf(pos);
 
 		if (!context.stall && !onCarriage

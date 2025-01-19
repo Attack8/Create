@@ -6,6 +6,7 @@ import com.simibubi.create.AllPackets;
 import com.simibubi.create.foundation.networking.BlockEntityConfigurationPacket;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -18,9 +19,9 @@ import net.minecraft.world.item.ItemStack;
 public class ChainPackageInteractionPacket extends BlockEntityConfigurationPacket<ChainConveyorBlockEntity> {
 	public static StreamCodec<RegistryFriendlyByteBuf, ChainPackageInteractionPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, packet -> packet.pos,
-	    BlockPos.STREAM_CODEC, packet -> packet.selectedConnection,
+		CatnipStreamCodecBuilders.nullable(BlockPos.STREAM_CODEC), packet -> packet.selectedConnection,
 		ByteBufCodecs.FLOAT, packet -> packet.chainPosition,
-		ItemStack.STREAM_CODEC, packet -> packet.insertedPackage,
+		ItemStack.OPTIONAL_STREAM_CODEC, packet -> packet.insertedPackage,
 	    ChainPackageInteractionPacket::new
 	);
 

@@ -125,7 +125,7 @@ public class ToolboxHandlerClient {
 		boolean equipped = compound.contains(slotKey);
 
 		if (equipped) {
-			BlockPos pos = NbtUtils.readBlockPos(compound.getCompound(slotKey), "Pos").orElseThrow();
+			BlockPos pos = NbtUtils.readBlockPos(compound.getCompound(slotKey), "Pos").orElse(BlockPos.ZERO);
 			double max = ToolboxHandler.getMaxRange(player);
 			boolean canReachToolbox = ToolboxHandler.distance(player.position(), pos) < max * max;
 
@@ -182,7 +182,7 @@ public class ToolboxHandlerClient {
 			String key = String.valueOf(slot);
 			if (!compound.contains(key))
 				continue;
-			BlockPos pos = NbtUtils.readBlockPos(compound.getCompound(key), "Pos").orElseThrow();
+			BlockPos pos = NbtUtils.readBlockPos(compound.getCompound(key), "Pos").orElse(BlockPos.ZERO);
 			double max = ToolboxHandler.getMaxRange(player);
 			boolean selected = player.getInventory().selected == slot;
 			int offset = selected ? 1 : 0;

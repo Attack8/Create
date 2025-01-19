@@ -107,7 +107,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 
 		Level world = context.world;
 		int id = data.getInt("BreakerId");
-		BlockPos breakingPos = NbtUtils.readBlockPos(data, "BreakingPos").orElseThrow();
+		BlockPos breakingPos = NbtUtils.readBlockPos(data, "BreakingPos").orElse(BlockPos.ZERO);
 
 		data.remove("Progress");
 		data.remove("TicksUntilNextProgress");
@@ -137,7 +137,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 			return;
 		}
 
-		BlockPos pos = NbtUtils.readBlockPos(data, "LastPos").orElseThrow();
+		BlockPos pos = NbtUtils.readBlockPos(data, "LastPos").orElse(BlockPos.ZERO);
 		data.remove("WaitingTicks");
 		data.remove("LastPos");
 		context.stall = false;
@@ -164,7 +164,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 		}
 
 		Level world = context.world;
-		BlockPos breakingPos = NbtUtils.readBlockPos(data, "BreakingPos").orElseThrow();
+		BlockPos breakingPos = NbtUtils.readBlockPos(data, "BreakingPos").orElse(BlockPos.ZERO);
 		int destroyProgress = data.getInt("Progress");
 		int id = data.getInt("BreakerId");
 		BlockState stateToBreak = world.getBlockState(breakingPos);
