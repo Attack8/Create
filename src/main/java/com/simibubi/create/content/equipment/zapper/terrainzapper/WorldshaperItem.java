@@ -2,10 +2,12 @@ package com.simibubi.create.content.equipment.zapper.terrainzapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.content.equipment.zapper.PlacementPatterns;
 import com.simibubi.create.content.equipment.zapper.ZapperItem;
+import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.gui.ScreenOpener;
@@ -21,11 +23,18 @@ import net.minecraft.world.phys.BlockHitResult;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 
 public class WorldshaperItem extends ZapperItem {
 
 	public WorldshaperItem(Properties properties) {
 		super(properties);
+	}
+
+	@Override
+	@OnlyIn(Dist.CLIENT)
+	public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+		consumer.accept(SimpleCustomRenderer.create(this, new WorldshaperItemRenderer()));
 	}
 
 	@Override

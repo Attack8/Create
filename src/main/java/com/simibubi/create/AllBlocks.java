@@ -161,7 +161,6 @@ import com.simibubi.create.content.kinetics.waterwheel.LargeWaterWheelBlock;
 import com.simibubi.create.content.kinetics.waterwheel.LargeWaterWheelBlockItem;
 import com.simibubi.create.content.kinetics.waterwheel.WaterWheelBlock;
 import com.simibubi.create.content.kinetics.waterwheel.WaterWheelStructuralBlock;
-import com.simibubi.create.content.kinetics.waterwheel.WaterWheelStructuralBlock.RenderProperties;
 import com.simibubi.create.content.logistics.chute.ChuteBlock;
 import com.simibubi.create.content.logistics.chute.ChuteGenerator;
 import com.simibubi.create.content.logistics.chute.ChuteItem;
@@ -554,7 +553,7 @@ public class AllBlocks {
 		.transform(BlockStressDefaults.setImpact(0))
 		.onRegister(assignDataBehaviour(new ItemNameDisplaySource(), "combine_item_names"))
 		.onRegister(CreateRegistrate.blockModel(() -> BeltModel::new))
-		.clientExtension(() -> BeltBlock.RenderProperties::new)
+		.clientExtension(() -> () -> new BeltBlock.RenderProperties())
 		.register();
 
 	public static final BlockEntry<ChainConveyorBlock> CHAIN_CONVEYOR =
@@ -616,7 +615,7 @@ public class AllBlocks {
 	public static final BlockEntry<WaterWheelStructuralBlock> WATER_WHEEL_STRUCTURAL =
 		REGISTRATE.block("water_wheel_structure", WaterWheelStructuralBlock::new)
 			.initialProperties(SharedProperties::wooden)
-			.clientExtension(() -> RenderProperties::new)
+			.clientExtension(() -> () -> new WaterWheelStructuralBlock.RenderProperties())
 			.blockstate((c, p) -> p.getVariantBuilder(c.get())
 				.forAllStatesExcept(BlockStateGen.mapToAir(p), WaterWheelStructuralBlock.FACING))
 			.properties(p -> p.noOcclusion()
@@ -830,7 +829,7 @@ public class AllBlocks {
 			.isRedstoneConductor((level, pos, state) -> false))
 		.transform(pickaxeOnly())
 		.addLayer(() -> RenderType::cutoutMipped)
-		.clientExtension(() -> ReducedDestroyEffects::new)
+		.clientExtension(() -> () -> new ReducedDestroyEffects())
 		.blockstate(new ChuteGenerator()::generate)
 		.item(ChuteItem::new)
 		.transform(customItemModel("_", "block"))
@@ -844,7 +843,7 @@ public class AllBlocks {
 			.isSuffocating((level, pos, state) -> false)
 			.isRedstoneConductor((level, pos, state) -> false))
 		.addLayer(() -> RenderType::cutoutMipped)
-		.clientExtension(() -> ReducedDestroyEffects::new)
+		.clientExtension(() -> () -> new ReducedDestroyEffects())
 		.transform(pickaxeOnly())
 		.blockstate((c, p) -> BlockStateGen.simpleBlock(c, p, AssetLookup.forPowered(c, p)))
 		.item()
@@ -1627,7 +1626,7 @@ public class AllBlocks {
 			.forceSolidOn())
 		.addLayer(() -> RenderType::cutoutMipped)
 		.transform(pickaxeOnly())
-		.clientExtension(() -> TrackBlock.RenderProperties::new)
+		.clientExtension(() -> () -> new TrackBlock.RenderProperties())
 		.onRegister(CreateRegistrate.blockModel(() -> TrackModel::new))
 		.blockstate(new TrackBlockStateGenerator()::generate)
 		.tag(AllBlockTags.RELOCATION_NOT_SUPPORTED.tag)
@@ -1736,7 +1735,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.STONE))
 			.transform(pickaxeOnly())
 			.tag(AllBlockTags.SAFE_NBT.tag)
-			.clientExtension(() -> ReducedDestroyEffects::new)
+			.clientExtension(() -> () -> new ReducedDestroyEffects())
 			.onRegister(movementBehaviour(FunnelMovementBehaviour.andesite()))
 			.blockstate(new FunnelGenerator("andesite", false)::generate)
 			.item(FunnelItem::new)
@@ -1752,7 +1751,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.STONE))
 			.transform(pickaxeOnly())
 			.tag(AllBlockTags.SAFE_NBT.tag)
-			.clientExtension(() -> ReducedDestroyEffects::new)
+			.clientExtension(() -> () -> new ReducedDestroyEffects())
 			.blockstate(new BeltFunnelGenerator("andesite")::generate)
 			.loot((p, b) -> p.dropOther(b, ANDESITE_FUNNEL.get()))
 			.register();
@@ -1764,7 +1763,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_YELLOW))
 			.transform(pickaxeOnly())
 			.tag(AllBlockTags.SAFE_NBT.tag)
-			.clientExtension(() -> ReducedDestroyEffects::new)
+			.clientExtension(() -> () -> new ReducedDestroyEffects())
 			.onRegister(movementBehaviour(FunnelMovementBehaviour.brass()))
 			.blockstate(new FunnelGenerator("brass", true)::generate)
 			.item(FunnelItem::new)
@@ -1780,7 +1779,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_YELLOW))
 			.transform(pickaxeOnly())
 			.tag(AllBlockTags.SAFE_NBT.tag)
-			.clientExtension(() -> ReducedDestroyEffects::new)
+			.clientExtension(() -> () -> new ReducedDestroyEffects())
 			.blockstate(new BeltFunnelGenerator("brass")::generate)
 			.loot((p, b) -> p.dropOther(b, BRASS_FUNNEL.get()))
 			.register();

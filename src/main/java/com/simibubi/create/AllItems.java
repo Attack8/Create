@@ -32,22 +32,15 @@ import com.simibubi.create.content.equipment.armor.DivingHelmetItem;
 import com.simibubi.create.content.equipment.armor.TrimmableArmorModelGenerator;
 import com.simibubi.create.content.equipment.blueprint.BlueprintItem;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItem;
-import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripItemRenderer;
 import com.simibubi.create.content.equipment.goggles.GogglesItem;
 import com.simibubi.create.content.equipment.goggles.GogglesModel;
 import com.simibubi.create.content.equipment.potatoCannon.PotatoCannonItem;
-import com.simibubi.create.content.equipment.potatoCannon.PotatoCannonItemRenderer;
 import com.simibubi.create.content.equipment.sandPaper.SandPaperItem;
-import com.simibubi.create.content.equipment.sandPaper.SandPaperItemRenderer;
 import com.simibubi.create.content.equipment.symmetryWand.SymmetryWandItem;
-import com.simibubi.create.content.equipment.symmetryWand.SymmetryWandItemRenderer;
 import com.simibubi.create.content.equipment.tool.AllToolMaterials;
 import com.simibubi.create.content.equipment.tool.CardboardSwordItem;
-import com.simibubi.create.content.equipment.tool.CardboardSwordItemRenderer;
 import com.simibubi.create.content.equipment.wrench.WrenchItem;
-import com.simibubi.create.content.equipment.wrench.WrenchItemRenderer;
 import com.simibubi.create.content.equipment.zapper.terrainzapper.WorldshaperItem;
-import com.simibubi.create.content.equipment.zapper.terrainzapper.WorldshaperItemRenderer;
 import com.simibubi.create.content.kinetics.belt.item.BeltConnectorItem;
 import com.simibubi.create.content.kinetics.gearbox.VerticalGearboxItem;
 import com.simibubi.create.content.legacy.ChromaticCompoundColor;
@@ -63,7 +56,6 @@ import com.simibubi.create.content.materials.ExperienceNuggetItem;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlockItem;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem;
 import com.simibubi.create.content.redstone.link.controller.LinkedControllerItem;
-import com.simibubi.create.content.redstone.link.controller.LinkedControllerItemRenderer;
 import com.simibubi.create.content.schematics.SchematicAndQuillItem;
 import com.simibubi.create.content.schematics.SchematicItem;
 import com.simibubi.create.content.trains.schedule.ScheduleItem;
@@ -74,7 +66,6 @@ import com.simibubi.create.foundation.data.recipe.CompatMetals;
 import com.simibubi.create.foundation.item.CombustibleItem;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.TagDependentIngredientItem;
-import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 import com.tterrag.registrate.builders.ItemBuilder;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.util.entry.ItemEntry;
@@ -172,7 +163,6 @@ public class AllItems {
 		REGISTRATE.item("cardboard_sword", CardboardSwordItem::new)
 			.properties(p -> p.stacksTo(1))
 			.properties(p -> p.attributes(SwordItem.createAttributes(AllToolMaterials.CARDBOARD, 3, 1)))
-			.clientExtension(i -> () -> () -> SimpleCustomRenderer.create(i, new CardboardSwordItemRenderer()))
 			.model(AssetLookup.itemModelWithPartials())
 			.register();
 
@@ -365,18 +355,15 @@ public class AllItems {
 
 	public static final ItemEntry<SandPaperItem> SAND_PAPER = REGISTRATE.item("sand_paper", SandPaperItem::new)
 		.tag(AllTags.AllItemTags.SANDPAPER.tag)
-		.clientExtension(i -> () -> () -> SimpleCustomRenderer.create(i, new SandPaperItemRenderer()))
 		.register();
 
 	public static final ItemEntry<SandPaperItem> RED_SAND_PAPER = REGISTRATE.item("red_sand_paper", SandPaperItem::new)
 		.tag(AllTags.AllItemTags.SANDPAPER.tag)
 		.onRegister(s -> ItemDescription.referKey(s, SAND_PAPER))
-		.clientExtension(i -> () -> () -> SimpleCustomRenderer.create(i, new SandPaperItemRenderer()))
 		.register();
 
 	public static final ItemEntry<WrenchItem> WRENCH = REGISTRATE.item("wrench", WrenchItem::new)
 		.properties(p -> p.stacksTo(1))
-		.clientExtension(i -> () -> () -> SimpleCustomRenderer.create(i, new WrenchItemRenderer()))
 		.model(AssetLookup.itemModelWithPartials())
 		.tag(AllItemTags.WRENCH.tag)
 		.register();
@@ -398,20 +385,17 @@ public class AllItems {
 	public static final ItemEntry<LinkedControllerItem> LINKED_CONTROLLER =
 		REGISTRATE.item("linked_controller", LinkedControllerItem::new)
 			.properties(p -> p.stacksTo(1))
-			.clientExtension(i -> () -> () -> SimpleCustomRenderer.create(i, new LinkedControllerItemRenderer()))
 			.model(AssetLookup.itemModelWithPartials())
 			.register();
 
 	public static final ItemEntry<PotatoCannonItem> POTATO_CANNON =
 		REGISTRATE.item("potato_cannon", PotatoCannonItem::new)
 			.model(AssetLookup.itemModelWithPartials())
-			.clientExtension(i -> () -> () -> SimpleCustomRenderer.create(i, new PotatoCannonItemRenderer()))
 			.tag(Tags.Items.ENCHANTABLES)
 			.register();
 
 	public static final ItemEntry<ExtendoGripItem> EXTENDO_GRIP = REGISTRATE.item("extendo_grip", ExtendoGripItem::new)
 		.properties(p -> p.rarity(Rarity.UNCOMMON))
-		.clientExtension(i -> () -> () -> SimpleCustomRenderer.create(i, new ExtendoGripItemRenderer()))
 		.model(AssetLookup.itemModelWithPartials())
 		.register();
 
@@ -419,7 +403,6 @@ public class AllItems {
 		REGISTRATE.item("wand_of_symmetry", SymmetryWandItem::new)
 			.properties(p -> p.stacksTo(1)
 				.rarity(Rarity.UNCOMMON))
-			.clientExtension(i -> () -> () -> SimpleCustomRenderer.create(i, new SymmetryWandItemRenderer()))
 			.model(AssetLookup.itemModelWithPartials())
 			.register();
 
@@ -427,7 +410,6 @@ public class AllItems {
 		REGISTRATE.item("handheld_worldshaper", WorldshaperItem::new)
 			.properties(p -> p.rarity(Rarity.EPIC))
 			.lang("Creative Worldshaper")
-			.clientExtension(i -> () -> () -> SimpleCustomRenderer.create(i, new WorldshaperItemRenderer()))
 			.model(AssetLookup.itemModelWithPartials())
 			.register();
 
