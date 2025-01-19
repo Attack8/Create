@@ -20,6 +20,7 @@ import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.tterrag.registrate.util.nullness.NonNullBiFunction;
 
+import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
@@ -30,7 +31,6 @@ import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -133,7 +133,7 @@ public class TrackTargetingBlockItem extends BlockItem {
 
 		if (bezier) {
 			BezierTrackPointLocation bezierTrackPointLocation = stack.get(AllDataComponents.TRACK_TARGETING_ITEM_BEZIER);
-			blockEntityData.put("Bezier", BezierTrackPointLocation.CODEC.encodeStart(NbtOps.INSTANCE, bezierTrackPointLocation).getOrThrow());
+			blockEntityData.put("Bezier", CatnipCodecUtils.encode(BezierTrackPointLocation.CODEC, bezierTrackPointLocation).orElseThrow());
 		}
 
 		blockEntityData.put("TargetTrack", NbtUtils.writeBlockPos(selectedPos.subtract(placedPos)));

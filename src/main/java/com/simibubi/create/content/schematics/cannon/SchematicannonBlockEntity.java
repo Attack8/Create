@@ -42,7 +42,6 @@ import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -65,6 +64,7 @@ import net.minecraft.world.level.block.state.properties.BedPart;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.AABB;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -174,7 +174,8 @@ public class SchematicannonBlockEntity extends SmartBlockEntity implements MenuP
 		}
 
 		// Settings
-		SchematicannonOptions options = CatnipCodecUtils.decode(SchematicannonOptions.CODEC, compound.getCompound("Options")).orElseThrow();
+		SchematicannonOptions options = CatnipCodecUtils.decode(SchematicannonOptions.CODEC, compound.getCompound("Options"))
+			.orElse(new SchematicannonOptions(2, true, false));
 		replaceMode = options.replaceMode;
 		skipMissing = options.skipMissing;
 		replaceBlockEntities = options.replaceBlockEntities;
@@ -247,7 +248,7 @@ public class SchematicannonBlockEntity extends SmartBlockEntity implements MenuP
 			compound.put("MissingItem", missingItem.saveOptional(registries));
 
 		// Settings
-		Tag options = SchematicannonOptions.CODEC.encodeStart(NbtOps.INSTANCE, new SchematicannonOptions(replaceMode, skipMissing, replaceBlockEntities)).getOrThrow();
+		Tag options = CatnipCodecUtils.encode(SchematicannonOptions.CODEC, new SchematicannonOptions(replaceMode, skipMissing, replaceBlockEntities)).orElseThrow();
 		compound.put("Options", options);
 
 		// Printer & Flying Blocks

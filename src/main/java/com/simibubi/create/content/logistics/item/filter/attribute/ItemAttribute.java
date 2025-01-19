@@ -10,6 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllRegistries;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -17,6 +18,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -25,7 +27,7 @@ public interface ItemAttribute {
 
 	static CompoundTag saveStatic(ItemAttribute attribute, HolderLookup.Provider registries) {
 		CompoundTag nbt = new CompoundTag();
-		nbt.put("attribute", CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), attribute).getOrThrow());
+		nbt.put("attribute", CatnipCodecUtils.encode(CODEC, registries, attribute).orElseThrow());
 		return nbt;
 	}
 
