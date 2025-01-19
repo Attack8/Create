@@ -80,7 +80,7 @@ public class LinkedControllerScreen extends AbstractSimiContainerScreen<LinkedCo
 
 	@Override
 	protected void containerTick() {
-		if (!ItemStack.isSameItemSameComponents(menu.player.getMainHandItem(), menu.contentHolder))
+		if (!ItemStack.matches(menu.player.getMainHandItem(), menu.contentHolder))
 			menu.player.closeContainer();
 
 		super.containerTick();

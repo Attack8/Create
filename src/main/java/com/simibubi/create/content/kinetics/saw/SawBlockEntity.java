@@ -235,7 +235,7 @@ public class SawBlockEntity extends BlockBreakingKineticBlockEntity {
 				if (stack.isEmpty())
 					continue;
 				ItemStack remainder = behaviour.handleInsertion(stack, itemMovementFacing, false);
-				if (ItemStack.isSameItemSameComponents(remainder, stack))
+				if (ItemStack.matches(remainder, stack))
 					continue;
 				inventory.setStackInSlot(slot, remainder);
 				changed = true;

@@ -7,9 +7,6 @@ import java.util.function.Predicate;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.server.level.ServerLevel;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,18 +32,20 @@ import com.simibubi.create.foundation.utility.BlockHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -57,6 +56,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
@@ -572,7 +572,7 @@ public class ChuteBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 //		if (clientPacket)
 //			airCurrent.rebuild();
 
-		if (hasLevel() && level != null && level.isClientSide && !ItemStack.isSameItemSameComponents(previousItem, item) && !item.isEmpty()) {
+		if (hasLevel() && level != null && level.isClientSide && !ItemStack.matches(previousItem, item) && !item.isEmpty()) {
 			if (level.random.nextInt(3) != 0)
 				return;
 			Vec3 p = VecHelper.getCenterOf(worldPosition);

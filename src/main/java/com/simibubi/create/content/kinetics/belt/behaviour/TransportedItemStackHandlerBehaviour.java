@@ -61,7 +61,7 @@ public class TransportedItemStackHandlerBehaviour extends BlockEntityBehaviour {
 
 		public boolean didntChangeFrom(ItemStack stackBefore) {
 			return doesNothing()
-				|| outputs.size() == 1 && ItemStack.isSameItemSameComponents(outputs.get(0).stack, stackBefore) && !hasHeldOutput();
+				|| outputs.size() == 1 && ItemStack.matches(outputs.get(0).stack, stackBefore) && !hasHeldOutput();
 		}
 
 		public List<TransportedItemStack> getOutputs() {

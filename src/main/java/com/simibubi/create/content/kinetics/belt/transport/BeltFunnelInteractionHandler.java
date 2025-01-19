@@ -15,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class BeltFunnelInteractionHandler {
 
@@ -99,7 +98,7 @@ public class BeltFunnelInteractionHandler {
 			}
 
 			ItemStack remainder = inserting.insert(toInsert);
-			if (ItemStack.isSameItemSameComponents(toInsert, remainder)) {
+			if (ItemStack.matches(toInsert, remainder)) {
 				beltInventory.belt.invVersionTracker.awaitNewVersion(inserting);
 				if (blocking)
 					return true;

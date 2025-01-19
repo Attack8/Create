@@ -49,7 +49,7 @@ public class ProcessingInventory extends ItemStackHandler {
 	@Override
 	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
 		ItemStack insertItem = super.insertItem(slot, stack, simulate);
-		if (slot == 0 && !ItemStack.isSameItem(insertItem, stack))
+		if (slot == 0 && !(insertItem.getCount() == stack.getCount() && ItemStack.isSameItem(insertItem, stack)))
 			callback.accept(getStackInSlot(slot));
 		return insertItem;
 	}

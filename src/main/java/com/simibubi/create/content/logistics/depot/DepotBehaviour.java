@@ -142,7 +142,7 @@ public class DepotBehaviour extends BlockEntityBehaviour {
 		}
 
 		heldItem.locked = result == ProcessingResult.HOLD;
-		if (heldItem.locked != wasLocked || !ItemStack.isSameItemSameComponents(previousItem, heldItem.stack))
+		if (heldItem.locked != wasLocked || !ItemStack.matches(previousItem, heldItem.stack))
 			blockEntity.sendData();
 	}
 

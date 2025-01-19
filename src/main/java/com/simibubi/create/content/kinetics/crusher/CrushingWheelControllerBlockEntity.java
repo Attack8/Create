@@ -167,7 +167,7 @@ public class CrushingWheelControllerBlockEntity extends SmartBlockEntity {
 						if (stack.isEmpty())
 							continue;
 						ItemStack remainder = behaviour.handleInsertion(stack, facing, false);
-						if (ItemStack.isSameItemSameComponents(remainder, stack))
+						if (ItemStack.matches(remainder, stack))
 							continue;
 						inventory.setStackInSlot(slot, remainder);
 						changed = true;

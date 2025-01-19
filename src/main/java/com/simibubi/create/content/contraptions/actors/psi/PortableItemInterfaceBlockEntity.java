@@ -74,7 +74,7 @@ public class PortableItemInterfaceBlockEntity extends PortableStorageInterfaceBl
 			if (!canTransfer())
 				return stack;
 			ItemStack insertItem = super.insertItem(slot, stack, simulate);
-			if (!simulate && !ItemStack.isSameItemSameComponents(insertItem, stack))
+			if (!simulate && !ItemStack.matches(insertItem, stack))
 				onContentTransferred();
 			return insertItem;
 		}
