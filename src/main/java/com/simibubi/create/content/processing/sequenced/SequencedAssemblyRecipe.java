@@ -231,8 +231,9 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 			return;
 		SequencedAssembly sequencedAssembly = stack.get(AllDataComponents.SEQUENCED_ASSEMBLY);
 		@SuppressWarnings({"RedundantCast", "DataFlowIssue"}) // The java compiler thinks `byKey` returns an Optional<RecipeHolder<?>>
-		Optional<RecipeHolder<? extends Recipe<?>>> optionalRecipe = (Optional<RecipeHolder<? extends Recipe<?>>>) Minecraft.getInstance().level.getRecipeManager()
-			.byKey(sequencedAssembly.id());
+		Optional<RecipeHolder<? extends Recipe<?>>> optionalRecipe =
+			(Optional<RecipeHolder<?>>) Minecraft.getInstance().level.getRecipeManager()
+				.byKey(sequencedAssembly.id());
 		if (!optionalRecipe.isPresent())
 			return;
 		Recipe<?> recipe = optionalRecipe.get().value();
