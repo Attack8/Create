@@ -154,7 +154,7 @@ dependencies {
         implementation("net.createmod.ponder:Ponder-NeoForge-${minecraft_version}:${ponder_version}")
     }
 
-    jarJar("net.createmod.ponder:Ponder-NeoForge-${catnip_and_ponder_mc_ver}:${ponder_version}")
+    jarJar("net.createmod.ponder:Ponder-NeoForge-${minecraft_version}:${ponder_version}")
 
     //compileOnly("mezz.jei:jei-${jei_minecraft_version}-common-api:${jei_version}")
     //compileOnly("mezz.jei:jei-${jei_minecraft_version}-neoforge-api:${jei_version}")
