@@ -17,7 +17,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 public class ChainPackageInteractionPacket extends BlockEntityConfigurationPacket<ChainConveyorBlockEntity> {
-	public static StreamCodec<RegistryFriendlyByteBuf, ChainPackageInteractionPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<RegistryFriendlyByteBuf, ChainPackageInteractionPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, packet -> packet.pos,
 		CatnipStreamCodecBuilders.nullable(BlockPos.STREAM_CODEC), packet -> packet.selectedConnection,
 		ByteBufCodecs.FLOAT, packet -> packet.chainPosition,

@@ -9,7 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 
 public class LogisticalStockRequestPacket extends BlockEntityConfigurationPacket<StockCheckingBlockEntity> {
-	public static StreamCodec<ByteBuf, LogisticalStockRequestPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, LogisticalStockRequestPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, packet -> packet.pos,
 	    LogisticalStockRequestPacket::new
 	);

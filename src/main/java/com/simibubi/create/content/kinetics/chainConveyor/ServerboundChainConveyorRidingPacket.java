@@ -10,7 +10,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 
 public class ServerboundChainConveyorRidingPacket extends BlockEntityConfigurationPacket<ChainConveyorBlockEntity> {
-	public static StreamCodec<ByteBuf, ServerboundChainConveyorRidingPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, ServerboundChainConveyorRidingPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, packet -> packet.pos,
 		ByteBufCodecs.BOOL, packet -> packet.stop,
 	    ServerboundChainConveyorRidingPacket::new

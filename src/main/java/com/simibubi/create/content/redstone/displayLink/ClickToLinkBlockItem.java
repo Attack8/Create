@@ -193,12 +193,12 @@ public abstract class ClickToLinkBlockItem extends BlockItem {
 	}
 
 	public record ClickToLinkData(BlockPos selectedPos, ResourceLocation selectedDim) {
-		public static Codec<ClickToLinkData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final Codec<ClickToLinkData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			BlockPos.CODEC.fieldOf("selected_pos").forGetter(ClickToLinkData::selectedPos),
 			ResourceLocation.CODEC.fieldOf("selected_dim").forGetter(ClickToLinkData::selectedDim)
 		).apply(instance, ClickToLinkData::new));
 
-		public static StreamCodec<ByteBuf, ClickToLinkData> STREAM_CODEC = StreamCodec.composite(
+		public static final StreamCodec<ByteBuf, ClickToLinkData> STREAM_CODEC = StreamCodec.composite(
 		    BlockPos.STREAM_CODEC, ClickToLinkData::selectedPos,
 		    ResourceLocation.STREAM_CODEC, ClickToLinkData::selectedDim,
 		    ClickToLinkData::new

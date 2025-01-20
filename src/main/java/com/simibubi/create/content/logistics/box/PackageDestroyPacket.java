@@ -19,7 +19,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public record PackageDestroyPacket(Vec3 location, ItemStack box) implements ClientboundPacketPayload {
-	public static StreamCodec<RegistryFriendlyByteBuf, PackageDestroyPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<RegistryFriendlyByteBuf, PackageDestroyPacket> STREAM_CODEC = StreamCodec.composite(
 		CatnipStreamCodecs.VEC3, PackageDestroyPacket::location,
 		ItemStack.STREAM_CODEC, PackageDestroyPacket::box,
 		PackageDestroyPacket::new

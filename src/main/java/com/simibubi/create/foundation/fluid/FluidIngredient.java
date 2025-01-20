@@ -118,7 +118,7 @@ public abstract sealed class FluidIngredient implements Predicate<FluidStack> {
 			).apply(i, FluidStackIngredient::new)
 		);
 
-		public static StreamCodec<RegistryFriendlyByteBuf, FluidStackIngredient> STREAM_CODEC = StreamCodec.composite(
+		public static final StreamCodec<RegistryFriendlyByteBuf, FluidStackIngredient> STREAM_CODEC = StreamCodec.composite(
 			CatnipStreamCodecs.FLUID, i -> i.fluid,
 			DataComponentPatch.STREAM_CODEC, i -> i.components,
 			ByteBufCodecs.VAR_INT, i -> i.amountRequired,
@@ -193,7 +193,7 @@ public abstract sealed class FluidIngredient implements Predicate<FluidStack> {
 			).apply(i, FluidTagIngredient::new)
 		);
 
-		public static StreamCodec<RegistryFriendlyByteBuf, FluidTagIngredient> STREAM_CODEC = StreamCodec.composite(
+		public static final StreamCodec<RegistryFriendlyByteBuf, FluidTagIngredient> STREAM_CODEC = StreamCodec.composite(
 			ResourceLocation.STREAM_CODEC, i -> i.tag.location(),
 			ByteBufCodecs.VAR_INT, i -> i.amountRequired,
 			(tag, amount) -> new FluidTagIngredient(TagKey.create(Registries.FLUID, tag), amount)
@@ -250,8 +250,8 @@ public abstract sealed class FluidIngredient implements Predicate<FluidStack> {
 		FLUID_STACK(FluidStackIngredient.CODEC, FluidStackIngredient.STREAM_CODEC),
 		FLUID_TAG(FluidTagIngredient.CODEC, FluidTagIngredient.STREAM_CODEC);
 
-		public static Codec<Type> CODEC = StringRepresentable.fromValues(Type::values);
-		public static StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(Type.class);
+		public static final Codec<Type> CODEC = StringRepresentable.fromValues(Type::values);
+		public static final StreamCodec<RegistryFriendlyByteBuf, Type> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(Type.class);
 
 		private final MapCodec<? extends FluidIngredient> codec;
 		private final StreamCodec<RegistryFriendlyByteBuf, ? extends FluidIngredient> streamCodec;

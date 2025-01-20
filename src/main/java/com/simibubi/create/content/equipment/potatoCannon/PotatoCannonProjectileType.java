@@ -23,7 +23,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
 public class PotatoCannonProjectileType {
-	public static Codec<PotatoCannonProjectileType> CODEC = RecordCodecBuilder.create(i -> i.group(
+	public static final Codec<PotatoCannonProjectileType> CODEC = RecordCodecBuilder.create(i -> i.group(
 			BuiltInRegistries.ITEM.byNameCodec().listOf().fieldOf("items").forGetter(p -> p.getItems()),
 			Codec.INT.optionalFieldOf("reload_ticks").forGetter(p -> Optional.of(p.getReloadTicks())),
 			Codec.INT.optionalFieldOf("damage").forGetter(p -> Optional.of(p.getDamage())),
@@ -50,7 +50,7 @@ public class PotatoCannonProjectileType {
 		return type;
 	}));
 
-	public static StreamCodec<RegistryFriendlyByteBuf, PotatoCannonProjectileType> STREAM_CODEC = CatnipLargerStreamCodecs.composite(
+	public static final StreamCodec<RegistryFriendlyByteBuf, PotatoCannonProjectileType> STREAM_CODEC = CatnipLargerStreamCodecs.composite(
 			ByteBufCodecs.registry(Registries.ITEM).apply(ByteBufCodecs.list()), t -> t.items,
 			ByteBufCodecs.INT, PotatoCannonProjectileType::getReloadTicks,
 			ByteBufCodecs.INT, PotatoCannonProjectileType::getDamage,

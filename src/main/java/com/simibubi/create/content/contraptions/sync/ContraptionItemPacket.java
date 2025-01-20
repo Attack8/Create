@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public record ContraptionItemPacket(int entityId, BlockPos localPos, List<ItemStack> containedItems) implements ClientboundPacketPayload {
-	public static StreamCodec<RegistryFriendlyByteBuf, ContraptionItemPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<RegistryFriendlyByteBuf, ContraptionItemPacket> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.INT, ContraptionItemPacket::entityId,
 		BlockPos.STREAM_CODEC, ContraptionItemPacket::localPos,
 		CatnipStreamCodecBuilders.list(ItemStack.STREAM_CODEC), ContraptionItemPacket::containedItems,

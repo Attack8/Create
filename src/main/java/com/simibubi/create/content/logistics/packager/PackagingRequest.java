@@ -16,7 +16,12 @@ import net.minecraft.world.item.ItemStack;
 
 public record PackagingRequest(ItemStack item, MutableInt count, String address, int linkIndex,
 	MutableBoolean finalLink, MutableInt packageCounter, int orderId, @Nullable PackageOrder context) {
-	public static Codec<PackagingRequest> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public PackagingRequest(ItemStack item, MutableInt count, String address, int linkIndex,
+							MutableBoolean finalLink, MutableInt packageCounter, int orderId, Optional<PackageOrder> context) {
+		this(item, count, address, linkIndex, finalLink, packageCounter, orderId, context.orElse(null));
+	}
+
+	public static final Codec<PackagingRequest> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		ItemStack.CODEC.fieldOf("item").forGetter(PackagingRequest::item),
 		CatnipCodecs.MUTABLE_INT_CODEC.fieldOf("count").forGetter(PackagingRequest::count),
 		Codec.STRING.fieldOf("address").forGetter(PackagingRequest::address),
@@ -25,8 +30,7 @@ public record PackagingRequest(ItemStack item, MutableInt count, String address,
 		CatnipCodecs.MUTABLE_INT_CODEC.fieldOf("package_counter").forGetter(PackagingRequest::packageCounter),
 		Codec.INT.fieldOf("order_id").forGetter(PackagingRequest::orderId),
 		PackageOrder.CODEC.optionalFieldOf("context").forGetter(i -> Optional.ofNullable(i.context()))
-	).apply(instance, (item, count, address, linkIndex, finalLink, packageCounter, orderId, context) ->
-		new PackagingRequest(item, count, address, linkIndex, finalLink, packageCounter, orderId, context.orElse(null))));
+	).apply(instance, PackagingRequest::new));
 
 	public static PackagingRequest create(ItemStack item, int count, String address, int linkIndex,
 		MutableBoolean finalLink, int packageCount, int orderId, @Nullable PackageOrder context) {

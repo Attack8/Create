@@ -15,7 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 public class RedstoneRequesterConfigurationPacket extends BlockEntityConfigurationPacket<RedstoneRequesterBlockEntity> {
-	public static StreamCodec<ByteBuf, RedstoneRequesterConfigurationPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, RedstoneRequesterConfigurationPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, packet -> packet.pos,
 		ByteBufCodecs.STRING_UTF8, packet -> packet.address,
 	    ByteBufCodecs.BOOL, packet -> packet.allowPartial,

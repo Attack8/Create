@@ -13,12 +13,12 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 
 public class BigItemStack {
-	public static Codec<BigItemStack> CODEC = RecordCodecBuilder.create(i -> i.group(
+	public static final Codec<BigItemStack> CODEC = RecordCodecBuilder.create(i -> i.group(
 		ItemStack.OPTIONAL_CODEC.fieldOf("item_stack").forGetter(s -> s.stack),
 		ExtraCodecs.POSITIVE_INT.fieldOf("count").forGetter(s -> s.count)
 	).apply(i, BigItemStack::new));
 
-	public static StreamCodec<RegistryFriendlyByteBuf, BigItemStack> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<RegistryFriendlyByteBuf, BigItemStack> STREAM_CODEC = StreamCodec.composite(
 		ItemStack.STREAM_CODEC, s -> s.stack,
 		ByteBufCodecs.VAR_INT, s -> s.count,
 		BigItemStack::new

@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 public record PackagePortPlacementPacket(PackagePortTarget target, BlockPos pos) implements ServerboundPacketPayload {
-	public static StreamCodec<ByteBuf, PackagePortPlacementPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, PackagePortPlacementPacket> STREAM_CODEC = StreamCodec.composite(
 	    PackagePortTarget.STREAM_CODEC, PackagePortPlacementPacket::target,
 	    BlockPos.STREAM_CODEC, PackagePortPlacementPacket::pos,
 	    PackagePortPlacementPacket::new
@@ -51,7 +51,7 @@ public record PackagePortPlacementPacket(PackagePortTarget target, BlockPos pos)
 	}
 
 	public record ClientBoundRequest(BlockPos pos) implements ClientboundPacketPayload {
-		public static StreamCodec<ByteBuf, ClientBoundRequest> STREAM_CODEC = StreamCodec.composite(
+		public static final StreamCodec<ByteBuf, ClientBoundRequest> STREAM_CODEC = StreamCodec.composite(
 			BlockPos.STREAM_CODEC, ClientBoundRequest::pos,
 			ClientBoundRequest::new
 		);

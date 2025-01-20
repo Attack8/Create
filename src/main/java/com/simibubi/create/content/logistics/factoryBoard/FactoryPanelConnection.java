@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 public class FactoryPanelConnection {
-	public static Codec<FactoryPanelConnection> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final Codec<FactoryPanelConnection> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		FactoryPanelPosition.CODEC.fieldOf("position").forGetter(i -> i.from),
 		Codec.INT.fieldOf("amount").forGetter(i -> i.amount),
 		Codec.INT.fieldOf("arrow_bending").forGetter(i -> i.arrowBendMode)

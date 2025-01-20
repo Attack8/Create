@@ -14,7 +14,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public record RedstoneRequesterEffectPacket(BlockPos pos, boolean success) implements ClientboundPacketPayload {
-	public static StreamCodec<ByteBuf, RedstoneRequesterEffectPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, RedstoneRequesterEffectPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, RedstoneRequesterEffectPacket::pos,
 		ByteBufCodecs.BOOL, RedstoneRequesterEffectPacket::success,
 	    RedstoneRequesterEffectPacket::new

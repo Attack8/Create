@@ -49,17 +49,17 @@ public class TrainMapSync {
 	public enum TrainState {
 		RUNNING, RUNNING_MANUALLY, DERAILED, SCHEDULE_INTERRUPTED, CONDUCTOR_MISSING, NAVIGATION_FAILED;
 
-		public static StreamCodec<ByteBuf, TrainState> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(TrainState.class);
+		public static final StreamCodec<ByteBuf, TrainState> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(TrainState.class);
 	}
 
 	public enum SignalState {
 		NOT_WAITING, WAITING_FOR_REDSTONE, BLOCK_SIGNAL, CHAIN_SIGNAL;
 
-		public static StreamCodec<ByteBuf, SignalState> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(SignalState.class);
+		public static final StreamCodec<ByteBuf, SignalState> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(SignalState.class);
 	}
 
 	public static class TrainMapSyncEntry {
-		public static StreamCodec<FriendlyByteBuf, TrainMapSyncEntry> STREAM_CODEC = CatnipLargerStreamCodecs.composite(
+		public static final StreamCodec<FriendlyByteBuf, TrainMapSyncEntry> STREAM_CODEC = CatnipLargerStreamCodecs.composite(
 				CatnipStreamCodecBuilders.array(ByteBufCodecs.FLOAT, Float.class), packet -> packet.positions,
 				CatnipStreamCodecBuilders.list(ResourceKey.streamCodec(Registries.DIMENSION)), packet -> packet.dimensions,
 				TrainState.STREAM_CODEC, packet -> packet.state,

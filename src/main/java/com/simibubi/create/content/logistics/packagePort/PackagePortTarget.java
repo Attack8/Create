@@ -33,7 +33,7 @@ import net.minecraft.world.phys.Vec3;
 
 public abstract class PackagePortTarget {
 	public static final Codec<PackagePortTarget> CODEC = PackagePortTarget.Type.CODEC.dispatch(PackagePortTarget::getType, type -> type.codec);
-	public static StreamCodec<ByteBuf, PackagePortTarget> STREAM_CODEC = Type.STREAM_CODEC.dispatch(PackagePortTarget::getType, type -> type.streamCodec);
+	public static final StreamCodec<ByteBuf, PackagePortTarget> STREAM_CODEC = Type.STREAM_CODEC.dispatch(PackagePortTarget::getType, type -> type.streamCodec);
 
 	public BlockPos relativePos;
 
@@ -68,28 +68,29 @@ public abstract class PackagePortTarget {
 	}
 
 	public static class ChainConveyorFrogportTarget extends PackagePortTarget {
-		public static MapCodec<ChainConveyorFrogportTarget> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+		public static final MapCodec<ChainConveyorFrogportTarget> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			BlockPos.CODEC.fieldOf("relative_pos").forGetter(i -> i.relativePos),
 			Codec.FLOAT.fieldOf("chain_pos").forGetter(i -> i.chainPos),
-			BlockPos.CODEC.optionalFieldOf("connection").forGetter(i -> i.connection)
+			BlockPos.CODEC.optionalFieldOf("connection").forGetter(i -> Optional.ofNullable(i.connection))
 		).apply(instance, ChainConveyorFrogportTarget::new));
 
-		public static StreamCodec<ByteBuf, ChainConveyorFrogportTarget> STREAM_CODEC = StreamCodec.composite(
+		public static final StreamCodec<ByteBuf, ChainConveyorFrogportTarget> STREAM_CODEC = StreamCodec.composite(
 		    BlockPos.STREAM_CODEC, i -> i.relativePos,
 			ByteBufCodecs.FLOAT, i -> i.chainPos,
-			ByteBufCodecs.optional(BlockPos.STREAM_CODEC), i -> i.connection,
+			CatnipStreamCodecBuilders.nullable(BlockPos.STREAM_CODEC), i -> i.connection,
 		    ChainConveyorFrogportTarget::new
 		);
 
 		public float chainPos;
-		public Optional<BlockPos> connection;
+		@Nullable
+		public BlockPos connection;
 		public boolean flipped;
 
-		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, @Nullable BlockPos connection) {
-			this(relativePos, chainPos, Optional.ofNullable(connection));
+		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, Optional<BlockPos> connection) {
+			this(relativePos, chainPos, connection.orElse(null));
 		}
 
-		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, Optional<BlockPos> connection) {
+		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, @Nullable BlockPos connection) {
 			super(relativePos);
 			this.chainPos = chainPos;
 			this.connection = connection;
@@ -110,14 +111,14 @@ public abstract class PackagePortTarget {
 		public boolean export(LevelAccessor level, BlockPos portPos, ItemStack box, boolean simulate) {
 			if (!(be(level, portPos) instanceof ChainConveyorBlockEntity clbe))
 				return false;
-			if (connection.isPresent() && !clbe.connections.contains(connection.get()))
+			if (connection != null && !clbe.connections.contains(connection))
 				return false;
 			if (simulate)
-				return clbe.getSpeed() != 0 && clbe.canAcceptPackagesFor(connection.get());
+				return clbe.getSpeed() != 0 && clbe.canAcceptPackagesFor(connection);
 			ChainConveyorPackage box2 = new ChainConveyorPackage(chainPos, box.copy());
-			if (connection.isEmpty())
+			if (connection == null)
 				return clbe.addLoopingPackage(box2);
-			return clbe.addTravellingPackage(box2, connection.get());
+			return clbe.addTravellingPackage(box2, connection);
 		}
 
 		@Override
@@ -127,32 +128,32 @@ public abstract class PackagePortTarget {
 			ChainConveyorBlockEntity actualBe = clbe;
 
 			// Jump to opposite chain if motion reversed
-			if (connection.isPresent() && clbe.getSpeed() < 0 != flipped) {
+			if (connection != null && clbe.getSpeed() < 0 != flipped) {
 				deregister(ppbe, level, portPos);
 				actualBe = AllBlocks.CHAIN_CONVEYOR.get()
 					.getBlockEntity(level, clbe.getBlockPos()
-						.offset(connection.get()));
+						.offset(connection));
 				if (actualBe == null)
 					return;
 				clbe.prepareStats();
-				ConnectionStats stats = clbe.connectionStats.get(connection.get());
+				ConnectionStats stats = clbe.connectionStats.get(connection);
 				if (stats != null)
 					chainPos = stats.chainLength() - chainPos;
-				connection = Optional.of(connection.get().multiply(-1));
+				connection = connection.multiply(-1);
 				flipped = !flipped;
 				relativePos = actualBe.getBlockPos()
 					.subtract(portPos);
 				ppbe.notifyUpdate();
 			}
 
-			if (connection.isPresent() && !actualBe.connections.contains(connection.get()))
+			if (connection != null && !actualBe.connections.contains(connection))
 				return;
 			String portFilter = ppbe.getFilterString();
 			if (portFilter == null)
 				return;
-			actualBe.routingTable.receivePortInfo(portFilter, connection.orElse(BlockPos.ZERO));
-			Map<BlockPos, ConnectedPort> portMap = connection.isEmpty() ? actualBe.loopPorts : actualBe.travelPorts;
-			portMap.put(relativePos.multiply(-1), new ConnectedPort(chainPos, connection.orElse(null), portFilter));
+			actualBe.routingTable.receivePortInfo(portFilter, connection == null ? BlockPos.ZERO : connection);
+			Map<BlockPos, ConnectedPort> portMap = connection == null ? actualBe.loopPorts : actualBe.travelPorts;
+			portMap.put(relativePos.multiply(-1), new ConnectedPort(chainPos, connection, portFilter));
 		}
 
 		@Override
@@ -173,7 +174,7 @@ public abstract class PackagePortTarget {
 		public Vec3 getExactTargetLocation(PackagePortBlockEntity ppbe, LevelAccessor level, BlockPos portPos) {
 			if (!(be(level, portPos) instanceof ChainConveyorBlockEntity clbe))
 				return Vec3.ZERO;
-			return clbe.getPackagePosition(chainPos, connection.orElse(null));
+			return clbe.getPackagePosition(chainPos, connection);
 		}
 
 		@Override
@@ -192,7 +193,7 @@ public abstract class PackagePortTarget {
 			BlockPos.CODEC.fieldOf("relative_pos").forGetter(i -> i.relativePos)
 		).apply(instance, TrainStationFrogportTarget::new));
 
-		public static StreamCodec<ByteBuf, TrainStationFrogportTarget> STREAM_CODEC = StreamCodec.composite(
+		public static final StreamCodec<ByteBuf, TrainStationFrogportTarget> STREAM_CODEC = StreamCodec.composite(
 		    BlockPos.STREAM_CODEC, i -> i.relativePos,
 		    TrainStationFrogportTarget::new
 		);
@@ -249,8 +250,8 @@ public abstract class PackagePortTarget {
 		CHAIN_CONVEYOR(ChainConveyorFrogportTarget.CODEC, ChainConveyorFrogportTarget.STREAM_CODEC),
 		TRAIN_STATION(TrainStationFrogportTarget.CODEC, TrainStationFrogportTarget.STREAM_CODEC);
 
-		public static Codec<Type> CODEC = StringRepresentable.fromValues(Type::values);
-		public static StreamCodec<ByteBuf, Type> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(Type.class);
+		public static final Codec<Type> CODEC = StringRepresentable.fromValues(Type::values);
+		public static final StreamCodec<ByteBuf, Type> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(Type.class);
 
 		private final MapCodec<? extends PackagePortTarget> codec;
 		private final StreamCodec<ByteBuf, ? extends PackagePortTarget> streamCodec;

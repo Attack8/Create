@@ -12,7 +12,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public record KnockbackPacket(float yRot, float strength) implements ClientboundPacketPayload {
-	public static StreamCodec<ByteBuf, KnockbackPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, KnockbackPacket> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.FLOAT, KnockbackPacket::yRot,
 	    ByteBufCodecs.FLOAT, KnockbackPacket::strength,
 	    KnockbackPacket::new

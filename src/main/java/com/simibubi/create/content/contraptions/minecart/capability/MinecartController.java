@@ -609,7 +609,7 @@ public class MinecartController implements INBTSerializable<CompoundTag> {
 			}
 		});
 
-		public static Codec<Type> CODEC = StringRepresentable.fromValues(Type::values);
+		public static final Codec<Type> CODEC = StringRepresentable.fromValues(Type::values);
 
 		private final IAttachmentSerializer<CompoundTag, MinecartController> serializer;
 

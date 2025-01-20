@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import net.minecraft.core.HolderLookup;
+
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.google.common.collect.Lists;
@@ -178,17 +180,17 @@ public class InventorySummary {
 	}
 
 	// TODO - Create codec for this
-	public CompoundTag write() {
+	public CompoundTag write(HolderLookup.Provider registries) {
 		List<BigItemStack> all = new ArrayList<>();
 		items.forEach((key, list) -> all.addAll(list));
 		CompoundTag tag = new CompoundTag();
-		tag.put("List", CatnipCodecUtils.encode(Codec.list(BigItemStack.CODEC), all).orElseThrow());
+		tag.put("List", CatnipCodecUtils.encode(Codec.list(BigItemStack.CODEC), registries, all).orElseThrow());
 		return tag;
 	}
 
-	public static InventorySummary read(CompoundTag tag) {
+	public static InventorySummary read(CompoundTag tag, HolderLookup.Provider registries) {
 		InventorySummary summary = new InventorySummary();
-		summary.addAllBigItemStacks(CatnipCodecUtils.decode(Codec.list(BigItemStack.CODEC), tag.getCompound("List")).orElse(Collections.emptyList()));
+		summary.addAllBigItemStacks(CatnipCodecUtils.decode(Codec.list(BigItemStack.CODEC), registries, tag.getCompound("List")).orElse(Collections.emptyList()));
 		return summary;
 	}
 

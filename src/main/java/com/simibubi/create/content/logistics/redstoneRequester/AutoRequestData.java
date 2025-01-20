@@ -16,7 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 public class AutoRequestData {
-	public static Codec<AutoRequestData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final Codec<AutoRequestData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		PackageOrder.CODEC.fieldOf("encoded_request").forGetter(i -> i.encodedRequest),
 		Codec.STRING.fieldOf("encoded_target_address").forGetter(i -> i.encodedTargetAddress),
 		BlockPos.CODEC.fieldOf("target_offset").forGetter(i -> i.targetOffset),
@@ -24,7 +24,7 @@ public class AutoRequestData {
 		Codec.BOOL.fieldOf("is_valid").forGetter(i -> i.isValid)
 	).apply(instance, AutoRequestData::new));
 
-	public static StreamCodec<RegistryFriendlyByteBuf, AutoRequestData> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<RegistryFriendlyByteBuf, AutoRequestData> STREAM_CODEC = StreamCodec.composite(
 	    PackageOrder.STREAM_CODEC, i -> i.encodedRequest,
 		ByteBufCodecs.STRING_UTF8, i -> i.encodedTargetAddress,
 	    BlockPos.STREAM_CODEC, i -> i.targetOffset,

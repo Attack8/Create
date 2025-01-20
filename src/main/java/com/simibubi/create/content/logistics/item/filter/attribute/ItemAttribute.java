@@ -61,7 +61,7 @@ public interface ItemAttribute {
 	}
 
 	record ItemAttributeEntry(ItemAttribute attribute, boolean inverted) {
-		public static Codec<ItemAttribute.ItemAttributeEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
+		public static final Codec<ItemAttribute.ItemAttributeEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
 				ItemAttribute.CODEC.fieldOf("attribute").forGetter(ItemAttribute.ItemAttributeEntry::attribute),
 				Codec.BOOL.fieldOf("inverted").forGetter(ItemAttribute.ItemAttributeEntry::inverted)
 		).apply(i, ItemAttribute.ItemAttributeEntry::new));

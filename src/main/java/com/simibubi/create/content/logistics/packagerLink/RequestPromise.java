@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.content.logistics.BigItemStack;
 
 public class RequestPromise {
-	public static Codec<RequestPromise> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+	public static final Codec<RequestPromise> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		Codec.INT.fieldOf("ticks_existed").forGetter(i -> i.ticksExisted),
 		BigItemStack.CODEC.fieldOf("promised_stack").forGetter(i -> i.promisedStack)
 	).apply(instance, RequestPromise::new));

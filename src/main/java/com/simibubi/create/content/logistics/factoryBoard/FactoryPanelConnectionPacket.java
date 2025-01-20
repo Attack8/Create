@@ -8,7 +8,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 
 public class FactoryPanelConnectionPacket extends BlockEntityConfigurationPacket<FactoryPanelBlockEntity> {
-	public static StreamCodec<ByteBuf, FactoryPanelConnectionPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, FactoryPanelConnectionPacket> STREAM_CODEC = StreamCodec.composite(
 	    FactoryPanelPosition.STREAM_CODEC, packet -> packet.fromPos,
 		FactoryPanelPosition.STREAM_CODEC, packet -> packet.toPos,
 	    FactoryPanelConnectionPacket::new

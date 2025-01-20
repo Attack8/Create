@@ -18,7 +18,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public record WiFiEffectPacket(BlockPos pos) implements ClientboundPacketPayload {
-	public static StreamCodec<ByteBuf, WiFiEffectPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, WiFiEffectPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, WiFiEffectPacket::pos,
 		WiFiEffectPacket::new
 	);

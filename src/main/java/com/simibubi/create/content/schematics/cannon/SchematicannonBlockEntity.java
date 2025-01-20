@@ -888,13 +888,13 @@ public class SchematicannonBlockEntity extends SmartBlockEntity implements MenuP
 	}
 
 	public record SchematicannonOptions(int replaceMode, boolean skipMissing, boolean replaceBlockEntities) {
-		public static Codec<SchematicannonOptions> CODEC = RecordCodecBuilder.create(i -> i.group(
+		public static final Codec<SchematicannonOptions> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Codec.INT.fieldOf("replace_mode").forGetter(SchematicannonOptions::replaceMode),
 				Codec.BOOL.fieldOf("skip_missing").forGetter(SchematicannonOptions::skipMissing),
 				Codec.BOOL.fieldOf("replace_block_entities").forGetter(SchematicannonOptions::replaceBlockEntities)
 		).apply(i, SchematicannonOptions::new));
 
-		public static StreamCodec<ByteBuf, SchematicannonOptions> STREAM_CODEC = StreamCodec.composite(
+		public static final StreamCodec<ByteBuf, SchematicannonOptions> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.INT, SchematicannonOptions::replaceMode,
 				ByteBufCodecs.BOOL, SchematicannonOptions::skipMissing,
 				ByteBufCodecs.BOOL, SchematicannonOptions::replaceBlockEntities,

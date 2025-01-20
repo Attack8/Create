@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 public class StockKeeperCategoryEditPacket extends BlockEntityConfigurationPacket<StockTickerBlockEntity> {
-	public static StreamCodec<RegistryFriendlyByteBuf, StockKeeperCategoryEditPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<RegistryFriendlyByteBuf, StockKeeperCategoryEditPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, p -> p.pos,
 		ItemStack.LIST_STREAM_CODEC, p -> p.schedule,
 	    StockKeeperCategoryEditPacket::new

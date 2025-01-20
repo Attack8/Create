@@ -36,13 +36,13 @@ import net.minecraft.world.level.LevelAccessor;
 
 public class ShoppingListItem extends Item {
 	public record ShoppingList(List<IntAttached<BlockPos>> purchases, UUID shopOwner, UUID shopNetwork) {
-		public static Codec<ShoppingList> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public static final Codec<ShoppingList> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.list(IntAttached.codec(BlockPos.CODEC)).fieldOf("purchases").forGetter(ShoppingList::purchases),
 			UUIDUtil.CODEC.fieldOf("shop_owner").forGetter(ShoppingList::shopOwner),
 			UUIDUtil.CODEC.fieldOf("shop_network").forGetter(ShoppingList::shopNetwork)
 		).apply(instance, ShoppingList::new));
 
-		public static StreamCodec<ByteBuf, ShoppingList> STREAM_CODEC = StreamCodec.composite(
+		public static final StreamCodec<ByteBuf, ShoppingList> STREAM_CODEC = StreamCodec.composite(
 			CatnipStreamCodecBuilders.list(IntAttached.streamCodec(BlockPos.STREAM_CODEC)), ShoppingList::purchases,
 		    UUIDUtil.STREAM_CODEC, ShoppingList::shopOwner,
 		    UUIDUtil.STREAM_CODEC, ShoppingList::shopNetwork,

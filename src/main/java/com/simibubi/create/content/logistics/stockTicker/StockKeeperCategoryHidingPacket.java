@@ -13,7 +13,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 
 public class StockKeeperCategoryHidingPacket extends BlockEntityConfigurationPacket<StockTickerBlockEntity> {
-	public static StreamCodec<ByteBuf, StockKeeperCategoryHidingPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, StockKeeperCategoryHidingPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, i -> i.pos,
 		CatnipStreamCodecBuilders.list(ByteBufCodecs.INT), i -> i.indices,
 		StockKeeperCategoryHidingPacket::new

@@ -17,7 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 public class DimensionPalette {
-	public static StreamCodec<ByteBuf, DimensionPalette> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, DimensionPalette> STREAM_CODEC = StreamCodec.composite(
 			CatnipStreamCodecBuilders.list(ResourceKey.streamCodec(Registries.DIMENSION)), packet -> packet.gatheredDims,
 			DimensionPalette::new
 	);

@@ -608,7 +608,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 			return;
 		queuedExitingPackages = NBTHelper.readItemList(compound.getList("QueuedPackages", Tag.TAG_COMPOUND), registries);
 		if (compound.contains("LastSummary"))
-			availableItems = InventorySummary.read(compound.getCompound("LastSummary"));
+			availableItems = InventorySummary.read(compound.getCompound("LastSummary"), registries);
 	}
 
 	@Override
@@ -624,7 +624,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 			return;
 		compound.put("QueuedPackages", NBTHelper.writeItemList(queuedExitingPackages, registries));
 		if (availableItems != null)
-			compound.put("LastSummary", availableItems.write());
+			compound.put("LastSummary", availableItems.write(registries));
 	}
 
 	@Override

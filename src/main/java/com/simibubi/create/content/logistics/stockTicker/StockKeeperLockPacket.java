@@ -12,7 +12,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 
 public class StockKeeperLockPacket extends BlockEntityConfigurationPacket<StockTickerBlockEntity> {
-	public static StreamCodec<ByteBuf, StockKeeperLockPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, StockKeeperLockPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, p -> p.pos,
 		ByteBufCodecs.BOOL, p -> p.lock,
 	    StockKeeperLockPacket::new

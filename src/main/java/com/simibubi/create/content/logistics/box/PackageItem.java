@@ -384,17 +384,21 @@ public class PackageItem extends Item {
 
 	public record PackageOrderData(int orderId, int linkIndex, boolean isFinalLink, int fragmentIndex,
 								   boolean isFinal, @Nullable PackageOrder orderContext) {
-		public static Codec<PackageOrderData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		public PackageOrderData(int orderId, int linkIndex, boolean isFinalLink, int fragmentIndex,
+								boolean isFinal, Optional<PackageOrder> orderContext) {
+			this(orderId, linkIndex, isFinalLink, fragmentIndex, isFinal, orderContext.orElse(null));
+		}
+
+		public static final Codec<PackageOrderData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.INT.fieldOf("order_id").forGetter(PackageOrderData::orderId),
 			Codec.INT.fieldOf("link_index").forGetter(PackageOrderData::linkIndex),
 			Codec.BOOL.fieldOf("is_final_link").forGetter(PackageOrderData::isFinalLink),
 			Codec.INT.fieldOf("fragment_index").forGetter(PackageOrderData::fragmentIndex),
 			Codec.BOOL.fieldOf("is_final").forGetter(PackageOrderData::isFinal),
 			PackageOrder.CODEC.optionalFieldOf("order_context").forGetter(i -> Optional.ofNullable(i.orderContext))
-		).apply(instance, (orderId, linkIndex, isFinalLink, fragmentIndex, isFinal, orderContext) ->
-			new PackageOrderData(orderId, linkIndex, isFinalLink, fragmentIndex, isFinal, orderContext.orElse(null))));
+		).apply(instance, PackageOrderData::new));
 
-		public static StreamCodec<RegistryFriendlyByteBuf, PackageOrderData> STREAM_CODEC = StreamCodec.composite(
+		public static final StreamCodec<RegistryFriendlyByteBuf, PackageOrderData> STREAM_CODEC = StreamCodec.composite(
 			ByteBufCodecs.INT, PackageOrderData::orderId,
 			ByteBufCodecs.INT, PackageOrderData::linkIndex,
 			ByteBufCodecs.BOOL, PackageOrderData::isFinalLink,

@@ -17,7 +17,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public record FactoryPanelEffectPacket(FactoryPanelPosition fromPos, FactoryPanelPosition toPos, boolean success) implements ClientboundPacketPayload {
-	public static StreamCodec<ByteBuf, FactoryPanelEffectPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<ByteBuf, FactoryPanelEffectPacket> STREAM_CODEC = StreamCodec.composite(
 		FactoryPanelPosition.STREAM_CODEC, FactoryPanelEffectPacket::fromPos,
 		FactoryPanelPosition.STREAM_CODEC, FactoryPanelEffectPacket::toPos,
 		ByteBufCodecs.BOOL, FactoryPanelEffectPacket::success,
