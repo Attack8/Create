@@ -34,19 +34,16 @@ public class FactoryPanelConnection {
 
 	public FactoryPanelConnection(FactoryPanelPosition from, int amount) {
 		this(from, amount, -1);
-		path = new ArrayList<>();
-		success = true;
-		arrowBendModeCurrentPathUses = 0;
-		cachedSource = new WeakReference<Object>(null);
 	}
 
 	public FactoryPanelConnection(FactoryPanelPosition from, int amount, int arrowBendMode) {
 		this.from = from;
 		this.amount = amount;
-		this.arrowBendMode = -1;
+		this.arrowBendMode = arrowBendMode;
 		path = new ArrayList<>();
 		success = true;
 		arrowBendModeCurrentPathUses = 0;
+		cachedSource = new WeakReference<>(null);
 	}
 
 	public List<Direction> getPath(BlockState state, FactoryPanelPosition to) {
