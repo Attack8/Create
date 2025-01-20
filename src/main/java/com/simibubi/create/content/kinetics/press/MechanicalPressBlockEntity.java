@@ -32,7 +32,6 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -187,7 +186,7 @@ public class MechanicalPressBlockEntity extends BasinOperatingBlockEntity implem
 		return AllRecipeTypes.PRESSING.find(new SingleRecipeInput(item), level);
 	}
 
-	public static <I extends RecipeInput, T extends Recipe<I>> boolean canCompress(T recipe) {
+	public static boolean canCompress(Recipe<?> recipe) {
 		if (!(recipe instanceof CraftingRecipe) || !AllConfigs.server().recipes.allowShapedSquareInPress.get())
 			return false;
 		NonNullList<Ingredient> ingredients = recipe.getIngredients();
