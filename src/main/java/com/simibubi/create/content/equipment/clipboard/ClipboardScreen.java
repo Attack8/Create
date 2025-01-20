@@ -26,13 +26,13 @@ import com.simibubi.create.content.equipment.clipboard.ClipboardOverrides.Clipbo
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.widget.IconButton;
-import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
@@ -53,6 +53,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -361,7 +362,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 	private void send() {
 		ClipboardEntry.saveAll(pages, item);
 		ClipboardOverrides.switchTo(ClipboardType.WRITTEN, item);
-		CatnipServices.NETWORK.sendToServer(new ClipboardEditPacket(targetSlot, pages.isEmpty(), targetedBlock));
+		CatnipServices.NETWORK.sendToServer(new ClipboardEditPacket(targetSlot, item.getComponentsPatch(), targetedBlock));
 	}
 
 	@Override

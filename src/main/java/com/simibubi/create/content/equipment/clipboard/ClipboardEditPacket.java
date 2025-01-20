@@ -8,9 +8,8 @@ import com.simibubi.create.AllPackets;
 
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
-
-import com.simibubi.create.foundation.utility.CreateNBTProcessors;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -20,12 +19,12 @@ import net.minecraft.world.level.Level;
 
 // TODO - Does this even work?
 // Also make sure to filter any data through CreateNBTProcessors.clipboardProcessor
-public record ClipboardEditPacket(int hotbarSlot, boolean isEmpty, @Nullable BlockPos targetedBlock) implements ServerboundPacketPayload {
+public record ClipboardEditPacket(int hotbarSlot, DataComponentPatch dataComponentPatch, @Nullable BlockPos targetedBlock) implements ServerboundPacketPayload {
 	public static final StreamCodec<RegistryFriendlyByteBuf, ClipboardEditPacket> STREAM_CODEC = StreamCodec.composite(
-			ByteBufCodecs.VAR_INT, ClipboardEditPacket::hotbarSlot,
-			ByteBufCodecs.BOOL, ClipboardEditPacket::isEmpty,
-			CatnipStreamCodecBuilders.nullable(BlockPos.STREAM_CODEC), ClipboardEditPacket::targetedBlock,
-	        ClipboardEditPacket::new
+		ByteBufCodecs.VAR_INT, ClipboardEditPacket::hotbarSlot,
+		DataComponentPatch.STREAM_CODEC, ClipboardEditPacket::dataComponentPatch,
+		CatnipStreamCodecBuilders.nullable(BlockPos.STREAM_CODEC), ClipboardEditPacket::targetedBlock,
+		ClipboardEditPacket::new
 	);
 
 	@Override
@@ -37,7 +36,11 @@ public record ClipboardEditPacket(int hotbarSlot, boolean isEmpty, @Nullable Blo
 			if (!targetedBlock.closerThan(sender.blockPosition(), 20))
 				return;
 			if (world.getBlockEntity(targetedBlock) instanceof ClipboardBlockEntity cbe) {
-				if (isEmpty) clearComponents(cbe.dataContainer);
+				if (dataComponentPatch.isEmpty()) {
+					clearComponents(cbe.dataContainer);
+				} else {
+					cbe.dataContainer.applyComponents(dataComponentPatch);
+				}
 				cbe.onEditedBy(sender);
 			}
 			return;
@@ -47,7 +50,11 @@ public record ClipboardEditPacket(int hotbarSlot, boolean isEmpty, @Nullable Blo
 				.getItem(hotbarSlot);
 		if (!AllBlocks.CLIPBOARD.isIn(itemStack))
 			return;
-		if (isEmpty) clearComponents(itemStack);
+		if (dataComponentPatch.isEmpty()) {
+			clearComponents(itemStack);
+		} else {
+			itemStack.applyComponents(dataComponentPatch);
+		}
 	}
 
 	@Override
