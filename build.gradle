@@ -132,11 +132,6 @@ repositories {
         }
     }
 
-    // Mirror of maven.createmod.net
-    if (System.getProperty("os.name").contains("Mac") && System.getenv("USER") == "ithundxr") {
-        maven { url = "https://maven.ithundxr.dev/mirror" }
-    }
-
     // todo - temp
     maven { url = "https://maven.ithundxr.dev/hidden" } // Flywheel 1.21 PR
 }
@@ -175,7 +170,9 @@ dependencies {
     implementation("dev.ftb.mods:ftb-library-neoforge:2101.1.3")
 
     implementation("maven.modrinth:journeymap:1.21.1-6.0.0-beta.32+neoforge")
-    implementation("info.journeymap:journeymap-api-neoforge:2.0.0-1.21.1-SNAPSHOT")
+    implementation("info.journeymap:journeymap-api-neoforge:2.0.0-1.21.1-SNAPSHOT") {
+        exclude(group: "curse.maven") // Pulls in a old version of journey map which is for forge
+    }
 }
 
 sourceSets.main {

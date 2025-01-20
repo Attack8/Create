@@ -137,7 +137,7 @@ public class RuntimeDataGenerator {
 			ResourceLocation id = ResourceLocation.fromNamespaceAndPath(recipe.id.getNamespace(),
 				typeId.getPath() + "/" + recipe.id.getPath());
 
-			Optional<JsonElement> serialized = CatnipCodecUtils.encode(Recipe.CONDITIONAL_CODEC, JsonOps.COMPRESSED, Optional.of(new WithConditions<>(recipe)));
+			Optional<JsonElement> serialized = CatnipCodecUtils.encode(Recipe.CONDITIONAL_CODEC, JsonOps.INSTANCE, Optional.of(new WithConditions<>(recipe)));
 			serialized.ifPresent(r -> JSON_FILES.put(id.withPrefix("recipes/"), r));
 			return recipe;
 		}

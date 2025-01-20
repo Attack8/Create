@@ -1,8 +1,10 @@
 package com.simibubi.create.content.equipment.clipboard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllDataComponents;
@@ -16,6 +18,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+
+import org.jetbrains.annotations.UnmodifiableView;
 
 public class ClipboardEntry {
 	public static final Codec<ClipboardEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -63,7 +67,14 @@ public class ClipboardEntry {
 	}
 
 	public static List<List<ClipboardEntry>> readAll(ItemStack clipboardItem) {
-		return clipboardItem.getOrDefault(AllDataComponents.CLIPBOARD_PAGES, new ArrayList<>());
+		List<List<ClipboardEntry>> entries = new ArrayList<>();
+
+		// Both these lists are immutable, so we unfortunately need to re-create them to make them mutable
+		List<List<ClipboardEntry>> saved = clipboardItem.getOrDefault(AllDataComponents.CLIPBOARD_PAGES, Collections.emptyList());
+		for (List<ClipboardEntry> inner : saved)
+			entries.add(new ArrayList<>(inner));
+
+		return entries;
 	}
 
 	public static List<ClipboardEntry> getLastViewedEntries(ItemStack heldItem) {

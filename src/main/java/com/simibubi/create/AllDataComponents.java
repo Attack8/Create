@@ -24,6 +24,7 @@ import com.simibubi.create.content.schematics.cannon.SchematicannonBlockEntity.S
 import com.simibubi.create.content.trains.track.BezierTrackPointLocation;
 import com.simibubi.create.content.trains.track.TrackPlacement.ConnectingFrom;
 
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
@@ -137,7 +138,7 @@ public class AllDataComponents {
 
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<List<ClipboardEntry>>>> CLIPBOARD_PAGES = DATA_COMPONENTS.registerComponentType(
 			"clipboard_pages",
-			builder -> builder.persistent(ClipboardEntry.CODEC.listOf().listOf()).networkSynchronized(ClipboardEntry.STREAM_CODEC.apply(ByteBufCodecs.list()).apply(ByteBufCodecs.list()))
+			builder -> builder.persistent(ClipboardEntry.CODEC.listOf().listOf()).networkSynchronized(CatnipStreamCodecBuilders.list(CatnipStreamCodecBuilders.list(ClipboardEntry.STREAM_CODEC)))
 	);
 
 	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Unit>> CLIPBOARD_READ_ONLY = DATA_COMPONENTS.registerComponentType(
