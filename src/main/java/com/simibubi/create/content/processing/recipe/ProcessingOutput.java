@@ -3,15 +3,11 @@ package com.simibubi.create.content.processing.recipe;
 import java.util.Random;
 
 import com.mojang.datafixers.util.Either;
-
 import com.mojang.serialization.Codec;
-
 import com.mojang.serialization.DataResult;
-
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.createmod.catnip.data.Pair;
-import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -36,9 +32,8 @@ public class ProcessingOutput {
 		this.chance = chance;
 	}
 
-	public ProcessingOutput(ItemStack stack, int count, DataComponentMap components, float chance) {
+	public ProcessingOutput(ItemStack stack, int count, float chance) {
 		stack.setCount(count);
-		stack.applyComponents(components);
 
 		this.stack = stack;
 		this.chance = chance;
@@ -51,9 +46,9 @@ public class ProcessingOutput {
 	}
 
 	private static ProcessingOutput fromCodec(Either<ItemStack, Pair<ResourceLocation, Integer>> item,
-											  int count, DataComponentMap components, float chance) {
+											  int count, float chance) {
 		return item.map(
-				stack -> new ProcessingOutput(stack, count, components, chance),
+				stack -> new ProcessingOutput(stack, count, chance),
 				compat -> new ProcessingOutput(compat, chance)
 		);
 	}
@@ -99,7 +94,6 @@ public class ProcessingOutput {
 					return s.compatDatagenOutput.getSecond();
 				return s.getStack().getCount();
 			}),
-			DataComponentMap.CODEC.optionalFieldOf("components", DataComponentMap.EMPTY).forGetter(s -> s.stack.getComponents()),
 			Codec.FLOAT.optionalFieldOf("chance", 1F).forGetter(s -> s.chance)
 	).apply(i, ProcessingOutput::fromCodec));
 

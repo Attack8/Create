@@ -527,7 +527,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		float angleYaw = getViewYRot(partialTicks);
 		float anglePitch = getViewXRot(partialTicks);
 
-		matrixStack.translate(-.5f, 0, -.5f);
+		matrixStack.translate(-.5f, -.2f, -.5f);
 
 		Entity ridingEntity = getVehicle();
 		if (ridingEntity instanceof AbstractMinecart)

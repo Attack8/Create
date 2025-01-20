@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 
 public record GhostItemSubmitPacket(ItemStack item, int slot) implements ServerboundPacketPayload {
 	public static final StreamCodec<RegistryFriendlyByteBuf, GhostItemSubmitPacket> STREAM_CODEC = StreamCodec.composite(
-	        ItemStack.STREAM_CODEC, GhostItemSubmitPacket::item,
+	        ItemStack.OPTIONAL_STREAM_CODEC, GhostItemSubmitPacket::item,
 			ByteBufCodecs.INT, GhostItemSubmitPacket::slot,
 	        GhostItemSubmitPacket::new
 	);

@@ -9,82 +9,22 @@
   "results": [
     {
       "chance": 0.25,
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
       "item": "minecraft:flint"
     },
     {
       "chance": 0.1,
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
       "item": "minecraft:gold_nugget"
     },
     {
       "chance": 0.1,
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
       "item": "create:copper_nugget"
     },
     {
       "chance": 0.1,
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
       "item": "create:zinc_nugget"
     },
     {
       "chance": 0.1,
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
       "item": "minecraft:iron_nugget"
     }
   ]

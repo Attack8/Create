@@ -11,18 +11,6 @@
   "keepHeldItem": true,
   "results": [
     {
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
       "item": "create:waxed_copper_tile_slab"
     }
   ]

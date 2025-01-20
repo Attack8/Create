@@ -8,67 +8,19 @@
   "processingTime": 300,
   "results": [
     {
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
       "count": 2,
       "item": "minecraft:coal"
     },
     {
       "chance": 0.25,
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
       "item": "minecraft:coal"
     },
     {
       "chance": 0.75,
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "uncommon",
-        "minecraft:repair_cost": 0
-      },
       "item": "create:experience_nugget"
     },
     {
       "chance": 0.125,
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
       "item": "minecraft:cobbled_deepslate"
     }
   ]

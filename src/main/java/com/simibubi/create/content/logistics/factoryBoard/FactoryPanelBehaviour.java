@@ -693,7 +693,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 			network = panelTag.getUUID("Freq");
 
 		targeting.clear();
-		targeting = CatnipCodecUtils.decode(CatnipCodecs.set(FactoryPanelPosition.CODEC), panelTag.get("Targeting")).orElseThrow();
+		targeting.addAll(CatnipCodecUtils.decode(CatnipCodecs.set(FactoryPanelPosition.CODEC), panelTag.get("Targeting")).orElseThrow());
 
 		targetedBy.clear();
 		CatnipCodecUtils.decode(Codec.list(FactoryPanelConnection.CODEC), panelTag.get("TargetedBy")).orElseThrow()
