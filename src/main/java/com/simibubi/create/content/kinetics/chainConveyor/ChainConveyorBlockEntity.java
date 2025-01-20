@@ -31,9 +31,9 @@ import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.codecs.CatnipCodecs;
 import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.nbt.NBTHelper;
-import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.HolderLookup;
@@ -62,7 +62,7 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 	public record ConnectionStats(float tangentAngle, float chainLength, Vec3 start, Vec3 end) {
 	}
 
-	public record ConnectedPort(float chainPosition, BlockPos connection, String filter) {
+	public record ConnectedPort(float chainPosition, @Nullable BlockPos connection, String filter) {
 	}
 
 	public Set<BlockPos> connections = new HashSet<>();
@@ -693,14 +693,14 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
 		if (clientPacket && compound.contains("DestroyEffect") && level != null)
-			spawnDestroyParticles(NbtUtils.readBlockPos(compound, "DestroyEffect").orElseThrow());
+			spawnDestroyParticles(NbtUtils.readBlockPos(compound, "DestroyEffect").orElse(BlockPos.ZERO));
 
 		int sizeBefore = connections.size();
 		connections.clear();
 		CatnipCodecUtils.decode(CatnipCodecs.set(BlockPos.CODEC), compound.get("Connections")).ifPresent(connections::addAll);
 		travellingPackages.clear();
 		NBTHelper.iterateCompoundList(compound.getList("TravellingPackages", Tag.TAG_COMPOUND),
-			c -> travellingPackages.put(NbtUtils.readBlockPos(c, "Target").orElseThrow(),
+			c -> travellingPackages.put(NbtUtils.readBlockPos(c, "Target").orElse(BlockPos.ZERO),
 				NBTHelper.readCompoundList(c.getList("Packages", Tag.TAG_COMPOUND), t -> ChainConveyorPackage.read(t, registries))));
 		loopingPackages = NBTHelper.readCompoundList(compound.getList("LoopingPackages", Tag.TAG_COMPOUND),
 			t -> ChainConveyorPackage.read(t, registries));

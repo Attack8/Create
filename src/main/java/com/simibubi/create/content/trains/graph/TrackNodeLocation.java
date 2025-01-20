@@ -83,7 +83,7 @@ public class TrackNodeLocation extends Vec3i {
 	}
 
 	public static TrackNodeLocation read(CompoundTag tag, DimensionPalette dimensions) {
-		TrackNodeLocation location = fromPackedPos(NbtUtils.readBlockPos(tag, "Pos").orElseThrow());
+		TrackNodeLocation location = fromPackedPos(NbtUtils.readBlockPos(tag, "Pos").orElse(BlockPos.ZERO));
 		if (dimensions != null)
 			location.dimension = dimensions.decode(tag.getInt("D"));
 		location.yOffsetPixels = tag.getInt("YO");

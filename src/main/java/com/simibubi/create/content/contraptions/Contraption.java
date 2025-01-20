@@ -740,7 +740,7 @@ public abstract class Contraption {
 		nbt.getList("Actors", Tag.TAG_COMPOUND)
 			.forEach(c -> {
 				CompoundTag comp = (CompoundTag) c;
-				StructureBlockInfo info = this.blocks.get(NbtUtils.readBlockPos(comp, "Pos").orElseThrow());
+				StructureBlockInfo info = this.blocks.get(NbtUtils.readBlockPos(comp, "Pos").orElse(BlockPos.ZERO));
 				if (info == null)
 					return;
 				MovementContext context = MovementContext.readNBT(world, info, comp, this);
@@ -976,7 +976,7 @@ public abstract class Contraption {
 	}
 
 	private static StructureBlockInfo legacyReadStructureBlockInfo(CompoundTag blockListEntry, HolderGetter<Block> holderGetter) {
-		return new StructureBlockInfo(NbtUtils.readBlockPos(blockListEntry, "Pos").orElseThrow(),
+		return new StructureBlockInfo(NbtUtils.readBlockPos(blockListEntry, "Pos").orElse(BlockPos.ZERO),
 			NbtUtils.readBlockState(holderGetter, blockListEntry.getCompound("Block")),
 			blockListEntry.contains("Data") ? blockListEntry.getCompound("Data") : null);
 	}

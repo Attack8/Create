@@ -45,7 +45,7 @@ public record ToolboxDisposeAllPacket(BlockPos toolboxPos) implements Serverboun
 		toolbox.inventory.inLimitedMode(inventory -> {
 			for (int i = 0; i < 36; i++) {
 				String key = String.valueOf(i);
-				if (compound.contains(key) && NbtUtils.readBlockPos(compound.getCompound(key),"Pos").orElseThrow()
+				if (compound.contains(key) && NbtUtils.readBlockPos(compound.getCompound(key),"Pos").orElse(BlockPos.ZERO)
 						.equals(toolboxPos)) {
 					ToolboxHandler.unequip(player, i, true);
 					sendData.setTrue();

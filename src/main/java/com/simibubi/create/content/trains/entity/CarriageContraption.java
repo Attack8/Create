@@ -218,7 +218,7 @@ public class CarriageContraption extends Contraption {
 			Couple.create(nbt.getBoolean("FrontBlazeConductor"), nbt.getBoolean("BackBlazeConductor"));
 		conductorSeats.clear();
 		NBTHelper.iterateCompoundList(nbt.getList("ConductorSeats", Tag.TAG_COMPOUND),
-			c -> conductorSeats.put(NbtUtils.readBlockPos(c, "Pos").orElseThrow(),
+			c -> conductorSeats.put(NbtUtils.readBlockPos(c, "Pos").orElse(BlockPos.ZERO),
 				Couple.create(c.getBoolean("Forward"), c.getBoolean("Backward"))));
 		soundQueue.deserialize(nbt);
 		super.readNBT(world, nbt, spawnData);

@@ -2,6 +2,7 @@ package com.simibubi.create.content.logistics.box;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
@@ -15,10 +16,9 @@ import com.simibubi.create.content.logistics.box.PackageStyles.PackageStyle;
 import com.simibubi.create.content.logistics.stockTicker.PackageOrder;
 import com.simibubi.create.foundation.item.ItemHelper;
 
-import net.createmod.catnip.codecs.CatnipCodecs;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
-import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -49,6 +49,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -389,8 +390,9 @@ public class PackageItem extends Item {
 			Codec.BOOL.fieldOf("is_final_link").forGetter(PackageOrderData::isFinalLink),
 			Codec.INT.fieldOf("fragment_index").forGetter(PackageOrderData::fragmentIndex),
 			Codec.BOOL.fieldOf("is_final").forGetter(PackageOrderData::isFinal),
-			CatnipCodecs.nullableFieldOf(PackageOrder.CODEC, "order_context").forGetter(PackageOrderData::orderContext)
-		).apply(instance, PackageOrderData::new));
+			PackageOrder.CODEC.optionalFieldOf("order_context").forGetter(i -> Optional.ofNullable(i.orderContext))
+		).apply(instance, (orderId, linkIndex, isFinalLink, fragmentIndex, isFinal, orderContext) ->
+			new PackageOrderData(orderId, linkIndex, isFinalLink, fragmentIndex, isFinal, orderContext.orElse(null))));
 
 		public static StreamCodec<RegistryFriendlyByteBuf, PackageOrderData> STREAM_CODEC = StreamCodec.composite(
 			ByteBufCodecs.INT, PackageOrderData::orderId,

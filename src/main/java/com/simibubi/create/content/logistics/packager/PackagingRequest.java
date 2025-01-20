@@ -1,5 +1,7 @@
 package com.simibubi.create.content.logistics.packager;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -22,8 +24,9 @@ public record PackagingRequest(ItemStack item, MutableInt count, String address,
 		CatnipCodecs.MUTABLE_BOOLEAN_CODEC.fieldOf("final_link").forGetter(PackagingRequest::finalLink),
 		CatnipCodecs.MUTABLE_INT_CODEC.fieldOf("package_counter").forGetter(PackagingRequest::packageCounter),
 		Codec.INT.fieldOf("order_id").forGetter(PackagingRequest::orderId),
-		CatnipCodecs.nullableFieldOf(PackageOrder.CODEC, "context").forGetter(PackagingRequest::context)
-	).apply(instance, PackagingRequest::new));
+		PackageOrder.CODEC.optionalFieldOf("context").forGetter(i -> Optional.ofNullable(i.context()))
+	).apply(instance, (item, count, address, linkIndex, finalLink, packageCounter, orderId, context) ->
+		new PackagingRequest(item, count, address, linkIndex, finalLink, packageCounter, orderId, context.orElse(null))));
 
 	public static PackagingRequest create(ItemStack item, int count, String address, int linkIndex,
 		MutableBoolean finalLink, int packageCount, int orderId, @Nullable PackageOrder context) {

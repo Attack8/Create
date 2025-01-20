@@ -1,6 +1,7 @@
 package com.simibubi.create.content.logistics.packagePort;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
@@ -68,23 +69,27 @@ public abstract class PackagePortTarget {
 
 	public static class ChainConveyorFrogportTarget extends PackagePortTarget {
 		public static MapCodec<ChainConveyorFrogportTarget> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			BlockPos.CODEC.fieldOf("relativePos").forGetter(i -> i.relativePos),
-			Codec.FLOAT.fieldOf("chainPos").forGetter(i -> i.chainPos),
-			BlockPos.CODEC.fieldOf("connection").forGetter(i -> i.connection)
+			BlockPos.CODEC.fieldOf("relative_pos").forGetter(i -> i.relativePos),
+			Codec.FLOAT.fieldOf("chain_pos").forGetter(i -> i.chainPos),
+			BlockPos.CODEC.optionalFieldOf("connection").forGetter(i -> i.connection)
 		).apply(instance, ChainConveyorFrogportTarget::new));
 
 		public static StreamCodec<ByteBuf, ChainConveyorFrogportTarget> STREAM_CODEC = StreamCodec.composite(
 		    BlockPos.STREAM_CODEC, i -> i.relativePos,
 			ByteBufCodecs.FLOAT, i -> i.chainPos,
-		    BlockPos.STREAM_CODEC, i -> i.connection,
+			ByteBufCodecs.optional(BlockPos.STREAM_CODEC), i -> i.connection,
 		    ChainConveyorFrogportTarget::new
 		);
 
 		public float chainPos;
-		public BlockPos connection;
+		public Optional<BlockPos> connection;
 		public boolean flipped;
 
 		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, @Nullable BlockPos connection) {
+			this(relativePos, chainPos, Optional.ofNullable(connection));
+		}
+
+		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, Optional<BlockPos> connection) {
 			super(relativePos);
 			this.chainPos = chainPos;
 			this.connection = connection;
@@ -105,14 +110,14 @@ public abstract class PackagePortTarget {
 		public boolean export(LevelAccessor level, BlockPos portPos, ItemStack box, boolean simulate) {
 			if (!(be(level, portPos) instanceof ChainConveyorBlockEntity clbe))
 				return false;
-			if (connection != null && !clbe.connections.contains(connection))
+			if (connection.isPresent() && !clbe.connections.contains(connection.get()))
 				return false;
 			if (simulate)
-				return clbe.getSpeed() != 0 && clbe.canAcceptPackagesFor(connection);
+				return clbe.getSpeed() != 0 && clbe.canAcceptPackagesFor(connection.get());
 			ChainConveyorPackage box2 = new ChainConveyorPackage(chainPos, box.copy());
-			if (connection == null)
+			if (connection.isEmpty())
 				return clbe.addLoopingPackage(box2);
-			return clbe.addTravellingPackage(box2, connection);
+			return clbe.addTravellingPackage(box2, connection.get());
 		}
 
 		@Override
@@ -122,32 +127,32 @@ public abstract class PackagePortTarget {
 			ChainConveyorBlockEntity actualBe = clbe;
 
 			// Jump to opposite chain if motion reversed
-			if (connection != null && clbe.getSpeed() < 0 != flipped) {
+			if (connection.isPresent() && clbe.getSpeed() < 0 != flipped) {
 				deregister(ppbe, level, portPos);
 				actualBe = AllBlocks.CHAIN_CONVEYOR.get()
 					.getBlockEntity(level, clbe.getBlockPos()
-						.offset(connection));
+						.offset(connection.get()));
 				if (actualBe == null)
 					return;
 				clbe.prepareStats();
-				ConnectionStats stats = clbe.connectionStats.get(connection);
+				ConnectionStats stats = clbe.connectionStats.get(connection.get());
 				if (stats != null)
 					chainPos = stats.chainLength() - chainPos;
-				connection = connection.multiply(-1);
+				connection = Optional.of(connection.get().multiply(-1));
 				flipped = !flipped;
 				relativePos = actualBe.getBlockPos()
 					.subtract(portPos);
 				ppbe.notifyUpdate();
 			}
 
-			if (connection != null && !actualBe.connections.contains(connection))
+			if (connection.isPresent() && !actualBe.connections.contains(connection.get()))
 				return;
 			String portFilter = ppbe.getFilterString();
 			if (portFilter == null)
 				return;
-			actualBe.routingTable.receivePortInfo(portFilter, connection == null ? BlockPos.ZERO : connection);
-			Map<BlockPos, ConnectedPort> portMap = connection == null ? actualBe.loopPorts : actualBe.travelPorts;
-			portMap.put(relativePos.multiply(-1), new ConnectedPort(chainPos, connection, portFilter));
+			actualBe.routingTable.receivePortInfo(portFilter, connection.orElse(BlockPos.ZERO));
+			Map<BlockPos, ConnectedPort> portMap = connection.isEmpty() ? actualBe.loopPorts : actualBe.travelPorts;
+			portMap.put(relativePos.multiply(-1), new ConnectedPort(chainPos, connection.orElse(null), portFilter));
 		}
 
 		@Override
@@ -168,7 +173,7 @@ public abstract class PackagePortTarget {
 		public Vec3 getExactTargetLocation(PackagePortBlockEntity ppbe, LevelAccessor level, BlockPos portPos) {
 			if (!(be(level, portPos) instanceof ChainConveyorBlockEntity clbe))
 				return Vec3.ZERO;
-			return clbe.getPackagePosition(chainPos, connection);
+			return clbe.getPackagePosition(chainPos, connection.orElse(null));
 		}
 
 		@Override
@@ -184,7 +189,7 @@ public abstract class PackagePortTarget {
 
 	public static class TrainStationFrogportTarget extends PackagePortTarget {
 		public static MapCodec<TrainStationFrogportTarget> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-			BlockPos.CODEC.fieldOf("relativePos").forGetter(i -> i.relativePos)
+			BlockPos.CODEC.fieldOf("relative_pos").forGetter(i -> i.relativePos)
 		).apply(instance, TrainStationFrogportTarget::new));
 
 		public static StreamCodec<ByteBuf, TrainStationFrogportTarget> STREAM_CODEC = StreamCodec.composite(
