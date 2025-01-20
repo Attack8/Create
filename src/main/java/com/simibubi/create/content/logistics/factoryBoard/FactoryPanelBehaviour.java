@@ -43,14 +43,14 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.codecs.CatnipCodecs;
 import net.createmod.catnip.gui.ScreenOpener;
-import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.nbt.NBTHelper;
-import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -693,14 +693,14 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 			network = panelTag.getUUID("Freq");
 
 		targeting.clear();
-		targeting.addAll(CatnipCodecUtils.decode(CatnipCodecs.set(FactoryPanelPosition.CODEC), panelTag.get("Targeting")).orElseThrow());
+		targeting.addAll(CatnipCodecUtils.decode(CatnipCodecs.set(FactoryPanelPosition.CODEC), panelTag.get("Targeting")).orElse(Set.of()));
 
 		targetedBy.clear();
-		CatnipCodecUtils.decode(Codec.list(FactoryPanelConnection.CODEC), panelTag.get("TargetedBy")).orElseThrow()
+		CatnipCodecUtils.decode(Codec.list(FactoryPanelConnection.CODEC), panelTag.get("TargetedBy")).orElse(List.of())
 			.forEach(c -> targetedBy.put(c.from, c));
 
 		targetedByLinks.clear();
-		CatnipCodecUtils.decode(Codec.list(FactoryPanelConnection.CODEC), panelTag.get("TargetedByLinks")).orElseThrow()
+		CatnipCodecUtils.decode(Codec.list(FactoryPanelConnection.CODEC), panelTag.get("TargetedByLinks")).orElse(List.of())
 			.forEach(c -> targetedByLinks.put(c.from.pos(), c));
 
 		activeCraftingArrangement = NBTHelper.readItemList(panelTag.getList("Craft", Tag.TAG_COMPOUND), registries);
@@ -708,8 +708,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 		recipeOutput = panelTag.getInt("RecipeOutput");
 
 		if (nbt.getBoolean("Restocker") && !clientPacket) {
-			restockerPromises = RequestPromiseQueue.read(panelTag.getCompound("Promises"), () -> {
-			});
+			restockerPromises = RequestPromiseQueue.read(panelTag.getCompound("Promises"), () -> {});
 			promisePrimedForMarkDirty = false;
 		}
 	}
