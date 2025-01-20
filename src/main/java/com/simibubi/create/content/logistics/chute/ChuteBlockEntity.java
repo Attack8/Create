@@ -504,8 +504,6 @@ public class ChuteBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 		if (level == null)
 			return null;
 		BlockEntity be = level.getBlockEntity(pos);
-		if (be == null)
-			return null;
 		if (be instanceof ChuteBlockEntity) {
 			if (side != Direction.DOWN || !(be instanceof SmartChuteBlockEntity) || getItemMotion() > 0)
 				return null;

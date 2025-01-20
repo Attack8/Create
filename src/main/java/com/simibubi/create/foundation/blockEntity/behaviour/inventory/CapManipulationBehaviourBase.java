@@ -136,7 +136,7 @@ public abstract class CapManipulationBehaviourBase<T, S extends CapManipulationB
 		if (!world.isLoaded(pos))
 			return;
 		BlockEntity invBE = world.getBlockEntity(pos);
-		if (invBE == null || !filter.test(invBE))
+		if (!filter.test(invBE))
 			return;
 		BlockCapability<T, Direction> capability = capability();
 		targetCapability = world.getCapability(capability, pos, bypassSided ? null : targetBlockFace.getFace());

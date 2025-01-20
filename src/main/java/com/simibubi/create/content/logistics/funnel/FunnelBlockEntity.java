@@ -5,8 +5,6 @@ import java.util.List;
 
 import net.createmod.catnip.platform.CatnipServices;
 
-import com.simibubi.create.foundation.utility.DistExecutor;
-
 import net.minecraft.server.level.ServerLevel;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -47,7 +45,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
 
 public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHoveringInformation {
 
