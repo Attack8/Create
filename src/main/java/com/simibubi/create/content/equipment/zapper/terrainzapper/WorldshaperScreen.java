@@ -188,8 +188,8 @@ public class WorldshaperScreen extends ZapperScreen {
 			TerrainTools tool = toolValues[id];
 			IconButton toolButton = new IconButton(x + 7 + id * 18, y + 79, tool.icon);
 			toolButton.withCallback(() -> {
-				toolButtons.forEach(b -> b.active = true);
-				toolButton.active = false;
+				toolButtons.forEach(b -> b.green = false);
+				toolButton.green = true;
 				currentTool = tool;
 			});
 			toolButton.setToolTip(CreateLang.translateDirect("gui.terrainzapper.tool." + tool.translationKey));
@@ -204,7 +204,7 @@ public class WorldshaperScreen extends ZapperScreen {
 			currentTool = toolValues[0];
 			toolIndex = 0;
 		}
-		toolButtons.get(toolIndex).active = false;
+		toolButtons.get(toolIndex).green = true;
 
 		addRenderableWidgets(toolButtons);
 
@@ -220,15 +220,15 @@ public class WorldshaperScreen extends ZapperScreen {
 				PlacementOptions option = placementValues[id];
 				IconButton placementButton = new IconButton(x + 136 + id * 18, y + 79, option.icon);
 				placementButton.withCallback(() -> {
-					placementButtons.forEach(b -> b.active = true);
-					placementButton.active = false;
+					placementButtons.forEach(b -> b.green = false);
+					placementButton.green = true;
 					currentPlacement = option;
 				});
 				placementButton.setToolTip(CreateLang.translateDirect("gui.terrainzapper.placement." + option.translationKey));
 				placementButtons.add(placementButton);
 			}
 
-			placementButtons.get(currentPlacement.ordinal()).active = false;
+			placementButtons.get(currentPlacement.ordinal()).green = true;
 
 			addRenderableWidgets(placementButtons);
 		}

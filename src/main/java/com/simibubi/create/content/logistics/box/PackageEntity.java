@@ -71,6 +71,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 		super((EntityType<? extends LivingEntity>) entityTypeIn, worldIn);
 		box = ItemStack.EMPTY;
 		setYRot(this.random.nextFloat() * 360.0F);
+		setYHeadRot(getYRot());
 		yRotO = getYRot();
 		insertionDelay = 30;
 	}

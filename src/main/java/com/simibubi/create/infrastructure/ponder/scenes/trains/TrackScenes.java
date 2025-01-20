@@ -342,6 +342,7 @@ public class TrackScenes {
 		scene.title("track_chunks", "Traversing unloaded Chunks");
 		scene.configureBasePlate(0, 0, 9);
 		scene.scaleSceneView(.65f);
+		scene.removeShadow();
 		scene.setSceneOffsetY(-1);
 
 		scene.world().cycleBlockProperty(util.grid().at(5, 3, 4), BlazeBurnerBlock.HEAT_LEVEL);

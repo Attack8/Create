@@ -65,9 +65,9 @@ public class SymmetryWandScreen extends AbstractSimiScreen {
 		int x = guiLeft;
 		int y = guiTop;
 
-		labelType = new Label(x + 49, y + 28, Components.immutableEmpty()).colored(0xFFFFFFFF)
+		labelType = new Label(x + 51, y + 28, Components.immutableEmpty()).colored(0xFFFFFFFF)
 			.withShadow();
-		labelAlign = new Label(x + 49, y + 50, Components.immutableEmpty()).colored(0xFFFFFFFF)
+		labelAlign = new Label(x + 51, y + 50, Components.immutableEmpty()).colored(0xFFFFFFFF)
 			.withShadow();
 
 		int state =
@@ -126,7 +126,8 @@ public class SymmetryWandScreen extends AbstractSimiScreen {
 		int y = guiTop;
 
 		background.render(graphics, x, y);
-		graphics.drawString(font, wand.getHoverName(), x + 11, y + 4, 0x592424, false);
+		graphics.drawString(font, wand.getHoverName(),
+			x + (background.getWidth() - font.width(wand.getHoverName())) / 2, y + 4, 0x592424, false);
 
 		renderBlock(graphics, x, y);
 		GuiGameElement.of(wand)

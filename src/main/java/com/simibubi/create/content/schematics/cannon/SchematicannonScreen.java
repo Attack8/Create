@@ -24,6 +24,7 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.lang.FontHelper.Palette;
 import net.createmod.catnip.lang.Components;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.renderer.Rect2i;
@@ -89,17 +90,17 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 		int y = topPos;
 
 		// Play Pause Stop
-		playButton = new IconButton(x + 75, y + 86, AllIcons.I_PLAY);
+		playButton = new IconButton(x + 75, y + 85, AllIcons.I_PLAY);
 		playButton.withCallback(() -> {
 			sendOptionUpdate(Option.PLAY, true);
 		});
 		playIndicator = new Indicator(x + 75, y + 79, Components.immutableEmpty());
-		pauseButton = new IconButton(x + 93, y + 86, AllIcons.I_PAUSE);
+		pauseButton = new IconButton(x + 93, y + 85, AllIcons.I_PAUSE);
 		pauseButton.withCallback(() -> {
 			sendOptionUpdate(Option.PAUSE, true);
 		});
 		pauseIndicator = new Indicator(x + 93, y + 79, Components.immutableEmpty());
-		resetButton = new IconButton(x + 111, y + 86, AllIcons.I_STOP);
+		resetButton = new IconButton(x + 111, y + 85, AllIcons.I_STOP);
 		resetButton.withCallback(() -> {
 			sendOptionUpdate(Option.STOP, true);
 		});
@@ -108,12 +109,12 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 		addRenderableWidgets(playButton, playIndicator, pauseButton, pauseIndicator, resetButton,
 			resetIndicator);
 
-		confirmButton = new IconButton(x + 180, y + 117, AllIcons.I_CONFIRM);
+		confirmButton = new IconButton(x + 180, y + 111, AllIcons.I_CONFIRM);
 		confirmButton.withCallback(() -> {
 			minecraft.player.closeContainer();
 		});
 		addRenderableWidget(confirmButton);
-		showSettingsButton = new IconButton(x + 9, y + 117, AllIcons.I_PLACEMENT_SETTINGS);
+		showSettingsButton = new IconButton(x + 8, y + 111, AllIcons.I_PLACEMENT_SETTINGS);
 		showSettingsButton.withCallback(() -> {
 			showSettingsIndicator.state = placementSettingsHidden() ? State.GREEN : State.OFF;
 			initPlacementSettings();
@@ -121,7 +122,7 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 		showSettingsButton.setToolTip(CreateLang.translateDirect(_showSettings));
 		addRenderableWidget(showSettingsButton);
 		showSettingsIndicator = new Indicator(x + 9, y + 111, Components.immutableEmpty());
-		addRenderableWidget(showSettingsIndicator);
+//		addRenderableWidget(showSettingsIndicator);
 
 		extraAreas = ImmutableList.of(new Rect2i(x + BG_TOP.getWidth(), y + BG_TOP.getHeight() + BG_BOTTOM.getHeight() - 62, 84, 92));
 
@@ -150,7 +151,7 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 
 		for (int i = 0; i < 4; i++) {
 			replaceLevelIndicators.add(new Indicator(x + 33 + i * 18, y + 111, Components.immutableEmpty()));
-			IconButton replaceLevelButton = new IconButton(x + 33 + i * 18, y + 117, icons.get(i));
+			IconButton replaceLevelButton = new IconButton(x + 33 + i * 18, y + 111, icons.get(i));
 			int replaceMode = i;
 			replaceLevelButton.withCallback(() -> {
 				if (menu.contentHolder.replaceMode != replaceMode)
@@ -160,24 +161,24 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 			replaceLevelButtons.add(replaceLevelButton);
 		}
 		placementSettingWidgets.addAll(replaceLevelButtons);
-		placementSettingWidgets.addAll(replaceLevelIndicators);
+//		placementSettingWidgets.addAll(replaceLevelIndicators);
 
 		// Other Settings
-		skipMissingButton = new IconButton(x + 111, y + 117, AllIcons.I_SKIP_MISSING);
+		skipMissingButton = new IconButton(x + 111, y + 111, AllIcons.I_SKIP_MISSING);
 		skipMissingButton.withCallback(() -> {
 			sendOptionUpdate(Option.SKIP_MISSING, !menu.contentHolder.skipMissing);
 		});
 		skipMissingButton.setToolTip(CreateLang.translateDirect("gui.schematicannon.option.skipMissing"));
 		skipMissingIndicator = new Indicator(x + 111, y + 111, Components.immutableEmpty());
-		Collections.addAll(placementSettingWidgets, skipMissingButton, skipMissingIndicator);
+		Collections.addAll(placementSettingWidgets, skipMissingButton);
 
-		skipBlockEntitiesButton = new IconButton(x + 129, y + 117, AllIcons.I_SKIP_BLOCK_ENTITIES);
+		skipBlockEntitiesButton = new IconButton(x + 135, y + 111, AllIcons.I_SKIP_BLOCK_ENTITIES);
 		skipBlockEntitiesButton.withCallback(() -> {
 			sendOptionUpdate(Option.SKIP_BLOCK_ENTITIES, !menu.contentHolder.replaceBlockEntities);
 		});
 		skipBlockEntitiesButton.setToolTip(CreateLang.translateDirect("gui.schematicannon.option.skipBlockEntities"));
 		skipBlockEntitiesIndicator = new Indicator(x + 129, y + 111, Components.immutableEmpty());
-		Collections.addAll(placementSettingWidgets, skipBlockEntitiesButton, skipBlockEntitiesIndicator);
+		Collections.addAll(placementSettingWidgets, skipBlockEntitiesButton);
 
 		addRenderableWidgets(placementSettingWidgets);
 	}
@@ -194,11 +195,11 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 
 		if (!placementSettingsHidden()) {
 			for (int replaceMode = 0; replaceMode < replaceLevelButtons.size(); replaceMode++) {
-				replaceLevelButtons.get(replaceMode).active = replaceMode != be.replaceMode;
+				replaceLevelButtons.get(replaceMode).green = replaceMode == be.replaceMode;
 				replaceLevelIndicators.get(replaceMode).state = replaceMode == be.replaceMode ? State.ON : State.OFF;
 			}
-			skipMissingIndicator.state = be.skipMissing ? State.ON : State.OFF;
-			skipBlockEntitiesIndicator.state = !be.replaceBlockEntities ? State.ON : State.OFF;
+			skipMissingButton.green = be.skipMissing;
+			skipBlockEntitiesButton.green = !be.replaceBlockEntities;
 		}
 
 		playIndicator.state = State.OFF;
@@ -260,10 +261,10 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 	private void fillToolTip(IconButton button, Indicator indicator, String tooltipKey) {
 		if (!button.isHovered())
 			return;
-		boolean enabled = indicator.state == State.ON;
+		boolean enabled = button.green;
 		List<Component> tip = button.getToolTip();
 		tip.add((enabled ? optionEnabled : optionDisabled).plainCopy()
-			.withStyle(BLUE));
+			.withStyle(enabled ? ChatFormatting.DARK_GREEN : ChatFormatting.RED));
 		tip.addAll(TooltipHelper
 			.cutTextComponent(CreateLang.translateDirect("gui.schematicannon.option." + tooltipKey + ".description"), Palette.ALL_GRAY));
 	}
@@ -279,6 +280,7 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 
 		BG_TOP.render(graphics, x, y);
 		BG_BOTTOM.render(graphics, x, y + BG_TOP.getHeight());
+		AllGuiTextures.SCHEMATIC_TITLE.render(graphics, x, y - 2);
 
 		SchematicannonBlockEntity be = menu.contentHolder;
 		renderPrintingProgress(graphics, x, y, be.schematicProgress);
@@ -295,7 +297,7 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 			.scale(5)
 			.render(graphics);
 
-		graphics.drawCenteredString(font, title, x + (BG_TOP.getWidth() - 8) / 2, y + 3, 0xFFFFFF);
+		graphics.drawString(font, title, x + (BG_TOP.getWidth() - 8 - font.width(title)) / 2, y + 2, 0x505050, false);
 
 		Component msg = CreateLang.translateDirect("schematicannon.status." + be.statusMsg);
 		int stringWidth = font.width(msg);
@@ -308,11 +310,11 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 				.render(graphics);
 		}
 
-		graphics.drawString(font, msg, x + 103 - stringWidth / 2, y + 53, 0xCCDDFF);
+		graphics.drawString(font, msg, x + 103 - stringWidth / 2, y + 53, 0xDDEEFF);
 
 		if ("schematicErrored".equals(be.statusMsg))
 			graphics.drawString(font, CreateLang.translateDirect("schematicannon.status.schematicErroredCheckLogs"),
-				x + 103 - stringWidth / 2, y + 65, 0xCCDDFF);
+				x + 103 - stringWidth / 2, y + 65, 0xDDEEFF);
 	}
 
 	protected void renderBlueprintHighlight(GuiGraphics graphics, int x, int y) {

@@ -80,8 +80,9 @@ public class AllPaletteBlocks {
 		WARPED_WINDOW = woodenWindowBlock(WoodType.WARPED, Blocks.WARPED_PLANKS),
 		CHERRY_WINDOW = woodenWindowBlock(WoodType.CHERRY, Blocks.CHERRY_PLANKS),
 		BAMBOO_WINDOW = woodenWindowBlock(WoodType.BAMBOO, Blocks.BAMBOO_PLANKS),
-		ORNATE_IRON_WINDOW = customWindowBlock("ornate_iron_window", () -> Items.IRON_NUGGET, null,
-			() -> RenderType::cutout, false, () -> MapColor.TERRACOTTA_LIGHT_GRAY),
+		ORNATE_IRON_WINDOW =
+			customWindowBlock("ornate_iron_window", () -> Items.IRON_NUGGET, () -> AllSpriteShifts.ORNATE_IRON_WINDOW,
+				() -> RenderType::cutout, false, () -> MapColor.TERRACOTTA_LIGHT_GRAY),
 		INDUSTRIAL_IRON_WINDOW = customWindowBlock("industrial_iron_window", AllBlocks.INDUSTRIAL_IRON_BLOCK,
 			() -> AllSpriteShifts.INDUSTRIAL_IRON_WINDOW, () -> RenderType::cutout, false, () -> MapColor.COLOR_GRAY),
 		WEATHERED_IRON_WINDOW = WindowGen

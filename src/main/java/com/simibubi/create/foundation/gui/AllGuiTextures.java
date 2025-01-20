@@ -24,13 +24,14 @@ public enum AllGuiTextures implements ScreenElement, TextureSheetSegment {
 	CURSEFORGE_LOGO("platform_icons/curseforge", 256, 256),
 	MODRINTH_LOGO("platform_icons/modrinth", 256, 256),
 
-	SCHEMATIC("schematics", 192, 121),
+	SCHEMATIC("schematics", 10, 8, 192, 123),
+	SCHEMATIC_TITLE("schematics_2", 205, 15),
 	SCHEMATIC_SLOT("widgets", 54, 0, 16, 16),
-	SCHEMATIC_PROMPT("schematics_2", 213, 77),
+	SCHEMATIC_PROMPT("schematics_2", 213, 79),
 	HUD_BACKGROUND("overlay", 0, 0, 16, 16),
 
-	SCHEMATIC_TABLE("schematics", 0, 121, 214, 83),
-	SCHEMATIC_TABLE_PROGRESS("schematics", 0, 204, 84, 16),
+	SCHEMATIC_TABLE("schematics", 10, 139, 214, 85),
+	SCHEMATIC_TABLE_PROGRESS("schematics", 10, 224, 84, 16),
 
 	SCHEMATICANNON_TOP("schematics_2", 0, 77, 213, 42),
 	SCHEMATICANNON_BOTTOM("schematics_2", 0, 119, 213, 99),

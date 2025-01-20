@@ -74,8 +74,8 @@ public abstract class ZapperScreen extends AbstractSimiScreen {
 				PlacementPatterns pattern = PlacementPatterns.values()[id];
 				IconButton patternButton = new IconButton(x + background.getWidth() - 76 + col * 18, y + 21 + row * 18, pattern.icon);
 				patternButton.withCallback(() -> {
-					patternButtons.forEach(b -> b.active = true);
-					patternButton.active = false;
+					patternButtons.forEach(b -> b.green = false);
+					patternButton.green = true;
 					currentPattern = pattern;
 				});
 				patternButton.setToolTip(CreateLang.translateDirect("gui.terrainzapper.pattern." + pattern.translationKey));
@@ -83,7 +83,7 @@ public abstract class ZapperScreen extends AbstractSimiScreen {
 			}
 		}
 
-		patternButtons.get(currentPattern.ordinal()).active = false;
+		patternButtons.get(currentPattern.ordinal()).green = true;
 
 		addRenderableWidgets(patternButtons);
 	}
@@ -101,7 +101,7 @@ public abstract class ZapperScreen extends AbstractSimiScreen {
 	}
 
 	protected void drawOnBackground(GuiGraphics graphics, int x, int y) {
-		graphics.drawString(font, title, x + 11, y + 4, 0x54214F, false);
+		graphics.drawString(font, title, x + (background.getWidth() - font.width(title)) / 2, y + 4, 0x54214F, false);
 	}
 
 	@Override

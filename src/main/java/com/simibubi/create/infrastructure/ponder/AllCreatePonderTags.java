@@ -53,84 +53,84 @@ public class AllCreatePonderTags {
 
 		helper.registerTag(KINETIC_RELAYS)
 				.addToIndex()
-				.item(AllBlocks.COGWHEEL.get())
+				.item(AllBlocks.COGWHEEL.get(), true, false)
 				.title("Kinetic Blocks")
 				.description("Components which help relaying Rotational Force elsewhere")
 				.register();
 
 		helper.registerTag(KINETIC_SOURCES)
 				.addToIndex()
-				.item(AllBlocks.WATER_WHEEL.get())
+				.item(AllBlocks.WATER_WHEEL.get(), true, false)
 				.title("Kinetic Sources")
 				.description("Components which generate Rotational Force")
 				.register();
 
 		helper.registerTag(KINETIC_APPLIANCES)
 				.addToIndex()
-				.item(AllBlocks.MECHANICAL_PRESS.get())
+				.item(AllBlocks.MECHANICAL_PRESS.get(), true, false)
 				.title("Kinetic Appliances")
 				.description("Components which make use of Rotational Force")
 				.register();
 
 		helper.registerTag(FLUIDS)
 				.addToIndex()
-				.item(AllBlocks.FLUID_PIPE.get())
+				.item(AllBlocks.FLUID_PIPE.get(), true, false)
 				.title("Fluid Manipulators")
 				.description("Components which help relaying and making use of Fluids")
 				.register();
 
 		helper.registerTag(LOGISTICS)
 				.addToIndex()
-				.item(Blocks.CHEST)
+				.item(Blocks.CHEST, true, false)
 				.title("Item Transportation")
 				.description("Components which help moving items around")
 				.register();
 
 		helper.registerTag(HIGH_LOGISTICS)
 				.addToIndex()
-				.item(AllBlocks.STOCK_TICKER.get())
+				.item(AllBlocks.STOCK_TICKER.get(), true, false)
 				.title("High Logistics")
-				.description("Components which help managing distributed item storage and automated requests around your factory")
+				.description("Components which help manage distributed item storage and automated requests around your factory")
 				.register();
 
 		helper.registerTag(REDSTONE)
 				.addToIndex()
-				.item(Items.REDSTONE)
+				.item(Items.REDSTONE, true, false)
 				.title("Logic Components")
 				.description("Components which help with redstone engineering")
 				.register();
 
 		helper.registerTag(DECORATION)
 				.addToIndex()
-				.item(Items.ROSE_BUSH)
+				.item(Items.ROSE_BUSH, true, false)
 				.title("Aesthetics")
 				.description("Components used mostly for decorative purposes")
 				.register();
 
 		helper.registerTag(CREATIVE)
 				.addToIndex()
-				.item(AllBlocks.CREATIVE_CRATE.get())
+				.item(AllBlocks.CREATIVE_CRATE.get(), true, false)
 				.title("Creative Mode")
 				.description("Components not usually available for Survival Mode")
 				.register();
 
 		helper.registerTag(MOVEMENT_ANCHOR)
 				.addToIndex()
-				.item(AllBlocks.MECHANICAL_PISTON.get())
+				.item(AllBlocks.MECHANICAL_PISTON.get(), true, false)
 				.title("Movement Anchors")
 				.description("Components which allow the creation of moving contraptions, animating an attached structure in a variety of ways")
 				.register();
 
 		helper.registerTag(CONTRAPTION_ACTOR)
 				.addToIndex()
-				.item(AllBlocks.MECHANICAL_HARVESTER.get())
+				.item(AllBlocks.MECHANICAL_HARVESTER.get(), true, false)
 				.title("Contraption Actors")
 				.description("Components which expose special behaviour when attached to a moving contraption")
 				.register();
 
 		helper.registerTag(CONTRAPTION_ASSEMBLY)
 				.addToIndex()
-				.item(AllItems.SUPER_GLUE.get())
+				.item(AllItems.SUPER_GLUE.get(), true, false)
 				.title("Block Attachment Utility")
 				.description("Tools and Components used to assemble structures moved as an animated Contraption")
 				.register();
@@ -149,7 +149,7 @@ public class AllCreatePonderTags {
 
 		helper.registerTag(TRAIN_RELATED)
 				.addToIndex()
-				.item(AllBlocks.TRACK.get())
+				.item(AllBlocks.TRACK.get(), true, false)
 				.title("Railway Equipment")
 				.description("Components used in the construction or management of Train Contraptions")
 				.register();
@@ -356,10 +356,10 @@ public class AllCreatePonderTags {
 
 		HELPER.addToTag(HIGH_LOGISTICS)
 				.add(AllBlocks.PACKAGER)
-				.add(AllBlocks.PACKAGE_FROGPORT)
-				.add(AllBlocks.PACKAGE_POSTBOXES.get(DyeColor.WHITE))
 				.add(AllBlocks.STOCK_LINK)
 				.add(AllBlocks.STOCK_TICKER)
+				.add(AllBlocks.PACKAGE_FROGPORT)
+				.add(AllBlocks.PACKAGE_POSTBOXES.get(DyeColor.WHITE))
 				.add(AllBlocks.REDSTONE_REQUESTER)
 				.add(AllBlocks.TABLE_CLOTHS.get(DyeColor.RED))
 				.add(AllBlocks.FACTORY_GAUGE)

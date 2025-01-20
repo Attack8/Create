@@ -76,7 +76,7 @@ public class StockLinkScenes {
 		scene.overlay()
 			.showText(70)
 			.attachKeyFrame()
-			.text("When placed, Stock Links create a new network")
+			.text("When placed, Stock Links create a new stock network")
 			.pointAt(util.vector()
 				.centerOf(link2.below()))
 			.placeNearTarget();

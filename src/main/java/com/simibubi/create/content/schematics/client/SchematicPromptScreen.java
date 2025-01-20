@@ -40,7 +40,7 @@ public class SchematicPromptScreen extends AbstractSimiScreen {
 		super.init();
 
 		int x = guiLeft;
-		int y = guiTop;
+		int y = guiTop + 2;
 
 		nameField = new EditBox(font, x + 49, y + 26, 131, 10, Components.immutableEmpty());
 		nameField.setTextColor(-1);
@@ -80,15 +80,15 @@ public class SchematicPromptScreen extends AbstractSimiScreen {
 		int y = guiTop;
 
 		background.render(graphics, x, y);
-		graphics.drawCenteredString(font, title, x + (background.getWidth() - 8) / 2, y + 3, 0xFFFFFF);
+		graphics.drawString(font, title, x + (background.getWidth() - 8 - font.width(title)) / 2, y + 4, 0x505050, false);
 
 		GuiGameElement.of(AllItems.SCHEMATIC.asStack())
-				.at(x + 22, y + 23, 0)
+				.at(x + 22, y + 24, 0)
 				.render(graphics);
 
 		GuiGameElement.of(AllItems.SCHEMATIC_AND_QUILL.asStack())
 				.scale(3)
-				.at(x + background.getWidth() + 6, y + background.getHeight() - 40, -200)
+				.at(x + background.getWidth() + 6, y + background.getHeight() - 38, -200)
 				.render(graphics);
 	}
 

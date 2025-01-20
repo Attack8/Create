@@ -42,7 +42,7 @@ public class PackageRenderer extends EntityRenderer<PackageEntity> {
 			return;
 		SuperByteBuffer sbb = CachedBuffers.partial(model, Blocks.AIR.defaultBlockState());
 		sbb.translate(-.5, 0, -.5)
-			.rotateCentered(AngleHelper.rad(yaw), Direction.UP)
+			.rotateCentered(-AngleHelper.rad(yaw + 90), Direction.UP)
 			.light(light)
 			.nudge(entity.getId());
 		sbb.renderInto(ms, buffer.getBuffer(RenderType.solid()));

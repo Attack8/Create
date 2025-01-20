@@ -81,7 +81,7 @@ public class PackagerScenes {
 
 		scene.overlay()
 			.showText(80)
-			.text("Place packagers next to the inventory they should target")
+			.text("Attach packagers to the inventory they should target")
 			.attachKeyFrame()
 			.placeNearTarget()
 			.pointAt(util.vector()
@@ -504,7 +504,7 @@ public class PackagerScenes {
 				.everywhere(), 1 / 32f);
 		scene.overlay()
 			.showText(100)
-			.text("For compactness, mechanical saws can unwrap packages straight onto a belt")
+			.text("For compactness, mechanical saws can unpack straight onto a belt")
 			.attachKeyFrame()
 			.placeNearTarget()
 			.pointAt(util.vector()

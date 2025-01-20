@@ -31,6 +31,7 @@ public class PostboxScenes {
 		scene.title("postbox", "Transporting packages between Postboxes");
 		scene.configureBasePlate(0, 1, 9);
 		scene.scaleSceneView(.875f);
+		scene.removeShadow();
 		scene.setSceneOffsetY(-0.5f);
 
 		BlockPos station = util.grid()

@@ -69,7 +69,7 @@ public class SchematicTableMenu extends MenuBase<SchematicTableBlockEntity> {
 
 	@Override
 	protected void addSlots() {
-		inputSlot = new SlotItemHandler(contentHolder.inventory, 0, 21, 57) {
+		inputSlot = new SlotItemHandler(contentHolder.inventory, 0, 21, 59) {
 			@Override
 			public boolean mayPlace(ItemStack stack) {
 				return AllItems.EMPTY_SCHEMATIC.isIn(stack) || AllItems.SCHEMATIC_AND_QUILL.isIn(stack)
@@ -77,7 +77,7 @@ public class SchematicTableMenu extends MenuBase<SchematicTableBlockEntity> {
 			}
 		};
 
-		outputSlot = new SlotItemHandler(contentHolder.inventory, 1, 166, 57) {
+		outputSlot = new SlotItemHandler(contentHolder.inventory, 1, 166, 59) {
 			@Override
 			public boolean mayPlace(ItemStack stack) {
 				return false;
@@ -90,12 +90,12 @@ public class SchematicTableMenu extends MenuBase<SchematicTableBlockEntity> {
 		// player Slots
 		for (int row = 0; row < 3; ++row) {
 			for (int col = 0; col < 9; ++col) {
-				this.addSlot(new Slot(player.getInventory(), col + row * 9 + 9, 38 + col * 18, 105 + row * 18));
+				this.addSlot(new Slot(player.getInventory(), col + row * 9 + 9, 38 + col * 18, 107 + row * 18));
 			}
 		}
 
 		for (int hotbarSlot = 0; hotbarSlot < 9; ++hotbarSlot) {
-			this.addSlot(new Slot(player.getInventory(), hotbarSlot, 38 + hotbarSlot * 18, 163));
+			this.addSlot(new Slot(player.getInventory(), hotbarSlot, 38 + hotbarSlot * 18, 165));
 		}
 	}
 

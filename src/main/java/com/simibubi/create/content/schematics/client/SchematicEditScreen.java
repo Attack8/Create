@@ -58,7 +58,7 @@ public class SchematicEditScreen extends AbstractSimiScreen {
 		super.init();
 
 		int x = guiLeft;
-		int y = guiTop;
+		int y = guiTop + 2;
 
 		xInput = new EditBox(font, x + 50, y + 26, 34, 10, Components.immutableEmpty());
 		yInput = new EditBox(font, x + 90, y + 26, 34, 10, Components.immutableEmpty());
@@ -115,7 +115,7 @@ public class SchematicEditScreen extends AbstractSimiScreen {
 		addRenderableWidgets(labelR, labelM, rotationArea, mirrorArea);
 
 		confirmButton =
-			new IconButton(x + background.getWidth() - 33, y + background.getHeight() - 24, AllIcons.I_CONFIRM);
+			new IconButton(x + background.getWidth() - 33, y + background.getHeight() - 26, AllIcons.I_CONFIRM);
 		confirmButton.withCallback(() -> {
 			onClose();
 		});
@@ -158,7 +158,7 @@ public class SchematicEditScreen extends AbstractSimiScreen {
 
 		background.render(graphics, x, y);
 		String title = handler.getCurrentSchematicName();
-		graphics.drawCenteredString(font, title, x + (background.getWidth() - 8) / 2, y + 3, 0xFFFFFF);
+		graphics.drawString(font, title, x + (background.getWidth() - 8 - font.width(title)) / 2, y + 4, 0x505050, false);
 
 		GuiGameElement.of(AllItems.SCHEMATIC.asStack())
 				.<GuiGameElement.GuiRenderBuilder>at(x + background.getWidth() + 6, y + background.getHeight() - 40, -200)

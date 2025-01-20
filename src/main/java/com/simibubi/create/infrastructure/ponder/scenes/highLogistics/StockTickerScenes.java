@@ -194,21 +194,21 @@ public class StockTickerScenes {
 		scene.idle(30);
 
 		scene.overlay()
-			.showText(80)
-			.text("Stock-linked packagers make their inventory available to the network")
+			.showText(100)
+			.text("Stock-linked packagers make their attached inventory available to the network")
 			.attachKeyFrame()
 			.placeNearTarget()
 			.pointAt(util.vector()
 				.blockSurface(util.grid()
 					.at(3, 2, 5), Direction.WEST));
-		scene.idle(90);
+		scene.idle(110);
 
 		scene.overlay()
 			.showOutline(PonderPalette.BLUE, ticker, tickerS, 40);
 
 		scene.overlay()
 			.showText(80)
-			.text("Stock tickers can request items from these inventories")
+			.text("Stock tickers can order items from these inventories")
 			.attachKeyFrame()
 			.placeNearTarget()
 			.pointAt(util.vector()
@@ -356,7 +356,7 @@ public class StockTickerScenes {
 
 		scene.overlay()
 			.showText(80)
-			.text("Right-click the block itself to open the category editor")
+			.text("Right-click the Stock ticker to open the category editor")
 			.colored(PonderPalette.BLUE)
 			.placeNearTarget()
 			.pointAt(util.vector()
@@ -368,7 +368,7 @@ public class StockTickerScenes {
 
 		scene.overlay()
 			.showText(80)
-			.text("Stock tickers can also request blocks required for the schematicannon")
+			.text("Stock tickers can also order blocks required for the schematicannon")
 			.colored(PonderPalette.BLUE)
 			.attachKeyFrame()
 			.placeNearTarget()
@@ -386,7 +386,7 @@ public class StockTickerScenes {
 
 		scene.overlay()
 			.showText(80)
-			.text("Simply hand the printed clipboard it generated to the keeper")
+			.text("Simply hand the printed clipboard it generated to the Stock keeper")
 			.colored(PonderPalette.BLUE)
 			.placeNearTarget()
 			.pointAt(keeper);
@@ -454,7 +454,7 @@ public class StockTickerScenes {
 
 		scene.overlay()
 			.showText(90)
-			.text("When requesting items, a target address can be set in the order")
+			.text("When ordering items, a target address can be set in the request")
 			.attachKeyFrame()
 			.placeNearTarget()
 			.pointAt(util.vector()

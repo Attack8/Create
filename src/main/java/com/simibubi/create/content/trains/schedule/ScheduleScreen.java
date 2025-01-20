@@ -110,30 +110,40 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		super.init();
 		clearWidgets();
 
-		confirmButton = new IconButton(leftPos + bg.getWidth() - 42, topPos + bg.getHeight() - 24, AllIcons.I_CONFIRM);
+		confirmButton = new IconButton(leftPos + bg.getWidth() - 42, topPos + bg.getHeight() - 30, AllIcons.I_CONFIRM);
 		confirmButton.withCallback(() -> minecraft.player.closeContainer());
 		addRenderableWidget(confirmButton);
 
 		cyclicIndicator = new Indicator(leftPos + 21, topPos + 196, Components.immutableEmpty());
 		cyclicIndicator.state = schedule.cyclic ? State.ON : State.OFF;
-		addRenderableWidget(cyclicIndicator);
-
-		cyclicButton = new IconButton(leftPos + 21, topPos + 202, AllIcons.I_REFRESH);
-		cyclicButton.withCallback(() -> {
-			schedule.cyclic = !schedule.cyclic;
-			cyclicIndicator.state = schedule.cyclic ? State.ON : State.OFF;
-		});
-
-		List<Component> tip = cyclicButton.getToolTip();
+		
+		List<Component> tip = new ArrayList<>();
 		tip.add(CreateLang.translateDirect("schedule.loop"));
+		tip.add(CreateLang.translateDirect("gui.schematicannon.optionDisabled")
+			.withStyle(ChatFormatting.RED));
 		tip.add(CreateLang.translateDirect("schedule.loop1")
 			.withStyle(ChatFormatting.GRAY));
 		tip.add(CreateLang.translateDirect("schedule.loop2")
 			.withStyle(ChatFormatting.GRAY));
+		
+		List<Component> tipEnabled = new ArrayList<>(tip);
+		tipEnabled.set(1, CreateLang.translateDirect("gui.schematicannon.optionEnabled")
+			.withStyle(ChatFormatting.DARK_GREEN));
+
+		cyclicButton = new IconButton(leftPos + 21, topPos + 196, AllIcons.I_REFRESH);
+		cyclicButton.withCallback(() -> {
+			schedule.cyclic = !schedule.cyclic;
+			cyclicButton.green = schedule.cyclic;
+			cyclicButton.getToolTip().clear();
+			cyclicButton.getToolTip().addAll(schedule.cyclic ? tipEnabled : tip);
+		});
+		cyclicButton.green = schedule.cyclic;
+		cyclicButton.getToolTip().clear();
+		cyclicButton.getToolTip().addAll(schedule.cyclic ? tipEnabled : tip);
 
 		addRenderableWidget(cyclicButton);
 
-		resetProgress = new IconButton(leftPos + 45, topPos + 202, AllIcons.I_PRIORITY_VERY_HIGH);
+		resetProgress = new IconButton(leftPos + 45, topPos + 196, AllIcons.I_PRIORITY_VERY_HIGH);
 		resetProgress.withCallback(() -> {
 			schedule.savedProgress = 0;
 			resetProgress.active = false;
@@ -142,7 +152,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		resetProgress.setToolTip(CreateLang.translateDirect("schedule.reset"));
 		addRenderableWidget(resetProgress);
 
-		skipProgress = new IconButton(leftPos + 63, topPos + 202, AllIcons.I_PRIORITY_LOW);
+		skipProgress = new IconButton(leftPos + 63, topPos + 196, AllIcons.I_PRIORITY_LOW);
 		skipProgress.withCallback(() -> {
 			schedule.savedProgress++;
 			schedule.savedProgress %= schedule.entries.size();

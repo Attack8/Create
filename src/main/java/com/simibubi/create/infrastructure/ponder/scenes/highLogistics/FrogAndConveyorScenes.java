@@ -182,13 +182,13 @@ public class FrogAndConveyorScenes {
 		scene.idle(20);
 
 		scene.overlay()
-			.showText(60)
-			.text("These relay rotational power to each other very flexibly..")
+			.showText(70)
+			.text("Chain conveyors relay rotational power between each other..")
 			.attachKeyFrame()
 			.placeNearTarget()
 			.pointAt(util.vector()
 				.topOf(conv3.offset(-1, 0, -1)));
-		scene.idle(50);
+		scene.idle(60);
 
 		scene.world()
 			.hideIndependentSection(poleE, Direction.SOUTH);
@@ -790,7 +790,7 @@ public class FrogAndConveyorScenes {
 		scene.overlay()
 			.showText(90)
 			.attachKeyFrame()
-			.text("This works with packagers, items can be packed and shipped directly")
+			.text("This also works with packagers. Items can be packed and shipped directly")
 			.pointAt(util.vector()
 				.blockSurface(fromFrog.below(), Direction.WEST))
 			.placeNearTarget();
