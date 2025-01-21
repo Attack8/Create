@@ -114,7 +114,7 @@ configurations {
 }
 
 repositories {
-    maven { url = "https://maven.createmod.net" } // Ponder, Catnip
+    maven { url = "https://maven.createmod.net" } // Ponder
     maven { url = "https://maven.tterrag.com" } // Flywheel
     maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
     maven { url = "https://maven.blamejared.com" } // JEI, Vazkii's Mods
@@ -125,6 +125,7 @@ repositories {
     maven { url = "https://api.modrinth.com/maven" }
     maven { url = "https://maven.saps.dev/releases" } // FTB Mods
     maven { url = "https://maven.architectury.dev" } // Arch API
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven" } // NeoForge config api port, needed by ponder
     maven { url = "https://jm.gserv.me/repository/maven-public" // JourneyMap
         content {
             includeGroup "info.journeymap"
