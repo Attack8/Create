@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 public class StockKeeperCategoryEditPacket extends BlockEntityConfigurationPacket<StockTickerBlockEntity> {
 	public static final StreamCodec<RegistryFriendlyByteBuf, StockKeeperCategoryEditPacket> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, p -> p.pos,
-		ItemStack.LIST_STREAM_CODEC, p -> p.schedule,
+		ItemStack.OPTIONAL_LIST_STREAM_CODEC, p -> p.schedule,
 	    StockKeeperCategoryEditPacket::new
 	);
 
