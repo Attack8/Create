@@ -5,7 +5,12 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.NotNull;
+import com.simibubi.create.AllRegistries;
+
+import com.simibubi.create.AllRegistries.Keys;
+
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -18,13 +23,10 @@ import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEnti
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorPackage;
 import com.simibubi.create.content.trains.station.StationBlockEntity;
 
-import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
-import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -32,8 +34,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class PackagePortTarget {
-	public static final Codec<PackagePortTarget> CODEC = PackagePortTarget.Type.CODEC.dispatch(PackagePortTarget::getType, type -> type.codec);
-	public static final StreamCodec<ByteBuf, PackagePortTarget> STREAM_CODEC = Type.STREAM_CODEC.dispatch(PackagePortTarget::getType, type -> type.streamCodec);
+	public static final Codec<PackagePortTarget> CODEC = AllRegistries.PACKAGE_PORT_TARGETS.byNameCodec().dispatch(PackagePortTarget::getType, PackagePortTargetType::codec);
+	public static final StreamCodec<? super RegistryFriendlyByteBuf, PackagePortTarget> STREAM_CODEC = ByteBufCodecs.registry(Keys.PACKAGE_PORT_TARGETS).dispatch(PackagePortTarget::getType, PackagePortTargetType::streamCodec);
 
 	public BlockPos relativePos;
 
@@ -59,7 +61,7 @@ public abstract class PackagePortTarget {
 		return false;
 	}
 
-	protected abstract Type getType();
+	protected abstract PackagePortTargetType getType();
 
 	public BlockEntity be(LevelAccessor level, BlockPos portPos) {
 		if (level instanceof Level l && !l.isLoaded(portPos.offset(relativePos)))
@@ -183,8 +185,20 @@ public abstract class PackagePortTarget {
 		}
 
 		@Override
-		protected Type getType() {
-			return Type.CHAIN_CONVEYOR;
+		protected PackagePortTargetType getType() {
+			return AllPackagePortTargetTypes.CHAIN_CONVEYOR.value();
+		}
+
+		public static class Type implements PackagePortTargetType {
+			@Override
+			public MapCodec<ChainConveyorFrogportTarget> codec() {
+				return CODEC;
+			}
+
+			@Override
+			public StreamCodec<ByteBuf, ChainConveyorFrogportTarget> streamCodec() {
+				return STREAM_CODEC;
+			}
 		}
 	}
 
@@ -240,30 +254,20 @@ public abstract class PackagePortTarget {
 		}
 
 		@Override
-		protected Type getType() {
-			return Type.TRAIN_STATION;
-		}
-	}
-
-	// TODO - Turn this into a registry so addons and other mods can extend it
-	public enum Type implements StringRepresentable {
-		CHAIN_CONVEYOR(ChainConveyorFrogportTarget.CODEC, ChainConveyorFrogportTarget.STREAM_CODEC),
-		TRAIN_STATION(TrainStationFrogportTarget.CODEC, TrainStationFrogportTarget.STREAM_CODEC);
-
-		public static final Codec<Type> CODEC = StringRepresentable.fromValues(Type::values);
-		public static final StreamCodec<ByteBuf, Type> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(Type.class);
-
-		private final MapCodec<? extends PackagePortTarget> codec;
-		private final StreamCodec<ByteBuf, ? extends PackagePortTarget> streamCodec;
-
-		Type(MapCodec<? extends PackagePortTarget> codec, StreamCodec<ByteBuf, ? extends PackagePortTarget> streamCodec) {
-			this.codec = codec;
-			this.streamCodec = streamCodec;
+		protected PackagePortTargetType getType() {
+			return AllPackagePortTargetTypes.TRAIN_STATION.value();
 		}
 
-		@Override
-		public @NotNull String getSerializedName() {
-			return Lang.asId(name());
+		public static class Type implements PackagePortTargetType {
+			@Override
+			public MapCodec<TrainStationFrogportTarget> codec() {
+				return CODEC;
+			}
+
+			@Override
+			public StreamCodec<ByteBuf, TrainStationFrogportTarget> streamCodec() {
+				return STREAM_CODEC;
+			}
 		}
 	}
 }

@@ -8,6 +8,7 @@ import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -15,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 public record PackagePortPlacementPacket(PackagePortTarget target, BlockPos pos) implements ServerboundPacketPayload {
-	public static final StreamCodec<ByteBuf, PackagePortPlacementPacket> STREAM_CODEC = StreamCodec.composite(
+	public static final StreamCodec<RegistryFriendlyByteBuf, PackagePortPlacementPacket> STREAM_CODEC = StreamCodec.composite(
 	    PackagePortTarget.STREAM_CODEC, PackagePortPlacementPacket::target,
 	    BlockPos.STREAM_CODEC, PackagePortPlacementPacket::pos,
 	    PackagePortPlacementPacket::new
@@ -36,8 +37,8 @@ public record PackagePortPlacementPacket(PackagePortTarget target, BlockPos pos)
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (!(blockEntity instanceof PackagePortBlockEntity ppbe))
 			return;
-			if (!target.canSupport(ppbe))
-				return;
+		if (!target.canSupport(ppbe))
+			return;
 
 		Vec3 targetLocation = target.getExactTargetLocation(ppbe, world, pos);
 		if (targetLocation == Vec3.ZERO || !targetLocation.closerThan(Vec3.atBottomCenterOf(pos),
