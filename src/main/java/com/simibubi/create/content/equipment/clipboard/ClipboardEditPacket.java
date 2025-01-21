@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllPackets;
+import com.simibubi.create.foundation.utility.CreateComponentProcessors;
 
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
@@ -17,8 +18,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-// TODO - Does this even work?
-// Also make sure to filter any data through CreateNBTProcessors.clipboardProcessor
 public record ClipboardEditPacket(int hotbarSlot, DataComponentPatch dataComponentPatch, @Nullable BlockPos targetedBlock) implements ServerboundPacketPayload {
 	public static final StreamCodec<RegistryFriendlyByteBuf, ClipboardEditPacket> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.VAR_INT, ClipboardEditPacket::hotbarSlot,
@@ -29,6 +28,8 @@ public record ClipboardEditPacket(int hotbarSlot, DataComponentPatch dataCompone
 
 	@Override
 	public void handle(ServerPlayer sender) {
+		DataComponentPatch processedData = CreateComponentProcessors.clipboardProcessor(dataComponentPatch);
+
 		if (targetedBlock != null) {
 			Level world = sender.level();
 			if (!world.isLoaded(targetedBlock))
@@ -36,10 +37,10 @@ public record ClipboardEditPacket(int hotbarSlot, DataComponentPatch dataCompone
 			if (!targetedBlock.closerThan(sender.blockPosition(), 20))
 				return;
 			if (world.getBlockEntity(targetedBlock) instanceof ClipboardBlockEntity cbe) {
-				if (dataComponentPatch.isEmpty()) {
+				if (processedData.isEmpty()) {
 					clearComponents(cbe.dataContainer);
 				} else {
-					cbe.dataContainer.applyComponents(dataComponentPatch);
+					cbe.dataContainer.applyComponents(processedData);
 				}
 				cbe.onEditedBy(sender);
 			}
@@ -50,10 +51,10 @@ public record ClipboardEditPacket(int hotbarSlot, DataComponentPatch dataCompone
 				.getItem(hotbarSlot);
 		if (!AllBlocks.CLIPBOARD.isIn(itemStack))
 			return;
-		if (dataComponentPatch.isEmpty()) {
+		if (processedData.isEmpty()) {
 			clearComponents(itemStack);
 		} else {
-			itemStack.applyComponents(dataComponentPatch);
+			itemStack.applyComponents(processedData);
 		}
 	}
 

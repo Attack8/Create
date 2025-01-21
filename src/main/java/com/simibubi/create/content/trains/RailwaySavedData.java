@@ -84,12 +84,6 @@ public class RailwaySavedData extends SavedData {
 		return sd;
 	}
 
-	// TODO - Uncomment on fabric, it doesn't have atomic writes
-//	@Override
-//	public void save(@NotNull File file, HolderLookup.Provider registries) {
-//		SavedDataUtil.saveWithDatOld(this, file, registries);
-//	}
-
 	public Map<UUID, TrackGraph> getTrackNetworks() {
 		return trackNetworks;
 	}

@@ -527,7 +527,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		float angleYaw = getViewYRot(partialTicks);
 		float anglePitch = getViewXRot(partialTicks);
 
-		matrixStack.translate(-.5f, -.2f, -.5f);
+		matrixStack.translate(-.5f, 0, -.5f);
 
 		Entity ridingEntity = getVehicle();
 		if (ridingEntity instanceof AbstractMinecart)
@@ -558,6 +558,8 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	// has to adjust aswell
 	@OnlyIn(Dist.CLIENT)
 	private void repositionOnCart(PoseStack matrixStack, float partialTicks, Entity ridingEntity) {
+		matrixStack.translate(0, -.2f, 0);
+
 		Vec3 cartPos = getCartOffset(partialTicks, ridingEntity);
 
 		if (cartPos == Vec3.ZERO)

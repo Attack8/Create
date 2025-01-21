@@ -368,8 +368,8 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		boolean mouseClicked = super.mouseClicked(pMouseX, pMouseY, pButton);
 
 		if (editorEditBox != null && editorEditBox.isMouseOver(pMouseX, pMouseY) && wasNotFocused) {
-			// TODO - Checkover the select = true part
-			editorEditBox.moveCursorToEnd(true);
+			// TODO - Checkover the select = false part
+			editorEditBox.moveCursorToEnd(false);
 			editorEditBox.setHighlightPos(0);
 		}
 

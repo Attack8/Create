@@ -79,8 +79,4 @@ public class AllArmorMaterials {
 	public static void register(IEventBus eventBus) {
 		ARMOR_MATERIALS.register(eventBus);
 	}
-
-	// FIXME 1.21: rehook-up durability
-	private static final int[] MAX_DAMAGE_ARRAY = new int[] { 11, 16, 15, 13 };
-
 }
