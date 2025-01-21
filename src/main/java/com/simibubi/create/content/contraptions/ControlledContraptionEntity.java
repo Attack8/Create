@@ -80,8 +80,8 @@ public class ControlledContraptionEntity extends AbstractContraptionEntity {
 	@Override
 	protected void readAdditional(CompoundTag compound, boolean spawnPacket) {
 		super.readAdditional(compound, spawnPacket);
-		NbtUtils.readBlockPos(compound, "ControllerRelative")
-				.ifPresent(p -> controllerPos = p.offset(blockPosition()));
+		if (compound.contains("ControllerRelative"))
+			controllerPos = NBTHelper.readBlockPos(compound, "ControllerRelative").offset(blockPosition());
 		if (compound.contains("Axis"))
 			rotationAxis = NBTHelper.readEnum(compound, "Axis", Axis.class);
 		angle = compound.getFloat("Angle");

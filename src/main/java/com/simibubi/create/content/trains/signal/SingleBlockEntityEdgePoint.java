@@ -2,6 +2,7 @@ package com.simibubi.create.content.trains.signal;
 
 import com.simibubi.create.content.trains.graph.DimensionPalette;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -51,7 +52,7 @@ public abstract class SingleBlockEntityEdgePoint extends TrackEdgePoint {
 		super.read(nbt, registries, migration, dimensions);
 		if (migration)
 			return;
-		blockEntityPos = NbtUtils.readBlockPos(nbt, "BlockEntityPos").orElse(BlockPos.ZERO);
+		blockEntityPos = NBTHelper.readBlockPos(nbt, "BlockEntityPos");
 		blockEntityDimension = dimensions.decode(nbt.contains("BlockEntityDimension") ? nbt.getInt("BlockEntityDimension") : -1);
 	}
 

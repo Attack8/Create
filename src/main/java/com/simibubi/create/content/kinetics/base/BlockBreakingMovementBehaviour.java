@@ -8,6 +8,7 @@ import com.simibubi.create.content.contraptions.mounted.MountedContraption;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
 import com.simibubi.create.foundation.utility.BlockHelper;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -107,7 +108,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 
 		Level world = context.world;
 		int id = data.getInt("BreakerId");
-		BlockPos breakingPos = NbtUtils.readBlockPos(data, "BreakingPos").orElse(BlockPos.ZERO);
+		BlockPos breakingPos = NBTHelper.readBlockPos(data, "BreakingPos");
 
 		data.remove("Progress");
 		data.remove("TicksUntilNextProgress");
@@ -137,7 +138,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 			return;
 		}
 
-		BlockPos pos = NbtUtils.readBlockPos(data, "LastPos").orElse(BlockPos.ZERO);
+		BlockPos pos = NBTHelper.readBlockPos(data, "LastPos");
 		data.remove("WaitingTicks");
 		data.remove("LastPos");
 		context.stall = false;
@@ -164,7 +165,7 @@ public class BlockBreakingMovementBehaviour implements MovementBehaviour {
 		}
 
 		Level world = context.world;
-		BlockPos breakingPos = NbtUtils.readBlockPos(data, "BreakingPos").orElse(BlockPos.ZERO);
+		BlockPos breakingPos = NBTHelper.readBlockPos(data, "BreakingPos");
 		int destroyProgress = data.getInt("Progress");
 		int id = data.getInt("BreakerId");
 		BlockState stateToBreak = world.getBlockState(breakingPos);

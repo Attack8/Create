@@ -22,6 +22,7 @@ import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.DistExecutor;
 import dev.engine_room.flywheel.lib.visualization.VisualizationHelper;
 import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.HolderLookup;
@@ -233,11 +234,10 @@ public class TrackBlockEntity extends SmartBlockEntity implements ITransformable
 		else
 			removeFromCurveInteraction();
 
-		NbtUtils.readBlockPos(tag, "BoundLocation").ifPresent(pos -> {
+		if (tag.contains("BoundLocation"))
 			boundLocation = Pair.of(
-					ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("BoundDimension"))),
-					pos);
-		});
+				ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(tag.getString("BoundDimension"))),
+				NBTHelper.readBlockPos(tag, "BoundLocation"));
 	}
 
 	@Override

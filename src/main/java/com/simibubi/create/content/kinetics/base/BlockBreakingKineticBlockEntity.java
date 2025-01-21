@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.simibubi.create.foundation.utility.BlockHelper;
 
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -67,7 +68,9 @@ public abstract class BlockBreakingKineticBlockEntity extends KineticBlockEntity
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		destroyProgress = compound.getInt("Progress");
 		ticksUntilNextProgress = compound.getInt("NextTick");
-		breakingPos = NbtUtils.readBlockPos(compound, "Breaking").orElse(null);
+		breakingPos = null;
+		if (compound.contains("Breaking"))
+			breakingPos = NBTHelper.readBlockPos(compound, "Breaking");
 		super.read(compound, registries, clientPacket);
 	}
 

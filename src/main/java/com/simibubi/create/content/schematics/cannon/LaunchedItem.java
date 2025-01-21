@@ -13,6 +13,7 @@ import com.simibubi.create.content.kinetics.belt.item.BeltConnectorItem;
 import com.simibubi.create.content.kinetics.simpleRelays.AbstractSimpleShaftBlock;
 import com.simibubi.create.foundation.utility.BlockHelper;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.HolderGetter;
@@ -83,7 +84,7 @@ public abstract class LaunchedItem {
 	abstract void place(Level world);
 
 	void readNBT(CompoundTag c, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
-		target = NbtUtils.readBlockPos(c, "Target").orElse(BlockPos.ZERO);
+		target = NBTHelper.readBlockPos(c, "Target");
 		ticksRemaining = c.getInt("TicksLeft");
 		totalTicks = c.getInt("TotalTicks");
 		stack = ItemStack.parseOptional(registries, c.getCompound("Stack"));

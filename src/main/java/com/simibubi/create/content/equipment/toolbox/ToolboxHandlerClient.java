@@ -15,6 +15,7 @@ import com.simibubi.create.AllKeys;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 
 import net.createmod.catnip.gui.ScreenOpener;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -125,7 +126,7 @@ public class ToolboxHandlerClient {
 		boolean equipped = compound.contains(slotKey);
 
 		if (equipped) {
-			BlockPos pos = NbtUtils.readBlockPos(compound.getCompound(slotKey), "Pos").orElse(BlockPos.ZERO);
+			BlockPos pos = NBTHelper.readBlockPos(compound.getCompound(slotKey), "Pos");
 			double max = ToolboxHandler.getMaxRange(player);
 			boolean canReachToolbox = ToolboxHandler.distance(player.position(), pos) < max * max;
 
@@ -182,7 +183,7 @@ public class ToolboxHandlerClient {
 			String key = String.valueOf(slot);
 			if (!compound.contains(key))
 				continue;
-			BlockPos pos = NbtUtils.readBlockPos(compound.getCompound(key), "Pos").orElse(BlockPos.ZERO);
+			BlockPos pos = NBTHelper.readBlockPos(compound.getCompound(key), "Pos");
 			double max = ToolboxHandler.getMaxRange(player);
 			boolean selected = player.getInventory().selected == slot;
 			int offset = selected ? 1 : 0;

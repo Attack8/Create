@@ -105,7 +105,7 @@ public class BezierConnection implements Iterable<BezierConnection.Segment> {
 	}
 
 	public BezierConnection(CompoundTag compound, BlockPos localTo) {
-		this(Couple.deserializeEach(compound.getList("Positions", Tag.TAG_COMPOUND), t -> NbtUtils.readBlockPos(t, "Pos").orElseThrow())
+		this(Couple.deserializeEach(compound.getList("Positions", Tag.TAG_COMPOUND), t -> NBTHelper.readBlockPos(t, "Pos"))
 			.map(b -> b.offset(localTo)),
 			Couple.deserializeEach(compound.getList("Starts", Tag.TAG_COMPOUND), VecHelper::readNBTCompound)
 				.map(v -> v.add(Vec3.atLowerCornerOf(localTo))),

@@ -11,6 +11,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.VersionedInventoryWrapper;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -187,8 +188,14 @@ public class ItemVaultBlockEntity extends SmartBlockEntity implements IMultiBloc
 		int prevLength = length;
 
 		updateConnectivity = compound.contains("Uninitialized");
-		lastKnownPos = NbtUtils.readBlockPos(compound, "LastKnownPos").orElse(null);
-		controller = NbtUtils.readBlockPos(compound, "Controller").orElse(null);
+		
+		lastKnownPos = null;
+		if (compound.contains("LastKnownPos"))
+			lastKnownPos = NBTHelper.readBlockPos(compound, "LastKnownPos");
+		
+		controller = null;
+		if (compound.contains("Controller"))
+			controller = NBTHelper.readBlockPos(compound, "Controller");
 
 		if (isController()) {
 			radius = compound.getInt("Size");

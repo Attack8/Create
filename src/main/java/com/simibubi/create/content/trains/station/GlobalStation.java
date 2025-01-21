@@ -71,7 +71,7 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 			port.address = c.getString("Address");
 			port.offlineBuffer.deserializeNBT(registries, c.getCompound("OfflineBuffer"));
 			port.primed = c.getBoolean("Primed");
-			connectedPorts.put(NbtUtils.readBlockPos(c, "Pos").orElse(BlockPos.ZERO), port);
+			connectedPorts.put(NBTHelper.readBlockPos(c, "Pos"), port);
 		});
 	}
 

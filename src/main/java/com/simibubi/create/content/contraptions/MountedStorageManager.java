@@ -98,11 +98,11 @@ public class MountedStorageManager {
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, Map<BlockPos, BlockEntity> presentBlockEntities, boolean clientPacket) {
 		storage.clear();
 		NBTHelper.iterateCompoundList(nbt.getList("Storage", Tag.TAG_COMPOUND), c -> storage
-			.put(NbtUtils.readBlockPos(c, "Pos").orElse(BlockPos.ZERO), MountedStorage.deserialize(c.getCompound("Data"), registries)));
+			.put(NBTHelper.readBlockPos(c, "Pos"), MountedStorage.deserialize(c.getCompound("Data"), registries)));
 
 		fluidStorage.clear();
 		NBTHelper.iterateCompoundList(nbt.getList("FluidStorage", Tag.TAG_COMPOUND), c -> fluidStorage
-			.put(NbtUtils.readBlockPos(c, "Pos").orElse(BlockPos.ZERO), MountedFluidStorage.deserialize(c.getCompound("Data"), registries)));
+			.put(NBTHelper.readBlockPos(c, "Pos"), MountedFluidStorage.deserialize(c.getCompound("Data"), registries)));
 
 		if (clientPacket && presentBlockEntities != null)
 			bindTanksAndDepots(presentBlockEntities);

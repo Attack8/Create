@@ -9,6 +9,7 @@ import com.simibubi.create.content.trains.track.TrackTargetingBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
 import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -31,8 +32,8 @@ public class StationMarker {
 	}
 
 	public static StationMarker load(CompoundTag tag, HolderLookup.Provider registries) {
-		BlockPos source = NbtUtils.readBlockPos(tag, "source").orElse(BlockPos.ZERO);
-		BlockPos target = NbtUtils.readBlockPos(tag, "target").orElse(BlockPos.ZERO);
+		BlockPos source = NBTHelper.readBlockPos(tag, "source");
+		BlockPos target = NBTHelper.readBlockPos(tag, "target");
 		Component name = Component.Serializer.fromJson(tag.getString("name"), registries);
 		if (name == null) name = Components.immutableEmpty();
 

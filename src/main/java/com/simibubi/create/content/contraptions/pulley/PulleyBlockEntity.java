@@ -293,8 +293,12 @@ public class PulleyBlockEntity extends LinearActuatorBlockEntity implements Thre
 		super.read(compound, registries, clientPacket);
 
 		BlockPos prevMirrorParent = mirrorParent;
-		mirrorParent = NbtUtils.readBlockPos(compound, "MirrorParent").orElse(null);
-		mirrorChildren = NBTHelper.readCompoundList(compound.getList("MirrorChildren", Tag.TAG_COMPOUND), t -> NbtUtils.readBlockPos(t, "Pos").orElse(BlockPos.ZERO));
+		mirrorParent = null;
+		if (compound.contains("MirrorParent"))
+			mirrorParent = NBTHelper.readBlockPos(compound, "MirrorParent");
+		mirrorChildren = null;
+		if (compound.contains("MirrorChildren"))
+			mirrorChildren = NBTHelper.readCompoundList(compound.getList("MirrorChildren", Tag.TAG_COMPOUND), t -> NBTHelper.readBlockPos(t, "Pos"));
 
 		if (mirrorParent != null) {
 			offset = 0;

@@ -643,7 +643,7 @@ public class BrassTunnelBlockEntity extends BeltTunnelBlockEntity implements IHa
 		for (boolean filtered : Iterate.trueAndFalse) {
 			distributionTargets.set(filtered, NBTHelper
 				.readCompoundList(compound.getList(filtered ? "FilteredTargets" : "Targets", Tag.TAG_COMPOUND), nbt -> {
-					BlockPos pos = NbtUtils.readBlockPos(nbt, "Pos").orElse(BlockPos.ZERO);
+					BlockPos pos = NBTHelper.readBlockPos(nbt, "Pos");
 					Direction face = Direction.from3DDataValue(nbt.getInt("Face"));
 					return Pair.of(pos, face);
 				}));

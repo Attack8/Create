@@ -15,6 +15,7 @@ import com.simibubi.create.foundation.blockEntity.IMergeableBE;
 import com.simibubi.create.foundation.utility.BlockHelper;
 
 import net.createmod.catnip.math.BBHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -58,11 +59,11 @@ public class SchematicPrinter {
 
 	public void fromTag(CompoundTag compound, boolean clientPacket) {
 		if (compound.contains("CurrentPos"))
-			currentPos = NbtUtils.readBlockPos(compound, "CurrentPos").orElse(BlockPos.ZERO);
+			currentPos = NBTHelper.readBlockPos(compound, "CurrentPos");
 		if (clientPacket) {
 			schematicLoaded = false;
 			if (compound.contains("Anchor")) {
-				schematicAnchor = NbtUtils.readBlockPos(compound, "Anchor").orElse(BlockPos.ZERO);
+				schematicAnchor = NBTHelper.readBlockPos(compound, "Anchor");
 				schematicLoaded = true;
 			}
 		}
@@ -70,7 +71,7 @@ public class SchematicPrinter {
 		printingEntityIndex = compound.getInt("EntityProgress");
 		printStage = PrintStage.valueOf(compound.getString("PrintStage"));
 		compound.getList("DeferredBlocks", 10).stream()
-			.map(p -> NbtUtils.readBlockPos((CompoundTag) p, "Pos").orElse(BlockPos.ZERO))
+			.map(p -> NBTHelper.readBlockPos((CompoundTag) p, "Pos"))
 			.collect(Collectors.toCollection(() -> deferredBlocks));
 	}
 

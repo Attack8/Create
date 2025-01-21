@@ -672,9 +672,9 @@ public abstract class Contraption {
 			return;
 
 		CompoundTag nbt = structureBlockInfo.nbt();
-		BlockPos controllerPos = NbtUtils.readBlockPos(nbt,"Controller")
-				.map(this::toLocalPos)
-				.orElse(localPos);
+		BlockPos controllerPos = localPos;
+		if (nbt.contains("Controller"))
+			controllerPos = toLocalPos(NBTHelper.readBlockPos(nbt, "Controller"));
 		nbt.put("Controller", NbtUtils.writeBlockPos(controllerPos));
 
 		if (multiBlockBE.isController() && multiBlockBE.getHeight() <= 1 && multiBlockBE.getWidth() <= 1) {
@@ -728,19 +728,22 @@ public abstract class Contraption {
 				if (!tag.contains("Controller", Tag.TAG_COMPOUND) && !tag.contains("Parts", Tag.TAG_LIST))
 					return;
 
-				BlockPos controllerPos = NbtUtils.readBlockPos(tag, "Controller").orElse(BlockPos.ZERO);
-				tag.getList("Parts", Tag.TAG_COMPOUND).forEach(part -> {
-					BlockPos partPos = NbtUtils.readBlockPos((CompoundTag) part, "Pos").orElse(BlockPos.ZERO);
-					StructureBlockInfo partInfo = this.blocks.get(partPos);
-					capturedMultiblocks.put(controllerPos, partInfo);
-				});
+				BlockPos controllerPos = NBTHelper.readBlockPos(tag, "Controller");
+				tag.getList("Parts", Tag.TAG_COMPOUND)
+					.forEach(part -> {
+						CompoundTag cPart = (CompoundTag) part;
+						BlockPos partPos = cPart.contains("Pos") ? NBTHelper.readBlockPos(cPart, "Pos")
+							: new BlockPos(cPart.getInt("X"), cPart.getInt("Y"), cPart.getInt("Z"));
+						StructureBlockInfo partInfo = this.blocks.get(partPos);
+						capturedMultiblocks.put(controllerPos, partInfo);
+					});
 			});
 
 		actors.clear();
 		nbt.getList("Actors", Tag.TAG_COMPOUND)
 			.forEach(c -> {
 				CompoundTag comp = (CompoundTag) c;
-				StructureBlockInfo info = this.blocks.get(NbtUtils.readBlockPos(comp, "Pos").orElse(BlockPos.ZERO));
+				StructureBlockInfo info = this.blocks.get(NBTHelper.readBlockPos(comp, "Pos"));
 				if (info == null)
 					return;
 				MovementContext context = MovementContext.readNBT(world, info, comp, this);
@@ -756,7 +759,7 @@ public abstract class Contraption {
 			c -> superglue.add(SuperGlueEntity.readBoundingBox(c)));
 
 		seats.clear();
-		NBTHelper.iterateCompoundList(nbt.getList("Seats", Tag.TAG_COMPOUND), c -> seats.add(NbtUtils.readBlockPos(c, "Pos").orElseThrow()));
+		NBTHelper.iterateCompoundList(nbt.getList("Seats", Tag.TAG_COMPOUND), c -> seats.add(NBTHelper.readBlockPos(c, "Pos")));
 
 		seatMapping.clear();
 		NBTHelper.iterateCompoundList(nbt.getList("Passengers", Tag.TAG_COMPOUND),
@@ -768,7 +771,7 @@ public abstract class Contraption {
 
 		interactors.clear();
 		NBTHelper.iterateCompoundList(nbt.getList("Interactors", Tag.TAG_COMPOUND), c -> {
-			BlockPos pos = NbtUtils.readBlockPos(c, "Pos").orElse(BlockPos.ZERO);
+			BlockPos pos = NBTHelper.readBlockPos(c, "Pos");
 			StructureBlockInfo structureBlockInfo = getBlocks().get(pos);
 			if (structureBlockInfo == null)
 				return;
@@ -784,7 +787,7 @@ public abstract class Contraption {
 
 		stalled = nbt.getBoolean("Stalled");
 		hasUniversalCreativeCrate = nbt.getBoolean("BottomlessSupply");
-		anchor = NbtUtils.readBlockPos(nbt, "Anchor").orElse(BlockPos.ZERO);
+		anchor = NBTHelper.readBlockPos(nbt, "Anchor");
 	}
 
 	public CompoundTag writeNBT(HolderLookup.Provider registries, boolean spawnPacket) {
@@ -802,7 +805,8 @@ public abstract class Contraption {
 			ListTag partsNBT = new ListTag();
 			multiblockParts.forEach(info -> {
 				CompoundTag c = new CompoundTag();
-				partsNBT.add(c.put("Pos", NbtUtils.writeBlockPos(info.pos())));
+				c.put("Pos", NbtUtils.writeBlockPos(info.pos()));
+				partsNBT.add(c);
 			});
 			tag.put("Parts", partsNBT);
 
@@ -976,7 +980,7 @@ public abstract class Contraption {
 	}
 
 	private static StructureBlockInfo legacyReadStructureBlockInfo(CompoundTag blockListEntry, HolderGetter<Block> holderGetter) {
-		return new StructureBlockInfo(NbtUtils.readBlockPos(blockListEntry, "Pos").orElse(BlockPos.ZERO),
+		return new StructureBlockInfo(NBTHelper.readBlockPos(blockListEntry, "Pos"),
 			NbtUtils.readBlockState(holderGetter, blockListEntry.getCompound("Block")),
 			blockListEntry.contains("Data") ? blockListEntry.getCompound("Data") : null);
 	}

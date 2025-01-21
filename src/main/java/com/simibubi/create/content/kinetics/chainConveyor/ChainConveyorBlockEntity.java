@@ -693,14 +693,14 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
 		if (clientPacket && compound.contains("DestroyEffect") && level != null)
-			spawnDestroyParticles(NbtUtils.readBlockPos(compound, "DestroyEffect").orElse(BlockPos.ZERO));
+			spawnDestroyParticles(NBTHelper.readBlockPos(compound, "DestroyEffect"));
 
 		int sizeBefore = connections.size();
 		connections.clear();
 		CatnipCodecUtils.decode(CatnipCodecs.set(BlockPos.CODEC), compound.get("Connections")).ifPresent(connections::addAll);
 		travellingPackages.clear();
 		NBTHelper.iterateCompoundList(compound.getList("TravellingPackages", Tag.TAG_COMPOUND),
-			c -> travellingPackages.put(NbtUtils.readBlockPos(c, "Target").orElse(BlockPos.ZERO),
+			c -> travellingPackages.put(NBTHelper.readBlockPos(c, "Target"),
 				NBTHelper.readCompoundList(c.getList("Packages", Tag.TAG_COMPOUND), t -> ChainConveyorPackage.read(t, registries))));
 		loopingPackages = NBTHelper.readCompoundList(compound.getList("LoopingPackages", Tag.TAG_COMPOUND),
 			t -> ChainConveyorPackage.read(t, registries));

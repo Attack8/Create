@@ -20,6 +20,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -415,8 +416,14 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 
 		updateConnectivity = compound.contains("Uninitialized");
 		luminosity = compound.getInt("Luminosity");
-		lastKnownPos = NbtUtils.readBlockPos(compound, "LastKnownPos").orElse(null);
-		controller = NbtUtils.readBlockPos(compound, "Controller").orElse(null);
+
+		lastKnownPos = null;
+		if (compound.contains("LastKnownPos"))
+			lastKnownPos = NBTHelper.readBlockPos(compound, "LastKnownPos");
+		
+		controller = null;
+		if (compound.contains("Controller"))
+			controller = NBTHelper.readBlockPos(compound, "Controller");
 
 		if (isController()) {
 			window = compound.getBoolean("Window");

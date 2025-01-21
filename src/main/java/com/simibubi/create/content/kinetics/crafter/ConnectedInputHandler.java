@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import com.simibubi.create.AllBlocks;
 
 import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -224,7 +225,7 @@ public class ConnectedInputHandler {
 			isController = nbt.getBoolean("Controller");
 			data.clear();
 			nbt.getList("Data", Tag.TAG_COMPOUND)
-				.forEach(inbt -> NbtUtils.readBlockPos((CompoundTag) inbt, "Pos").ifPresent(data::add));
+				.forEach(inbt -> data.add(NBTHelper.readBlockPos((CompoundTag) inbt, "Pos")));
 
 			// nbt got wiped -> reset
 			if (data.isEmpty()) {

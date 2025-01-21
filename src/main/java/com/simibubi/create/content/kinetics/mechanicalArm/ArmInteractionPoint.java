@@ -161,7 +161,7 @@ public class ArmInteractionPoint {
 		ArmInteractionPointType type = AllRegistries.ARM_INTERACTION_POINT_TYPES.get(id);
 		if (type == null)
 			return null;
-		BlockPos pos = NbtUtils.readBlockPos(nbt, "Pos").orElse(BlockPos.ZERO).offset(anchor);
+		BlockPos pos = NBTHelper.readBlockPos(nbt, "Pos").offset(anchor);
 		BlockState state = level.getBlockState(pos);
 		if (!type.canCreatePoint(level, pos, state))
 			return null;
@@ -173,7 +173,7 @@ public class ArmInteractionPoint {
 	}
 
 	public static void transformPos(CompoundTag nbt, StructureTransform transform) {
-		BlockPos pos = NbtUtils.readBlockPos(nbt, "Pos").orElse(BlockPos.ZERO);
+		BlockPos pos = NBTHelper.readBlockPos(nbt, "Pos");
 		pos = transform.applyWithoutOffset(pos);
 		nbt.put("Pos", NbtUtils.writeBlockPos(pos));
 	}

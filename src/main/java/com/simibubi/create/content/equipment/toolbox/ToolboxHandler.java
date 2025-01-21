@@ -9,6 +9,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.data.WorldAttached;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -62,7 +63,7 @@ public class ToolboxHandler {
 				continue;
 
 			CompoundTag data = compound.getCompound(key);
-			BlockPos pos = NbtUtils.readBlockPos(data, "Pos").orElse(BlockPos.ZERO);
+			BlockPos pos = NBTHelper.readBlockPos(data, "Pos");
 			int slot = data.getInt("Slot");
 
 			if (!world.isLoaded(pos))
@@ -123,7 +124,7 @@ public class ToolboxHandler {
 			return;
 
 		CompoundTag prevData = compound.getCompound(key);
-		BlockPos prevPos = NbtUtils.readBlockPos(prevData, "Pos").orElse(BlockPos.ZERO);
+		BlockPos prevPos = NBTHelper.readBlockPos(prevData, "Pos");
 		int prevSlot = prevData.getInt("Slot");
 
 		BlockEntity prevBlockEntity = world.getBlockEntity(prevPos);

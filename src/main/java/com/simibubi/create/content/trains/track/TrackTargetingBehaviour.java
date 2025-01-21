@@ -26,6 +26,7 @@ import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.createmod.ponder.api.level.PonderLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -104,7 +105,7 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 	@Override
 	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		id = nbt.contains("Id") ? nbt.getUUID("Id") : UUID.randomUUID();
-		targetTrack = NbtUtils.readBlockPos(nbt, "TargetTrack").orElse(BlockPos.ZERO);
+		targetTrack = NBTHelper.readBlockPos(nbt, "TargetTrack");
 		targetDirection = nbt.getBoolean("TargetDirection") ? AxisDirection.POSITIVE : AxisDirection.NEGATIVE;
 		orthogonal = nbt.getBoolean("Ortho");
 		if (nbt.contains("PrevAxis"))
@@ -117,7 +118,7 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 			edgePoint = null;
 		if (nbt.contains("Bezier")) {
 			CompoundTag bezierNbt = nbt.getCompound("Bezier");
-			BlockPos key = NbtUtils.readBlockPos(bezierNbt, "Key").orElse(BlockPos.ZERO);
+			BlockPos key = NBTHelper.readBlockPos(bezierNbt, "Key");
 			targetBezier = new BezierTrackPointLocation(key.offset(getPos()),
 				bezierNbt.getInt("Segment"));
 		}

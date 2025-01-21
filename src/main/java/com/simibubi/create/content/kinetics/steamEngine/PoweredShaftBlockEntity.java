@@ -5,6 +5,7 @@ import java.util.List;
 import com.simibubi.create.content.kinetics.BlockStressValues;
 import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
@@ -97,11 +98,11 @@ public class PoweredShaftBlockEntity extends GeneratingKineticBlockEntity {
 		enginePos = null;
 		engineEfficiency = 0;
 
-		NbtUtils.readBlockPos(compound, "EnginePos").ifPresent(pos -> {
-			enginePos = pos;
+		if (compound.contains("EnginePos")) {
+			enginePos = NBTHelper.readBlockPos(compound, "EnginePos");
 			engineEfficiency = compound.getFloat("EnginePower");
 			capacityKey = BuiltInRegistries.BLOCK.get(ResourceLocation.parse(compound.getString("EngineType")));
-		});
+		}
 	}
 
 	@Override

@@ -39,6 +39,7 @@ import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -159,7 +160,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 		if (!context.data.contains("ReferencePos"))
 			return;
 
-		BlockPos referencePos = NbtUtils.readBlockPos(context.data, "ReferencePos").orElse(BlockPos.ZERO);
+		BlockPos referencePos = NBTHelper.readBlockPos(context.data, "ReferencePos");
 		for (BlockPos otherPos : getPositionsToBreak(context, referencePos))
 			if (!otherPos.equals(pos))
 				destroyBlock(context, otherPos);

@@ -16,6 +16,7 @@ import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -88,7 +89,7 @@ public class PortableStorageInterfaceMovement implements MovementBehaviour {
 		if (!context.data.contains(_workingPos_))
 			return;
 
-		BlockPos pos = NbtUtils.readBlockPos(context.data, _workingPos_).orElse(BlockPos.ZERO);
+		BlockPos pos = NBTHelper.readBlockPos(context.data, _workingPos_);
 		Vec3 target = VecHelper.getCenterOf(pos);
 
 		if (!context.stall && !onCarriage
