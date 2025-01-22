@@ -268,7 +268,6 @@ publishMods {
     changelog = ChangelogText.getChangelogText(project).toString()
     type = STABLE
     displayName = "$mod_name $minecraft_version $mod_version"
-    modLoaders.add("forge")
     modLoaders.add("neoforge")
 
     curseforge {
