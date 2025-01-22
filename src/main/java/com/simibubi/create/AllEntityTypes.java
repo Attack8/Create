@@ -16,6 +16,7 @@ import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileEntity
 import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileRenderer;
 import com.simibubi.create.content.logistics.box.PackageEntity;
 import com.simibubi.create.content.logistics.box.PackageRenderer;
+import com.simibubi.create.content.logistics.box.PackageVisual;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntityRenderer;
 import com.simibubi.create.content.trains.entity.CarriageContraptionVisual;
@@ -71,7 +72,9 @@ public class AllEntityTypes {
 		MobCategory.MISC, 5, Integer.MAX_VALUE, false, true, SeatEntity::build).register();
 
 	public static final EntityEntry<PackageEntity> PACKAGE = register("package", PackageEntity::new, () -> PackageRenderer::new,
-		MobCategory.MISC, 10, 3, true, false, PackageEntity::build).register();
+		MobCategory.MISC, 10, 3, true, false, PackageEntity::build)
+		.visual(() -> PackageVisual::new, true)
+		.register();
 
 	//
 

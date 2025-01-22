@@ -5,7 +5,8 @@ Additions
 - Example
 
 Changes
-- Bumped the defalt max rope length to 384
+
+- Bumped the default max rope length to 384
 - Set vault capacity limit to 2048 slots to prevent people from OOM-ing themselves if they set the capacity too high
 
 Bug Fixes

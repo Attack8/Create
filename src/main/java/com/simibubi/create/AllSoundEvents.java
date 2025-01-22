@@ -62,7 +62,7 @@ public class AllSoundEvents {
 			.build(),
 			
 		PACKAGER = create("packager").subtitle("Packager packages")
-			.playExisting(SoundEvents.SHULKER_OPEN, 0.125f, 0.75f)
+			.playExisting(SoundEvents.SHULKER_OPEN, 0.5f, 0.75f)
 			.category(SoundSource.BLOCKS)
 			.build(),
 

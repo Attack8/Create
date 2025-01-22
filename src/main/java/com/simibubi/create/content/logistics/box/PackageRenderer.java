@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllPartialModels;
 
+import dev.engine_room.flywheel.api.backend.BackendManager;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
@@ -28,11 +29,13 @@ public class PackageRenderer extends EntityRenderer<PackageEntity> {
 
 	@Override
 	public void render(PackageEntity entity, float yaw, float pt, PoseStack ms, MultiBufferSource buffer, int light) {
-		ItemStack box = entity.box;
-		if (box.isEmpty() || !PackageItem.isPackage(box))
-			box = AllBlocks.CARDBOARD_BLOCK.asStack();
-		PartialModel model = AllPartialModels.PACKAGES.get(BuiltInRegistries.ITEM.getKey(box.getItem()));
-		renderBox(entity, yaw, ms, buffer, light, model);
+		if (!BackendManager.isBackendOn()) {
+			ItemStack box = entity.box;
+			if (box.isEmpty() || !PackageItem.isPackage(box))
+				box = AllBlocks.CARDBOARD_BLOCK.asStack();
+			PartialModel model = AllPartialModels.PACKAGES.get(BuiltInRegistries.ITEM.getKey(box.getItem()));
+			renderBox(entity, yaw, ms, buffer, light, model);
+		}
 		super.render(entity, yaw, pt, ms, buffer, light);
 	}
 

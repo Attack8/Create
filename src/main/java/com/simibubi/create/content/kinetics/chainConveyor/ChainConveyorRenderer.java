@@ -3,8 +3,6 @@ package com.simibubi.create.content.kinetics.chainConveyor;
 import java.util.List;
 import java.util.Map.Entry;
 
-import net.createmod.catnip.animation.AnimationTickHolder;
-
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -18,10 +16,11 @@ import com.simibubi.create.foundation.render.RenderTypes;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.math.VecHelper;
-import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -57,6 +56,11 @@ public class ChainConveyorRenderer extends KineticBlockEntityRenderer<ChainConve
 
 		if (VisualizationManager.supportsVisualization(be.getLevel()))
 			return;
+
+		CachedBuffers.partial(AllPartialModels.CHAIN_CONVEYOR_WHEEL, be.getBlockState())
+			.light(light)
+			.overlay(overlay)
+			.renderInto(ms, buffer.getBuffer(RenderType.cutoutMipped()));
 
 		for (ChainConveyorPackage box : be.loopingPackages)
 			renderBox(be, ms, buffer, overlay, pos, box, partialTicks);

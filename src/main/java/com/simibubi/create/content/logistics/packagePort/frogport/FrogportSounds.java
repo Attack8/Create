@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 public class FrogportSounds {
 
 	public void open(Level level, BlockPos pos) {
-		AllSoundEvents.FROGPORT_OPEN.playAt(level, Vec3.atCenterOf(pos), 0.125f, 1, false);
+		AllSoundEvents.FROGPORT_OPEN.playAt(level, Vec3.atCenterOf(pos), 0.5f, 1, false);
 	}
 
 	public void close(Level level, BlockPos pos) {

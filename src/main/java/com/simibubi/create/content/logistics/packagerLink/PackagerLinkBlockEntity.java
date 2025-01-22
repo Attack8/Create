@@ -57,7 +57,7 @@ public class PackagerLinkBlockEntity extends LinkWithBulbBlockEntity {
 	}
 
 	public void playEffect() {
-		AllSoundEvents.STOCK_LINK.playAt(level, worldPosition, 1.0f, 1.0f, false);
+		AllSoundEvents.STOCK_LINK.playAt(level, worldPosition, 0.75f, 1.25f, false);
 		Vec3 vec3 = Vec3.atCenterOf(worldPosition);
 
 		BlockState state = getBlockState();

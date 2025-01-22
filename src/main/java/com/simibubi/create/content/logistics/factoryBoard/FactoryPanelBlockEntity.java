@@ -46,6 +46,11 @@ public class FactoryPanelBlockEntity extends SmartBlockEntity {
 		super(type, pos, state);
 		restocker = false;
 	}
+	
+	@Override
+	protected AABB createRenderBoundingBox() {
+		return new AABB(worldPosition).inflate(8);
+	}
 
 	@Override
 	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {

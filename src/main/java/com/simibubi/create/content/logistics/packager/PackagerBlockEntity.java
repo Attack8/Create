@@ -150,7 +150,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 			if (animationTicks == CYCLE - (animationInward ? 5 : 1))
 				AllSoundEvents.PACKAGER.playAt(level, worldPosition, 1, 1, true);
 			if (animationTicks == (animationInward ? 1 : 5))
-				level.playLocalSound(worldPosition, SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 0.075f, 0.75f,
+				level.playLocalSound(worldPosition, SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 0.25f, 0.75f,
 					true);
 		}
 

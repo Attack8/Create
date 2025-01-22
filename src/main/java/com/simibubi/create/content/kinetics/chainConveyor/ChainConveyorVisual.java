@@ -147,8 +147,17 @@ public class ChainConveyorVisual extends SingleAxisRotatingVisual<ChainConveyorB
 	private void setupGuards() {
 		deleteGuards();
 
+		var wheelInstancer = instancerProvider().instancer(InstanceTypes.TRANSFORMED, SpecialModels.chunkDiffuse(AllPartialModels.CHAIN_CONVEYOR_WHEEL));
 		var guardInstancer = instancerProvider().instancer(InstanceTypes.TRANSFORMED, SpecialModels.chunkDiffuse(AllPartialModels.CHAIN_CONVEYOR_GUARD));
 
+		TransformedInstance wheel = wheelInstancer.createInstance();
+		
+		wheel.translate(getVisualPosition())
+			.light(rotatingModel.light)
+			.setChanged();
+		
+		guards.add(wheel);
+		
 		for (BlockPos blockPos : blockEntity.connections) {
 			ChainConveyorBlockEntity.ConnectionStats stats = blockEntity.connectionStats.get(blockPos);
 			if (stats == null) {

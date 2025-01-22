@@ -5,7 +5,6 @@ import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.SidedFilteringBehaviour;
-import com.simibubi.create.foundation.utility.RaycastHelper;
 
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
@@ -51,7 +50,7 @@ public class ValueSettingsInputHandler {
 			if (!valueSettingsBehaviour.mayInteract(player))
 				continue;
 
-			BlockHitResult ray = RaycastHelper.rayTraceRange(world, player, 10);
+			BlockHitResult ray = event.getHitVec();
 			if (ray == null)
 				return;
 			if (behaviour instanceof SidedFilteringBehaviour) {

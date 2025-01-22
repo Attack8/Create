@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+import org.jetbrains.annotations.Unmodifiable;
+
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.Create;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-
-import org.jetbrains.annotations.ApiStatus.Internal;
-import org.jetbrains.annotations.UnmodifiableView;
 
 public class PackageStyles {
 	public record PackageStyle(String type, int width, int height, float riggingOffset, boolean rare) {
@@ -33,7 +33,7 @@ public class PackageStyles {
 	 * and use the PackageItem class so your packages end up in the correct lists.
 	 */
 	@Internal
-	@UnmodifiableView
+	@Unmodifiable
 	public static final List<PackageStyle> STYLES = ImmutableList.of(
 		new PackageStyle("cardboard", 12, 12, 23f, false),
 		new PackageStyle("cardboard", 10, 12, 22f, false),

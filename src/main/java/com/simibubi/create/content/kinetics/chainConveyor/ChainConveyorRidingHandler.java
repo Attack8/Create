@@ -46,7 +46,7 @@ public class ChainConveyorRidingHandler {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.isPaused())
 			return;
-		if (!AllItemTags.WRENCH.matches(mc.player.getMainHandItem())) {
+		if (!AllItemTags.CHAIN_RIDEABLE.matches(mc.player.getMainHandItem())) {
 			stopRiding();
 			return;
 		}

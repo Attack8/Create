@@ -5,6 +5,8 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
 
+import dev.engine_room.flywheel.api.backend.BackendManager;
+import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.render.CachedBuffers;
@@ -33,36 +35,35 @@ public class PackagerRenderer extends SmartBlockEntityRenderer<PackagerBlockEnti
 
 		ItemStack renderedBox = be.getRenderedBox();
 		float trayOffset = be.getTrayOffset(partialTicks);
-		boolean hatchOpen = be.animationTicks > (be.animationInward ? 1 : 5)
-			&& be.animationTicks < PackagerBlockEntity.CYCLE - (be.animationInward ? 5 : 1);
 		BlockState blockState = be.getBlockState();
 		Direction facing = blockState.getValue(PackagerBlock.FACING)
 			.getOpposite();
 
-		PartialModel hatchModel =
-			hatchOpen ? AllPartialModels.PACKAGER_HATCH_OPEN : AllPartialModels.PACKAGER_HATCH_CLOSED;
+		if (!BackendManager.isBackendOn()) {
+			var hatchModel = getHatchModel(be);
 
-		SuperByteBuffer sbb = CachedBuffers.partial(hatchModel, blockState);
-		sbb.translate(Vec3.atLowerCornerOf(facing.getNormal())
-			.scale(.49999f))
-			.rotateCentered(AngleHelper.rad(AngleHelper.horizontalAngle(facing)), Direction.UP)
-			.rotateCentered(AngleHelper.rad(AngleHelper.verticalAngle(facing)), Direction.EAST)
-			.light(light)
-			.renderInto(ms, buffer.getBuffer(RenderType.solid()));
+			SuperByteBuffer sbb = CachedBuffers.partial(hatchModel, blockState);
+			sbb.translate(Vec3.atLowerCornerOf(facing.getNormal())
+					.scale(.49999f))
+				.rotateYCenteredDegrees(AngleHelper.horizontalAngle(facing))
+				.rotateXCenteredDegrees(AngleHelper.verticalAngle(facing))
+				.light(light)
+				.renderInto(ms, buffer.getBuffer(RenderType.solid()));
 
-		ms.pushPose();
-		var msr = TransformStack.of(ms);
-		msr.translate(Vec3.atLowerCornerOf(facing.getNormal())
-			.scale(trayOffset));
-
-		sbb = CachedBuffers.partial(AllBlocks.PACKAGER.has(blockState) ? AllPartialModels.PACKAGER_TRAY_REGULAR
-			: AllPartialModels.PACKAGER_TRAY_DEFRAG, blockState);
-		sbb.rotateCentered(AngleHelper.rad(facing.toYRot()), Direction.UP)
-			.light(light)
-			.renderInto(ms, buffer.getBuffer(RenderType.cutoutMipped()));
+			sbb = CachedBuffers.partial(getTrayModel(blockState), blockState);
+			sbb.translate(Vec3.atLowerCornerOf(facing.getNormal())
+					.scale(trayOffset))
+				.rotateYCenteredDegrees(facing.toYRot())
+				.light(light)
+				.renderInto(ms, buffer.getBuffer(RenderType.cutoutMipped()));
+		}
 
 		if (!renderedBox.isEmpty()) {
-			msr.translate(.5f, .5f, .5f)
+			ms.pushPose();
+			var msr = TransformStack.of(ms);
+			msr.translate(Vec3.atLowerCornerOf(facing.getNormal())
+					.scale(trayOffset))
+				.translate(.5f, .5f, .5f)
 				.rotateYDegrees(facing.toYRot())
 				.translate(0, 2 / 16f, 0)
 				.scale(1.49f, 1.49f, 1.49f);
@@ -70,9 +71,22 @@ public class PackagerRenderer extends SmartBlockEntityRenderer<PackagerBlockEnti
 				.getItemRenderer()
 				.renderStatic(null, renderedBox, ItemDisplayContext.FIXED, false, ms, buffer, be.getLevel(), light,
 					overlay, 0);
+			ms.popPose();
 		}
+	}
 
-		ms.popPose();
+	public static PartialModel getTrayModel(BlockState blockState) {
+		return AllBlocks.PACKAGER.has(blockState) ? AllPartialModels.PACKAGER_TRAY_REGULAR
+			: AllPartialModels.PACKAGER_TRAY_DEFRAG;
+	}
+
+	public static PartialModel getHatchModel(PackagerBlockEntity be) {
+		return isHatchOpen(be) ? AllPartialModels.PACKAGER_HATCH_OPEN : AllPartialModels.PACKAGER_HATCH_CLOSED;
+	}
+
+	public static boolean isHatchOpen(PackagerBlockEntity be) {
+		return be.animationTicks > (be.animationInward ? 1 : 5)
+			&& be.animationTicks < PackagerBlockEntity.CYCLE - (be.animationInward ? 5 : 1);
 	}
 
 }

@@ -59,6 +59,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -170,7 +171,7 @@ public class FactoryPanelBlock extends FaceAttachedHorizontalDirectionalBlock
 		Player player = context.getPlayer();
 		PanelSlot slot = getTargetedSlot(pos, state, context.getClickLocation());
 
-		if (!(world instanceof ServerLevel serverLevel))
+		if (!(world instanceof ServerLevel))
 			return InteractionResult.SUCCESS;
 
 		return onBlockEntityUse(world, pos, be -> {
@@ -313,6 +314,8 @@ public class FactoryPanelBlock extends FaceAttachedHorizontalDirectionalBlock
 	@Override
 	public VoxelShape getCollisionShape(BlockState pState, BlockGetter pLevel, BlockPos pPos,
 		CollisionContext pContext) {
+		if (pContext instanceof EntityCollisionContext ecc && ecc.getEntity() == null)
+			return getShape(pState, pLevel, pPos, pContext);
 		return Shapes.empty();
 	}
 

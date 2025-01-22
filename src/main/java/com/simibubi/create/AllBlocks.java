@@ -1957,9 +1957,9 @@ public class AllBlocks {
 	public static final BlockEntry<RedstoneRequesterBlock> REDSTONE_REQUESTER =
 		REGISTRATE.block("redstone_requester", RedstoneRequesterBlock::new)
 			.initialProperties(SharedProperties::stone)
-			.properties(p -> p.sound(SoundType.WOOD))
+			.properties(p -> p.sound(SoundType.NETHERITE_BLOCK))
 			.properties(p -> p.noOcclusion())
-			.transform(axeOrPickaxe())
+			.transform(pickaxeOnly())
 			.blockstate((c, p) -> BlockStateGen.horizontalAxisBlock(c, p, AssetLookup.forPowered(c, p)))
 			.item(RedstoneRequesterBlockItem::new)
 			.transform(customItemModel("_", "block"))
@@ -2008,6 +2008,7 @@ public class AllBlocks {
 			.recipe((c, p) -> p.stonecutting(DataIngredient.items(AllItems.ANDESITE_ALLOY.get()),
 				RecipeCategory.DECORATIONS, c::get, 2))
 			.transform(pickaxeOnly())
+			.lang("Andesite Table Cover")
 			.register();
 
 	public static final BlockEntry<TableClothBlock> BRASS_TABLE_CLOTH =
@@ -2018,6 +2019,7 @@ public class AllBlocks {
 			.recipe((c, p) -> p.stonecutting(DataIngredient.tag(AllTags.commonItemTag("ingots/brass")),
 				RecipeCategory.DECORATIONS, c::get, 2))
 			.transform(pickaxeOnly())
+			.lang("Brass Table Cover")
 			.register();
 
 	public static final BlockEntry<TableClothBlock> COPPER_TABLE_CLOTH =
@@ -2027,6 +2029,7 @@ public class AllBlocks {
 			.recipe((c, p) -> p.stonecutting(DataIngredient.tag(Tags.Items.INGOTS_COPPER),
 				RecipeCategory.DECORATIONS, c::get, 2))
 			.transform(pickaxeOnly())
+			.lang("Copper Table Cover")
 			.register();
 
 	public static final BlockEntry<DisplayLinkBlock> DISPLAY_LINK =

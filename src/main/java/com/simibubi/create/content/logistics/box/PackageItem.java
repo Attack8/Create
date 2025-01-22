@@ -355,11 +355,8 @@ public class PackageItem extends Item {
 			SoundSource.NEUTRAL, 0.5F, 0.5F);
 
 		ItemStack copy = stack.copy();
-		stack.shrink(1);
-
-		if (stack.isEmpty())
-			player.getInventory()
-				.removeItem(stack);
+		if (!player.getAbilities().instabuild)
+			stack.shrink(1);
 
 		Vec3 vec = new Vec3(entity.getX(), entity.getY() + entity.getBoundingBox()
 			.getYsize() / 2f, entity.getZ());
