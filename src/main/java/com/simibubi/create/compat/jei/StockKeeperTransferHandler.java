@@ -38,7 +38,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 @ParametersAreNonnullByDefault
@@ -70,19 +72,22 @@ public class StockKeeperTransferHandler implements IRecipeTransferHandler<StockK
 	public @Nullable IRecipeTransferError transferRecipe(StockKeeperRequestMenu container, Object object,
 		IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
 		Level level = player.level();
-		if (!(object instanceof Recipe<?> recipe))
+		if (!(object instanceof RecipeHolder<?> recipe))
 			return null;
 		MutableObject<IRecipeTransferError> result = new MutableObject<>();
 		if (level.isClientSide())
+			//noinspection unchecked
 			CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> result
-				.setValue(transferRecipeOnClient(container, recipe, recipeSlots, player, maxTransfer, doTransfer)));
+				.setValue(transferRecipeOnClient(container, (RecipeHolder<Recipe<?>>) recipe, recipeSlots, player, maxTransfer, doTransfer)));
 		return result.getValue();
 	}
 
-	private @Nullable IRecipeTransferError transferRecipeOnClient(StockKeeperRequestMenu container, Recipe<?> recipe,
+	private @Nullable IRecipeTransferError transferRecipeOnClient(StockKeeperRequestMenu container, RecipeHolder<Recipe<?>> recipeHolder,
 		IRecipeSlotsView recipeSlots, Player player, boolean maxTransfer, boolean doTransfer) {
 		if (!(container.screenReference instanceof StockKeeperRequestScreen screen))
 			return null;
+
+		Recipe<?> recipe = recipeHolder.value();
 
 		for (CraftableBigItemStack cbis : screen.recipesToOrder)
 			if (cbis.recipe == recipe)
