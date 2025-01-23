@@ -45,6 +45,7 @@ public class AddressEditBox extends EditBox {
 			return true;
 		if (isFocused() && pKeyCode == GLFW.GLFW_KEY_ENTER) {
 			setFocused(false);
+			moveCursorToEnd(false);
 			mouseClicked(0, 0, 0);
 			return true;
 		}
@@ -60,11 +61,29 @@ public class AddressEditBox extends EditBox {
 
 	@Override
 	public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
-		if (super.mouseClicked(pMouseX, pMouseY, pButton))
+		boolean wasFocused = isFocused();
+		if (super.mouseClicked(pMouseX, pMouseY, pButton)) {
+			if (!wasFocused) {
+				setHighlightPos(getValue().length());
+				setCursorPosition(0);
+			}
 			return true;
+		}
 		if (destinationSuggestions.mouseClicked((int) pMouseX, (int) pMouseY, pButton))
 			return true;
 		return false;
+	}
+	
+	@Override
+	public void setValue(String text) {
+		super.setValue(text);
+	}
+	
+	@Override
+	public void setFocused(boolean focused) {
+		super.setFocused(focused);
+		if (!focused)
+			setHighlightPos(getCursorPosition());
 	}
 
 	@Override

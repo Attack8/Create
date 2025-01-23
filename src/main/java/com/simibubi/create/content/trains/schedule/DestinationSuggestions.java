@@ -47,7 +47,7 @@ public class DestinationSuggestions extends CommandSuggestions {
 
 	@Override
 	public void updateCommandInfo() {
-		String value = this.textBox.getValue();
+		String value = textBox.getValue().substring(0, textBox.getCursorPosition());
 		if (value.equals(previous))
 			return;
 		if (!active) {
@@ -63,7 +63,7 @@ public class DestinationSuggestions extends CommandSuggestions {
 					.startsWith(value.toLowerCase()))
 			.sorted((ia1, ia2) -> Integer.compare(ia1.getFirst(), ia2.getFirst()))
 			.map(IntAttached::getValue)
-			.map(s -> new Suggestion(new StringRange(0, s.length()), s))
+			.map(s -> new Suggestion(new StringRange(0, 1000), s))
 			.toList();
 
 		showSuggestions(false);

@@ -23,7 +23,7 @@ public record ContraptionItemPacket(int entityId, BlockPos localPos, List<ItemSt
 	public static final StreamCodec<RegistryFriendlyByteBuf, ContraptionItemPacket> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.INT, ContraptionItemPacket::entityId,
 		BlockPos.STREAM_CODEC, ContraptionItemPacket::localPos,
-		CatnipStreamCodecBuilders.list(ItemStack.STREAM_CODEC), ContraptionItemPacket::containedItems,
+		CatnipStreamCodecBuilders.list(ItemStack.OPTIONAL_STREAM_CODEC), ContraptionItemPacket::containedItems,
 		ContraptionItemPacket::new
 	);
 

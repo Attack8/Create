@@ -9,7 +9,6 @@ import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.EntityElement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
@@ -66,7 +65,7 @@ public class PonderHilo {
 		scene.addInstruction(s -> {
 			Vec3 vec3 = Vec3.atCenterOf(pos);
 			s.getWorld()
-				.addParticle(ParticleTypes.NOTE, vec3.x, vec3.y + 1, vec3.z, 0, 0, 0);
+				.addParticle(new WiFiParticle.Data(), vec3.x, vec3.y, vec3.z, 1, 1, 1);
 		});
 	}
 

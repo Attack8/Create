@@ -53,7 +53,7 @@ public class ChainConveyorInteractionHandler {
 
 		Minecraft mc = Minecraft.getInstance();
 		ItemStack mainHandItem = mc.player.getMainHandItem();
-		boolean isWrench = AllItemTags.WRENCH.matches(mainHandItem);
+		boolean isWrench = AllItemTags.CHAIN_RIDEABLE.matches(mainHandItem);
 		boolean dismantling = isWrench && mc.player.isShiftKeyDown();
 		double range = mc.player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE) + 1;
 
@@ -114,7 +114,7 @@ public class ChainConveyorInteractionHandler {
 	private static boolean isActive() {
 		Minecraft mc = Minecraft.getInstance();
 		ItemStack mainHandItem = mc.player.getMainHandItem();
-		return AllItemTags.WRENCH.matches(mainHandItem) || AllBlocks.PACKAGE_FROGPORT.isIn(mainHandItem)
+		return AllItemTags.CHAIN_RIDEABLE.matches(mainHandItem) || AllBlocks.PACKAGE_FROGPORT.isIn(mainHandItem)
 			|| PackageItem.isPackage(mainHandItem);
 	}
 
@@ -125,7 +125,7 @@ public class ChainConveyorInteractionHandler {
 		Minecraft mc = Minecraft.getInstance();
 		ItemStack mainHandItem = mc.player.getMainHandItem();
 
-		if (AllItemTags.WRENCH.matches(mainHandItem)) {
+		if (AllItemTags.CHAIN_RIDEABLE.matches(mainHandItem)) {
 			if (!mc.player.isShiftKeyDown()) {
 				ChainConveyorRidingHandler.embark(selectedLift, selectedChainPosition, selectedConnection);
 				return true;

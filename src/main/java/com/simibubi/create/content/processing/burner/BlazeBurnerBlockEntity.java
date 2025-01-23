@@ -15,12 +15,12 @@ import com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
-import dev.engine_room.flywheel.api.backend.BackendManager;
-import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.math.VecHelper;
+import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -140,7 +140,7 @@ public class BlazeBurnerBlockEntity extends SmartBlockEntity {
 	@OnlyIn(Dist.CLIENT)
 	private boolean shouldTickAnimation() {
 		// Offload the animation tick to the visual when flywheel in enabled
-		return !BackendManager.isBackendOn();
+		return !VisualizationManager.supportsVisualization(level);
 	}
 
 	@OnlyIn(Dist.CLIENT)

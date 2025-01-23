@@ -5,13 +5,12 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
 
-import dev.engine_room.flywheel.api.backend.BackendManager;
-import dev.engine_room.flywheel.api.model.Model;
+import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -38,8 +37,8 @@ public class PackagerRenderer extends SmartBlockEntityRenderer<PackagerBlockEnti
 		BlockState blockState = be.getBlockState();
 		Direction facing = blockState.getValue(PackagerBlock.FACING)
 			.getOpposite();
-
-		if (!BackendManager.isBackendOn()) {
+		
+		if (!VisualizationManager.supportsVisualization(be.getLevel())) {
 			var hatchModel = getHatchModel(be);
 
 			SuperByteBuffer sbb = CachedBuffers.partial(hatchModel, blockState);

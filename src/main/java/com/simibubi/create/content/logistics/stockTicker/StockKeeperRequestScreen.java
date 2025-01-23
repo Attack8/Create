@@ -18,6 +18,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllPartialModels;
@@ -38,24 +39,27 @@ import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
-import net.createmod.catnip.gui.UIRenderHelper;
-import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.gui.UIRenderHelper;
+import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -87,7 +91,9 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 			hidden = false;
 			this.y = y;
 		}
-	};
+	}
+
+	;
 
 	private static final AllGuiTextures NUMBERS = AllGuiTextures.NUMBERS;
 	private static final AllGuiTextures HEADER = AllGuiTextures.STOCK_KEEPER_REQUEST_HEADER;
@@ -192,7 +198,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 					if (!seatEntity.getPassengers()
 						.isEmpty()
 						&& seatEntity.getPassengers()
-							.get(0) instanceof LivingEntity keeper)
+						.get(0) instanceof LivingEntity keeper)
 						stockKeeper = new WeakReference<>(keeper);
 				if (yOffset == 0 && blockEntity.getLevel()
 					.getBlockEntity(seatPos) instanceof BlazeBurnerBlockEntity bbbe) {
@@ -281,7 +287,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 			ItemStack stack = blockEntity.categories.get(i);
 			CategoryEntry entry = new CategoryEntry(stack, stack.isEmpty() ? ""
 				: stack.getHoverName()
-					.getString(),
+				.getString(),
 				0);
 			entry.hidden = hiddenCategories.contains(i);
 			categories.add(entry);
@@ -486,13 +492,15 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		LivingEntity keeper = stockKeeper.get();
 		if (keeper != null && keeper.isAlive()) {
 			ms.pushPose();
-			ms.translate(0, 0, -300);
+			ms.translate(0, 0, 50);
 			entitySizeOffset = (int) (Math.max(0, keeper.getBoundingBox()
 				.getXsize() - 1) * 50);
+			int entitySizeOffsetY = (int) (Math.max(0, keeper.getBoundingBox()
+				.getYsize() - 1) * 25);
 			int entityX = x - 35 - entitySizeOffset;
-			int entityY = y + windowHeight - 17;
-			InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, entityX, entityY, 50, entityX - mouseX,
-				Mth.clamp(entityY - mouseY, -50, 10), 0, mouseX, mouseY, keeper);
+			int entityY = y + windowHeight - 47 - entitySizeOffsetY;
+			InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, entityX - 100, entityY - 100, entityX + 100,
+				entityY + 100, 50, 0, mouseX, Mth.clamp(mouseY, entityY - 50, entityY + 10), keeper);
 			ms.popPose();
 		}
 
@@ -500,8 +508,8 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		if (keeperBE != null && !keeperBE.isRemoved()) {
 			ms.pushPose();
 			int entityX = x - 35;
-			int entityY = y + windowHeight - 23;
-			ms.translate(entityX, entityY, -100);
+			int entityY = y + windowHeight - 43;
+			ms.translate(entityX, entityY, -0);
 			ms.mulPose(Axis.XP.rotationDegrees(-22.5f));
 			ms.mulPose(Axis.YP.rotationDegrees(-45));
 			ms.scale(48, -48, 48);
@@ -513,6 +521,13 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 			PartialModel drawHat = AllPartialModels.LOGISTICS_HAT;
 			int hashCode = keeperBE.hashCode();
 			Lighting.setupForEntityInInventory();
+
+			VertexConsumer cutout = graphics.bufferSource().getBuffer(RenderType.cutoutMipped());
+			CachedBuffers.partial(AllPartialModels.BLAZE_CAGE, keeperBE.getBlockState())
+				.rotateCentered(horizontalAngle + Mth.PI, Direction.UP)
+				.light(LightTexture.FULL_BRIGHT)
+				.renderInto(ms, cutout);
+
 			BlazeBurnerRenderer.renderShared(ms, null, graphics.bufferSource(), minecraft.level,
 				keeperBE.getBlockState(), heatLevel, animation, horizontalAngle, canDrawFlame, drawGoggles, drawHat,
 				hashCode);
@@ -755,8 +770,8 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 			boolean orderHovered = hoveredSlot.getFirst() == -1;
 			BigItemStack entry = recipeHovered ? recipesToOrder.get(slot)
 				: orderHovered ? itemsToOrder.get(slot)
-					: displayedItems.get(hoveredSlot.getFirst())
-						.get(slot);
+				: displayedItems.get(hoveredSlot.getFirst())
+				.get(slot);
 
 			if (recipeHovered) {
 				ArrayList<Component> lines =
@@ -791,7 +806,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 	}
 
 	private void renderItemEntry(GuiGraphics graphics, float scale, BigItemStack entry, boolean isStackHovered,
-		boolean isRenderingOrders) {
+								 boolean isRenderingOrders) {
 
 		int customCount = entry.count;
 		if (!isRenderingOrders) {
@@ -839,7 +854,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		count = customCount;
 		String text = count >= 1000000 ? (count / 1000000) + "m"
 			: count >= 10000 ? (count / 1000) + "k"
-				: count >= 1000 ? ((count * 10) / 1000) / 10f + "k" : count >= 100 ? count + "" : " " + count;
+			: count >= 1000 ? ((count * 10) / 1000) / 10f + "k" : count >= 100 ? count + "" : " " + count;
 
 		if (count >= BigItemStack.INF)
 			text = "+";
@@ -854,24 +869,24 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 			int spriteWidth = NUMBERS.getWidth();
 
 			switch (c) {
-			case ' ':
-				x += 4;
-				continue;
-			case '.':
-				spriteWidth = 3;
-				xOffset = 60;
-				break;
-			case 'k':
-				xOffset = 64;
-				break;
-			case 'm':
-				spriteWidth = 7;
-				xOffset = 70;
-				break;
-			case '+':
-				spriteWidth = 9;
-				xOffset = 84;
-				break;
+				case ' ':
+					x += 4;
+					continue;
+				case '.':
+					spriteWidth = 3;
+					xOffset = 60;
+					break;
+				case 'k':
+					xOffset = 64;
+					break;
+				case 'm':
+					spriteWidth = 7;
+					xOffset = 70;
+					break;
+				case '+':
+					spriteWidth = 9;
+					xOffset = 84;
+					break;
 			}
 
 			RenderSystem.enableBlend();
@@ -1073,8 +1088,8 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		boolean recipeClicked = hoveredSlot.getFirst() == -2;
 		BigItemStack entry = recipeClicked ? recipesToOrder.get(hoveredSlot.getSecond())
 			: orderClicked ? itemsToOrder.get(hoveredSlot.getSecond())
-				: displayedItems.get(hoveredSlot.getFirst())
-					.get(hoveredSlot.getSecond());
+			: displayedItems.get(hoveredSlot.getFirst())
+			.get(hoveredSlot.getSecond());
 
 		ItemStack itemStack = entry.stack;
 		int transfer = hasShiftDown() ? itemStack.getMaxStackSize() : hasControlDown() ? 10 : 1;
@@ -1141,8 +1156,8 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		boolean recipeClicked = hoveredSlot.getFirst() == -2;
 		BigItemStack entry = recipeClicked ? recipesToOrder.get(hoveredSlot.getSecond())
 			: orderClicked ? itemsToOrder.get(hoveredSlot.getSecond())
-				: displayedItems.get(hoveredSlot.getFirst())
-					.get(hoveredSlot.getSecond());
+			: displayedItems.get(hoveredSlot.getFirst())
+			.get(hoveredSlot.getSecond());
 
 		boolean remove = scrollY < 0;
 		int transfer = Mth.ceil(Math.abs(scrollY)) * (hasControlDown() ? 10 : 1);
@@ -1434,7 +1449,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 	}
 
 	private Pair<Integer, List<List<BigItemStack>>> maxCraftable(CraftableBigItemStack cbis, InventorySummary summary,
-		Function<ItemStack, Integer> countModifier, int newTypeLimit) {
+																 Function<ItemStack, Integer> countModifier, int newTypeLimit) {
 		List<Ingredient> ingredients = cbis.getIngredients();
 		List<List<BigItemStack>> validEntriesByIngredient = new ArrayList<>();
 		List<ItemStack> visited = new ArrayList<>();
