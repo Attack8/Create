@@ -45,7 +45,7 @@ public class AddressEditBox extends EditBox {
 			return true;
 		if (isFocused() && pKeyCode == GLFW.GLFW_KEY_ENTER) {
 			setFocused(false);
-			moveCursorToEnd();
+			moveCursorToEnd(false);
 			mouseClicked(0, 0, 0);
 			return true;
 		}

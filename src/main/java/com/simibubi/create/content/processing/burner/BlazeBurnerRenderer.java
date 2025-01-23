@@ -87,8 +87,6 @@ public class BlazeBurnerRenderer extends SafeBlockEntityRenderer<BlazeBurnerBloc
 		float offset2 = Mth.sin((float) ((renderTick / 16f + Math.PI / 2) % (2 * Math.PI))) / offsetMult;
 		float headY = offset - (animation * .75f);
 
-		VertexConsumer solid = bufferSource.getBuffer(RenderType.solid());
-
 		ms.pushPose();
 
 		var blazeModel = getBlazeModel(heatLevel, blockAbove);
@@ -97,7 +95,7 @@ public class BlazeBurnerRenderer extends SafeBlockEntityRenderer<BlazeBurnerBloc
 		if (modelTransform != null)
 			blazeBuffer.transform(modelTransform);
 		blazeBuffer.translate(0, headY, 0);
-		draw(blazeBuffer, horizontalAngle, ms, solid);
+		draw(blazeBuffer, horizontalAngle, ms, bufferSource.getBuffer(RenderType.solid()));
 
 		if (drawGoggles) {
 			PartialModel gogglesModel = blazeModel == AllPartialModels.BLAZE_INERT
@@ -107,7 +105,7 @@ public class BlazeBurnerRenderer extends SafeBlockEntityRenderer<BlazeBurnerBloc
 			if (modelTransform != null)
 				gogglesBuffer.transform(modelTransform);
 			gogglesBuffer.translate(0, headY + 8 / 16f, 0);
-			draw(gogglesBuffer, horizontalAngle, ms, solid);
+			draw(gogglesBuffer, horizontalAngle, ms, bufferSource.getBuffer(RenderType.solid()));
 		}
 
 		if (drawHat != null) {
@@ -142,14 +140,14 @@ public class BlazeBurnerRenderer extends SafeBlockEntityRenderer<BlazeBurnerBloc
 				rodsBuffer.transform(modelTransform);
 			rodsBuffer.translate(0, offset1 + animation + .125f, 0)
 					.light(LightTexture.FULL_BRIGHT)
-					.renderInto(ms, solid);
+					.renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
 
 			SuperByteBuffer rodsBuffer2 = CachedBuffers.partial(rodsModel2, blockState);
 			if (modelTransform != null)
 				rodsBuffer2.transform(modelTransform);
 			rodsBuffer2.translate(0, offset2 + animation - 3 / 16f, 0)
 					.light(LightTexture.FULL_BRIGHT)
-					.renderInto(ms, solid);
+					.renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
 		}
 
 		if (canDrawFlame && blockAbove) {

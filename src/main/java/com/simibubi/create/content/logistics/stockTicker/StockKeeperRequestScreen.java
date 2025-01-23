@@ -508,8 +508,8 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		if (keeperBE != null && !keeperBE.isRemoved()) {
 			ms.pushPose();
 			int entityX = x - 35;
-			int entityY = y + windowHeight - 23;
-			ms.translate(entityX, entityY, -100);
+			int entityY = y + windowHeight - 43;
+			ms.translate(entityX, entityY, -0);
 			ms.mulPose(Axis.XP.rotationDegrees(-22.5f));
 			ms.mulPose(Axis.YP.rotationDegrees(-45));
 			ms.scale(48, -48, 48);
