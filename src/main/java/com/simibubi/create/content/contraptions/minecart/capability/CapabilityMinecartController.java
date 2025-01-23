@@ -25,11 +25,11 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-
-import net.neoforged.neoforge.event.entity.EntityEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.ChunkEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 public class CapabilityMinecartController {
 
@@ -76,38 +76,38 @@ public class CapabilityMinecartController {
 			if (cart.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
 				MinecartController controller = cart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
 				carts.put(uniqueID, controller);
-
-				if (cart.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
-					MinecartController mc = cart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
-					if (mc.isLeadingCoupling()) {
-						cartsWithCoupling.add(uniqueID);
-					}
-				}
+				if (controller.isLeadingCoupling())
+					cartsWithCoupling.add(uniqueID);
 				if (!world.isClientSide && controller != null)
 					controller.sendData();
 			}
-
-			queuedRemovals.clear();
-			queued.clear();
-
-			List<UUID> toRemove = new ArrayList<>();
-
-			for (Entry<UUID, MinecartController> entry : carts.entrySet()) {
-				MinecartController controller = entry.getValue();
-				if (controller != null) {
-					if (controller.isPresent()) {
-						controller.tick();
-						continue;
-					}
-				}
-				toRemove.add(entry.getKey());
-			}
-
-			for (UUID uuid : toRemove) {
-				keySet.remove(uuid);
-				cartsWithCoupling.remove(uuid);
-			}
 		}
+		
+		queuedRemovals.clear();
+		queued.clear();
+
+		List<UUID> toRemove = new ArrayList<>();
+
+		for (Entry<UUID, MinecartController> entry : carts.entrySet()) {
+			MinecartController controller = entry.getValue();
+			if (controller != null && controller.isPresent())
+				continue;
+			toRemove.add(entry.getKey());
+		}
+
+		for (UUID uuid : toRemove) {
+			keySet.remove(uuid);
+			cartsWithCoupling.remove(uuid);
+		}
+	}
+	
+	public static void entityTick(EntityTickEvent.Post event) {
+		Entity entity = event.getEntity();
+		if (!(entity instanceof AbstractMinecart))
+			return;
+		MinecartController data = entity.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+		if (data != null)
+			data.tick();
 	}
 
 	public static void onChunkUnloaded(ChunkEvent.Unload event) {
@@ -177,15 +177,17 @@ public class CapabilityMinecartController {
 
 	/* Capability management */
 
-	public static void attach(EntityEvent.EntityConstructing event) {
+	public static void attach(EntityJoinLevelEvent event) {
 		Entity entity = event.getEntity();
 		if (!(entity instanceof AbstractMinecart abstractMinecart))
+			return;
+		if (event.loadedFromDisk())
 			return;
 
 		MinecartController controller = new MinecartController(abstractMinecart);
 		abstractMinecart.setData(AllAttachmentTypes.MINECART_CONTROLLER, controller);
-
-		queuedAdditions.get(entity.level()).add(abstractMinecart);
+		queuedAdditions.get(entity.level())
+			.add(abstractMinecart);
 	}
 
 	public static void onEntityDeath(EntityLeaveLevelEvent event) {
@@ -199,7 +201,8 @@ public class CapabilityMinecartController {
 			return;
 
 		if (entity.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
-			entity.getData(AllAttachmentTypes.MINECART_CONTROLLER).sendData(abstractMinecart);
+			entity.getData(AllAttachmentTypes.MINECART_CONTROLLER)
+				.sendData(abstractMinecart);
 		}
 	}
 }

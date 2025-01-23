@@ -1,24 +1,20 @@
 package com.simibubi.create.content.contraptions.minecart.capability;
 
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
-
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.AllAttachmentTypes;
 import com.simibubi.create.AllPackets;
-import net.createmod.catnip.net.base.ClientboundPacketPayload;
 
 import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -39,13 +35,12 @@ public record MinecartControllerUpdatePacket(int entityId, @Nullable CompoundTag
 		Entity entityByID = player.clientLevel.getEntity(entityId);
 		if (entityByID == null)
 			return;
-		if (entityByID.hasData(AllAttachmentTypes.MINECART_CONTROLLER) && entityByID instanceof AbstractMinecart cart) {
+		if (entityByID.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
 			if (nbt == null) {
 				entityByID.setData(AllAttachmentTypes.MINECART_CONTROLLER, MinecartController.EMPTY);
 			} else {
-				MinecartController controller = new MinecartController(cart);
+				MinecartController controller = entityByID.getData(AllAttachmentTypes.MINECART_CONTROLLER);
 				controller.deserializeNBT(player.registryAccess(), nbt);
-				cart.setData(AllAttachmentTypes.MINECART_CONTROLLER, controller);
 			}
 		}
 	}

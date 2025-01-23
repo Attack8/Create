@@ -150,6 +150,8 @@ public class CommonEvents {
 	// FIXME 1.21: should this be pre or post?
 	@SubscribeEvent
 	public static void onEntityTick(EntityTickEvent.Post event) {
+		CapabilityMinecartController.entityTick(event);
+		
 		if (event.getEntity() instanceof LivingEntity livingEntity) {
 			Level level = livingEntity.level();
 
@@ -221,13 +223,15 @@ public class CommonEvents {
 	}
 
 	@SubscribeEvent
-	public static void attachData(EntityEvent.EntityConstructing event) {
+	public static void attachData(EntityJoinLevelEvent event) {
 		CapabilityMinecartController.attach(event);
 	}
 
 	@SubscribeEvent
 	public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
-		CapabilityMinecartController.onEntityDeath(event);
+		if (!event.getEntity()
+			.isAlive())
+			CapabilityMinecartController.onEntityDeath(event);
 	}
 
 	@SubscribeEvent
