@@ -486,13 +486,15 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		LivingEntity keeper = stockKeeper.get();
 		if (keeper != null && keeper.isAlive()) {
 			ms.pushPose();
-			ms.translate(0, 0, -300);
+			ms.translate(0, 0, 50);
 			entitySizeOffset = (int) (Math.max(0, keeper.getBoundingBox()
 				.getXsize() - 1) * 50);
+			int entitySizeOffsetY = (int) (Math.max(0, keeper.getBoundingBox()
+				.getYsize() - 1) * 25);
 			int entityX = x - 35 - entitySizeOffset;
-			int entityY = y + windowHeight - 17;
-			InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, entityX, entityY, 50, entityX - mouseX,
-				Mth.clamp(entityY - mouseY, -50, 10), 0, mouseX, mouseY, keeper);
+			int entityY = y + windowHeight - 47 - entitySizeOffsetY;
+			InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, entityX - 100, entityY - 100, entityX + 100,
+				entityY + 100, 50, 0, mouseX, Mth.clamp(mouseY, entityY - 50, entityY + 10), keeper);
 			ms.popPose();
 		}
 
