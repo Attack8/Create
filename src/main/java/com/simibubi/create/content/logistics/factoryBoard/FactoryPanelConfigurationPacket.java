@@ -23,7 +23,7 @@ public class FactoryPanelConfigurationPacket extends BlockEntityConfigurationPac
 		FactoryPanelPosition.STREAM_CODEC, packet -> packet.position,
 		ByteBufCodecs.STRING_UTF8, packet -> packet.address,
 	    ByteBufCodecs.map(HashMap::new, FactoryPanelPosition.STREAM_CODEC, ByteBufCodecs.INT), packet -> packet.inputAmounts,
-		ItemStack.LIST_STREAM_CODEC, packet -> packet.craftingArrangement,
+		ItemStack.OPTIONAL_LIST_STREAM_CODEC, packet -> packet.craftingArrangement,
 		ByteBufCodecs.VAR_INT, packet -> packet.outputAmount,
 		ByteBufCodecs.VAR_INT, packet -> packet.promiseClearingInterval,
 		CatnipStreamCodecBuilders.nullable(FactoryPanelPosition.STREAM_CODEC), packet -> packet.removeConnection,

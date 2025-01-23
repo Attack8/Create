@@ -3,7 +3,6 @@ package com.simibubi.create.content.trains.station;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.decoration.slidingDoor.DoorControl;
 import com.simibubi.create.foundation.networking.BlockEntityConfigurationPacket;
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import io.netty.buffer.ByteBuf;

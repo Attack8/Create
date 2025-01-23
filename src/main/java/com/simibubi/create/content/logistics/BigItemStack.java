@@ -19,7 +19,7 @@ public class BigItemStack {
 	).apply(i, BigItemStack::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, BigItemStack> STREAM_CODEC = StreamCodec.composite(
-		ItemStack.STREAM_CODEC, s -> s.stack,
+		ItemStack.OPTIONAL_STREAM_CODEC, s -> s.stack,
 		ByteBufCodecs.VAR_INT, s -> s.count,
 		BigItemStack::new
 	);
