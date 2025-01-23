@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -215,7 +216,9 @@ public class ConnectedInputHandler {
 			ListTag list = new ListTag();
 			data.forEach(pos -> {
 				CompoundTag data = new CompoundTag();
-				data.put("Pos", NbtUtils.writeBlockPos(pos));
+				data.putInt("X", pos.getX());
+				data.putInt("Y", pos.getY());
+				data.putInt("Z", pos.getZ());
 				list.add(data);
 			});
 			nbt.put("Data", list);
@@ -223,9 +226,8 @@ public class ConnectedInputHandler {
 
 		public void read(CompoundTag nbt) {
 			isController = nbt.getBoolean("Controller");
-			data.clear();
-			nbt.getList("Data", Tag.TAG_COMPOUND)
-				.forEach(inbt -> data.add(NBTHelper.readBlockPos((CompoundTag) inbt, "Pos")));
+			data = NBTHelper.readCompoundList(nbt.getList("Data", Tag.TAG_COMPOUND),
+				c -> new BlockPos(c.getInt("X"), c.getInt("Y"), c.getInt("Z")));
 
 			// nbt got wiped -> reset
 			if (data.isEmpty()) {
