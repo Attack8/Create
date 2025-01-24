@@ -420,7 +420,7 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 		lastKnownPos = null;
 		if (compound.contains("LastKnownPos"))
 			lastKnownPos = NBTHelper.readBlockPos(compound, "LastKnownPos");
-		
+
 		controller = null;
 		if (compound.contains("Controller"))
 			controller = NBTHelper.readBlockPos(compound, "Controller");
@@ -500,11 +500,6 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 		if (queuedSync)
 			compound.putBoolean("LazySync", true);
 		forceFluidLevelUpdate = false;
-	}
-
-	@Override
-	public void invalidate() {
-		super.invalidate();
 	}
 
 	@Override

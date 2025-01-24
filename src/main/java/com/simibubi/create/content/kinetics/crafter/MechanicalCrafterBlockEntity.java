@@ -543,8 +543,9 @@ public class MechanicalCrafterBlockEntity extends KineticBlockEntity {
 	public void connectivityChanged() {
 		reRender = true;
 		sendData();
-		invCap = getInvCapability();
+		invCap = null;
 		invalidateCapabilities();
+		getInvCapability();
 	}
 
 	public Inventory getInventory() {
