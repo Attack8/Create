@@ -493,6 +493,11 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	}
 
 	@Override
+	public Vec3 getVehicleAttachmentPoint(Entity entity) {
+		return entity instanceof AbstractContraptionEntity ? Vec3.ZERO : new Vec3(0,0.25,0);
+	}
+	
+	@Override
 	public Vec3 getAnchorVec() {
 		Vec3 anchorVec = super.getAnchorVec();
 		return anchorVec.subtract(.5, 0, .5);
@@ -558,8 +563,6 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	// has to adjust aswell
 	@OnlyIn(Dist.CLIENT)
 	private void repositionOnCart(PoseStack matrixStack, float partialTicks, Entity ridingEntity) {
-		matrixStack.translate(0, -.2f, 0);
-
 		Vec3 cartPos = getCartOffset(partialTicks, ridingEntity);
 
 		if (cartPos == Vec3.ZERO)

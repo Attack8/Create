@@ -43,6 +43,7 @@ import com.simibubi.create.content.logistics.depot.EjectorBlockEntity;
 import com.simibubi.create.content.logistics.packagePort.frogport.FrogportBlockEntity;
 import com.simibubi.create.content.logistics.packagePort.postbox.PostboxBlockEntity;
 import com.simibubi.create.content.logistics.packager.PackagerBlockEntity;
+import com.simibubi.create.content.logistics.packager.repackager.RepackagerBlockEntity;
 import com.simibubi.create.content.logistics.stockTicker.StockTickerBlockEntity;
 import com.simibubi.create.content.logistics.tunnel.BeltTunnelBlockEntity;
 import com.simibubi.create.content.logistics.tunnel.BrassTunnelBlockEntity;
@@ -313,6 +314,7 @@ public class CommonEvents {
 			DisplayLinkBlockEntity.registerCapabilities(event);
 			StockTickerBlockEntity.registerCapabilities(event);
 			PackagerBlockEntity.registerCapabilities(event);
+			RepackagerBlockEntity.registerCapabilities(event);
 			PostboxBlockEntity.registerCapabilities(event);
 			FrogportBlockEntity.registerCapabilities(event);
 		}

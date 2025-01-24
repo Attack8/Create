@@ -1,7 +1,6 @@
 package com.simibubi.create.content.logistics.packager;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +69,11 @@ public class PackageDefragmenter {
 			}
 		}
 
-		List<BigItemStack> orderedStacks =
-			orderContext == null ? Collections.emptyList() : new ArrayList<>(orderContext.stacks());
+		List<BigItemStack> orderedStacks = new ArrayList<>();
+		if (orderContext != null)
+			for (BigItemStack stack : orderContext.stacks())
+				orderedStacks.add(new BigItemStack(stack.stack, stack.count));
+
 		List<ItemStack> outputSlots = new ArrayList<>();
 
 		Repack: while (true) {
@@ -100,7 +102,8 @@ public class PackageDefragmenter {
 
 					ItemStack output = entry.stack.copyWithCount(removedAmount);
 					targetAmount -= removedAmount;
-					targetedEntry.count = targetAmount;
+					if (targetedEntry != null)
+						targetedEntry.count = targetAmount;
 					entry.count -= removedAmount;
 					outputSlots.add(output);
 				}

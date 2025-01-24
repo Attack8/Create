@@ -22,7 +22,7 @@ public record PlaceExtendedCurvePacket(boolean mainHand, boolean ctrlDown) imple
 	@Override
 	public void handle(ServerPlayer sender) {
 		ItemStack stack = sender.getItemInHand(mainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
-		if (!AllTags.AllBlockTags.TRACKS.matches(stack) || !stack.has(AllDataComponents.TRACK_EXTENDED_CURVE))
+		if (!AllTags.AllBlockTags.TRACKS.matches(stack))
 			return;
 		stack.set(AllDataComponents.TRACK_EXTENDED_CURVE, true);
 	}

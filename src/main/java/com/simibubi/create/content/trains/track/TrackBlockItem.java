@@ -152,7 +152,9 @@ public class TrackBlockItem extends BlockItem {
 	@OnlyIn(Dist.CLIENT)
 	public static void sendExtenderPacket(PlayerInteractEvent.RightClickBlock event) {
 		ItemStack stack = event.getItemStack();
-		if (!AllTags.AllBlockTags.TRACKS.matches(stack) || !stack.has(AllDataComponents.TRACK_EXTENDED_CURVE))
+		if (!event.getLevel().isClientSide)
+			return;
+		if (!AllTags.AllBlockTags.TRACKS.matches(stack))
 			return;
 		if (Minecraft.getInstance().options.keySprint.isDown())
 			CatnipServices.NETWORK.sendToServer(new PlaceExtendedCurvePacket(event.getHand() == InteractionHand.MAIN_HAND, true));

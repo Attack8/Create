@@ -545,7 +545,6 @@ public class MechanicalCrafterBlockEntity extends KineticBlockEntity {
 		sendData();
 		invCap = null;
 		invalidateCapabilities();
-		getInvCapability();
 	}
 
 	public Inventory getInventory() {
