@@ -16,6 +16,7 @@ import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackH
 import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes;
 import com.simibubi.create.content.kinetics.fan.processing.FanProcessing;
 import com.simibubi.create.content.kinetics.fan.processing.FanProcessingType;
+import com.simibubi.create.content.kinetics.fan.processing.FanProcessingTypeRegistry;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.infrastructure.config.AllConfigs;
@@ -141,7 +142,9 @@ public class AirCurrent {
 			TransportedItemStackHandlerBehaviour handler = pair.getKey();
 			Level world = handler.getWorld();
 			FanProcessingType processingType = pair.getRight();
-
+			if (processingType == AllFanProcessingTypes.NONE)
+				continue;
+			
 			handler.handleProcessingOnAllItems(transported -> {
 				if (world.isClientSide) {
 					processingType.spawnProcessingParticles(world, handler.getWorldPositionOf(transported));

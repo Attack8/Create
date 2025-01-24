@@ -129,7 +129,7 @@ public class BlazeBurnerBlockEntity extends SmartBlockEntity {
 				return null;
 			BlockState blockState = level.getBlockState(pos.relative(direction));
 			if (!AllBlocks.STOCK_TICKER.has(blockState)
-				|| blockState.getValue(StockTickerBlock.FACING) != direction.getOpposite())
+				|| blockState.getValue(StockTickerBlock.FACING) == direction.getOpposite())
 				continue;
 			if (level.getBlockEntity(pos.relative(direction)) instanceof StockTickerBlockEntity stbe)
 				return stbe;

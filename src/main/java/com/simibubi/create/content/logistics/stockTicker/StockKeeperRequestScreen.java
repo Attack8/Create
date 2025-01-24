@@ -240,11 +240,11 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		addWidget(searchBox);
 
 		boolean initial = addressBox == null;
+		String previouslyUsedAddress = initial ? blockEntity.previouslyUsedAddress : addressBox.getValue();
 		addressBox =
 			new AddressEditBox(this, new NoShadowFontWrapper(font), x + 27, y + windowHeight - 36, 90, 10, true);
 		addressBox.setTextColor(0x714A40);
-		if (initial)
-			addressBox.setValue(blockEntity.previouslyUsedAddress);
+		addressBox.setValue(previouslyUsedAddress);
 		addRenderableWidget(addressBox);
 
 		extraAreas = new ArrayList<>();

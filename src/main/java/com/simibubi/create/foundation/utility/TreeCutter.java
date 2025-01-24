@@ -38,6 +38,7 @@ import net.minecraft.world.level.block.KelpPlantBlock;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SugarCaneBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 
@@ -314,7 +315,7 @@ public class TreeCutter {
 
 	private static boolean isLeaf(BlockState state) {
 		for (Property<?> property : state.getValues().keySet())
-			if (property instanceof IntegerProperty && property.getName().equals("distance"))
+			if (property instanceof IntegerProperty && property.getName().equals("distance") && property != BlockStateProperties.STABILITY_DISTANCE)
 				return true;
 		return false;
 	}
