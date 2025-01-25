@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "create:cardboard"
-            ]
+            "items": "create:cardboard"
           }
         ]
       },
@@ -20,12 +18,10 @@
       "color": "#DBA213",
       "translate": "advancement.create.cardboard.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
-      "item": "create:cardboard"
+      "count": 1,
+      "id": "create:cardboard"
     },
-    "show_toast": true,
     "title": {
       "translate": "advancement.create.cardboard"
     }

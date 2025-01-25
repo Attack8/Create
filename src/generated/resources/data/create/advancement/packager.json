@@ -2,7 +2,6 @@
   "parent": "create:cardboard",
   "criteria": {
     "0": {
-      "conditions": {},
       "trigger": "create:packager_builtin"
     }
   },
@@ -12,12 +11,10 @@
       "color": "#DBA213",
       "translate": "advancement.create.packager.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
-      "item": "create:packager"
+      "count": 1,
+      "id": "create:packager"
     },
-    "show_toast": true,
     "title": {
       "translate": "advancement.create.packager"
     }

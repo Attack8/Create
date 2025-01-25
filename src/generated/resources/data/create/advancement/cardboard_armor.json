@@ -2,7 +2,6 @@
   "parent": "create:factory_gauge",
   "criteria": {
     "0": {
-      "conditions": {},
       "trigger": "create:cardboard_armor_builtin"
     }
   },
@@ -12,13 +11,10 @@
       "color": "#DBA213",
       "translate": "advancement.create.cardboard_armor.desc"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
-      "item": "create:cardboard_chestplate",
-      "nbt": "{Damage:0}"
+      "count": 1,
+      "id": "create:cardboard_chestplate"
     },
-    "show_toast": true,
     "title": {
       "translate": "advancement.create.cardboard_armor"
     }
