@@ -76,6 +76,12 @@ public class RepackagerBlockEntity extends PackagerBlockEntity {
 			return;
 
 		attemptToDefrag(targetInv);
+		if (heldBox.isEmpty())
+			return;
+
+		updateSignAddress();
+		if (!signBasedAddress.isBlank())
+			PackageItem.addAddress(heldBox, signBasedAddress);
 	}
 
 	protected void attemptToDefrag(IItemHandler targetInv) {

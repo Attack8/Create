@@ -83,7 +83,11 @@ public class LogisticsManager {
 	public static Multimap<PackagerBlockEntity, PackagingRequest> findPackagersForRequest(UUID freqId,
 		PackageOrder order, @Nullable PackageOrder customContext, @Nullable IItemHandler ignoredHandler,
 		String address) {
-		List<BigItemStack> stacks = order.stacks();
+		List<BigItemStack> stacks = new ArrayList<>();
+		for (BigItemStack stack : order.stacks())
+			if (!stack.stack.isEmpty() && stack.count > 0)
+				stacks.add(stack);
+		
 		Multimap<PackagerBlockEntity, PackagingRequest> requests = HashMultimap.create();
 
 		// Packages need to track their index and successors for successful defrag

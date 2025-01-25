@@ -37,8 +37,7 @@ public class FactoryPanelBlockEntity extends SmartBlockEntity {
 
 	public boolean redraw;
 	public boolean restocker;
-
-	private VoxelShape lastShape;
+	public VoxelShape lastShape;
 
 	public AdvancementBehaviour advancements;
 

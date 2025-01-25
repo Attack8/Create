@@ -24,6 +24,10 @@ class FactoryPanelSlotPositioning extends ValueBoxTransform {
 
 	@Override
 	public Vec3 getLocalOffset(LevelAccessor level, BlockPos pos, BlockState state) {
+		return getCenterOfSlot(state, slot);
+	}
+
+	public static Vec3 getCenterOfSlot(BlockState state, PanelSlot slot) {
 		Vec3 vec = new Vec3(.25 + slot.xOffset * .5, 1.5 / 16f, .25 + slot.yOffset * .5);
 		vec = VecHelper.rotateCentered(vec, 180, Axis.Y);
 		vec = VecHelper.rotateCentered(vec, Mth.RAD_TO_DEG * FactoryPanelBlock.getXRot(state) + 90, Axis.X);

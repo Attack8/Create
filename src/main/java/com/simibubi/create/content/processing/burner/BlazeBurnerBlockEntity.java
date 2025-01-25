@@ -8,7 +8,6 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.content.fluids.tank.FluidTankBlock;
-import com.simibubi.create.content.logistics.stockTicker.StockTickerBlock;
 import com.simibubi.create.content.logistics.stockTicker.StockTickerBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinBlock;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
@@ -128,8 +127,7 @@ public class BlazeBurnerBlockEntity extends SmartBlockEntity {
 			if (level instanceof Level l && !l.isLoaded(pos))
 				return null;
 			BlockState blockState = level.getBlockState(pos.relative(direction));
-			if (!AllBlocks.STOCK_TICKER.has(blockState)
-				|| blockState.getValue(StockTickerBlock.FACING) == direction.getOpposite())
+			if (!AllBlocks.STOCK_TICKER.has(blockState))
 				continue;
 			if (level.getBlockEntity(pos.relative(direction)) instanceof StockTickerBlockEntity stbe)
 				return stbe;

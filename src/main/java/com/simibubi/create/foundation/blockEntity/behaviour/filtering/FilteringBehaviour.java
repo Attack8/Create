@@ -283,9 +283,7 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 		ItemStack itemInHand = player.getItemInHand(hand);
 		ItemStack toApply = itemInHand.copy();
 
-		if (AllItems.WRENCH.isIn(toApply))
-			return;
-		if (AllBlocks.MECHANICAL_ARM.isIn(toApply))
+		if (!canShortInteract(toApply))
 			return;
 		if (level.isClientSide())
 			return;
@@ -318,6 +316,14 @@ public class FilteringBehaviour extends BlockEntityBehaviour implements ValueSet
 		}
 
 		level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, .25f, .1f);
+	}
+
+	public boolean canShortInteract(ItemStack toApply) {
+		if (AllItems.WRENCH.isIn(toApply))
+			return false;
+		if (AllBlocks.MECHANICAL_ARM.isIn(toApply))
+			return false;
+		return true;
 	}
 
 	public MutableComponent getLabel() {

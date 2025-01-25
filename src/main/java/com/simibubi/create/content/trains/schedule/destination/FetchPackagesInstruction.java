@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.PatternSyntaxException;
 
+import net.createmod.catnip.data.Glob;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.ImmutableList;
@@ -66,10 +68,7 @@ public class FetchPackagesInstruction extends TextScheduleInstruction {
 	}
 
 	public String getFilterForRegex() {
-		String filter = getFilter();
-		if (filter.isBlank())
-			return filter;
-		return "\\Q" + filter.replace("*", "\\E.*\\Q") + "\\E";
+		return Glob.toRegexPattern(getFilter(), "");
 	}
 
 	@Override

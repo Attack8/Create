@@ -55,6 +55,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 	private IconButton confirmButton;
 	private IconButton deleteButton;
 	private IconButton newInputButton;
+	private IconButton relocateButton;
 	private IconButton activateCraftingButton;
 	private ScrollInput promiseExpiration;
 	private FactoryPanelBehaviour behaviour;
@@ -177,19 +178,30 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 		promiseExpiration.setState(behaviour.promiseClearingInterval);
 		addRenderableWidget(promiseExpiration);
 
-		newInputButton = new IconButton(x + 31, y + 67, AllIcons.I_ADD);
+		newInputButton = new IconButton(x + 31, y + 47, AllIcons.I_ADD);
 		newInputButton.withCallback(() -> {
 			FactoryPanelConnectionHandler.startConnection(behaviour);
 			minecraft.setScreen(null);
 		});
 		newInputButton.setToolTip(CreateLang.translate("gui.factory_panel.connect_input")
 			.component());
-		if (!restocker)
+		
+		relocateButton = new IconButton(x + 31, y + 67, AllIcons.I_MOVE_GAUGE);
+		relocateButton.withCallback(() -> {
+			FactoryPanelConnectionHandler.startRelocating(behaviour);
+			minecraft.setScreen(null);
+		});
+		relocateButton.setToolTip(CreateLang.translate("gui.factory_panel.relocate")
+			.component());
+		
+		if (!restocker) {
 			addRenderableWidget(newInputButton);
+			addRenderableWidget(relocateButton);
+		}
 
 		activateCraftingButton = null;
 		if (availableCraftingRecipe != null) {
-			activateCraftingButton = new IconButton(x + 31, y + 47, AllIcons.I_3x3);
+			activateCraftingButton = new IconButton(x + 31, y + 27, AllIcons.I_3x3);
 			activateCraftingButton.withCallback(() -> {
 				craftingActive = !craftingActive;
 				init();

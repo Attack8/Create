@@ -2,6 +2,7 @@ package com.simibubi.create.content.logistics.factoryBoard;
 
 import javax.annotation.Nullable;
 
+import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelBlock.PanelSlot;
 import com.simibubi.create.foundation.block.WrenchableDirectionalBlock;
@@ -9,9 +10,9 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.outliner.Outliner;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -33,6 +34,9 @@ public class FactoryPanelConnectionHandler {
 
 	static FactoryPanelPosition connectingFrom;
 	static AABB connectingFromBox;
+
+	static boolean relocating;
+	static FactoryPanelPosition validRelocationTarget;
 
 	public static boolean panelClicked(LevelAccessor level, Player player, FactoryPanelBehaviour panel) {
 		if (connectingFrom == null)
@@ -61,7 +65,7 @@ public class FactoryPanelConnectionHandler {
 		ItemStack filterFrom = panel.getFilter();
 		ItemStack filterTo = at.getFilter();
 
-		CatnipServices.NETWORK.sendToServer(new FactoryPanelConnectionPacket(panel.getPanelPosition(), connectingFrom));
+		CatnipServices.NETWORK.sendToServer(new FactoryPanelConnectionPacket(panel.getPanelPosition(), connectingFrom, false));
 
 		player.displayClientMessage(CreateLang.translate("factory_panel.panels_connected", filterFrom.getHoverName()
 			.getString(),
@@ -158,12 +162,50 @@ public class FactoryPanelConnectionHandler {
 			return;
 		}
 
-		Outliner.getInstance().showAABB(connectingFrom, connectingFromBox)
+		Outliner.getInstance()
+			.showAABB(connectingFrom, connectingFromBox)
 			.colored(AnimationTickHolder.getTicks() % 16 > 8 ? 0x38b764 : 0xa7f070)
 			.lineWidth(1 / 16f);
 
-		mc.player.displayClientMessage(CreateLang.translate("factory_panel.click_second_panel")
-			.component(), true);
+		mc.player.displayClientMessage(
+			CreateLang.translate(relocating ? "factory_panel.click_to_relocate" : "factory_panel.click_second_panel")
+				.component(),
+			true);
+
+		if (!relocating)
+			return;
+
+		validRelocationTarget = null;
+
+		if (!(mc.hitResult instanceof BlockHitResult bhr) || bhr.getType() == Type.MISS)
+			return;
+
+		Vec3 offsetPos = bhr.getLocation()
+			.add(Vec3.atLowerCornerOf(bhr.getDirection()
+				.getNormal())
+				.scale(1 / 32f));
+		BlockPos pos = BlockPos.containing(offsetPos);
+		BlockState blockState = at.blockEntity.getBlockState();
+		PanelSlot slot = FactoryPanelBlock.getTargetedSlot(pos, blockState, offsetPos);
+		BlockPos diff = pos.subtract(connectingFrom.pos());
+		Direction facing = FactoryPanelBlock.connectedDirection(blockState);
+
+		if (facing.getAxis()
+			.choose(diff.getX(), diff.getY(), diff.getZ()) != 0)
+			return;
+		if (!AllBlocks.FACTORY_GAUGE.get()
+			.canSurvive(blockState, mc.level, pos))
+			return;
+		if (AllBlocks.PACKAGER.has(mc.level.getBlockState(pos.relative(facing.getOpposite()))))
+			return;
+
+		validRelocationTarget = new FactoryPanelPosition(pos, slot);
+
+		Outliner.getInstance()
+			.showAABB("target", getBB(blockState, validRelocationTarget))
+			.colored(0xeeeeee)
+			.disableLineNormals()
+			.lineWidth(1 / 16f);
 	}
 
 	public static boolean onRightClick() {
@@ -171,6 +213,24 @@ public class FactoryPanelConnectionHandler {
 			return false;
 		Minecraft mc = Minecraft.getInstance();
 		boolean missed = false;
+
+		if (relocating) {
+			if (mc.player.isShiftKeyDown())
+				validRelocationTarget = null;
+			if (validRelocationTarget != null)
+				CatnipServices.NETWORK.sendToServer(new FactoryPanelConnectionPacket(validRelocationTarget, connectingFrom, true));
+
+			connectingFrom = null;
+			connectingFromBox = null;
+
+			if (validRelocationTarget == null)
+				mc.player.displayClientMessage(CreateLang.translate("factory_panel.relocation_aborted")
+					.component(), true);
+
+			relocating = false;
+			validRelocationTarget = null;
+			return true;
+		}
 
 		if (mc.hitResult instanceof BlockHitResult bhr && bhr.getType() != Type.MISS) {
 			BlockEntity blockEntity = mc.level.getBlockEntity(bhr.getBlockPos());
@@ -205,7 +265,7 @@ public class FactoryPanelConnectionHandler {
 					bestPosition = panelPosition;
 				}
 
-				CatnipServices.NETWORK.sendToServer(new FactoryPanelConnectionPacket(bestPosition, connectingFrom));
+				CatnipServices.NETWORK.sendToServer(new FactoryPanelConnectionPacket(bestPosition, connectingFrom, false));
 
 				mc.player.displayClientMessage(CreateLang
 					.translate("factory_panel.link_connected", blockEntity.getBlockState()
@@ -235,15 +295,22 @@ public class FactoryPanelConnectionHandler {
 		return true;
 	}
 
+	public static void startRelocating(FactoryPanelBehaviour behaviour) {
+		startConnection(behaviour);
+		relocating = true;
+	}
+
 	public static void startConnection(FactoryPanelBehaviour behaviour) {
+		relocating = false;
 		connectingFrom = behaviour.getPanelPosition();
-		BlockState blockState = behaviour.blockEntity.getBlockState();
-		Vec3 location = behaviour.getSlotPositioning()
-			.getLocalOffset(behaviour.getWorld(), behaviour.getPos(), blockState)
-			.add(Vec3.atLowerCornerOf(behaviour.getPos()));
+		connectingFromBox = getBB(behaviour.blockEntity.getBlockState(), connectingFrom);
+	}
+
+	public static AABB getBB(BlockState blockState, FactoryPanelPosition factoryPanelPosition) {
+		Vec3 location = FactoryPanelSlotPositioning.getCenterOfSlot(blockState, factoryPanelPosition.slot())
+			.add(Vec3.atLowerCornerOf(factoryPanelPosition.pos()));
 		Vec3 plane = VecHelper.axisAlingedPlaneOf(FactoryPanelBlock.connectedDirection(blockState));
-		connectingFromBox =
-			new AABB(location, location).inflate(plane.x * 3 / 16f, plane.y * 3 / 16f, plane.z * 3 / 16f);
+		return new AABB(location, location).inflate(plane.x * 3 / 16f, plane.y * 3 / 16f, plane.z * 3 / 16f);
 	}
 
 }

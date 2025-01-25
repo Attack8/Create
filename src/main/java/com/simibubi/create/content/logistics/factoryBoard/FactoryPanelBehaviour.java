@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
 import com.google.common.collect.HashMultimap;
@@ -36,6 +37,7 @@ import com.simibubi.create.content.logistics.packagerLink.RequestPromiseQueue;
 import com.simibubi.create.content.logistics.stockTicker.PackageOrder;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
+import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
@@ -60,11 +62,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 import net.neoforged.api.distmarker.Dist;
@@ -172,6 +178,95 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 		if (world instanceof Level l && !l.isLoaded(pos.pos()))
 			return null;
 		return BlockEntityBehaviour.get(world, pos.pos(), FactoryPanelSupportBehaviour.TYPE);
+	}
+
+	public void moveTo(FactoryPanelPosition newPos, ServerPlayer player) {
+		Level level = getWorld();
+		BlockState existingState = level.getBlockState(newPos.pos());
+
+		// Check if target pos is valid
+		if (FactoryPanelBehaviour.at(level, newPos) != null)
+			return;
+		boolean isAddedToOtherGauge = AllBlocks.FACTORY_GAUGE.has(existingState);
+		if (!existingState.isAir() && !isAddedToOtherGauge)
+			return;
+		if (isAddedToOtherGauge && existingState != blockEntity.getBlockState())
+			return;
+		if (!isAddedToOtherGauge)
+			level.setBlock(newPos.pos(), blockEntity.getBlockState(), 3);
+
+		for (BlockPos blockPos : targetedByLinks.keySet())
+			if (!blockPos.closerThan(newPos.pos(), 24))
+				return;
+		for (FactoryPanelPosition blockPos : targetedBy.keySet())
+			if (!blockPos.pos().closerThan(newPos.pos(), 24))
+				return;
+		for (FactoryPanelPosition blockPos : targeting)
+			if (!blockPos.pos().closerThan(newPos.pos(), 24))
+				return;
+
+		// Disconnect links
+		for (BlockPos pos : targetedByLinks.keySet()) {
+			FactoryPanelSupportBehaviour at = linkAt(level, new FactoryPanelPosition(pos, slot));
+			if (at != null)
+				at.disconnect(this);
+		}
+
+		SmartBlockEntity oldBE = blockEntity;
+		FactoryPanelPosition oldPos = getPanelPosition();
+		slot = newPos.slot();
+
+		// Add to new BE
+		if (level.getBlockEntity(newPos.pos()) instanceof FactoryPanelBlockEntity fpbe) {
+			fpbe.attachBehaviourLate(this);
+			fpbe.panels.put(slot, this);
+			fpbe.redraw = true;
+			fpbe.lastShape = null;
+			fpbe.notifyUpdate();
+		}
+
+		// Remove from old BE
+		if (oldBE instanceof FactoryPanelBlockEntity fpbe) {
+			FactoryPanelBehaviour newBehaviour = new FactoryPanelBehaviour(fpbe, oldPos.slot());
+			fpbe.attachBehaviourLate(newBehaviour);
+			fpbe.panels.put(oldPos.slot(), newBehaviour);
+			fpbe.redraw = true;
+			fpbe.lastShape = null;
+			fpbe.notifyUpdate();
+		}
+
+		// Rewire connections
+		for (FactoryPanelPosition position : targeting) {
+			FactoryPanelBehaviour at = at(level, position);
+			if (at != null) {
+				FactoryPanelConnection connection = at.targetedBy.remove(oldPos);
+				connection.from = newPos;
+				at.targetedBy.put(newPos, connection);
+				at.blockEntity.sendData();
+			}
+		}
+
+		for (FactoryPanelPosition position : targetedBy.keySet()) {
+			FactoryPanelBehaviour at = at(level, position);
+			if (at != null) {
+				at.targeting.remove(oldPos);
+				at.targeting.add(newPos);
+			}
+		}
+
+		// Reconnect links
+		for (BlockPos pos : targetedByLinks.keySet()) {
+			FactoryPanelSupportBehaviour at = linkAt(level, new FactoryPanelPosition(pos, slot));
+			if (at != null)
+				at.connect(this);
+		}
+
+		// Tell player
+		player.displayClientMessage(CreateLang.translate("factory_panel.relocated")
+			.style(ChatFormatting.GREEN)
+			.component(), true);
+		player.level()
+			.playSound(null, newPos.pos(), SoundEvents.COPPER_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
 	}
 
 	@Override
@@ -440,7 +535,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 			return;
 		}
 
-		if (AllItemTags.WRENCH.matches(player.getItemInHand(hand))) {
+		if (targeting.size() + targetedByLinks.size() > 0 && AllItemTags.WRENCH.matches(player.getItemInHand(hand))) {
 			int sharedMode = -1;
 			boolean notifySelf = false;
 
@@ -484,9 +579,6 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 				return;
 
 		if (getFilter().isEmpty()) {
-			if (AllBlocks.FACTORY_GAUGE.isIn(player.getItemInHand(hand)))
-				return;
-
 			super.onShortInteract(player, hand, side, hitResult);
 			return;
 		}
@@ -882,4 +974,18 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 			: ItemRequirement.NONE;
 	}
 
+	@Override
+	public boolean canShortInteract(ItemStack toApply) {
+		return true;
+	}
+
+	@Override
+	public boolean readFromClipboard(@NotNull HolderLookup.Provider registries, CompoundTag tag, Player player, Direction side, boolean simulate) {
+		return false;
+	}
+
+	@Override
+	public boolean writeToClipboard(@NotNull HolderLookup.Provider registries, CompoundTag tag, Direction side) {
+		return false;
+	}
 }
