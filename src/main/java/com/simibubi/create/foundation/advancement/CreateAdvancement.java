@@ -1,9 +1,8 @@
 package com.simibubi.create.foundation.advancement;
 
-import java.util.Collections;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
 import com.simibubi.create.Create;
@@ -17,7 +16,8 @@ import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
-import net.minecraft.advancements.critereon.MinMaxBounds;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -33,9 +33,10 @@ public class CreateAdvancement {
 	static final String LANG = "advancement." + Create.ID + ".";
 	static final String SECRET_SUFFIX = "\n\u00A77(Hidden Advancement)";
 
-	private Advancement.Builder builder;
+	private final Advancement.Builder mcBuilder = Advancement.Builder.advancement();
 	private SimpleCreateTrigger builtinTrigger;
 	private CreateAdvancement parent;
+	private final Builder createBuilder = new Builder();
 
 	AdvancementHolder datagenResult;
 
@@ -44,22 +45,16 @@ public class CreateAdvancement {
 	private String description;
 
 	public CreateAdvancement(String id, UnaryOperator<Builder> b) {
-		this.builder = Advancement.Builder.advancement();
 		this.id = id;
 
-		Builder t = new Builder();
-		b.apply(t);
+		b.apply(createBuilder);
 
-		if (!t.externalTrigger) {
+		if (!createBuilder.externalTrigger) {
 			builtinTrigger = AllTriggers.addSimple(id + "_builtin");
-			builder.addCriterion("0", builtinTrigger.createCriterion(builtinTrigger.instance()));
+			mcBuilder.addCriterion("0", builtinTrigger.createCriterion(builtinTrigger.instance()));
 		}
 
-		builder.display(t.icon, Components.translatable(titleKey()),
-			Components.translatable(descriptionKey()).withStyle(s -> s.withColor(0xDBA213)),
-			id.equals("root") ? BACKGROUND : null, t.type.advancementType, t.type.toast, t.type.announce, t.type.hide);
-
-		if (t.type == TaskType.SECRET)
+		if (createBuilder.type == TaskType.SECRET)
 			description += SECRET_SUFFIX;
 
 		AllAdvancements.ENTRIES.add(this);
@@ -95,10 +90,19 @@ public class CreateAdvancement {
 		builtinTrigger.trigger(sp);
 	}
 
-	void save(Consumer<AdvancementHolder> t) {
+	void save(Consumer<AdvancementHolder> t, HolderLookup.Provider registries) {
 		if (parent != null)
-			builder.parent(parent.datagenResult);
-		datagenResult = builder.save(t, Create.asResource(id)
+			mcBuilder.parent(parent.datagenResult);
+
+		if (createBuilder.func != null)
+			createBuilder.icon(createBuilder.func.apply(registries));
+
+		mcBuilder.display(createBuilder.icon, Components.translatable(titleKey()),
+			Components.translatable(descriptionKey()).withStyle(s -> s.withColor(0xDBA213)),
+			id.equals("root") ? BACKGROUND : null, createBuilder.type.advancementType, createBuilder.type.toast,
+			createBuilder.type.announce, createBuilder.type.hide);
+
+		datagenResult = mcBuilder.save(t, Create.asResource(id)
 			.toString());
 	}
 
@@ -136,6 +140,7 @@ public class CreateAdvancement {
 		private boolean externalTrigger;
 		private int keyIndex;
 		private ItemStack icon;
+		private Function<Provider, ItemStack> func;
 
 		Builder special(TaskType type) {
 			this.type = type;
@@ -157,6 +162,11 @@ public class CreateAdvancement {
 
 		Builder icon(ItemStack stack) {
 			icon = stack;
+			return this;
+		}
+
+		Builder icon(Function<Provider, ItemStack> func) {
+			this.func = func;
 			return this;
 		}
 
@@ -197,7 +207,7 @@ public class CreateAdvancement {
 		}
 
 		Builder externalTrigger(Criterion<?> trigger) {
-			builder.addCriterion(String.valueOf(keyIndex), trigger);
+			mcBuilder.addCriterion(String.valueOf(keyIndex), trigger);
 			externalTrigger = true;
 			keyIndex++;
 			return this;

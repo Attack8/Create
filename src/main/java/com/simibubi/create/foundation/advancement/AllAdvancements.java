@@ -25,6 +25,8 @@ import com.simibubi.create.foundation.advancement.CreateAdvancement.Builder;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -33,6 +35,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.armortrim.ArmorTrim;
+import net.minecraft.world.item.armortrim.TrimMaterial;
+import net.minecraft.world.item.armortrim.TrimMaterials;
+import net.minecraft.world.item.armortrim.TrimPattern;
+import net.minecraft.world.item.armortrim.TrimPatterns;
 import net.minecraft.world.level.block.Blocks;
 
 public class AllAdvancements implements DataProvider {
@@ -283,7 +290,7 @@ public class AllAdvancements implements DataProvider {
 
 		// TODO: award using AllAdvancements.CARDBOARD_ARMOR_TRIM.awardTo() on server
 		CARDBOARD_ARMOR_TRIM = create("cardboard_armor_trim",
-			b -> b.icon(createArmorTrimmedCardboardChestplate())
+			b -> b.icon(AllAdvancements::createArmorTrimmedCardboardChestplate)
 				.title("Arts and Crafts")
 				.description("Decorate your cardboard equipment with armor trims")
 				.after(CARDBOARD_ARMOR)
@@ -662,15 +669,17 @@ public class AllAdvancements implements DataProvider {
 		//
 		END = null;
 
-	private static ItemStack createArmorTrimmedCardboardChestplate() {
+	private static ItemStack createArmorTrimmedCardboardChestplate(HolderLookup.Provider registries) {
+		HolderLookup.RegistryLookup<TrimMaterial> materialLookup = registries.lookupOrThrow(Registries.TRIM_MATERIAL);
+		HolderLookup.RegistryLookup<TrimPattern> patternLookup = registries.lookupOrThrow(Registries.TRIM_PATTERN);
+
+		ArmorTrim trim = new ArmorTrim(
+			materialLookup.getOrThrow(TrimMaterials.DIAMOND),
+			patternLookup.getOrThrow(TrimPatterns.SENTRY)
+		);
+
 		ItemStack asStack = AllItems.CARDBOARD_CHESTPLATE.asStack();
-		// FIXME 1.21.1: Swap to components
-//		CompoundTag tag = new CompoundTag();
-//		CompoundTag trimTag = new CompoundTag();
-//		trimTag.putString("material", "minecraft:diamond");
-//		trimTag.putString("pattern", "minecraft:sentry");
-//		tag.put("Trim", trimTag);
-//		asStack.setTag(tag);
+		asStack.set(DataComponents.TRIM, trim);
 		return asStack;
 	}
 
@@ -705,7 +714,7 @@ public class AllAdvancements implements DataProvider {
 			};
 
 			for (CreateAdvancement advancement : ENTRIES)
-				advancement.save(consumer);
+				advancement.save(consumer, provider);
 
 			return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new));
 		});

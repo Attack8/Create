@@ -1,4 +1,4 @@
-// 1.21.1	2025-01-24T18:38:28.457154067	Create's Advancements
+// 1.21.1	2025-01-25T15:43:14.385916774	Create's Advancements
 5876d95160eca4e05f94dbc9c4ff44ce83cbbb2b data/create/advancement/andesite_alloy.json
 b124cd0229367b711f4e9650115a5579825e44e2 data/create/advancement/andesite_casing.json
 ee674ceca35306b53838dde10ed55d8f506650f8 data/create/advancement/anvil_plough.json
@@ -12,7 +12,7 @@ d9c2665c4281784a7afbf123384c73eac66af1c1 data/create/advancement/brass_casing.js
 a177c4e2b21d20c5aa4f17ce2c302514f077bade data/create/advancement/burner.json
 893453d5c8d8a81433f8a97984164bc8464869b9 data/create/advancement/cardboard.json
 0c7c9b5eb333daca2e936519e681d321cad8aff5 data/create/advancement/cardboard_armor.json
-f64a0ff799687104060053c031961532fb943f24 data/create/advancement/cardboard_armor_trim.json
+d0d98663fd72c0a275e7ccdb7259b6e532ee4f50 data/create/advancement/cardboard_armor_trim.json
 a757fd567dab2849e132ee607431a50f415c3872 data/create/advancement/cart_pickup.json
 d7751a643b612bd2a32aef4396280f833e1ee337 data/create/advancement/chained_drain.json
 3e90be77f0450f4354184905b029793f7e77089b data/create/advancement/chocolate_bucket.json
