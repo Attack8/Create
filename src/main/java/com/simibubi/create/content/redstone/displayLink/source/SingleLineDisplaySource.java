@@ -11,8 +11,8 @@ import com.simibubi.create.content.trains.display.FlapDisplaySection;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -50,8 +50,9 @@ public abstract class SingleLineDisplaySource extends DisplaySource {
 		if (allowsLabeling(context)) {
 			String label = context.sourceConfig()
 				.getString("Label");
-			if (!label.isEmpty())
-				line = Components.literal(label + " ").append(line);
+			if (!label.isEmpty()) {
+                line = Component.literal(label + " ").append(line);
+            }
 		}
 
 		return ImmutableList.of(line);
@@ -63,8 +64,9 @@ public abstract class SingleLineDisplaySource extends DisplaySource {
 		if (allowsLabeling(context)) {
 			String label = context.sourceConfig()
 				.getString("Label");
-			if (!label.isEmpty())
-				return ImmutableList.of(ImmutableList.of(Components.literal(label + " "), provideLine(context, stats)));
+			if (!label.isEmpty()) {
+                return ImmutableList.of(ImmutableList.of(Component.literal(label + " "), provideLine(context, stats)));
+            }
 		}
 
 		return super.provideFlapDisplayText(context, stats);

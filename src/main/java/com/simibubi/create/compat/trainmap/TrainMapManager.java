@@ -33,11 +33,11 @@ import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.FastColor;
@@ -76,8 +76,9 @@ public class TrainMapManager {
 		graphics.bufferSource()
 			.endBatch();
 
-		if (hoveredElement instanceof GlobalStation station)
-			return List.of(Components.literal(station.name));
+		if (hoveredElement instanceof GlobalStation station) {
+            return List.of(Component.literal(station.name));
+        }
 
 		if (hoveredElement instanceof Train train)
 			return listTrainDetails(train);

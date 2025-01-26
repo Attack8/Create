@@ -15,8 +15,8 @@ import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.math.VecHelper;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -478,7 +478,7 @@ public class BeltSlicer {
 			mc.player.displayClientMessage(CreateLang.translateDirect(feedback.langKey)
 				.withStyle(feedback.formatting), true);
 		else
-			mc.player.displayClientMessage(Components.immutableEmpty(), true);
+			mc.player.displayClientMessage(Lang.IMMUTABLE_EMPTY, true);
 
 		if (feedback.bb != null)
 			Outliner.getInstance().chaseAABB("BeltSlicer", feedback.bb)

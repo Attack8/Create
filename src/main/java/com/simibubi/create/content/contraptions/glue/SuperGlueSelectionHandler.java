@@ -12,7 +12,7 @@ import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.foundation.utility.RaycastHelper;
 
-import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -64,7 +64,7 @@ public class SuperGlueSelectionHandler {
 
 		if (clusterCooldown > 0) {
 			if (clusterCooldown == 25)
-				player.displayClientMessage(Components.immutableEmpty(), true);
+				player.displayClientMessage(Lang.IMMUTABLE_EMPTY, true);
 			Outliner.getInstance().keep(clusterOutlineSlot);
 			clusterCooldown--;
 		}

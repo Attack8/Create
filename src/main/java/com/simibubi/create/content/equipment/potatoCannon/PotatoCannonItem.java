@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import net.createmod.catnip.lang.Lang;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.AllEnchantments;
@@ -19,7 +21,6 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -241,21 +242,21 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 				String _reload = "potato_cannon.ammo.reload_ticks";
 				String _knockback = "potato_cannon.ammo.knockback";
 
-				tooltip.add(Components.immutableEmpty());
-				tooltip.add(Components.translatable(ammo.getDescriptionId()).append(Components.literal(":"))
+				tooltip.add(Lang.IMMUTABLE_EMPTY);
+				tooltip.add(Component.translatable(ammo.getDescriptionId()).append(Component.literal(":"))
 						.withStyle(ChatFormatting.GRAY));
 				PotatoCannonProjectileType type = PotatoProjectileTypeManager.getTypeForStack(ammo)
 						.get();
-				MutableComponent spacing = Components.literal(" ");
+				MutableComponent spacing = Component.literal(" ");
 				ChatFormatting green = ChatFormatting.GREEN;
 				ChatFormatting darkGreen = ChatFormatting.DARK_GREEN;
 
 				float damageF = type.getDamage() * additionalDamageMult;
-				MutableComponent damage = Components.literal(
+				MutableComponent damage = Component.literal(
 						damageF == Mth.floor(damageF) ? "" + Mth.floor(damageF) : "" + damageF);
-				MutableComponent reloadTicks = Components.literal("" + type.getReloadTicks());
+				MutableComponent reloadTicks = Component.literal("" + type.getReloadTicks());
 				MutableComponent knockback =
-						Components.literal("" + (type.getKnockback() + additionalKnockback));
+						Component.literal("" + (type.getKnockback() + additionalKnockback));
 
 				damage = damage.withStyle(additionalDamageMult > 1 ? green : darkGreen);
 				knockback = knockback.withStyle(additionalKnockback > 0 ? green : darkGreen);

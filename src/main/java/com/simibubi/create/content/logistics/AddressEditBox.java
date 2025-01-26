@@ -11,7 +11,6 @@ import com.simibubi.create.content.trains.schedule.DestinationSuggestions;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -27,7 +26,7 @@ public class AddressEditBox extends EditBox {
 	private Consumer<String> mainResponder;
 
 	public AddressEditBox(Screen screen, Font pFont, int pX, int pY, int pWidth, int pHeight, boolean anchorToBottom) {
-		super(pFont, pX, pY, pWidth, pHeight, Components.empty());
+        super(pFont, pX, pY, pWidth, pHeight, Component.empty());
 		destinationSuggestions = AddressEditBoxHelper.createSuggestions(screen, this, anchorToBottom);
 		destinationSuggestions.setAllowSuggestions(true);
 		destinationSuggestions.updateCommandInfo();
@@ -73,12 +72,12 @@ public class AddressEditBox extends EditBox {
 			return true;
 		return false;
 	}
-	
+
 	@Override
 	public void setValue(String text) {
 		super.setValue(text);
 	}
-	
+
 	@Override
 	public void setFocused(boolean focused) {
 		super.setFocused(focused);

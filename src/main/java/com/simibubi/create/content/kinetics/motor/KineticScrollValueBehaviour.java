@@ -8,7 +8,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -24,9 +23,9 @@ public class KineticScrollValueBehaviour extends ScrollValueBehaviour {
 
 	@Override
 	public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-		ImmutableList<Component> rows = ImmutableList.of(Components.literal("\u27f3")
+		ImmutableList<Component> rows = ImmutableList.of(Component.literal("\u27f3")
 			.withStyle(ChatFormatting.BOLD),
-			Components.literal("\u27f2")
+			Component.literal("\u27f2")
 				.withStyle(ChatFormatting.BOLD));
 		ValueSettingsFormatter formatter = new ValueSettingsFormatter(this::formatSettings);
 		return new ValueSettingsBoard(label, 256, 32, rows, formatter);

@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllItems;
 
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -50,7 +49,7 @@ public class RemainingAirOverlay implements LayeredDraw.Layer {
 		poseStack.translate(guiGraphics.guiWidth() / 2 + 90, guiGraphics.guiHeight() - 53 + (backtank
 				.has(DataComponents.FIRE_RESISTANT) ? 9 : 0), 0);
 
-		Component text = Components.literal(StringUtil.formatTickDuration(Math.max(0, timeLeft - 1) * 20, mc.level.tickRateManager().tickrate()));
+		Component text = Component.literal(StringUtil.formatTickDuration(Math.max(0, timeLeft - 1) * 20, mc.level.tickRateManager().tickrate()));
 		GuiGameElement.of(backtank)
 			.at(0, 0)
 			.render(guiGraphics);

@@ -27,10 +27,10 @@ import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
+import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -507,14 +507,14 @@ public class DeployerBlockEntity extends KineticBlockEntity {
 			.forGoggles(tooltip);
 
 		if (!heldItem.isEmpty())
-			CreateLang.translate("tooltip.deployer.contains", Components.translatable(heldItem.getDescriptionId())
-				.getString(), heldItem.getCount())
-				.style(ChatFormatting.GREEN)
-				.forGoggles(tooltip);
+            CreateLang.translate("tooltip.deployer.contains", Component.translatable(heldItem.getDescriptionId())
+                .getString(), heldItem.getCount())
+                .style(ChatFormatting.GREEN)
+                .forGoggles(tooltip);
 
 		float stressAtBase = calculateStressApplied();
 		if (StressImpact.isEnabled() && !Mth.equal(stressAtBase, 0)) {
-			tooltip.add(Components.immutableEmpty());
+			tooltip.add(Lang.IMMUTABLE_EMPTY);
 			addStressImpactStats(tooltip, stressAtBase);
 		}
 

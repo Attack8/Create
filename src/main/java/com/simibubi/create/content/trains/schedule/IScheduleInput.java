@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -34,8 +33,8 @@ public interface IScheduleInput {
 
 	public default List<Component> getTitleAs(String type) {
 		ResourceLocation id = getId();
-		return ImmutableList
-			.of(Components.translatable(id.getNamespace() + ".schedule." + type + "." + id.getPath()));
+        return ImmutableList
+			.of(Component.translatable(id.getNamespace() + ".schedule." + type + "." + id.getPath()));
 	}
 
 	public default ItemStack getSecondLineIcon() {

@@ -15,7 +15,6 @@ import com.simibubi.create.content.trains.schedule.ScheduleRuntime;
 import com.simibubi.create.content.trains.signal.SignalBoundary;
 import com.simibubi.create.content.trains.station.GlobalStation;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -23,6 +22,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -48,7 +48,9 @@ public class DumpRailwaysCommand {
 			.executes(ctx -> {
 				CommandSourceStack source = ctx.getSource();
 				fillReport(source.getLevel(), source.getPosition(),
-					(s, f) -> source.sendSuccess(() -> Components.literal(s).withStyle(st -> st.withColor(f)), false),
+					(s, f) -> source.sendSuccess(() -> {
+                        return Component.literal(s).withStyle(st -> st.withColor(f));
+                    }, false),
 					(c) -> source.sendSuccess(() -> c, false));
 				return 1;
 			});
@@ -161,25 +163,29 @@ public class DumpRailwaysCommand {
 	}
 
 	private static Component createDeleteButton(Train train) {
-		return Components.literal("└─").withStyle(style -> style.withColor(blue)).append(
+        return Component.literal("└─").withStyle(style -> style.withColor(blue)).append(
 			ComponentUtils.wrapInSquareBrackets(
-					Components.literal("Remove").withStyle(style -> style.withColor(orange))
-			).withStyle(style -> style
-				.withColor(blue)
-				.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c train remove " + train.id.toString()))
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Components.literal("Click to remove ").append(train.name)))
+					Component.literal("Remove").withStyle(style -> style.withColor(orange))
+			).withStyle(style -> {
+                        return style
+                            .withColor(blue)
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c train remove " + train.id.toString()))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to remove ").append(train.name)));
+                    }
 			)
 		);
 	}
 
 	private static Component createTeleportButton(Train train) {
-		return Components.literal("├─").withStyle(style -> style.withColor(darkBlue)).append(
+        return Component.literal("├─").withStyle(style -> style.withColor(darkBlue)).append(
 			ComponentUtils.wrapInSquareBrackets(
-				Components.literal("Teleport").withStyle(style -> style.withColor(orange))
-			).withStyle(style -> style
-				.withColor(darkBlue)
-				.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c train tp " + train.id.toString()))
-				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Components.literal("Click to teleport to ").append(train.name)))
+				Component.literal("Teleport").withStyle(style -> style.withColor(orange))
+			).withStyle(style -> {
+                        return style
+                            .withColor(darkBlue)
+                            .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c train tp " + train.id.toString()))
+                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to teleport to ").append(train.name)));
+                    }
 			)
 		);
 	}

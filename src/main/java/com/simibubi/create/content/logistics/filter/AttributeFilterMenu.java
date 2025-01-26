@@ -7,10 +7,10 @@ import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllMenuTypes;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
@@ -47,7 +47,7 @@ public class AttributeFilterMenu extends AbstractFilterMenu {
 	protected void init(Inventory inv, ItemStack contentHolder) {
 		super.init(inv, contentHolder);
 		ItemStack stack = new ItemStack(Items.NAME_TAG);
-		stack.set(DataComponents.CUSTOM_NAME, Components.literal("Selected Tags").withStyle(ChatFormatting.RESET, ChatFormatting.BLUE));
+		stack.set(DataComponents.CUSTOM_NAME, Component.literal("Selected Tags").withStyle(ChatFormatting.RESET, ChatFormatting.BLUE));
 		ghostInventory.setStackInSlot(1, stack);
 	}
 

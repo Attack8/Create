@@ -12,11 +12,11 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.utility.DynamicComponent;
 
 import net.createmod.catnip.data.Couple;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -83,7 +83,7 @@ public class NixieTubeBlockEntity extends SmartBlockEntity {
 
 	public MutableComponent getFullText() {
 		return customText.map(DynamicComponent::get)
-			.orElse(Components.literal("" + redstoneStrength));
+			.orElse(Component.literal("" + redstoneStrength));
 	}
 
 	public void updateRedstoneStrength(int signalStrength) {

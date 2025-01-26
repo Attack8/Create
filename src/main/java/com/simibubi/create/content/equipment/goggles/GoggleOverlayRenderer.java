@@ -23,7 +23,7 @@ import com.simibubi.create.infrastructure.config.CClient;
 import net.createmod.catnip.gui.element.BoxElement;
 import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.outliner.Outline;
 import net.createmod.catnip.outliner.Outliner;
 import net.createmod.catnip.outliner.Outliner.OutlineEntry;
@@ -111,7 +111,7 @@ public class GoggleOverlayRenderer {
 
 		if (hasHoveringInformation) {
 			if (!tooltip.isEmpty())
-				tooltip.add(Components.immutableEmpty());
+				tooltip.add(Lang.IMMUTABLE_EMPTY);
 			IHaveHoveringInformation hte = (IHaveHoveringInformation) be;
 			hoverAddedInformation = hte.addToTooltip(tooltip, isShifting);
 
@@ -158,7 +158,7 @@ public class GoggleOverlayRenderer {
 				return;
 			}
 			if (!tooltip.isEmpty())
-				tooltip.add(Components.immutableEmpty());
+				tooltip.add(Lang.IMMUTABLE_EMPTY);
 
 			CreateLang.translate("gui.goggles.pole_length")
 				.text(" " + poles)

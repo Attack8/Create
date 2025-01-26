@@ -22,10 +22,9 @@ import com.simibubi.create.content.trains.schedule.destination.DestinationInstru
 import com.simibubi.create.content.trains.schedule.destination.FetchPackagesInstruction;
 import com.simibubi.create.content.trains.schedule.destination.ScheduleInstruction;
 
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.lang.Components;
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -79,7 +78,7 @@ public class Schedule {
 		return list.stream()
 			.map(Pair::getFirst)
 			.map(rl -> rl.getNamespace() + ".schedule." + langSection + rl.getPath())
-			.map(Components::translatable)
+			.map(key -> Component.translatable(key))
 			.toList();
 	}
 

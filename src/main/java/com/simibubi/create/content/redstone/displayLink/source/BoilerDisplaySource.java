@@ -14,8 +14,8 @@ import com.simibubi.create.content.trains.display.FlapDisplaySection;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import joptsimple.internal.Strings;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
@@ -50,8 +50,10 @@ public class BoilerDisplaySource extends DisplaySource {
 				return reduce.orElse(EMPTY_LINE);
 			});
 
-			return List.of(componentList.reduce((comp1, comp2) -> comp1.append(Components.literal("\n"))
-				.append(comp2))
+			return List.of(componentList.reduce((comp1, comp2) -> {
+					return comp1.append(Component.literal("\n"))
+						.append(comp2);
+				})
 				.orElse(EMPTY_LINE));
 		}
 
@@ -128,9 +130,9 @@ public class BoilerDisplaySource extends DisplaySource {
 
 		int lw = labelWidth();
 		if (forFlapDisplay) {
-			size = Components.literal(Strings.repeat(' ', lw - labelWidthOf("size"))).append(size);
-			water = Components.literal(Strings.repeat(' ', lw - labelWidthOf("water"))).append(water);
-			heat = Components.literal(Strings.repeat(' ', lw - labelWidthOf("heat"))).append(heat);
+			size = Component.literal(Strings.repeat(' ', lw - labelWidthOf("size"))).append(size);
+			water = Component.literal(Strings.repeat(' ', lw - labelWidthOf("water"))).append(water);
+			heat = Component.literal(Strings.repeat(' ', lw - labelWidthOf("heat"))).append(heat);
 		}
 
 		return Stream.of(List.of(CreateLang.translateDirect(label, boiler.getHeatLevelTextComponent())),
@@ -150,7 +152,7 @@ public class BoilerDisplaySource extends DisplaySource {
 
 	private MutableComponent labelOf(String label) {
 		if (label.isBlank())
-			return Components.empty();
+            return Component.empty();
 		return CreateLang.translateDirect("boiler." + label);
 	}
 

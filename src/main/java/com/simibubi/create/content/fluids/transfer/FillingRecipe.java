@@ -13,7 +13,6 @@ import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
@@ -69,8 +68,9 @@ public class FillingRecipe extends ProcessingRecipe<SingleRecipeInput> implement
 	public Component getDescriptionForAssembly() {
 		List<FluidStack> matchingFluidStacks = fluidIngredients.get(0)
 			.getMatchingFluidStacks();
-		if (matchingFluidStacks.size() == 0)
-			return Components.literal("Invalid");
+		if (matchingFluidStacks.size() == 0) {
+            return Component.literal("Invalid");
+        }
 		return CreateLang.translateDirect("recipe.assembly.spout_filling_fluid",
 			matchingFluidStacks.get(0).getHoverName().getString());
 	}

@@ -12,7 +12,7 @@ import net.neoforged.neoforge.fluids.FluidType;
 
 @Mixin(FluidInteractionRegistry.class)
 public interface FluidInteractionRegistryAccessor {
-	@Accessor("INTERACTIONS")
+	@Accessor(value = "INTERACTIONS", remap = false)
 	static Map<FluidType, List<InteractionInformation>> getInteractions() {
 		throw new AssertionError();
 	}

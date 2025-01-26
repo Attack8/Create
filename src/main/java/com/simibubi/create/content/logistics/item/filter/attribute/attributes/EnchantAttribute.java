@@ -18,8 +18,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nullable;
-
 public record EnchantAttribute(@Nullable Holder<Enchantment> enchantment) implements ItemAttribute {
 	public static final MapCodec<EnchantAttribute> CODEC = Enchantment.CODEC
 			.xmap(EnchantAttribute::new, EnchantAttribute::enchantment)

@@ -26,7 +26,6 @@ import com.simibubi.create.content.trains.station.GlobalStation.GlobalPackagePor
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.BlockPos;
@@ -51,7 +50,7 @@ public class FetchPackagesInstruction extends TextScheduleInstruction {
 	public List<Component> getTitleAs(String type) {
 		return ImmutableList.of(CreateLang.translate("schedule.instruction.package_retrieval.summary")
 			.style(ChatFormatting.GOLD)
-			.component(), CreateLang.translateDirect("generic.in_quotes", Components.literal(getLabelText())),
+			.component(), CreateLang.translateDirect("generic.in_quotes", Component.literal(getLabelText())),
 			CreateLang.translateDirect("schedule.instruction.package_retrieval.summary_1")
 				.withStyle(ChatFormatting.GRAY),
 			CreateLang.translateDirect("schedule.instruction.package_retrieval.summary_2")

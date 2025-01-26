@@ -20,7 +20,6 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CKinetics;
 
 import net.createmod.catnip.data.Couple;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.network.chat.Component;
@@ -53,7 +52,7 @@ public class KineticStats implements TooltipModifier {
 		List<Component> kineticStats = getKineticStats(block, context.getEntity());
 		if (!kineticStats.isEmpty()) {
 			List<Component> tooltip = context.getToolTip();
-			tooltip.add(Components.immutableEmpty());
+			tooltip.add(Lang.IMMUTABLE_EMPTY);
 			tooltip.addAll(kineticStats);
 		}
 	}

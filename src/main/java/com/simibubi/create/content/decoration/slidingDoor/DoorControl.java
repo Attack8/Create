@@ -11,10 +11,10 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 
@@ -64,7 +64,7 @@ public enum DoorControl {
 				playerFacing = SOUTH;
 		}
 
-		Label label = new Label(x + 4, y + 6, Components.empty()).withShadow();
+        Label label = new Label(x + 4, y + 6, Component.empty()).withShadow();
 		ScrollInput input = new SelectionScrollInput(x, y, 53, 16)
 			.forOptions(CreateLang.translatedOptions("contraption.door_control", valuesAsString()))
 			.titled(CreateLang.translateDirect("contraption.door_control"))

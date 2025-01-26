@@ -14,7 +14,6 @@ import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -36,7 +35,7 @@ public class ChangeThrottleInstruction extends ScheduleInstruction {
 	}
 
 	private MutableComponent formatted() {
-		return Components.literal(intData("Value") + "%");
+		return Component.literal(intData("Value") + "%");
 	}
 
 	@Override

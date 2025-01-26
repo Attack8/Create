@@ -6,8 +6,8 @@ import java.util.List;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.lang.FontHelper.Palette;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
@@ -19,7 +19,7 @@ public interface IDisplayAssemblyExceptions {
 			return false;
 
 		if (!tooltip.isEmpty())
-			tooltip.add(Components.immutableEmpty());
+			tooltip.add(Lang.IMMUTABLE_EMPTY);
 
 		CreateLang.translate("gui.assembly.exception").style(ChatFormatting.GOLD)
 			.forGoggles(tooltip);

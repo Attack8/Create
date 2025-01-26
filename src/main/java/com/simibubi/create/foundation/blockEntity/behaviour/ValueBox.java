@@ -8,8 +8,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform.Si
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.INamedIconOptions;
 import com.simibubi.create.foundation.gui.AllIcons;
 
+import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.render.SuperRenderTypeBuffer;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.outliner.ChasingAABBOutline;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -30,8 +30,8 @@ import net.minecraft.world.phys.Vec3;
 public class ValueBox extends ChasingAABBOutline {
 
 	protected Component label;
-	protected Component sublabel = Components.immutableEmpty();
-	protected Component scrollTooltip = Components.immutableEmpty();
+	protected Component sublabel = Lang.IMMUTABLE_EMPTY;
+	protected Component scrollTooltip = Lang.IMMUTABLE_EMPTY;
 	protected Vec3 labelOffset = Vec3.ZERO;
 
 	public int overrideColor = -1;

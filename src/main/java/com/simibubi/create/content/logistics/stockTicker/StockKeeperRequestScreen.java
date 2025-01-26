@@ -47,7 +47,6 @@ import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.gui.UIRenderHelper;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.render.CachedBuffers;
@@ -559,9 +558,10 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 			ms.popPose();
 		}
 
-		if (itemsToOrder.size() > 8)
-			graphics.drawString(font, Components.literal("[+" + (itemsToOrder.size() - 8) + "]"), x + windowWidth - 40,
+		if (itemsToOrder.size() > 8) {
+			graphics.drawString(font, Component.literal("[+" + (itemsToOrder.size() - 8) + "]"), x + windowWidth - 40,
 				orderY + 21, 0xF8F8EC);
+		}
 
 		boolean justSent = itemsToOrder.isEmpty() && successTicks > 0;
 		if (isConfirmHovered(mouseX, mouseY) && !justSent)

@@ -7,7 +7,6 @@ import com.simibubi.create.foundation.utility.CameraAngleAnimationService;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.gui.ScreenOpener;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -23,7 +22,7 @@ public class SimpleCreateActions {
 			return;
 
 		if (value.equals("info")) {
-			Component text = Components.literal("Rainbow Debug Utility is currently: ")
+			Component text = Component.literal("Rainbow Debug Utility is currently: ")
 					.append(boolToText(AllConfigs.client().rainbowDebug.get()));
 			player.displayClientMessage(text, false);
 			return;
@@ -31,7 +30,7 @@ public class SimpleCreateActions {
 
 		AllConfigs.client().rainbowDebug.set(Boolean.parseBoolean(value));
 		Component text = boolToText(AllConfigs.client().rainbowDebug.get())
-				.append(Components.literal(" Rainbow Debug Utility").withStyle(ChatFormatting.WHITE));
+				.append(Component.literal(" Rainbow Debug Utility").withStyle(ChatFormatting.WHITE));
 		player.displayClientMessage(text, false);
 	}
 
@@ -54,7 +53,7 @@ public class SimpleCreateActions {
 		AllConfigs.client().ignoreFabulousWarning.set(true);
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player != null) {
-			player.displayClientMessage(Components.literal("Disabled Fabulous graphics warning"), false);
+			player.displayClientMessage(Component.literal("Disabled Fabulous graphics warning"), false);
 		}
 	}
 
@@ -105,8 +104,11 @@ public class SimpleCreateActions {
 	}
 
 	private static MutableComponent boolToText(boolean b) {
-		return b ? Components.literal("enabled").withStyle(ChatFormatting.DARK_GREEN)
-				: Components.literal("disabled").withStyle(ChatFormatting.RED);
+        if (b) {
+            return Component.literal("enabled").withStyle(ChatFormatting.DARK_GREEN);
+        } else {
+            return Component.literal("disabled").withStyle(ChatFormatting.RED);
+        }
 	}
 
 }

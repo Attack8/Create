@@ -7,7 +7,7 @@ import com.simibubi.create.content.trains.display.FlapDisplaySection;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.api.distmarker.Dist;
@@ -15,9 +15,13 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 public class TimeOfDayDisplaySource extends SingleLineDisplaySource {
 
-	public static final MutableComponent EMPTY_TIME = Components.literal("--:--");
+	public static final MutableComponent EMPTY_TIME;
 
-	@Override
+    static {
+        EMPTY_TIME = Component.literal("--:--");
+    }
+
+    @Override
 	protected MutableComponent provideLine(DisplayLinkContext context, DisplayTargetStats stats) {
 		if (!(context.level()instanceof ServerLevel sLevel))
 			return EMPTY_TIME;
@@ -48,7 +52,7 @@ public class TimeOfDayDisplaySource extends SingleLineDisplaySource {
 			minutes = sLevel.random.nextInt(40) + 60;
 		}
 
-		MutableComponent component = Components.literal(
+		MutableComponent component = Component.literal(
 			(hours < 10 ? " " : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + (c12 ? " " : ""));
 
 		return c12 ? component.append(suffix) : component;

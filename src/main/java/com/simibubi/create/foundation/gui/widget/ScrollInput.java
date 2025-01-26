@@ -9,7 +9,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollVa
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.gui.widget.AbstractSimiWidget;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -40,7 +39,9 @@ public class ScrollInput extends AbstractSimiWidget {
 		max = 1;
 		shiftStep = 5;
 		step = standardStep();
-		formatter = i -> Components.literal(String.valueOf(i));
+		formatter = i -> {
+            return Component.literal(String.valueOf(i));
+        };
 		soundPlayed = false;
 	}
 

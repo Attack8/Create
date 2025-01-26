@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
+import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 import com.simibubi.create.AllDataComponents;
@@ -17,7 +18,6 @@ import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.TypedDataComponent;
@@ -80,7 +80,7 @@ public class FilterItem extends Item implements MenuProvider {
 		List<Component> makeSummary = makeSummary(stack);
 		if (makeSummary.isEmpty())
 			return;
-		tooltip.add(Components.literal(" "));
+		tooltip.add(Component.literal(" "));
 		tooltip.addAll(makeSummary);
 	}
 
@@ -98,7 +98,7 @@ public class FilterItem extends Item implements MenuProvider {
 			int count = 0;
 			for (int i = 0; i < filterItems.getSlots(); i++) {
 				if (count > 3) {
-					list.add(Components.literal("- ...")
+                    list.add(Component.literal("- ...")
 						.withStyle(ChatFormatting.DARK_GRAY));
 					break;
 				}
@@ -106,7 +106,7 @@ public class FilterItem extends Item implements MenuProvider {
 				ItemStack filterStack = filterItems.getStackInSlot(i);
 				if (filterStack.isEmpty())
 					continue;
-				list.add(Components.literal("- ")
+                list.add(Component.literal("- ")
 					.append(filterStack.getHoverName())
 					.withStyle(ChatFormatting.GRAY));
 				count++;
@@ -133,11 +133,11 @@ public class FilterItem extends Item implements MenuProvider {
 					continue;
 				boolean inverted = attributeEntry.inverted();
 				if (count > 3) {
-					list.add(Components.literal("- ...")
+                    list.add(Component.literal("- ...")
 						.withStyle(ChatFormatting.DARK_GRAY));
 					break;
 				}
-				list.add(Components.literal("- ")
+                list.add(Component.literal("- ")
 					.append(attribute.format(inverted)));
 				count++;
 			}

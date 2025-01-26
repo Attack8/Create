@@ -18,9 +18,9 @@ import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
@@ -28,14 +28,25 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 public class StationSummaryDisplaySource extends DisplaySource {
 
-	protected static final MutableComponent UNPREDICTABLE = Components.literal(" ~ ");
+	protected static final MutableComponent UNPREDICTABLE;
 
-	protected static final List<MutableComponent> EMPTY_ENTRY_4 =
-		ImmutableList.of(WHITESPACE, Components.literal(" . "), WHITESPACE, WHITESPACE);
-	protected static final List<MutableComponent> EMPTY_ENTRY_5 =
-		ImmutableList.of(WHITESPACE, Components.literal(" . "), WHITESPACE, WHITESPACE, WHITESPACE);
+    static {
+        UNPREDICTABLE = Component.literal(" ~ ");
+    }
 
-	@Override
+    protected static final List<MutableComponent> EMPTY_ENTRY_4;
+
+    static {
+        EMPTY_ENTRY_4 = ImmutableList.of(WHITESPACE, Component.literal(" . "), WHITESPACE, WHITESPACE);
+    }
+
+    protected static final List<MutableComponent> EMPTY_ENTRY_5;
+
+    static {
+        EMPTY_ENTRY_5 = ImmutableList.of(WHITESPACE, Component.literal(" . "), WHITESPACE, WHITESPACE, WHITESPACE);
+    }
+
+    @Override
 	public List<MutableComponent> provideText(DisplayLinkContext context, DisplayTargetStats stats) {
 		return EMPTY;
 	}
@@ -67,7 +78,7 @@ public class StationSummaryDisplaySource extends DisplaySource {
 						min++;
 						sec = 0;
 					}
-					lines.add(min > 0 ? Components.literal(String.valueOf(min)) : WHITESPACE);
+					lines.add(min > 0 ? Component.literal(String.valueOf(min)) : WHITESPACE);
 					lines.add(min > 0 ? CreateLang.translateDirect("display_source.station_summary.minutes")
 						: CreateLang.translateDirect("display_source.station_summary.seconds", sec));
 				}
@@ -86,7 +97,7 @@ public class StationSummaryDisplaySource extends DisplaySource {
 						platform = platform.replace(string, "");
 				platform = platform.replace("*", "?");
 
-				lines.add(Components.literal(platform.trim()));
+				lines.add(Component.literal(platform.trim()));
 				list.add(lines);
 			});
 

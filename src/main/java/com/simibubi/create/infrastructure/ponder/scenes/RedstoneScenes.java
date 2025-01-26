@@ -19,7 +19,6 @@ import com.simibubi.create.content.redstone.nixieTube.NixieTubeBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 
 import net.createmod.catnip.math.Pointing;
-import net.createmod.catnip.lang.Components;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
 import net.createmod.ponder.api.element.ParrotPose;
@@ -31,6 +30,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -638,7 +638,7 @@ public class RedstoneScenes {
 			.withItem(clipboard);
 		scene.idle(7);
 
-		Component component = Components.literal("CREATE");
+        Component component = Component.literal("CREATE");
 		for (int i = 0; i < 3; i++) {
 			final int index = i;
 			scene.world().modifyBlockEntityNBT(util.select().position(3 - i, 1, 3), NixieTubeBlockEntity.class, nbt -> {

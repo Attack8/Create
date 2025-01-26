@@ -4,13 +4,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import net.createmod.catnip.lang.Lang;
+
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import com.simibubi.create.AllItems;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.gui.ScreenOpener;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -32,7 +33,7 @@ public class OpenCreateMenuButton extends Button {
 	public static final ItemStack ICON = AllItems.GOGGLES.asStack();
 
 	public OpenCreateMenuButton(int x, int y) {
-		super(x, y, 20, 20, Components.immutableEmpty(), OpenCreateMenuButton::click, DEFAULT_NARRATION);
+		super(x, y, 20, 20, Lang.IMMUTABLE_EMPTY, OpenCreateMenuButton::click, DEFAULT_NARRATION);
 	}
 
 	@Override

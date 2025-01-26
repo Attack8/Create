@@ -46,7 +46,7 @@ import net.createmod.catnip.data.IntAttached;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
-import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -114,9 +114,9 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		confirmButton.withCallback(() -> minecraft.player.closeContainer());
 		addRenderableWidget(confirmButton);
 
-		cyclicIndicator = new Indicator(leftPos + 21, topPos + 196, Components.immutableEmpty());
+		cyclicIndicator = new Indicator(leftPos + 21, topPos + 196, Lang.IMMUTABLE_EMPTY);
 		cyclicIndicator.state = schedule.cyclic ? State.ON : State.OFF;
-		
+
 		List<Component> tip = new ArrayList<>();
 		tip.add(CreateLang.translateDirect("schedule.loop"));
 		tip.add(CreateLang.translateDirect("gui.schematicannon.optionDisabled")
@@ -125,7 +125,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 			.withStyle(ChatFormatting.GRAY));
 		tip.add(CreateLang.translateDirect("schedule.loop2")
 			.withStyle(ChatFormatting.GRAY));
-		
+
 		List<Component> tipEnabled = new ArrayList<>(tip);
 		tipEnabled.set(1, CreateLang.translateDirect("gui.schematicannon.optionEnabled")
 			.withStyle(ChatFormatting.DARK_GREEN));
@@ -179,7 +179,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		resetProgress.visible = false;
 
 		scrollInput = new SelectionScrollInput(leftPos + 56, topPos + 65, 143, 16);
-		scrollInputLabel = new Label(leftPos + 59, topPos + 69, Components.immutableEmpty()).withShadow();
+		scrollInputLabel = new Label(leftPos + 59, topPos + 69, Lang.IMMUTABLE_EMPTY).withShadow();
 		editorConfirm = new IconButton(leftPos + 56 + 168, topPos + 65 + 22, AllIcons.I_CONFIRM);
 		if (allowDeletion)
 			editorDelete = new IconButton(leftPos + 56 - 45, topPos + 65 + 22, AllIcons.I_TRASH);
@@ -651,7 +651,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		if (editingCondition != null || editingDestination != null)
 			return false;
 
-		Component empty = Components.immutableEmpty();
+		Component empty = Lang.IMMUTABLE_EMPTY;
 
 		int mx = (int) mouseX;
 		int my = (int) mouseY;

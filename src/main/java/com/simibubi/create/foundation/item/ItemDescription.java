@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import net.createmod.catnip.lang.Lang;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +20,6 @@ import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.lang.FontHelper.Palette;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
@@ -143,20 +144,20 @@ public record ItemDescription(ImmutableList<Component> lines, ImmutableList<Comp
 			}
 
 			if (!behaviours.isEmpty()) {
-				linesOnShift.add(Components.immutableEmpty());
+				linesOnShift.add(Lang.IMMUTABLE_EMPTY);
 			}
 
 			for (Pair<String, String> behaviourPair : behaviours) {
 				String condition = behaviourPair.getLeft();
 				String behaviour = behaviourPair.getRight();
-				linesOnShift.add(Components.literal(condition).withStyle(GRAY));
+				linesOnShift.add(Component.literal(condition).withStyle(GRAY));
 				linesOnShift.addAll(TooltipHelper.cutStringTextComponent(behaviour, palette.primary(), palette.highlight(), 1));
 			}
 
 			for (Pair<String, String> actionPair : actions) {
 				String condition = actionPair.getLeft();
 				String action = actionPair.getRight();
-				linesOnCtrl.add(Components.literal(condition).withStyle(GRAY));
+				linesOnCtrl.add(Component.literal(condition).withStyle(GRAY));
 				linesOnCtrl.addAll(TooltipHelper.cutStringTextComponent(action, palette.primary(), palette.highlight(), 1));
 			}
 
@@ -177,30 +178,30 @@ public record ItemDescription(ImmutableList<Component> lines, ImmutableList<Comp
 					boolean ctrl = list == linesOnCtrl;
 
 					if (holdDesc.length != 2 || holdCtrl.length != 2) {
-						list.add(0, Components.literal("Invalid lang formatting!"));
+						list.add(0, Component.literal("Invalid lang formatting!"));
 						continue;
 					}
 
 					if (hasControls) {
-						MutableComponent tabBuilder = Components.empty();
-						tabBuilder.append(Components.literal(holdCtrl[0]).withStyle(DARK_GRAY));
+                        MutableComponent tabBuilder = Component.empty();
+						tabBuilder.append(Component.literal(holdCtrl[0]).withStyle(DARK_GRAY));
 						tabBuilder.append(keyCtrl.plainCopy()
 							.withStyle(ctrl ? WHITE : GRAY));
-						tabBuilder.append(Components.literal(holdCtrl[1]).withStyle(DARK_GRAY));
+						tabBuilder.append(Component.literal(holdCtrl[1]).withStyle(DARK_GRAY));
 						list.add(0, tabBuilder);
 					}
 
 					if (hasDescription) {
-						MutableComponent tabBuilder = Components.empty();
-						tabBuilder.append(Components.literal(holdDesc[0]).withStyle(DARK_GRAY));
+                        MutableComponent tabBuilder = Component.empty();
+						tabBuilder.append(Component.literal(holdDesc[0]).withStyle(DARK_GRAY));
 						tabBuilder.append(keyShift.plainCopy()
 							.withStyle(shift ? WHITE : GRAY));
-						tabBuilder.append(Components.literal(holdDesc[1]).withStyle(DARK_GRAY));
+						tabBuilder.append(Component.literal(holdDesc[1]).withStyle(DARK_GRAY));
 						list.add(0, tabBuilder);
 					}
 
 					if (shift || ctrl)
-						list.add(hasDescription && hasControls ? 2 : 1, Components.immutableEmpty());
+						list.add(hasDescription && hasControls ? 2 : 1, Lang.IMMUTABLE_EMPTY);
 				}
 			}
 

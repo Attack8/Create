@@ -21,7 +21,6 @@ import com.simibubi.create.content.trains.station.GlobalStation;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -34,7 +33,7 @@ public class DestinationInstruction extends TextScheduleInstruction {
 
 	@Override
 	public Pair<ItemStack, Component> getSummary() {
-		return Pair.of(AllBlocks.TRACK_STATION.asStack(), Components.literal(getLabelText()));
+		return Pair.of(AllBlocks.TRACK_STATION.asStack(), Component.literal(getLabelText()));
 	}
 
 	@Override

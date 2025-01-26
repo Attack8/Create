@@ -9,7 +9,7 @@ import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStat
 import com.simibubi.create.content.trains.display.FlapDisplayBlockEntity;
 import com.simibubi.create.content.trains.display.FlapDisplaySection;
 
-import net.createmod.catnip.lang.Components;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
@@ -47,11 +47,11 @@ public abstract class PercentOrProgressBarDisplaySource extends NumericSingleLin
 		for (int i = 0; i < emptySpaces; i++)
 			s.append("\u2592");
 
-		return Components.literal(s.toString());
+		return Component.literal(s.toString());
 	}
 
 	protected MutableComponent formatNumeric(DisplayLinkContext context, Float currentLevel) {
-		return Components.literal(Mth.clamp((int) (currentLevel * 100), 0, 100) + "%");
+		return Component.literal(Mth.clamp((int) (currentLevel * 100), 0, 100) + "%");
 	}
 
 	@Nullable

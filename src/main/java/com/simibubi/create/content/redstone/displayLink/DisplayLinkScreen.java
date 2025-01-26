@@ -27,7 +27,7 @@ import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.gui.widget.AbstractSimiWidget;
 import net.createmod.catnip.gui.widget.ElementWidget;
 import net.createmod.catnip.data.Couple;
-import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.lang.Lang;
 import net.createmod.ponder.foundation.ui.PonderTagScreen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -138,7 +138,7 @@ public class DisplayLinkScreen extends AbstractSimiScreen {
 			int rows = stats.maxRows();
 			int startIndex = Math.min(blockEntity.targetLine, rows);
 
-			targetLineLabel = new Label(x + 65, y + 109, Components.immutableEmpty()).withShadow();
+			targetLineLabel = new Label(x + 65, y + 109, Lang.IMMUTABLE_EMPTY).withShadow();
 			targetLineLabel.text = target.getLineOptionText(startIndex);
 
 			if (rows > 1) {
@@ -190,7 +190,7 @@ public class DisplayLinkScreen extends AbstractSimiScreen {
 		if (!sources.isEmpty()) {
 			int startIndex = Math.max(sources.indexOf(blockEntity.activeSource), 0);
 
-			sourceTypeLabel = new Label(x + 65, y + 30, Components.immutableEmpty()).withShadow();
+			sourceTypeLabel = new Label(x + 65, y + 30, Lang.IMMUTABLE_EMPTY).withShadow();
 			sourceTypeLabel.text = sources.get(startIndex)
 					.getName();
 

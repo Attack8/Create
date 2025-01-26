@@ -3,12 +3,13 @@ package com.simibubi.create.content.trains.station;
 import java.util.Objects;
 import java.util.Optional;
 
+import net.createmod.catnip.lang.Lang;
+
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllMapDecorationTypes;
 import com.simibubi.create.content.trains.track.TrackTargetingBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -35,7 +36,7 @@ public class StationMarker {
 		BlockPos source = NBTHelper.readBlockPos(tag, "source");
 		BlockPos target = NBTHelper.readBlockPos(tag, "target");
 		Component name = Component.Serializer.fromJson(tag.getString("name"), registries);
-		if (name == null) name = Components.immutableEmpty();
+		if (name == null) name = Lang.IMMUTABLE_EMPTY;
 
 		return new StationMarker(source, target, name);
 	}
@@ -49,7 +50,7 @@ public class StationMarker {
 		String name = stationOption.get()
 			.getStation().name;
 		return new StationMarker(pos, BlockEntityBehaviour.get(stationOption.get(), TrackTargetingBehaviour.TYPE)
-			.getPositionForMapMarker(), Components.literal(name));
+			.getPositionForMapMarker(), Component.literal(name));
 	}
 
 	public CompoundTag save(HolderLookup.Provider registries) {

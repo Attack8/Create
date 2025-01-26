@@ -25,7 +25,6 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.nbt.NBTHelper;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -66,13 +65,11 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 
 	// Shop feature
 	protected SmartInventory receivedPayments;
-	protected IItemHandler capability;
 
 	public StockTickerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
 		previouslyUsedAddress = "";
 		receivedPayments = new SmartInventory(27, this, 64, false);
-		capability = receivedPayments;
 		categories = new ArrayList<>();
 		hiddenCategoriesByPlayer = new HashMap<>();
 	}
@@ -81,7 +78,7 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 		event.registerBlockEntity(
 			Capabilities.ItemHandler.BLOCK,
 			AllBlockEntityTypes.STOCK_TICKER.get(),
-			(be, context) -> be.capability
+			(be, context) -> be.receivedPayments
 		);
 	}
 
@@ -233,7 +230,7 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 			summary.add(receivedPayments.getStackInSlot(i));
 		for (BigItemStack entry : summary.getStacksByCount())
 			CreateLang.builder()
-				.text(Components.translatable(entry.stack.getDescriptionId())
+				.text(Component.translatable(entry.stack.getDescriptionId())
 					.getString() + " x" + entry.count)
 				.style(ChatFormatting.GREEN)
 				.forGoggles(tooltip);
@@ -269,8 +266,8 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 
 		@Override
 		public Component getDisplayName() {
-			return Components.empty();
-		}
+            return Component.empty();
+        }
 
 	}
 
@@ -283,8 +280,8 @@ public class StockTickerBlockEntity extends StockCheckingBlockEntity implements 
 
 		@Override
 		public Component getDisplayName() {
-			return Components.empty();
-		}
+            return Component.empty();
+        }
 
 	}
 

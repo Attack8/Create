@@ -7,6 +7,9 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+import net.createmod.catnip.platform.CatnipServices;
+import net.minecraft.network.chat.MutableComponent;
+
 import org.lwjgl.glfw.GLFW;
 
 import com.google.common.collect.ImmutableList;
@@ -27,8 +30,6 @@ import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.gui.UIRenderHelper;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Components;
-import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -94,7 +95,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		editorConfirm = new IconButton(leftPos + 36 + 131, topPos + 59, AllIcons.I_CONFIRM);
 		menu.slotsActive = true;
 
-		editorEditBox = new EditBox(font, leftPos + 47, topPos + 28, 124, 10, Components.empty());
+        editorEditBox = new EditBox(font, leftPos + 47, topPos + 28, 124, 10, Component.empty());
 		editorEditBox.setTextColor(0xffeeeeee);
 		editorEditBox.setBordered(false);
 		editorEditBox.setFocused(false);
@@ -128,7 +129,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		ItemStack stackInSlot = menu.proxyInventory.getStackInSlot(0)
 			.copy();
 		if (!stackInSlot.isEmpty())
-			stackInSlot.set(DataComponents.CUSTOM_NAME, Components.literal(editorEditBox.getValue()));
+			stackInSlot.set(DataComponents.CUSTOM_NAME, Component.literal(editorEditBox.getValue()));
 
 		if (editingIndex == -1)
 			schedule.add(stackInSlot);

@@ -1,5 +1,7 @@
 package com.simibubi.create.content.schematics.client;
 
+import net.createmod.catnip.lang.Lang;
+
 import org.lwjgl.glfw.GLFW;
 
 import com.simibubi.create.AllItems;
@@ -11,7 +13,6 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -42,7 +43,7 @@ public class SchematicPromptScreen extends AbstractSimiScreen {
 		int x = guiLeft;
 		int y = guiTop + 2;
 
-		nameField = new EditBox(font, x + 49, y + 26, 131, 10, Components.immutableEmpty());
+		nameField = new EditBox(font, x + 49, y + 26, 131, 10, Lang.IMMUTABLE_EMPTY);
 		nameField.setTextColor(-1);
 		nameField.setTextColorUneditable(-1);
 		nameField.setBordered(false);

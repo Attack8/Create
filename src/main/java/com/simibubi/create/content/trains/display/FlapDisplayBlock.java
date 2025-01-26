@@ -16,7 +16,6 @@ import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.foundation.block.IBE;
 
 import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.placement.IPlacementHelper;
 import net.createmod.catnip.placement.PlacementHelpers;
 import net.createmod.catnip.placement.PlacementOffset;
@@ -173,10 +172,11 @@ public class FlapDisplayBlock extends HorizontalKineticBlock
 			if (AllBlocks.CLIPBOARD.isIn(stack)) {
 				List<ClipboardEntry> entries = ClipboardEntry.getLastViewedEntries(stack);
 				int line = lineIndex;
-				for (ClipboardEntry entry : entries) {
-					for (String string : entry.text.getString()
-							.split("\n"))
-						flapBE.applyTextManually(line++, Components.literal(string));
+				for (int i = 0; i < entries.size(); i++) {
+					for (String string : entries.get(i).text.getString()
+						.split("\n")) {
+                        flapBE.applyTextManually(line++, Component.literal(string));
+                    }
 				}
 				return ItemInteractionResult.SUCCESS;
 			}

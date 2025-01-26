@@ -2,6 +2,8 @@ package com.simibubi.create.foundation.mixin.compat.journeymap;
 
 import java.awt.geom.Point2D;
 
+import journeymap.client.render.map.MapRenderer;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,19 +14,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.simibubi.create.compat.trainmap.JourneyTrainMap;
 
-import journeymap.client.render.map.MapRenderer;
 import journeymap.client.ui.fullscreen.Fullscreen;
 import net.minecraft.client.gui.GuiGraphics;
 
 @Mixin(Fullscreen.class)
 public abstract class JourneyFullscreenMapMixin {
-	@Shadow @Final
+	@Final
+	@Shadow(remap = false)
 	private static MapRenderer mapRenderer;
 
-	@Shadow
+	@Shadow(remap = false)
 	private Boolean isDragging;
 
-	@Shadow
+	@Shadow(remap = false)
 	protected abstract Point2D.Double getMouseDrag();
 
 	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;IIF)V", at = @At(target = "Ljourneymap/client/ui/fullscreen/Fullscreen;drawMap(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;II)V", value = "INVOKE", shift = Shift.AFTER))

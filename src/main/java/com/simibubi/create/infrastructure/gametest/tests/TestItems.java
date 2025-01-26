@@ -21,13 +21,13 @@ import com.simibubi.create.infrastructure.gametest.CreateGameTestHelper;
 import com.simibubi.create.infrastructure.gametest.GameTestGroup;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
@@ -345,7 +345,7 @@ public class TestItems {
 		helper.succeedWhen(() -> {
 			for (int i = 0; i < 2; i++) {
 				FlapDisplayLayout line = display.getLines().get(i);
-				MutableComponent textComponent = Components.empty();
+                MutableComponent textComponent = Component.empty();
 				line.getSections().stream().map(FlapDisplaySection::getText).forEach(textComponent::append);
 				String text = textComponent.getString().toLowerCase(Locale.ROOT).trim();
 

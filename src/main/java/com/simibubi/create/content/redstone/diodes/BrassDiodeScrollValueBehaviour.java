@@ -7,7 +7,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -69,7 +68,7 @@ public class BrassDiodeScrollValueBehaviour extends ScrollValueBehaviour {
 
 	public MutableComponent formatSettings(ValueSettings settings) {
 		int value = Math.max(1, settings.value());
-		return Components.literal(switch (settings.row()) {
+		return Component.literal(switch (settings.row()) {
 		case 0 -> Math.max(2, value) + "t";
 		case 1 -> "0:" + (value < 10 ? "0" : "") + value;
 		default -> value + ":00";

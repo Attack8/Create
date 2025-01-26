@@ -35,7 +35,6 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.nbt.NBTHelper;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -796,8 +795,8 @@ public class BrassTunnelBlockEntity extends BeltTunnelBlockEntity implements IHa
 
 		CreateLang.translate("tooltip.brass_tunnel.contains").style(ChatFormatting.WHITE).forGoggles(tooltip);
 		for (ItemStack item : allStacks) {
-			CreateLang.translate("tooltip.brass_tunnel.contains_entry",
-					Components.translatable(item.getDescriptionId()).getString(), item.getCount())
+            CreateLang.translate("tooltip.brass_tunnel.contains_entry",
+					Component.translatable(item.getDescriptionId()).getString(), item.getCount())
 					.style(ChatFormatting.GRAY).forGoggles(tooltip);
 		}
 		CreateLang.translate("tooltip.brass_tunnel.retrieve").style(ChatFormatting.DARK_GRAY).forGoggles(tooltip);

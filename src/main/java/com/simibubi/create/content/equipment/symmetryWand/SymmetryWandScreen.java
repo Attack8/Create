@@ -1,5 +1,6 @@
 package com.simibubi.create.content.equipment.symmetryWand;
 
+import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.platform.CatnipServices;
 
 import org.joml.Vector3f;
@@ -21,7 +22,6 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -65,9 +65,9 @@ public class SymmetryWandScreen extends AbstractSimiScreen {
 		int x = guiLeft;
 		int y = guiTop;
 
-		labelType = new Label(x + 51, y + 28, Components.immutableEmpty()).colored(0xFFFFFFFF)
+		labelType = new Label(x + 51, y + 28, Lang.IMMUTABLE_EMPTY).colored(0xFFFFFFFF)
 			.withShadow();
-		labelAlign = new Label(x + 51, y + 50, Components.immutableEmpty()).colored(0xFFFFFFFF)
+		labelAlign = new Label(x + 51, y + 50, Lang.IMMUTABLE_EMPTY).colored(0xFFFFFFFF)
 			.withShadow();
 
 		int state =

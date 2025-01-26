@@ -7,6 +7,8 @@ import java.util.List;
 
 import net.createmod.catnip.platform.CatnipServices;
 
+import net.createmod.catnip.lang.Lang;
+
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -21,7 +23,6 @@ import com.simibubi.create.foundation.utility.ControlsUtil;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.lang.FontHelper.Palette;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
@@ -225,7 +226,7 @@ public class LinkedControllerClientHandler {
 
 		PoseStack poseStack = guiGraphics.pose();
 		poseStack.pushPose();
-		Screen tooltipScreen = new Screen(Components.immutableEmpty()) {
+		Screen tooltipScreen = new Screen(Lang.IMMUTABLE_EMPTY) {
 		};
 		tooltipScreen.init(mc, width1, height1);
 

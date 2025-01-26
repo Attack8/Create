@@ -8,10 +8,10 @@ import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRende
 import dev.engine_room.flywheel.lib.transform.Transform;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
 public class PostboxRenderer extends SmartBlockEntityRenderer<PostboxBlockEntity> {
@@ -24,8 +24,9 @@ public class PostboxRenderer extends SmartBlockEntityRenderer<PostboxBlockEntity
 	protected void renderSafe(PostboxBlockEntity blockEntity, float partialTicks, PoseStack ms,
 		MultiBufferSource buffer, int light, int overlay) {
 
-		if (blockEntity.addressFilter != null && !blockEntity.addressFilter.isBlank())
-			renderNameplateOnHover(blockEntity, Components.literal(blockEntity.addressFilter), 1, ms, buffer, light);
+		if (blockEntity.addressFilter != null && !blockEntity.addressFilter.isBlank()) {
+            renderNameplateOnHover(blockEntity, Component.literal(blockEntity.addressFilter), 1, ms, buffer, light);
+        }
 
 		SuperByteBuffer sbb = CachedBuffers.partial(AllPartialModels.POSTBOX_FLAG, blockEntity.getBlockState());
 

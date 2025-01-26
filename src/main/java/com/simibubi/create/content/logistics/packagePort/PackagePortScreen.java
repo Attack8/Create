@@ -17,7 +17,6 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.gui.widget.AbstractSimiWidget;
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -60,8 +59,8 @@ public class PackagePortScreen extends AbstractSimiContainerScreen<PackagePortMe
 
 		Consumer<String> onTextChanged;
 		onTextChanged = s -> addressBox.setX(nameBoxX(s, addressBox));
-		addressBox = new EditBox(new NoShadowFontWrapper(font), x + 23, y - 11, background.getWidth() - 20, 10,
-			Components.empty());
+        addressBox = new EditBox(new NoShadowFontWrapper(font), x + 23, y - 11, background.getWidth() - 20, 10,
+                Component.empty());
 		addressBox.setBordered(false);
 		addressBox.setMaxLength(25);
 		addressBox.setTextColor(0x3D3C48);

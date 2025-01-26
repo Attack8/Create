@@ -63,7 +63,8 @@ import com.simibubi.create.foundation.utility.TickBasedCache;
 import com.simibubi.create.infrastructure.command.AllCommands;
 
 import net.createmod.catnip.data.WorldAttached;
-import net.createmod.catnip.lang.Components;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
@@ -152,7 +153,7 @@ public class CommonEvents {
 	@SubscribeEvent
 	public static void onEntityTick(EntityTickEvent.Post event) {
 		CapabilityMinecartController.entityTick(event);
-		
+
 		if (event.getEntity() instanceof LivingEntity livingEntity) {
 			Level level = livingEntity.level();
 
@@ -259,7 +260,7 @@ public class CommonEvents {
 				}
 				IModFile modFile = modFileInfo.getFile();
 				event.addRepositorySource(consumer -> {
-					PackLocationInfo locationInfo = new PackLocationInfo(Create.asResource("legacy_copper").toString(), Components.literal("Create Legacy Copper"), PackSource.BUILT_IN, Optional.empty());
+                    PackLocationInfo locationInfo = new PackLocationInfo(Create.asResource("legacy_copper").toString(), Component.literal("Create Legacy Copper"), PackSource.BUILT_IN, Optional.empty());
 					PathPackResources.PathResourcesSupplier resourcesSupplier = new PathPackResources.PathResourcesSupplier(modFile.findResource("resourcepacks/legacy_copper"));
 					PackSelectionConfig packSelectionConfig = new PackSelectionConfig(false, Pack.Position.TOP, false);
 					Pack pack = Pack.readMetaAndCreate(locationInfo, resourcesSupplier, PackType.CLIENT_RESOURCES, packSelectionConfig);

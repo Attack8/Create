@@ -27,7 +27,7 @@ import net.createmod.catnip.gui.UIRenderHelper;
 import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -72,7 +72,7 @@ public class StationScreen extends AbstractStationScreen {
 
 		onTextChanged = s -> nameBox.setX(nameBoxX(s, nameBox));
 		nameBox = new EditBox(new NoShadowFontWrapper(font), x + 23, y + 4, background.getWidth() - 20, 10,
-			Components.literal(station.name));
+			Component.literal(station.name));
 		nameBox.setBordered(false);
 		nameBox.setMaxLength(25);
 		nameBox.setTextColor(0x592424);
@@ -120,7 +120,7 @@ public class StationScreen extends AbstractStationScreen {
 		addRenderableWidget(colorTypeScroll);
 
 		onTextChanged = s -> trainNameBox.setX(nameBoxX(s, trainNameBox));
-		trainNameBox = new EditBox(font, x + 23, y + 47, background.getWidth() - 75, 10, Components.immutableEmpty());
+		trainNameBox = new EditBox(font, x + 23, y + 47, background.getWidth() - 75, 10, Lang.IMMUTABLE_EMPTY);
 		trainNameBox.setBordered(false);
 		trainNameBox.setMaxLength(35);
 		trainNameBox.setTextColor(0xC6C6C6);

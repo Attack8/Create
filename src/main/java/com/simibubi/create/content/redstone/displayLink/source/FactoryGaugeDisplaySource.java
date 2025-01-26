@@ -11,8 +11,8 @@ import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelPosition;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
 
 import net.createmod.catnip.data.IntAttached;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -51,7 +51,7 @@ public class FactoryGaugeDisplaySource extends ValueListDisplaySource {
 				s = "\u25aa";
 		}
 
-		return IntAttached.with(panel.getLevelInStorage(), Components.literal(s + " ")
+		return IntAttached.with(panel.getLevelInStorage(), Component.literal(s + " ")
 			.withStyle(style -> style.withColor(panel.getIngredientStatusColor()))
 			.append(filter.getHoverName()
 				.plainCopy()

@@ -19,7 +19,8 @@ import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -92,9 +93,9 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		});
 		blacklist.setToolTip(denyN);
 
-		whitelistDisIndicator = new Indicator(x + 47, y + 55, Components.immutableEmpty());
-		whitelistConIndicator = new Indicator(x + 65, y + 55, Components.immutableEmpty());
-		blacklistIndicator = new Indicator(x + 83, y + 55, Components.immutableEmpty());
+		whitelistDisIndicator = new Indicator(x + 47, y + 55, Lang.IMMUTABLE_EMPTY);
+		whitelistConIndicator = new Indicator(x + 65, y + 55, Lang.IMMUTABLE_EMPTY);
+		blacklistIndicator = new Indicator(x + 83, y + 55, Lang.IMMUTABLE_EMPTY);
 
 		addRenderableWidgets(blacklist, whitelistCon, whitelistDis, blacklistIndicator, whitelistConIndicator,
 			whitelistDisIndicator);
@@ -112,10 +113,10 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 
 		handleIndicators();
 
-		attributeSelectorLabel = new Label(x + 43, y + 28, Components.immutableEmpty()).colored(0xF3EBDE)
+		attributeSelectorLabel = new Label(x + 43, y + 28, Lang.IMMUTABLE_EMPTY).colored(0xF3EBDE)
 			.withShadow();
 		attributeSelector = new SelectionScrollInput(x + 39, y + 23, 137, 18);
-		attributeSelector.forOptions(Arrays.asList(Components.immutableEmpty()));
+		attributeSelector.forOptions(Arrays.asList(Lang.IMMUTABLE_EMPTY));
 		attributeSelector.removeCallback();
 		referenceItemChanged(menu.ghostInventory.getStackInSlot(0));
 
@@ -125,10 +126,12 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		selectedAttributes.clear();
 		selectedAttributes.add((menu.selectedAttributes.isEmpty() ? noSelectedT : selectedT).plainCopy()
 			.withStyle(ChatFormatting.YELLOW));
-		menu.selectedAttributes.forEach(at -> selectedAttributes.add(Components.literal("- ")
-			.append(at.attribute()
-				.format(at.inverted()))
-			.withStyle(ChatFormatting.GRAY)));
+		menu.selectedAttributes.forEach(at -> {
+            selectedAttributes.add(Component.literal("- ")
+                .append(at.attribute()
+                    .format(at.inverted()))
+                .withStyle(ChatFormatting.GRAY));
+        });
 	}
 
 	private void referenceItemChanged(ItemStack stack) {
@@ -242,7 +245,7 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		if (menu.selectedAttributes.size() == 1)
 			selectedAttributes.set(0, selectedT.plainCopy()
 				.withStyle(ChatFormatting.YELLOW));
-		selectedAttributes.add(Components.literal("- ").append(itemAttribute.format(inverted))
+        selectedAttributes.add(Component.literal("- ").append(itemAttribute.format(inverted))
 			.withStyle(ChatFormatting.GRAY));
 		return true;
 	}

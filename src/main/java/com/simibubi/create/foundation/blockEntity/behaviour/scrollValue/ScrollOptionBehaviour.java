@@ -6,7 +6,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatter.ScrollOptionSettingsFormatter;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.BlockHitResult;
@@ -31,7 +30,7 @@ public class ScrollOptionBehaviour<E extends Enum<E> & INamedIconOptions> extend
 
 	@Override
 	public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-		return new ValueSettingsBoard(label, max, 1, ImmutableList.of(Components.literal("Select")),
+		return new ValueSettingsBoard(label, max, 1, ImmutableList.of(Component.literal("Select")),
 			new ScrollOptionSettingsFormatter(options));
 	}
 

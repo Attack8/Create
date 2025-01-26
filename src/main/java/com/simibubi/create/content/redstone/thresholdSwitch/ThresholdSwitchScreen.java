@@ -21,11 +21,11 @@ import net.createmod.catnip.gui.ScreenOpener;
 import net.createmod.catnip.gui.element.GuiGameElement;
 import net.createmod.catnip.gui.widget.AbstractSimiWidget;
 import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.lang.Components;
 import net.createmod.ponder.foundation.ui.PonderTagScreen;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -160,17 +160,17 @@ public class ThresholdSwitchScreen extends AbstractSimiScreen {
 
 		}
 
-		graphics.drawString(font,
-			Components.literal("\u2265 " + (typeOfCurrentTarget == ThresholdType.UNSUPPORTED ? ""
-				: forItems ? onAbove.getState() / valueStep
-					: blockEntity.format(onAbove.getState() / valueStep, stacks)
-						.getString())),
+        graphics.drawString(font,
+                Component.literal("\u2265 " + (typeOfCurrentTarget == ThresholdType.UNSUPPORTED ? ""
+                        : forItems ? onAbove.getState() / valueStep
+                        : blockEntity.format(onAbove.getState() / valueStep, stacks)
+                        .getString())),
 			x + 53, y + 28, 0xFFFFFFFF, true);
-		graphics.drawString(font,
-			Components.literal("\u2264 " + (typeOfCurrentTarget == ThresholdType.UNSUPPORTED ? ""
-				: forItems ? offBelow.getState() / valueStep
-					: blockEntity.format(offBelow.getState() / valueStep, stacks)
-						.getString())),
+        graphics.drawString(font,
+                Component.literal("\u2264 " + (typeOfCurrentTarget == ThresholdType.UNSUPPORTED ? ""
+                        : forItems ? offBelow.getState() / valueStep
+                        : blockEntity.format(offBelow.getState() / valueStep, stacks)
+                        .getString())),
 			x + 53, y + 28 + 24, 0xFFFFFFFF, true);
 
 		GuiGameElement.of(renderedItem).<GuiGameElement

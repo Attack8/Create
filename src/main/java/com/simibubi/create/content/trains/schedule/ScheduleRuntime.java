@@ -19,10 +19,10 @@ import com.simibubi.create.content.trains.schedule.destination.ScheduleInstructi
 import com.simibubi.create.content.trains.station.GlobalStation;
 
 import net.createmod.catnip.nbt.NBTHelper;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
@@ -346,8 +346,9 @@ public class ScheduleRuntime {
 
 		int size = schedule.entries.size();
 		if (index >= size) {
-			if (!schedule.cyclic)
-				return new TrainDeparturePrediction(train, time, Components.literal(" "), destination);
+			if (!schedule.cyclic) {
+				return new TrainDeparturePrediction(train, time, Component.literal(" "), destination);
+			}
 			index %= size;
 		}
 
@@ -365,7 +366,7 @@ public class ScheduleRuntime {
 			}
 		}
 
-		return new TrainDeparturePrediction(train, time, Components.literal(text), destination);
+		return new TrainDeparturePrediction(train, time, Component.literal(text), destination);
 	}
 
 	public CompoundTag write(HolderLookup.Provider registries) {
@@ -423,12 +424,12 @@ public class ScheduleRuntime {
 	public MutableComponent getWaitingStatus(Level level) {
 		List<List<ScheduleWaitCondition>> conditions = schedule.entries.get(currentEntry).conditions;
 		if (conditions.isEmpty() || conditionProgress.isEmpty() || conditionContext.isEmpty())
-			return Components.empty();
+			return Component.empty();
 
 		List<ScheduleWaitCondition> list = conditions.get(0);
 		int progress = conditionProgress.get(0);
 		if (progress >= list.size())
-			return Components.empty();
+			return Component.empty();
 
 		CompoundTag tag = conditionContext.get(0);
 		ScheduleWaitCondition condition = list.get(progress);

@@ -4,6 +4,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 import com.simibubi.create.compat.computercraft.implementation.CreateLuaTable;
@@ -18,7 +20,6 @@ import com.simibubi.create.foundation.utility.StringHelper;
 import dan200.computercraft.api.lua.IArguments;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
@@ -127,7 +128,7 @@ public class StationPeripheral extends SyncedPeripheral<StationBlockEntity> {
 	@LuaFunction(mainThread = true)
 	public final void setTrainName(String name) throws LuaException {
 		Train train = getTrainOrThrow();
-		train.name = Components.literal(name);
+        train.name = Component.literal(name);
 		CatnipServices.NETWORK.sendToAllClients(new TrainEditPacket.TrainEditReturnPacket(train.id, name, train.icon.getId(), train.mapColorIndex));
 	}
 

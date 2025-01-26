@@ -19,7 +19,7 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
 import net.createmod.catnip.math.VecHelper;
-import net.createmod.catnip.lang.Components;
+import net.createmod.ponder.render.VirtualRenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -163,9 +163,9 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 
 		@Override
 		public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-			ImmutableList<Component> rows = ImmutableList.of(Components.literal("\u27f3")
+            ImmutableList<Component> rows = ImmutableList.of(Component.literal("\u27f3")
 				.withStyle(ChatFormatting.BOLD),
-				Components.literal("\u27f2")
+				Component.literal("\u27f2")
 					.withStyle(ChatFormatting.BOLD));
 			return new ValueSettingsBoard(label, 180, 45, rows, new ValueSettingsFormatter(this::formatValue));
 		}

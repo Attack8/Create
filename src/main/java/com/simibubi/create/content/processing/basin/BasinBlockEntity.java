@@ -38,7 +38,6 @@ import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.lang.LangBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -745,8 +744,8 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 			ItemStack stackInSlot = itemCapability.getStackInSlot(i);
 			if (stackInSlot.isEmpty())
 				continue;
-			CreateLang.text("")
-				.add(Components.translatable(stackInSlot.getDescriptionId())
+            CreateLang.text("")
+				.add(Component.translatable(stackInSlot.getDescriptionId())
 					.withStyle(ChatFormatting.GRAY))
 				.add(CreateLang.text(" x" + stackInSlot.getCount())
 					.style(ChatFormatting.GREEN))

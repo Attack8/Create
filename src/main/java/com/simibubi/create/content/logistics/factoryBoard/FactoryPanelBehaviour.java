@@ -13,6 +13,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.network.chat.Component;
+
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
@@ -50,7 +52,6 @@ import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.codecs.CatnipCodecs;
 import net.createmod.catnip.gui.ScreenOpener;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
@@ -812,8 +813,11 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 
 	@Override
 	public MutableComponent formatValue(ValueSettings value) {
-		return value.value() == 0 ? CreateLang.translateDirect("gui.factory_panel.inactive")
-			: Components.literal(Math.max(0, value.value()) + ((value.row() == 0) ? "" : "\u25A4"));
+		if (value.value() == 0) {
+			return CreateLang.translateDirect("gui.factory_panel.inactive");
+		} else {
+			return Component.literal(Math.max(0, value.value()) + ((value.row() == 0) ? "" : "\u25A4"));
+		}
 	}
 
 	@Override
@@ -907,9 +911,10 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 	@Override
 	public MutableComponent getCountLabelForValueBox() {
 		if (filter.isEmpty())
-			return Components.empty();
-		if (waitingForNetwork)
-			return Components.literal("?");
+            return Component.empty();
+		if (waitingForNetwork) {
+			return Component.literal("?");
+		}
 
 		int levelInStorage = getLevelInStorage();
 		boolean inf = levelInStorage >= BigItemStack.INF;

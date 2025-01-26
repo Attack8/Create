@@ -10,11 +10,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Train;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.UuidArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,14 +41,16 @@ public class TrainCommand {
 	private static int runDelete(CommandSourceStack source, UUID argument) {
 		Train train = Create.RAILWAYS.trains.get(argument);
 		if (train == null) {
-			source.sendFailure(Components.literal("No Train with id " + argument.toString()
+			source.sendFailure(Component.literal("No Train with id " + argument.toString()
 				.substring(0, 5) + "[...] was found"));
 			return 0;
 		}
 
 		train.invalid = true;
-		source.sendSuccess(() -> Components.literal("Train '").append(train.name)
-			.append("' removed successfully"), true);
+		source.sendSuccess(() -> {
+            return Component.literal("Train '").append(train.name)
+                .append("' removed successfully");
+        }, true);
 		return Command.SINGLE_SUCCESS;
 	}
 
@@ -56,13 +58,13 @@ public class TrainCommand {
 		ServerPlayer serverPlayer = source.getPlayerOrException();
 		GameType gameMode = serverPlayer.gameMode.getGameModeForPlayer();
 		if (gameMode != GameType.CREATIVE && gameMode != GameType.SPECTATOR) {
-			source.sendFailure(Components.literal("Can only teleport to train when in Creative or Spectator Mode!"));
+			source.sendFailure(Component.literal("Can only teleport to train when in Creative or Spectator Mode!"));
 			return 0;
 		}
 
 		Train train = Create.RAILWAYS.trains.get(argument);
 		if (train == null) {
-			source.sendFailure(Components.literal("No Train with id " + argument.toString()
+			source.sendFailure(Component.literal("No Train with id " + argument.toString()
 				.substring(0, 5) + "[...] was found"));
 			return 0;
 		}
@@ -70,7 +72,7 @@ public class TrainCommand {
 		List<ResourceKey<Level>> presentDimensions = train.getPresentDimensions();
 
 		if (presentDimensions.isEmpty()) {
-			source.sendFailure(Components.literal("Unable to teleport to Train. No valid location found"));
+			source.sendFailure(Component.literal("Unable to teleport to Train. No valid location found"));
 			return 0;
 		}
 
@@ -79,7 +81,7 @@ public class TrainCommand {
 		Optional<BlockPos> positionInDimension = train.getPositionInDimension(levelKey);
 
 		if (positionInDimension.isEmpty() || serverLevel == null) {
-			source.sendFailure(Components.literal("Unable to teleport to Train. No valid location found"));
+			source.sendFailure(Component.literal("Unable to teleport to Train. No valid location found"));
 			return 0;
 		}
 
@@ -94,8 +96,10 @@ public class TrainCommand {
 			serverPlayer.getViewXRot(0)
 		);
 
-		source.sendSuccess(() -> Components.literal("Teleported to Train '").append(train.name)
-			.append("' successfully"), true);
+		source.sendSuccess(() -> {
+            return Component.literal("Teleported to Train '").append(train.name)
+                .append("' successfully");
+        }, true);
 		return Command.SINGLE_SUCCESS;
 	}
 

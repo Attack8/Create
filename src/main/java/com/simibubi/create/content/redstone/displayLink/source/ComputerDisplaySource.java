@@ -6,9 +6,9 @@ import java.util.List;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
 import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStats;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 public class ComputerDisplaySource extends DisplaySource {
@@ -19,7 +19,7 @@ public class ComputerDisplaySource extends DisplaySource {
 		ListTag tag = context.sourceConfig().getList("ComputerSourceList", Tag.TAG_STRING);
 
 		for (int i = 0; i < tag.size(); i++) {
-			components.add(Components.literal(tag.getString(i)));
+			components.add(Component.literal(tag.getString(i)));
 		}
 
 		return components;

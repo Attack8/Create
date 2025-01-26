@@ -20,9 +20,9 @@ import com.simibubi.create.content.schematics.SchematicExport;
 import com.simibubi.create.content.schematics.SchematicExport.SchematicExportResult;
 import com.simibubi.create.content.schematics.client.SchematicAndQuillHandler;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.fml.loading.FMLPaths;
 
@@ -53,15 +53,16 @@ public class CreateTestCommand {
 	private static int handleExport(CommandSourceStack source, ServerLevel level, String path) {
 		SchematicAndQuillHandler handler = CreateClient.SCHEMATIC_AND_QUILL_HANDLER;
 		if (handler.firstPos == null || handler.secondPos == null) {
-			source.sendFailure(Components.literal("You must select an area with the Schematic and Quill first."));
+			source.sendFailure(Component.literal("You must select an area with the Schematic and Quill first."));
 			return 0;
 		}
 		SchematicExportResult result = SchematicExport.saveSchematic(
 				gametests, path, true,
 				level, handler.firstPos, handler.secondPos
 		);
-		if (result == null)
-			source.sendFailure(Components.literal("Failed to export, check logs").withStyle(ChatFormatting.RED));
+		if (result == null) {
+            source.sendFailure(Component.literal("Failed to export, check logs").withStyle(ChatFormatting.RED));
+        }
 		else {
 			sendSuccess(source, "Successfully exported test!", ChatFormatting.GREEN);
 			sendSuccess(source, "Overwritten: " + result.overwritten(), ChatFormatting.AQUA);
@@ -71,7 +72,9 @@ public class CreateTestCommand {
 	}
 
 	private static void sendSuccess(CommandSourceStack source, String text, ChatFormatting color) {
-		source.sendSuccess(() -> Components.literal(text).withStyle(color), true);
+		source.sendSuccess(() -> {
+            return Component.literal(text).withStyle(color);
+        }, true);
 	}
 
 	// find existing tests and folders for autofill

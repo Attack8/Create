@@ -14,9 +14,9 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
 
 public class SequencedGearshiftScreen extends AbstractSimiScreen {
@@ -166,7 +166,7 @@ public class SequencedGearshiftScreen extends AbstractSimiScreen {
 			if (def.hasValueParameter) {
 				String text = def.formatValue(instruction.value);
 				int stringWidth = font.width(text);
-				label(graphics, 90 + (12 - stringWidth / 2), yOffset - 1, Components.literal(text));
+                label(graphics, 90 + (12 - stringWidth / 2), yOffset - 1, Component.literal(text));
 			}
 			if (def.hasSpeedParameter)
 				label(graphics, 127, yOffset - 1, instruction.speedModifier.label);

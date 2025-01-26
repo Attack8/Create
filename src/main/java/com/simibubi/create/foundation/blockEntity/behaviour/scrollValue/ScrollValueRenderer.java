@@ -13,7 +13,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBox.IconValueBo
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBox.TextValueBox;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -92,7 +91,7 @@ public class ScrollValueRenderer {
 		if (behaviour instanceof ScrollOptionBehaviour) {
 			box = new IconValueBox(label, ((ScrollOptionBehaviour<?>) behaviour).getIconForSelected(), bb, pos);
 		} else {
-			box = new TextValueBox(label, bb, pos, Components.literal(behaviour.formatValue()));
+            box = new TextValueBox(label, bb, pos, Component.literal(behaviour.formatValue()));
 		}
 
 		box.passive(!highlight)

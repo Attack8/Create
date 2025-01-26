@@ -13,7 +13,6 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.Pro
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -61,10 +60,11 @@ public class DeployerApplicationRecipe extends ItemApplicationRecipe implements 
 	public Component getDescriptionForAssembly() {
 		ItemStack[] matchingStacks = ingredients.get(1)
 			.getItems();
-		if (matchingStacks.length == 0)
-			return Components.literal("Invalid");
+		if (matchingStacks.length == 0) {
+            return Component.literal("Invalid");
+        }
 		return CreateLang.translateDirect("recipe.assembly.deploying_item",
-			Components.translatable(matchingStacks[0].getDescriptionId()).getString());
+			Component.translatable(matchingStacks[0].getDescriptionId()).getString());
 	}
 
 	@Override

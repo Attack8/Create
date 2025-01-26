@@ -23,10 +23,10 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.foundation.utility.FilesHelper;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -166,7 +166,7 @@ public class ClientSchematicLoader {
 						if (Files.isDirectory(path))
 							return;
 
-						availableSchematics.add(Components.literal(path.getFileName().toString()));
+                        availableSchematics.add(Component.literal(path.getFileName().toString()));
 					});
 		} catch (NoSuchFileException e) {
 			// No Schematics created yet

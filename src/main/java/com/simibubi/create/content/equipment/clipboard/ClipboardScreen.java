@@ -31,7 +31,6 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.createmod.catnip.gui.AbstractSimiScreen;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -102,7 +101,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 		currentEntries = pages.get(currentPage);
 		boolean startEmpty = currentEntries.isEmpty();
 		if (startEmpty)
-			currentEntries.add(new ClipboardEntry(false, Components.empty()));
+            currentEntries.add(new ClipboardEntry(false, Component.empty()));
 		editingIndex = 0;
 		editContext = new TextFieldHelper(this::getCurrentEntryText, this::setCurrentEntryText, this::getClipboard,
 			this::setClipboard, this::validateTextForEntry);
@@ -128,7 +127,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 			editingIndex = -1;
 			currentEntries.removeIf(ce -> ce.checked);
 			if (currentEntries.isEmpty())
-				currentEntries.add(new ClipboardEntry(false, Components.empty()));
+                currentEntries.add(new ClipboardEntry(false, Component.empty()));
 			sendIfEditingBlock();
 		});
 		clearBtn.setToolTip(CreateLang.translateDirect("gui.clipboard.erase_checked"));
@@ -187,7 +186,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 				ClipboardEntry clipboardEntry = currentEntries.get(i);
 				String text = clipboardEntry.text.getString();
 				totalHeight +=
-					Math.max(12, font.split(Components.literal(text), clipboardEntry.icon.isEmpty() ? 150 : 130)
+					Math.max(12, font.split(Component.literal(text), clipboardEntry.icon.isEmpty() ? 150 : 130)
 						.size() * 9 + 3);
 
 				if (totalHeight > my) {
@@ -204,7 +203,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 	}
 
 	private void setCurrentEntryText(String text) {
-		currentEntries.get(editingIndex).text = Components.literal(text);
+		currentEntries.get(editingIndex).text = Component.literal(text);
 		sendIfEditingBlock();
 	}
 
@@ -222,7 +221,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 		for (int i = 0; i < currentEntries.size(); i++) {
 			ClipboardEntry clipboardEntry = currentEntries.get(i);
 			String text = i == editingIndex ? newText : clipboardEntry.text.getString();
-			totalHeight += Math.max(12, font.split(Components.literal(text), 150)
+			totalHeight += Math.max(12, font.split(Component.literal(text), 150)
 				.size() * 9 + 3);
 		}
 		return totalHeight < 185;
@@ -255,7 +254,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 		}
 		currentEntries = pages.get(currentPage);
 		if (currentEntries.isEmpty()) {
-			currentEntries.add(new ClipboardEntry(false, Components.empty()));
+            currentEntries.add(new ClipboardEntry(false, Component.empty()));
 			if (!readonly) {
 				editingIndex = 0;
 				editContext.setCursorToEnd();
@@ -281,7 +280,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 		int y = guiTop - 8;
 
 		AllGuiTextures.CLIPBOARD.render(graphics, x, y);
-		graphics.drawString(font, Components.translatable("book.pageIndicator", currentPage + 1, getNumPages()),
+		graphics.drawString(font, Component.translatable("book.pageIndicator", currentPage + 1, getNumPages()),
 			x + 150, y + 9, 0x43ffffff, false);
 
 		for (int i = 0; i < currentEntries.size(); i++) {
@@ -298,7 +297,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 				RenderSystem.enableBlend();
 				(checked ? AllGuiTextures.CLIPBOARD_ADDRESS_INACTIVE : AllGuiTextures.CLIPBOARD_ADDRESS)
 					.render(graphics, x + 44, y + 50);
-				text = Components.literal(string.substring(1)
+				text = Component.literal(string.substring(1)
 					.stripLeading());
 			} else {
 				graphics.drawString(font, "\u25A1", x + 45, y + 51, checked ? 0x668D7F6B : 0xff8D7F6B, false);
@@ -433,7 +432,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 					if (currentEntries.size() <= editingIndex + 1
 						|| !currentEntries.get(editingIndex + 1).text.getString()
 							.isEmpty())
-						currentEntries.add(editingIndex + 1, new ClipboardEntry(false, Components.empty()));
+                        currentEntries.add(editingIndex + 1, new ClipboardEntry(false, Component.empty()));
 					editingIndex += 1;
 					editContext.setCursorToEnd();
 					if (validateTextForEntry(" "))
@@ -607,7 +606,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 			if (hoveredEntry != editingIndex && !readonly) {
 				editingIndex = hoveredEntry;
 				if (hoveredEntry >= currentEntries.size()) {
-					currentEntries.add(new ClipboardEntry(false, Components.empty()));
+                    currentEntries.add(new ClipboardEntry(false, Component.empty()));
 					if (!validateTextForEntry(" ")) {
 						currentEntries.remove(hoveredEntry);
 						editingIndex = -1;
@@ -858,7 +857,7 @@ public class ClipboardScreen extends AbstractSimiScreen {
 			contents = pContents;
 			x = pX;
 			y = pY;
-			asComponent = Components.literal(pContents)
+			asComponent = Component.literal(pContents)
 				.setStyle(pStyle);
 		}
 	}

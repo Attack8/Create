@@ -123,9 +123,9 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 		// debug routing info
 //		tooltip.addAll(routingTable.createSummary());
 //		if (!loopPorts.isEmpty())
-//			tooltip.add(Components.literal(loopPorts.size() + " Loop ports"));
+//			tooltip.add(Component.literal(loopPorts.size() + " Loop ports"));
 //		if (!travelPorts.isEmpty())
-//			tooltip.add(Components.literal(travelPorts.size() + " Travel ports"));
+//			tooltip.add(Component.literal(travelPorts.size() + " Travel ports"));
 //		return true;
 	}
 

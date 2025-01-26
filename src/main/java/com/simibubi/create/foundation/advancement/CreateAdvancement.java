@@ -8,7 +8,6 @@ import java.util.function.UnaryOperator;
 import com.simibubi.create.Create;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
@@ -18,6 +17,7 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.advancements.critereon.ItemUsedOnLocationTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -97,8 +97,8 @@ public class CreateAdvancement {
 		if (createBuilder.func != null)
 			createBuilder.icon(createBuilder.func.apply(registries));
 
-		mcBuilder.display(createBuilder.icon, Components.translatable(titleKey()),
-			Components.translatable(descriptionKey()).withStyle(s -> s.withColor(0xDBA213)),
+		mcBuilder.display(createBuilder.icon, Component.translatable(titleKey()),
+			Component.translatable(descriptionKey()).withStyle(s -> s.withColor(0xDBA213)),
 			id.equals("root") ? BACKGROUND : null, createBuilder.type.advancementType, createBuilder.type.toast,
 			createBuilder.type.announce, createBuilder.type.hide);
 

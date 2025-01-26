@@ -8,7 +8,6 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.simibubi.create.content.logistics.box.PackageItem;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -89,8 +88,9 @@ public class ChainConveyorRoutingTable {
 
 	public Collection<? extends Component> createSummary() {
 		ArrayList<Component> list = new ArrayList<>();
-		for (RoutingTableEntry entry : entriesByDistance)
-			list.add(Components.literal("    [" + entry.distance() + "] " + entry.port()));
+		for (RoutingTableEntry entry : entriesByDistance) {
+            list.add(Component.literal("    [" + entry.distance() + "] " + entry.port()));
+        }
 		return list;
 	}
 

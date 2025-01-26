@@ -5,7 +5,7 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -23,26 +23,26 @@ public class GoggleConfigScreen extends AbstractSimiScreen {
 	private final List<Component> tooltip;
 
 	public GoggleConfigScreen() {
-		Component componentSpacing = Components.literal("    ");
+		Component componentSpacing = Component.literal("    ");
 		tooltip = new ArrayList<>();
 		tooltip.add(componentSpacing.plainCopy()
 			.append(CreateLang.translateDirect("gui.config.overlay1")));
 		tooltip.add(componentSpacing.plainCopy()
 			.append(CreateLang.translateDirect("gui.config.overlay2")
 				.withStyle(ChatFormatting.GRAY)));
-		tooltip.add(Components.immutableEmpty());
+		tooltip.add(Lang.IMMUTABLE_EMPTY);
 		tooltip.add(componentSpacing.plainCopy()
 			.append(CreateLang.translateDirect("gui.config.overlay3")));
 		tooltip.add(componentSpacing.plainCopy()
 			.append(CreateLang.translateDirect("gui.config.overlay4")));
-		tooltip.add(Components.immutableEmpty());
+		tooltip.add(Lang.IMMUTABLE_EMPTY);
 		tooltip.add(componentSpacing.plainCopy()
 			.append(CreateLang.translateDirect("gui.config.overlay5")
 				.withStyle(ChatFormatting.GRAY)));
 		tooltip.add(componentSpacing.plainCopy()
 			.append(CreateLang.translateDirect("gui.config.overlay6")
 				.withStyle(ChatFormatting.GRAY)));
-		tooltip.add(Components.immutableEmpty());
+		tooltip.add(Lang.IMMUTABLE_EMPTY);
 		tooltip.add(componentSpacing.plainCopy()
 			.append(CreateLang.translateDirect("gui.config.overlay7")));
 		tooltip.add(componentSpacing.plainCopy()

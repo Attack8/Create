@@ -21,7 +21,6 @@ import com.simibubi.create.content.schematics.client.SchematicEditScreen;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.gui.ScreenOpener;
-import net.createmod.catnip.lang.Components;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -73,7 +72,7 @@ public class SchematicItem extends Item {
 	@OnlyIn(value = Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
 		if (stack.has(AllDataComponents.SCHEMATIC_FILE)) {
-			tooltip.add(Components.literal(ChatFormatting.GOLD + stack.get(AllDataComponents.SCHEMATIC_FILE)));
+			tooltip.add(Component.literal(ChatFormatting.GOLD + stack.get(AllDataComponents.SCHEMATIC_FILE)));
 		} else {
 			tooltip.add(CreateLang.translateDirect("schematic.invalid").withStyle(ChatFormatting.RED));
 		}

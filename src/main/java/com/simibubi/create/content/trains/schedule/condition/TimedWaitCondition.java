@@ -7,7 +7,6 @@ import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -58,15 +57,16 @@ public abstract class TimedWaitCondition extends ScheduleWaitCondition {
 	}
 
 	protected Component formatTime(boolean compact) {
-		if (compact)
-			return Components.literal(getValue() + getUnit().suffix);
-		return Components.literal(getValue() + " ").append(CreateLang.translateDirect(getUnit().key));
+		if (compact) {
+            return Component.literal(getValue() + getUnit().suffix);
+        }
+		return Component.literal(getValue() + " ").append(CreateLang.translateDirect(getUnit().key));
 	}
 
 	@Override
 	public List<Component> getTitleAs(String type) {
 		return ImmutableList.of(
-			Components.translatable(getId().getNamespace() + ".schedule." + type + "." + getId().getPath()),
+			Component.translatable(getId().getNamespace() + ".schedule." + type + "." + getId().getPath()),
 			CreateLang.translateDirect("schedule.condition.for_x_time", formatTime(false))
 				.withStyle(ChatFormatting.DARK_AQUA));
 	}
@@ -115,8 +115,8 @@ public abstract class TimedWaitCondition extends ScheduleWaitCondition {
 			(int) (showInMinutes ? Math.floor(ticksUntilDeparture / (20 * 60f)) : Math.ceil(ticksUntilDeparture / 100f) * 5);
 		String key = "generic." + (showInMinutes ? num == 1 ? "daytime.minute" : "unit.minutes"
 			: num == 1 ? "daytime.second" : "unit.seconds");
-		return CreateLang.translateDirect("schedule.condition." + getId().getPath() + ".status",
-			Components.literal(num + " ").append(CreateLang.translateDirect(key)));
+        return CreateLang.translateDirect("schedule.condition." + getId().getPath() + ".status",
+			Component.literal(num + " ").append(CreateLang.translateDirect(key)));
 	}
 
 }

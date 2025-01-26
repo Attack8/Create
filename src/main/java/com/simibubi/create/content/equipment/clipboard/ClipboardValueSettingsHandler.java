@@ -14,12 +14,12 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -102,7 +102,7 @@ public class ClipboardValueSettingsHandler {
 		if (smartBE instanceof ClipboardBlockEntity) {
 			List<MutableComponent> tip = new ArrayList<>();
 			tip.add(CreateLang.translateDirect("clipboard.actions"));
-			tip.add(CreateLang.translateDirect("clipboard.copy_other_clipboard", Components.keybind("key.use")));
+            tip.add(CreateLang.translateDirect("clipboard.copy_other_clipboard", Component.keybind("key.use")));
 			CreateClient.VALUE_SETTINGS_HANDLER.showHoverTip(tip);
 			return;
 		}
@@ -129,9 +129,9 @@ public class ClipboardValueSettingsHandler {
 		List<MutableComponent> tip = new ArrayList<>();
 		tip.add(CreateLang.translateDirect("clipboard.actions"));
 		if (canCopy)
-			tip.add(CreateLang.translateDirect("clipboard.to_copy", Components.keybind("key.use")));
+            tip.add(CreateLang.translateDirect("clipboard.to_copy", Component.keybind("key.use")));
 		if (canPaste)
-			tip.add(CreateLang.translateDirect("clipboard.to_paste", Components.keybind("key.attack")));
+            tip.add(CreateLang.translateDirect("clipboard.to_paste", Component.keybind("key.attack")));
 
 		CreateClient.VALUE_SETTINGS_HANDLER.showHoverTip(tip);
 	}

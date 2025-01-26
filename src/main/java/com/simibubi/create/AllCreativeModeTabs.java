@@ -7,6 +7,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import net.createmod.catnip.platform.CatnipServices;
+import net.minecraft.network.chat.Component;
+
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock;
@@ -29,8 +32,6 @@ import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
-import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
@@ -61,7 +62,7 @@ public class AllCreativeModeTabs {
 
 	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BASE_CREATIVE_TAB = REGISTER.register("base",
 		() -> CreativeModeTab.builder()
-			.title(Components.translatable("itemGroup.create.base"))
+			.title(Component.translatable("itemGroup.create.base"))
 			.withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
 			.icon(() -> AllBlocks.COGWHEEL.asStack())
 			.displayItems(new RegistrateDisplayItemsGenerator(true, AllCreativeModeTabs.BASE_CREATIVE_TAB))
@@ -69,7 +70,7 @@ public class AllCreativeModeTabs {
 
 	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> PALETTES_CREATIVE_TAB = REGISTER.register("palettes",
 		() -> CreativeModeTab.builder()
-			.title(Components.translatable("itemGroup.create.palettes"))
+			.title(Component.translatable("itemGroup.create.palettes"))
 			.withTabsBefore(BASE_CREATIVE_TAB.getKey())
 			.icon(() -> AllPaletteBlocks.ORNATE_IRON_WINDOW.asStack())
 			.displayItems(new RegistrateDisplayItemsGenerator(false, AllCreativeModeTabs.PALETTES_CREATIVE_TAB))

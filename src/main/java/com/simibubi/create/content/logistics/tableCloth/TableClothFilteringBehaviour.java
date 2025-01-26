@@ -6,8 +6,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -81,12 +81,12 @@ public class TableClothFilteringBehaviour extends FilteringBehaviour {
 	}
 
 	public MutableComponent formatValue(ValueSettings value) {
-		return Components.literal(String.valueOf(Math.max(1, value.value())));
+		return Component.literal(String.valueOf(Math.max(1, value.value())));
 	}
 
 	@Override
 	public MutableComponent getCountLabelForValueBox() {
-		return Components.literal(isCountVisible() ? String.valueOf(count) : "");
+		return Component.literal(isCountVisible() ? String.valueOf(count) : "");
 	}
 
 	@Override

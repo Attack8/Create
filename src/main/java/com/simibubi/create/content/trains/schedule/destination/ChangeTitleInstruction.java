@@ -12,7 +12,6 @@ import com.simibubi.create.content.trains.schedule.ScheduleRuntime.State;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +22,7 @@ public class ChangeTitleInstruction extends TextScheduleInstruction {
 
 	@Override
 	public Pair<ItemStack, Component> getSummary() {
-		return Pair.of(icon(), Components.literal(getLabelText()));
+		return Pair.of(icon(), Component.literal(getLabelText()));
 	}
 
 	@Override

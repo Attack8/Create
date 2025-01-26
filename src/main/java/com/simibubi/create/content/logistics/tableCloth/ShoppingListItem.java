@@ -16,7 +16,6 @@ import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.IntAttached;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
@@ -117,7 +116,7 @@ public class ShoppingListItem extends Item {
 					boolean cost = items == lists.getSecond();
 
 					if (cost)
-						tooltipComponents.add(Components.empty());
+                        tooltipComponents.add(Component.empty());
 
 					if (entries.size() == 1) {
 						BigItemStack entry = entries.get(0);

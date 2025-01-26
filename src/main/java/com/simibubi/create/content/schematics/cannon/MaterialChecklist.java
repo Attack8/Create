@@ -17,7 +17,6 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -87,7 +86,7 @@ public class MaterialChecklist {
 		MutableComponent textComponent;
 
 		if (blocksNotLoaded) {
-			textComponent = Components.literal("\n" + ChatFormatting.RED);
+			textComponent = Component.literal("\n" + ChatFormatting.RED);
 			textComponent = textComponent.append(CreateLang.translateDirect("materialChecklist.blocksNotLoaded"));
 			pages.add(Filterable.passThrough(textComponent));
 		}
@@ -104,7 +103,7 @@ public class MaterialChecklist {
 			return name1.compareTo(name2);
 		});
 
-		textComponent = Components.empty();
+        textComponent = Component.empty();
 		List<Item> completed = new ArrayList<>();
 		for (Item item : keys) {
 			int amount = getRequiredAmount(item);
@@ -118,10 +117,10 @@ public class MaterialChecklist {
 
 			if (itemsWritten == MAX_ENTRIES_PER_PAGE) {
 				itemsWritten = 0;
-				textComponent.append(Components.literal("\n >>>")
+				textComponent.append(Component.literal("\n >>>")
 					.withStyle(ChatFormatting.BLUE));
 				pages.add(Filterable.passThrough(textComponent));
-				textComponent = Components.empty();
+                textComponent = Component.empty();
 			}
 
 			itemsWritten++;
@@ -131,10 +130,10 @@ public class MaterialChecklist {
 		for (Item item : completed) {
 			if (itemsWritten == MAX_ENTRIES_PER_PAGE) {
 				itemsWritten = 0;
-				textComponent.append(Components.literal("\n >>>")
+				textComponent.append(Component.literal("\n >>>")
 					.withStyle(ChatFormatting.DARK_GREEN));
 				pages.add(Filterable.passThrough(textComponent));
-				textComponent = Components.empty();
+                textComponent = Component.empty();
 			}
 
 			itemsWritten++;
@@ -196,7 +195,7 @@ public class MaterialChecklist {
 
 			if (itemsWritten == MAX_ENTRIES_PER_CLIPBOARD_PAGE) {
 				itemsWritten = 0;
-				currentPage.add(new ClipboardEntry(false, Components.literal(">>>")
+				currentPage.add(new ClipboardEntry(false, Component.literal(">>>")
 					.withStyle(ChatFormatting.DARK_GRAY)));
 				pages.add(currentPage);
 				currentPage = new ArrayList<>();
@@ -210,7 +209,7 @@ public class MaterialChecklist {
 		for (Item item : completed) {
 			if (itemsWritten == MAX_ENTRIES_PER_CLIPBOARD_PAGE) {
 				itemsWritten = 0;
-				currentPage.add(new ClipboardEntry(true, Components.literal(">>>")
+				currentPage.add(new ClipboardEntry(true, Component.literal(">>>")
 					.withStyle(ChatFormatting.DARK_GREEN)));
 				pages.add(currentPage);
 				currentPage = new ArrayList<>();
@@ -240,8 +239,8 @@ public class MaterialChecklist {
 	private MutableComponent entry(ItemStack item, int amount, boolean unfinished, boolean forBook) {
 		int stacks = amount / 64;
 		int remainder = amount % 64;
-		MutableComponent tc = Components.empty();
-		tc.append(Components.translatable(item.getDescriptionId())
+        MutableComponent tc = Component.empty();
+		tc.append(Component.translatable(item.getDescriptionId())
 			.setStyle(Style.EMPTY
 				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(item)))));
 
@@ -249,9 +248,9 @@ public class MaterialChecklist {
 			tc.append(" \u2714");
 		if (!unfinished || forBook)
 			tc.withStyle(unfinished ? ChatFormatting.BLUE : ChatFormatting.DARK_GREEN);
-		return tc.append(Components.literal("\n" + " x" + amount)
+		return tc.append(Component.literal("\n" + " x" + amount)
 			.withStyle(ChatFormatting.BLACK))
-			.append(Components.literal(" | " + stacks + "\u25A4 +" + remainder + (forBook ? "\n" : ""))
+			.append(Component.literal(" | " + stacks + "\u25A4 +" + remainder + (forBook ? "\n" : ""))
 				.withStyle(ChatFormatting.GRAY));
 	}
 

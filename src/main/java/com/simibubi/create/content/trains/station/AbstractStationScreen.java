@@ -17,8 +17,8 @@ import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public abstract class AbstractStationScreen extends AbstractSimiScreen {
@@ -43,8 +43,9 @@ public abstract class AbstractStationScreen extends AbstractSimiScreen {
 	@Override
 	protected void init() {
 		if (blockEntity.computerBehaviour.hasAttachedComputer())
-			minecraft.setScreen(new ComputerScreen(title, () -> Components.literal(station.name),
-					this::renderAdditional, this, blockEntity.computerBehaviour::hasAttachedComputer));
+			minecraft.setScreen(new ComputerScreen(title, () ->
+                Component.literal(station.name),
+				this::renderAdditional, this, blockEntity.computerBehaviour::hasAttachedComputer));
 
 		setWindowSize(background.getWidth(), background.getHeight());
 		super.init();
@@ -83,8 +84,9 @@ public abstract class AbstractStationScreen extends AbstractSimiScreen {
 		super.tick();
 
 		if (blockEntity.computerBehaviour.hasAttachedComputer())
-			minecraft.setScreen(new ComputerScreen(title, () -> Components.literal(station.name),
-					this::renderAdditional, this, blockEntity.computerBehaviour::hasAttachedComputer));
+			minecraft.setScreen(new ComputerScreen(title, () ->
+                Component.literal(station.name),
+				this::renderAdditional, this, blockEntity.computerBehaviour::hasAttachedComputer));
 	}
 
 	@Override

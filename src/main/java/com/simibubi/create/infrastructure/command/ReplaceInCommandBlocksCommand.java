@@ -1,11 +1,12 @@
 package com.simibubi.create.infrastructure.command;
 
+import net.minecraft.network.chat.Component;
+
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
@@ -59,10 +60,14 @@ public class ReplaceInCommandBlocksCommand {
 			});
 		int intValue = blocks.intValue();
 		if (intValue == 0) {
-			source.sendSuccess(() -> Components.literal("Couldn't find \"" + toReplace + "\" anywhere."), true);
+			source.sendSuccess(() -> {
+                return Component.literal("Couldn't find \"" + toReplace + "\" anywhere.");
+            }, true);
 			return;
 		}
-		source.sendSuccess(() -> Components.literal("Replaced occurrences in " + intValue + " blocks."), true);
+		source.sendSuccess(() -> {
+            return Component.literal("Replaced occurrences in " + intValue + " blocks.");
+        }, true);
 	}
 
 }

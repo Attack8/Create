@@ -4,9 +4,9 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 
 import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.lang.Components;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public class OverlayConfigCommand {
@@ -20,7 +20,9 @@ public class OverlayConfigCommand {
 
 						CatnipServices.NETWORK.simpleActionToClient(player, "overlayReset", "");
 
-						ctx.getSource().sendSuccess(() -> Components.literal("Create Goggle Overlay has been reset to default position"), true);
+						ctx.getSource().sendSuccess(() -> {
+                            return Component.literal("Create Goggle Overlay has been reset to default position");
+                        }, true);
 
 						return Command.SINGLE_SUCCESS;
 					})

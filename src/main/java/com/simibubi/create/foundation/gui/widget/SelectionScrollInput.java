@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -42,26 +41,28 @@ public class SelectionScrollInput extends ScrollInput {
 		max = Math.min(max, this.max);
 		if (this.min + 1 == min)
 			min--;
-		if (min > this.min)
-			toolTip.add(Components.literal("> ...")
+		if (min > this.min) {
+			toolTip.add(Component.literal("> ...")
 				.withStyle(ChatFormatting.GRAY));
+		}
 		if (this.max - 1 == max)
 			max++;
 		for (int i = min; i < max; i++) {
 			if (i == state)
-				toolTip.add(Components.empty()
+				toolTip.add(Component.empty()
 					.append("-> ")
 					.append(options.get(i))
 					.withStyle(ChatFormatting.WHITE));
 			else
-				toolTip.add(Components.empty()
+				toolTip.add(Component.empty()
 					.append("> ")
 					.append(options.get(i))
 					.withStyle(ChatFormatting.GRAY));
 		}
-		if (max < this.max)
-			toolTip.add(Components.literal("> ...")
+		if (max < this.max) {
+			toolTip.add(Component.literal("> ...")
 				.withStyle(ChatFormatting.GRAY));
+		}
 
 		if (hint != null)
 			toolTip.add(hint.plainCopy()

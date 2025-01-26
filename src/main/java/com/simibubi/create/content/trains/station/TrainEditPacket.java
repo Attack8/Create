@@ -7,20 +7,21 @@ import com.simibubi.create.AllPackets;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.entity.TrainIconType;
-import net.createmod.catnip.net.base.ClientboundPacketPayload;
-import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.net.base.ServerboundPacketPayload;
 
-import net.createmod.catnip.lang.Components;
 import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
+import net.createmod.catnip.net.base.ServerboundPacketPayload;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -60,8 +61,9 @@ public abstract class TrainEditPacket implements CustomPacketPayload {
 			Train train = Create.RAILWAYS.sided(level).trains.get(id);
 			if (train == null)
 				return;
-			if (!name.isBlank())
-				train.name = Components.literal(name);
+			if (!name.isBlank()) {
+                train.name = Component.literal(name);
+            }
 			train.icon = TrainIconType.byId(iconType);
 			train.mapColorIndex = mapColor;
 			if (sender != null)

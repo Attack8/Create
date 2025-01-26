@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableList;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
@@ -22,7 +21,7 @@ public abstract class TextScheduleInstruction extends ScheduleInstruction {
 	@Override
 	public List<Component> getTitleAs(String type) {
 		return ImmutableList.of(CreateLang.translateDirect("schedule." + type + "." + getId().getPath() + ".summary")
-			.withStyle(ChatFormatting.GOLD), CreateLang.translateDirect("generic.in_quotes", Components.literal(getLabelText())));
+			.withStyle(ChatFormatting.GOLD), CreateLang.translateDirect("generic.in_quotes", Component.literal(getLabelText())));
 	}
 
 	@Override

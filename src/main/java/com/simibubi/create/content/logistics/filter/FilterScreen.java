@@ -10,7 +10,7 @@ import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Indicator;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Components;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Inventory;
@@ -58,8 +58,8 @@ public class FilterScreen extends AbstractFilterScreen<FilterMenu> {
 			sendOptionUpdate(Option.WHITELIST);
 		});
 		whitelist.setToolTip(allowN);
-		blacklistIndicator = new Indicator(x + 18, y + 69, Components.immutableEmpty());
-		whitelistIndicator = new Indicator(x + 36, y + 69, Components.immutableEmpty());
+		blacklistIndicator = new Indicator(x + 18, y + 69, Lang.IMMUTABLE_EMPTY);
+		whitelistIndicator = new Indicator(x + 36, y + 69, Lang.IMMUTABLE_EMPTY);
 		addRenderableWidgets(blacklist, whitelist, blacklistIndicator, whitelistIndicator);
 
 		respectNBT = new IconButton(x + 60, y + 75, AllIcons.I_RESPECT_NBT);
@@ -74,8 +74,8 @@ public class FilterScreen extends AbstractFilterScreen<FilterMenu> {
 			sendOptionUpdate(Option.IGNORE_DATA);
 		});
 		ignoreNBT.setToolTip(ignoreDataN);
-		respectNBTIndicator = new Indicator(x + 60, y + 69, Components.immutableEmpty());
-		ignoreNBTIndicator = new Indicator(x + 78, y + 69, Components.immutableEmpty());
+		respectNBTIndicator = new Indicator(x + 60, y + 69, Lang.IMMUTABLE_EMPTY);
+		ignoreNBTIndicator = new Indicator(x + 78, y + 69, Lang.IMMUTABLE_EMPTY);
 		addRenderableWidgets(respectNBT, ignoreNBT, respectNBTIndicator, ignoreNBTIndicator);
 
 		handleIndicators();
