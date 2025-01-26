@@ -38,6 +38,7 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
+
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
@@ -53,6 +54,25 @@ public class TestItems {
 				new BlockPos(4, 2, 2), new ItemStack(AllItems.BRASS_INGOT.get(), 3)
 		);
 		helper.succeedWhen(() -> outputs.forEach(helper::assertContainerContains));
+	}
+
+	@GameTest(template = "arm_multi_output", timeoutTicks = CreateGameTestHelper.TEN_SECONDS)
+	public static void armMultiOutput(CreateGameTestHelper helper) {
+		BlockPos lever = new BlockPos(2, 3, 1);
+		BlockPos[] blazeBurners = IntStream.rangeClosed(6, 8)
+			.boxed()
+			.flatMap(x -> IntStream.rangeClosed(1, 3)
+				.mapToObj(z -> new BlockPos(x, 2, z)))
+			.toArray(BlockPos[]::new);
+		helper.pullLever(lever);
+		helper.succeedWhen(() -> {
+			for (BlockPos pos : blazeBurners)
+				helper.assertBlockState(
+					pos,
+					state -> state.getValue(BlazeBurnerBlock.HEAT_LEVEL) == HeatLevel.KINDLED,
+					() -> "Blaze burner isn't lit!"
+				);
+		});
 	}
 
 	@GameTest(template = "arm_purgatory", timeoutTicks = CreateGameTestHelper.TEN_SECONDS)
@@ -77,25 +97,6 @@ public class TestItems {
 				helper.fail("Unexpected count on depot 1: " + held1Count);
 			if (!held2Empty && held2Count != 1)
 				helper.fail("Unexpected count on depot 2: " + held2Count);
-		});
-	}
-
-	@GameTest(template = "arm_multi_output", timeoutTicks = CreateGameTestHelper.TEN_SECONDS)
-	public static void armMultiOutput(CreateGameTestHelper helper) {
-		BlockPos lever = new BlockPos(2, 3, 1);
-		BlockPos[] blazeBurners = IntStream.rangeClosed(6, 8)
-			.boxed()
-			.flatMap(x -> IntStream.rangeClosed(1, 3)
-				.mapToObj(z -> new BlockPos(x, 2, z)))
-			.toArray(BlockPos[]::new);
-		helper.pullLever(lever);
-		helper.succeedWhen(() -> {
-			for (BlockPos pos : blazeBurners)
-				helper.assertBlockState(
-					pos,
-					state -> state.getValue(BlazeBurnerBlock.HEAT_LEVEL) == HeatLevel.KINDLED,
-					() -> "Blaze burner isn't lit!"
-				);
 		});
 	}
 
