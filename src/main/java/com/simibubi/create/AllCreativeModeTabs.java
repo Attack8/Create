@@ -53,6 +53,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+
 public class AllCreativeModeTabs {
 	private static final DeferredRegister<CreativeModeTab> REGISTER =
 		DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Create.ID);
@@ -73,6 +75,7 @@ public class AllCreativeModeTabs {
 			.displayItems(new RegistrateDisplayItemsGenerator(false, AllCreativeModeTabs.PALETTES_CREATIVE_TAB))
 			.build());
 
+	@Internal
 	public static void register(IEventBus modEventBus) {
 		REGISTER.register(modEventBus);
 	}

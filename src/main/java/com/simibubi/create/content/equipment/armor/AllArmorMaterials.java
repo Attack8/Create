@@ -19,6 +19,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+
 public class AllArmorMaterials {
 	private static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, Create.ID);
 
@@ -76,6 +78,7 @@ public class AllArmorMaterials {
 		);
 	}
 
+	@Internal
 	public static void register(IEventBus eventBus) {
 		ARMOR_MATERIALS.register(eventBus);
 	}

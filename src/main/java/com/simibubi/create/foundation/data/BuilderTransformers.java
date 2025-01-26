@@ -450,7 +450,7 @@ public class BuilderTransformers {
 					.setRolls(ConstantValue.exactly(1))
 					.add(LootItem.lootTableItem(drop.get())
 						.apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
-							.include(AllDataComponents.BACKTANK_AIR.get())))));
+							.include(AllDataComponents.BACKTANK_AIR)))));
 			});
 	}
 

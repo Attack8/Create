@@ -364,7 +364,7 @@ public class AllBlocks {
 					.add(LootItem.lootTableItem(AllBlocks.SCHEMATICANNON.get()
 						.asItem())
 						.apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
-							.include(AllDataComponents.SCHEMATICANNON_OPTIONS.value())))));
+							.include(AllDataComponents.SCHEMATICANNON_OPTIONS)))));
 			})
 			.item()
 			.transform(customItemModel())
@@ -2252,8 +2252,8 @@ public class AllBlocks {
 						.add(LootItem.lootTableItem(block)
 								.apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))
 								.apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
-										.include(AllDataComponents.TOOLBOX_UUID.value())
-										.include(AllDataComponents.TOOLBOX_INVENTORY.value())
+										.include(AllDataComponents.TOOLBOX_UUID)
+										.include(AllDataComponents.TOOLBOX_INVENTORY)
 								)
 						)
 				));

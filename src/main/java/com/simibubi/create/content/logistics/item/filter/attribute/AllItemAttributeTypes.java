@@ -3,7 +3,7 @@ package com.simibubi.create.content.logistics.item.filter.attribute;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.AllRegistries;
@@ -20,7 +20,6 @@ import com.simibubi.create.content.logistics.item.filter.attribute.attributes.In
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ItemNameAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ShulkerFillLevelAttribute;
 
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.BlockItem;
@@ -106,7 +105,7 @@ public class AllItemAttributeTypes {
 		return type;
 	}
 
-	@ApiStatus.Internal
+	@Internal
 	public static void register(IEventBus modEventBus) {
 		REGISTER.register(modEventBus);
 	}

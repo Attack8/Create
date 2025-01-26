@@ -13,7 +13,7 @@ public class CreateComponentProcessors {
 	@SuppressWarnings({"unchecked", "OptionalAssignedToNull"})
 	public static DataComponentPatch clipboardProcessor(DataComponentPatch data) {
 		data.forget(type -> {
-			if (type.equals(AllDataComponents.CLIPBOARD_PAGES.value())) {
+			if (type.equals(AllDataComponents.CLIPBOARD_PAGES)) {
 				Optional<List<List<ClipboardEntry>>> optional = (Optional<List<List<ClipboardEntry>>>) data.get(type);
 				if (optional != null) {
 					for (List<ClipboardEntry> page : optional.orElse(List.of())) {

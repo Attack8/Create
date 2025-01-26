@@ -24,6 +24,8 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+
 public enum AllParticleTypes {
 	ROTATION_INDICATOR(RotationIndicatorParticleData::new),
 	AIR_FLOW(AirFlowParticleData::new),
@@ -46,6 +48,7 @@ public enum AllParticleTypes {
 		entry = new ParticleEntry<>(name, typeFactory);
 	}
 
+	@Internal
 	public static void register(IEventBus modEventBus) {
 		ParticleEntry.REGISTER.register(modEventBus);
 	}

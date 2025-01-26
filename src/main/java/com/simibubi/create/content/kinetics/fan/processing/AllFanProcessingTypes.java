@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -85,6 +86,7 @@ public class AllFanProcessingTypes {
 		return type;
 	}
 
+	@Internal
 	public static void register(IEventBus eventBus) {
 		REGISTER.register(eventBus);
 	}

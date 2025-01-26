@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -118,6 +119,7 @@ public enum AllRecipeTypes implements IRecipeTypeInfo, StringRepresentable {
 		isProcessingRecipe = true;
 	}
 
+	@Internal
 	public static void register(IEventBus modEventBus) {
 		ShapedRecipePattern.setCraftingSize(9, 9);
 		Registers.SERIALIZER_REGISTER.register(modEventBus);

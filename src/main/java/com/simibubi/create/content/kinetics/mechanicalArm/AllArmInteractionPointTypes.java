@@ -65,6 +65,8 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import org.jetbrains.annotations.ApiStatus.Internal;
+
 public class AllArmInteractionPointTypes {
 	private static final DeferredRegister<ArmInteractionPointType> REGISTER = DeferredRegister.create(AllRegistries.Keys.ARM_INTERACTION_POINT_TYPES, Create.ID);
 
@@ -92,6 +94,7 @@ public class AllArmInteractionPointTypes {
 		REGISTER.register(name, () -> type);
 	}
 
+	@Internal
 	public static void register(IEventBus eventBus) {
 		REGISTER.register(eventBus);
 	}
