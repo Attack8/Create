@@ -12,10 +12,12 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.HopperBlockEntity;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 public class MovedDefaultDispenseItemBehaviour implements IMovedDispenseItemBehaviour {
-	private static final MovedDefaultDispenseItemBehaviour DEFAULT_INSTANCE = new MovedDefaultDispenseItemBehaviour();
+	public static final MovedDefaultDispenseItemBehaviour INSTANCE = new MovedDefaultDispenseItemBehaviour();
 
 	public static void doDispense(Level p_82486_0_, ItemStack p_82486_1_, int p_82486_2_, Vec3 facing,
 		BlockPos p_82486_4_, MovementContext context) {
@@ -98,10 +100,21 @@ public class MovedDefaultDispenseItemBehaviour implements IMovedDispenseItemBeha
 	protected ItemStack placeItemInInventory(ItemStack consumedFrom, ItemStack output, MovementContext context,
 		BlockPos pos, Vec3 facing) {
 		consumedFrom.shrink(1);
-		ItemStack remainder =
-			ItemHandlerHelper.insertItem(context.contraption.getSharedInventory(), output.copy(), false);
-		if (!remainder.isEmpty())
-			DEFAULT_INSTANCE.dispenseStack(output, context, pos, facing);
+
+		ItemStack toInsert = output.copy();
+		// try inserting into own inventory first
+		ItemStack remainder = ItemHandlerHelper.insertItem(context.getItemStorage(), toInsert, false);
+		if (!remainder.isEmpty()) {
+			// next, try the whole contraption inventory
+			// note that this contains the dispenser inventory. That's fine.
+			CombinedInvWrapper contraption = context.contraption.getStorage().getAllItems();
+			ItemStack newRemainder = ItemHandlerHelper.insertItem(contraption, remainder, false);
+			if (!newRemainder.isEmpty()) {
+				// if there's *still* something left, dispense into world
+				INSTANCE.dispenseStack(remainder, context, pos, facing);
+			}
+		}
+
 		return consumedFrom;
 	}
 }

@@ -59,11 +59,11 @@ public class BearingContraption extends Contraption {
 	}
 
 	@Override
-	public void addBlock(BlockPos pos, Pair<StructureBlockInfo, BlockEntity> capture) {
+	public void addBlock(Level level, BlockPos pos, Pair<StructureBlockInfo, BlockEntity> capture) {
 		BlockPos localPos = pos.subtract(anchor);
 		if (!getBlocks().containsKey(localPos) && AllBlockTags.WINDMILL_SAILS.matches(getSailBlock(capture)))
 			sailBlocks++;
-		super.addBlock(pos, capture);
+		super.addBlock(level, pos, capture);
 	}
 
 	private BlockState getSailBlock(Pair<StructureBlockInfo, BlockEntity> capture) {

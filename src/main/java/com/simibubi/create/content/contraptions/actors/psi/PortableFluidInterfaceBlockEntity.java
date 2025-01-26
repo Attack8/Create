@@ -31,7 +31,7 @@ public class PortableFluidInterfaceBlockEntity extends PortableStorageInterfaceB
 
 	@Override
 	public void startTransferringTo(Contraption contraption, float distance) {;
-		capability = new InterfaceFluidHandler(contraption.getSharedFluidTanks());
+		capability = new InterfaceFluidHandler(contraption.getStorage().getFluids());
 		invalidateCapability();
 		super.startTransferringTo(contraption, distance);
 	}

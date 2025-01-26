@@ -5,7 +5,6 @@ import net.minecraft.world.ItemInteractionResult;
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.AllBlockEntityTypes;
-import com.simibubi.create.AllItems;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.advancement.AdvancementBehaviour;
@@ -64,8 +63,6 @@ public class FrogportBlock extends Block implements IBE<FrogportBlockEntity>, IW
 
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-		if (AllItems.WRENCH.isIn(stack))
-			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		return onBlockEntityUseItemOn(level, pos, be -> be.use(player));
 	}
 

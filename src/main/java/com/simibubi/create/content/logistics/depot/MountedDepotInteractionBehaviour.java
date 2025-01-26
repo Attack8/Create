@@ -1,18 +1,17 @@
 package com.simibubi.create.content.logistics.depot;
 
 import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
-import com.simibubi.create.content.contraptions.MountedStorage;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
 import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour;
+import com.simibubi.create.content.logistics.depot.storage.DepotMountedStorage;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 public class MountedDepotInteractionBehaviour extends MovingInteractionBehaviour {
 
@@ -25,23 +24,17 @@ public class MountedDepotInteractionBehaviour extends MovingInteractionBehaviour
 		if (player.level().isClientSide)
 			return true;
 
-		MountedStorageManager storageManager = contraptionEntity.getContraption()
-			.getStorageManager();
-		if (storageManager == null)
+		MountedStorageManager manager = contraptionEntity.getContraption().getStorage();
+
+		MountedItemStorage storage = manager.getAllItemStorages().get(localPos);
+		if (!(storage instanceof DepotMountedStorage depot))
 			return false;
 
-		MountedStorage mountedStorage = storageManager.getMountedItemStorage()
-			.get(localPos);
-		if (mountedStorage == null)
-			return false;
-
-		IItemHandlerModifiable itemHandler = mountedStorage.getItemHandler();
-		ItemStack itemOnDepot = itemHandler.getStackInSlot(0);
-
+		ItemStack itemOnDepot = depot.getItem();
 		if (itemOnDepot.isEmpty() && itemInHand.isEmpty())
 			return true;
 
-		itemHandler.setStackInSlot(0, itemInHand.copy());
+		depot.setItem(itemInHand.copy());
 		player.setItemInHand(activeHand, itemOnDepot.copy());
 		AllSoundEvents.DEPOT_PLOP.playOnServer(player.level(),
 			BlockPos.containing(contraptionEntity.toGlobalVector(Vec3.atCenterOf(localPos), 0)));

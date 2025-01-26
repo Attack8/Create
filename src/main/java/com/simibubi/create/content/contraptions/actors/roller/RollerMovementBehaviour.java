@@ -197,7 +197,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 		if (!getStateToPaveWith(context).isAir()) {
 			FilterItemStack filter = context.getFilterFromBE();
 			if (!ItemHelper
-				.extract(context.contraption.getSharedInventory(),
+				.extract(context.contraption.getStorage().getAllItems(),
 					stack -> filter.test(context.world, stack), 1, true)
 				.isEmpty())
 				startingY = 0;
@@ -475,7 +475,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 			return PaveResult.FAIL;
 
 		FilterItemStack filter = context.getFilterFromBE();
-		ItemStack held = ItemHelper.extract(context.contraption.getSharedInventory(),
+		ItemStack held = ItemHelper.extract(context.contraption.getStorage().getAllItems(),
 			stack -> filter.test(context.world, stack), 1, false);
 		if (held.isEmpty())
 			return PaveResult.FAIL;

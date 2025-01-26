@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 
-import com.simibubi.create.foundation.mixin.accessor.ItemStackHandlerAccessor;
 import com.simibubi.create.content.logistics.box.PackageEntity;
+import com.simibubi.create.foundation.mixin.accessor.ItemStackHandlerAccessor;
 
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
@@ -24,7 +24,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class ItemHelper {
@@ -324,4 +326,13 @@ public class ItemHelper {
 		return remainder;
 	}
 
+	public static void copyContents(IItemHandler from, IItemHandlerModifiable to) {
+		if (from.getSlots() != to.getSlots()) {
+			throw new IllegalArgumentException("Slot count mismatch");
+		}
+
+		for (int i = 0; i < from.getSlots(); i++) {
+			to.setStackInSlot(i, from.getStackInSlot(i).copy());
+		}
+	}
 }

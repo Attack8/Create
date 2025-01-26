@@ -1,35 +1,104 @@
 ------------------------------------------------------
 Create 6.0.0
 ------------------------------------------------------
+_Now using Flywheel 1.0_
+
 Additions
-- Example
+- Chain conveyor
+- Item hatch
+- Packager and Re-packager
+- Cardboard packages
+- Package frogport
+- Package postbox
+- Stock link
+- Stock ticker
+- Redstone requester
+- Factory gauge
+- Table cloths and covers
+- Pulse timer
+- Desk bell
+- Pulp and the cardboard ingredient
+- Cardboard armor set
+- Cardboard sword
+- Package filter
+- Cardboard block
+- Cherry and bamboo windows
+- Industrial iron window
+- Weathered iron block and windows
 
-Changes
 
-- Bumped the default max rope length to 384
-- Set vault capacity limit to 2048 slots to prevent people from OOM-ing themselves if they set the capacity too high
+Art
+- Palette and model updates to all copper-based components
+- Rope and hose pulley motion now uses a scrolling texture
+- Increased vertical size of train and contraption controls to a full block
+- Updates to display and redstone links
+- Updates to metal sheet items
+- Copper roof blocks now use connected textures
+- Added missing shaft detail to the backtank armor
+- Updates to various UI screens and components
+- Bars and window item models are now consistent with vanilla
+
+
+Gameplay
+- Redstone links are now andesite tier
+- All links now use a new ingredient item, the transmitter
+- New advancement chain for high logistics components
+- New ponder scenes and category for high logistics components
+- Depots can now be used as storage blocks on contraptions
+- Brass tunnels now try to distribute an item more quickly when it first arrives
+- Brass tunnels now always prefer filtered sides over non-filtered sides
+- Added train schedule instructions for delivering or retrieving packages
+- Basins no longer limit to 16 items per slot
+- Mechanical crafters waste less time on empty animation frames
+- In common cobblegen scenarios, stationary drills now skip breaking blocks and just insert the result items into open inventories directly below
+- Held clipboards can now copy entries from other in-world clipboards
+- Metal ladders no longer require a wall if another ladder block is above them
+- Bells assembled to elevator contraptions now activate when arriving at a floor
+- Sliding doors placed in front of contraption-mounted sliding doors now open and clost automatically
+- Fully outlined text on filter slots for better readability
+- Added recipes where cardboard substitutes leather
+- Play at most 4 steam engine sounds at once per side of a boiler
+- Increased default max rope length to 384
+- Implemented a system for generating certain recipes at runtime to improve mod compat
+- Boiler gauge now disappears when blocks are clipping into it
+- Added a keybind that opens a radial menu for rotating blocks with the wrench
+
 
 Bug Fixes
-- Fix certain blocks messing up the order scheduled ticks (#7141)
-- Fix unbreakable superglue not being usable (#6253)
-- Fix update suppression (#7176)
-- Fix comparator output of depots ignoring the items max stack size (#7179)
-- Fix deployers retaining the damage attribute of their last held weapon (#4870)
-- Fix an exploit allowing people to create clipboards that execute commands (#7218)
-- Fix redstone links not updating their redstone output when they've been taken out of receiver mode (#7226)
-- Fix rare crash related to sliding doors (#6184)
+- Deployers can no longer take a seat
+- Fixed contraptions keeping pressure plates and tripwires activated
+- Steam engine placement assist now shows a normal shaft
+- Fixed schedule screen not showing tooltips in the entry editor
+- Fixed tracks creating signal block intersections despite being in different dimensions
+- Fixed non-effect fans resetting processed belt items
+- Fixed mechanical saw considering scaffolding as leaves
+- Fixed entity name display source not working for players on signs
+- Fixed certain blocks messing up the order scheduled ticks (#7141)
+- Fixed unbreakable superglue not being usable (#6253)
+- Fixed update suppression (#7176)
+- Fixed comparator output of depots ignoring the items' max stack size (#7179)
+- Fixed deployers retaining the damage attribute of their last held weapon (#4870)
+- Fixed an exploit allowing people to create clipboards that execute commands (#7218)
+- Fixed redstone links not updating their redstone output when they've been taken out of receiver mode (#7226)
+- Fixed rare crash related to sliding doors (#6184)
 - Verify that schematics are gzip-encoded before trying to read from them (#6087)
 - Added workaround for create_tracks.dat getting corrupted during crashes, the mod will try to restore the old track data stored in the create_tracks.dat_old file if the current one is corrupted
-- Fix contraptions triggering pressure plates and tripwires (#7255)
-- Fix ConditionContext nbt in trains containing a large number of empty tags
-- Fix deployers not placing fish from fish buckets (#3705)
-- Fix gasses not being visible in basins and item drains (#7236)
+- Fixed ConditionContext nbt in trains containing a large number of empty tags
+- Fixed deployers not placing fish from fish buckets (#3705)
+- Fixed gasses not being visible in basins and item drains (#7236)
+- Set vault capacity config limit to 2048 slots
+- Fixed InventorySorter able to take items from ghost/filter inventories
+- Fixed typo in better end compat recipe
+- FTB buttons no longer show in create screens
 
-Art Changes
-- Example
 
 API Changes
+- Versioning change: `major.minor.patch`, starting with `6.0.0`
+- Ponder is now a separate library mod. It comes shipped with the create jar.
+- Added `#create:chain_rideable` to mark items as valid for riding a chain with
+- Added `#create:invalid_for_track_paving` for items
+- New API for custom storage block behaviour on contraptions. For simple cases, create provides the `#create:simple_mounted_storage` and `#create:chest_mounted_storage` block tags.
 - Removed LangMerger and related classes
 - Implemented an api to allow mods to register schematic requirements, partial safe nbt and contraption transforms without implementing interfaces (#4702)
 - Add a method that developers can override to change the icon in goggle tooltips
-- Refactored Item Attributes types, Fan processing types and Arm interaction points, all 3 now use proper registries
+- Refactored Item Attributes types, Fan processing types and Arm interaction points, all 3 now use registries

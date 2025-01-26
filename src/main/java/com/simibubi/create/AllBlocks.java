@@ -3,6 +3,8 @@ package com.simibubi.create;
 import static com.simibubi.create.AllInteractionBehaviours.interactionBehaviour;
 import static com.simibubi.create.AllMovementBehaviours.movementBehaviour;
 import static com.simibubi.create.Create.REGISTRATE;
+import static com.simibubi.create.api.contraption.storage.MountedStorageTypeRegistry.mountedFluidStorage;
+import static com.simibubi.create.api.contraption.storage.MountedStorageTypeRegistry.mountedItemStorage;
 import static com.simibubi.create.content.redstone.displayLink.AllDisplayBehaviours.assignDataBehaviour;
 import static com.simibubi.create.foundation.data.BlockStateGen.axisBlock;
 import static com.simibubi.create.foundation.data.BlockStateGen.simpleCubeAll;
@@ -105,6 +107,7 @@ import com.simibubi.create.content.fluids.tank.FluidTankBlock;
 import com.simibubi.create.content.fluids.tank.FluidTankGenerator;
 import com.simibubi.create.content.fluids.tank.FluidTankItem;
 import com.simibubi.create.content.fluids.tank.FluidTankModel;
+import com.simibubi.create.content.fluids.tank.FluidTankMovementBehavior;
 import com.simibubi.create.content.kinetics.BlockStressDefaults;
 import com.simibubi.create.content.kinetics.belt.BeltBlock;
 import com.simibubi.create.content.kinetics.belt.BeltGenerator;
@@ -802,6 +805,7 @@ public class AllBlocks {
 		.blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
 		.onRegister(assignDataBehaviour(new ItemNameDisplaySource(), "combine_item_names"))
 		.onRegister(interactionBehaviour(new MountedDepotInteractionBehaviour()))
+		.transform(mountedItemStorage(AllMountedStorageTypes.DEPOT))
 		.item()
 		.transform(customItemModel("_", "block"))
 		.register();
@@ -1002,6 +1006,8 @@ public class AllBlocks {
 		.blockstate(new FluidTankGenerator()::generate)
 		.onRegister(CreateRegistrate.blockModel(() -> FluidTankModel::standard))
 		.onRegister(assignDataBehaviour(new BoilerDisplaySource(), "boiler_status"))
+		.transform(mountedFluidStorage(AllMountedStorageTypes.FLUID_TANK))
+		.onRegister(movementBehaviour(new FluidTankMovementBehavior()))
 		.addLayer(() -> RenderType::cutoutMipped)
 		.item(FluidTankItem::new)
 		.model(AssetLookup.customBlockItemModel("_", "block_single_window"))
@@ -1017,6 +1023,7 @@ public class AllBlocks {
 			.tag(AllBlockTags.SAFE_NBT.tag)
 			.blockstate(new FluidTankGenerator("creative_")::generate)
 			.onRegister(CreateRegistrate.blockModel(() -> FluidTankModel::creative))
+			.transform(mountedFluidStorage(AllMountedStorageTypes.CREATIVE_FLUID_TANK))
 			.addLayer(() -> RenderType::cutoutMipped)
 			.item(FluidTankItem::new)
 			.properties(p -> p.rarity(Rarity.EPIC))
@@ -1835,6 +1842,7 @@ public class AllBlocks {
 		REGISTRATE.block("creative_crate", CreativeCrateBlock::new)
 			.transform(BuilderTransformers.crate("creative"))
 			.properties(p -> p.mapColor(MapColor.COLOR_PURPLE))
+			.transform(mountedItemStorage(AllMountedStorageTypes.CREATIVE_CRATE))
 			.register();
 
 	public static final BlockEntry<ItemVaultBlock> ITEM_VAULT = REGISTRATE.block("item_vault", ItemVaultBlock::new)
@@ -1849,6 +1857,7 @@ public class AllBlocks {
 				.rotationY(s.getValue(ItemVaultBlock.HORIZONTAL_AXIS) == Axis.X ? 90 : 0)
 				.build()))
 		.onRegister(connectedTextures(ItemVaultCTBehaviour::new))
+		.transform(mountedItemStorage(AllMountedStorageTypes.VAULT))
 		.item(ItemVaultItem::new)
 		.build()
 		.register();
@@ -2255,6 +2264,7 @@ public class AllBlocks {
 					.texture("0", p.modLoc("block/toolbox/" + colourName)));
 			})
 			.onRegisterAfter(Registries.ITEM, v -> ItemDescription.useKey(v, "block.create.toolbox"))
+			.transform(mountedItemStorage(AllMountedStorageTypes.TOOLBOX))
 			.tag(AllBlockTags.TOOLBOXES.tag)
 			.item(UncontainableBlockItem::new)
 			.model((c, p) -> p.withExistingParent(colourName + "_toolbox", p.modLoc("block/toolbox/item"))

@@ -47,7 +47,7 @@ public class ItemThresholdCondition extends CargoThresholdCondition {
 
 		int foundItems = 0;
 		for (Carriage carriage : train.carriages) {
-			IItemHandlerModifiable items = carriage.storage.getItems();
+			IItemHandlerModifiable items = carriage.storage.getAllItems();
 			for (int i = 0; i < items.getSlots(); i++) {
 				ItemStack stackInSlot = items.getStackInSlot(i);
 				if (!stack.test(level, stackInSlot))

@@ -8,8 +8,11 @@ import javax.annotation.Nonnull;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
+import com.simibubi.create.foundation.item.ItemSlots;
 
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.HolderLookup;
@@ -17,9 +20,14 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class ToolboxInventory extends ItemStackHandler {
+	public static final Codec<ToolboxInventory> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+		ItemSlots.maxSizeCodec(8).fieldOf("items").forGetter(ItemSlots::fromHandler),
+		ItemStack.CODEC.listOf().fieldOf("filters").forGetter(toolbox -> toolbox.filters)
+	).apply(instance, ToolboxInventory::deserialize));
 
 	public static final int STACKS_PER_COMPARTMENT = 4;
 	List<ItemStack> filters;
@@ -214,6 +222,13 @@ public class ToolboxInventory extends ItemStackHandler {
 	private void notifyUpdate() {
 		if (blockEntity != null)
 			blockEntity.notifyUpdate();
+	}
+
+	private static ToolboxInventory deserialize(ItemSlots slots, List<ItemStack> filters) {
+		ToolboxInventory inventory = new ToolboxInventory(null);
+		slots.forEach(inventory::setStackInSlot);
+		inventory.filters = filters;
+		return inventory;
 	}
 
 }

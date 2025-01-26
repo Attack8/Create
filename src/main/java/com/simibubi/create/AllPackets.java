@@ -11,6 +11,7 @@ import com.simibubi.create.content.contraptions.ContraptionColliderLockPacket.Co
 import com.simibubi.create.content.contraptions.ContraptionDisassemblyPacket;
 import com.simibubi.create.content.contraptions.ContraptionRelocationPacket;
 import com.simibubi.create.content.contraptions.ContraptionStallPacket;
+import com.simibubi.create.content.contraptions.MountedStorageSyncPacket;
 import com.simibubi.create.content.contraptions.TrainCollisionPacket;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionDisableActorPacket;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsInputPacket;
@@ -25,9 +26,7 @@ import com.simibubi.create.content.contraptions.glue.SuperGlueSelectionPacket;
 import com.simibubi.create.content.contraptions.minecart.CouplingCreationPacket;
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartControllerUpdatePacket;
 import com.simibubi.create.content.contraptions.sync.ClientMotionPacket;
-import com.simibubi.create.content.contraptions.sync.ContraptionFluidPacket;
 import com.simibubi.create.content.contraptions.sync.ContraptionInteractionPacket;
-import com.simibubi.create.content.contraptions.sync.ContraptionItemPacket;
 import com.simibubi.create.content.contraptions.sync.ContraptionSeatMappingPacket;
 import com.simibubi.create.content.contraptions.sync.LimbSwingUpdatePacket;
 import com.simibubi.create.content.contraptions.wrench.RadialWrenchMenuSubmitPacket;
@@ -201,8 +200,7 @@ public enum AllPackets implements BasePacketPayload.PacketTypeProvider {
 	LIMBSWING_UPDATE(LimbSwingUpdatePacket.class, LimbSwingUpdatePacket.STREAM_CODEC),
 	MINECART_CONTROLLER(MinecartControllerUpdatePacket.class, MinecartControllerUpdatePacket.STREAM_CODEC),
 	FLUID_SPLASH(FluidSplashPacket.class, FluidSplashPacket.STREAM_CODEC),
-	CONTRAPTION_FLUID(ContraptionFluidPacket.class, ContraptionFluidPacket.STREAM_CODEC),
-	CONTRAPTION_ITEM(ContraptionItemPacket.class, ContraptionItemPacket.STREAM_CODEC),
+	MOUNTED_STORAGE_SYNC(MountedStorageSyncPacket.class, MountedStorageSyncPacket.STREAM_CODEC),
 	GANTRY_UPDATE(GantryContraptionUpdatePacket.class, GantryContraptionUpdatePacket.STREAM_CODEC),
 	BLOCK_HIGHLIGHT(HighlightPacket.class, HighlightPacket.STREAM_CODEC),
 	TUNNEL_FLAP(TunnelFlapPacket.class, TunnelFlapPacket.STREAM_CODEC),

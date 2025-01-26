@@ -79,7 +79,7 @@ public class DeliverPackagesInstruction extends ScheduleInstruction {
 		}
 
 		for (Carriage carriage : train.carriages) {
-			IItemHandlerModifiable carriageInventory = carriage.storage.getItems();
+			IItemHandlerModifiable carriageInventory = carriage.storage.getAllItems();
 			if (carriageInventory == null)
 				continue;
 

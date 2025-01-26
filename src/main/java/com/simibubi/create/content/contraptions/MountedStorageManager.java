@@ -1,290 +1,474 @@
 package com.simibubi.create.content.contraptions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.function.Predicate;
 
-import com.simibubi.create.content.contraptions.Contraption.ContraptionInvWrapper;
-import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
-import com.simibubi.create.content.logistics.depot.DepotBlockEntity;
-import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
+import org.jetbrains.annotations.Nullable;
 
-import net.createmod.catnip.lang.Components;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
+import com.mojang.datafixers.util.Pair;
+import com.simibubi.create.Create;
+import com.simibubi.create.api.contraption.storage.MountedStorageTypeRegistry;
+import com.simibubi.create.api.contraption.storage.SyncedMountedStorage;
+import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorage;
+import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageType;
+import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageWrapper;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorageType;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorageWrapper;
+import com.simibubi.create.content.equipment.toolbox.ToolboxMountedStorage;
+import com.simibubi.create.content.fluids.tank.storage.FluidTankMountedStorage;
+import com.simibubi.create.content.fluids.tank.storage.creative.CreativeFluidTankMountedStorage;
+import com.simibubi.create.content.logistics.crate.CreativeCrateMountedStorage;
+import com.simibubi.create.content.logistics.depot.storage.DepotMountedStorage;
+import com.simibubi.create.content.logistics.vault.ItemVaultMountedStorage;
+import com.simibubi.create.impl.contraption.storage.FallbackMountedStorage;
+
 import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
-import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 
 public class MountedStorageManager {
+	// builders used during assembly, null afterward
+	// ImmutableMap.Builder is not used because it will throw with duplicate keys, not override them
+	private Map<BlockPos, MountedItemStorage> itemsBuilder;
+	private Map<BlockPos, MountedFluidStorage> fluidsBuilder;
+	private Map<BlockPos, SyncedMountedStorage> syncedItemsBuilder;
+	private Map<BlockPos, SyncedMountedStorage> syncedFluidsBuilder;
 
-	protected ContraptionInvWrapper inventory;
-	protected ContraptionInvWrapper fuelInventory;
-	protected CombinedTankWrapper fluidInventory;
-	protected Map<BlockPos, MountedStorage> storage;
-	protected Map<BlockPos, MountedFluidStorage> fluidStorage;
+	// built data structures after assembly, null before
+	private ImmutableMap<BlockPos, MountedItemStorage> allItemStorages;
+	// different from allItemStorages, does not contain internal ones
+	protected MountedItemStorageWrapper items;
+	@Nullable
+	protected MountedItemStorageWrapper fuelItems;
+	protected MountedFluidStorageWrapper fluids;
+
+	private ImmutableMap<BlockPos, SyncedMountedStorage> syncedItems;
+	private ImmutableMap<BlockPos, SyncedMountedStorage> syncedFluids;
+
+	private List<IItemHandlerModifiable> externalHandlers;
+	private CombinedInvWrapper allItems;
+
+	// ticks until storage can sync again
+	private int syncCooldown;
+
+	// client-side: not all storages are synced, this determines which interactions are valid
+	private Set<BlockPos> interactablePositions;
 
 	public MountedStorageManager() {
-		storage = new TreeMap<>();
-		fluidStorage = new TreeMap<>();
+		this.reset();
 	}
 
-	public void entityTick(AbstractContraptionEntity entity) {
-		boolean isClientSide = entity.level().isClientSide;
-		storage.forEach((pos, mfs) -> mfs.tick(entity, pos, isClientSide));
-		fluidStorage.forEach((pos, mfs) -> mfs.tick(entity, pos, isClientSide));
-	}
-
-	public void createHandlers() {
-		Collection<MountedStorage> itemHandlers = storage.values();
-
-		inventory = wrapItems(itemHandlers.stream()
-			.map(MountedStorage::getItemHandler)
-			.toList(), false);
-
-		fuelInventory = wrapItems(itemHandlers.stream()
-			.filter(MountedStorage::canUseForFuel)
-			.map(MountedStorage::getItemHandler)
-			.toList(), true);
-
-		fluidInventory = wrapFluids(fluidStorage.values()
-			.stream()
-			.map(MountedFluidStorage::getFluidHandler)
-			.collect(Collectors.toList()));
-	}
-
-	protected ContraptionInvWrapper wrapItems(Collection<IItemHandlerModifiable> list, boolean fuel) {
-		return new ContraptionInvWrapper(Arrays.copyOf(list.toArray(), list.size(), IItemHandlerModifiable[].class));
-	}
-
-	protected CombinedTankWrapper wrapFluids(Collection<IFluidHandler> list) {
-		return new CombinedTankWrapper(Arrays.copyOf(list.toArray(), list.size(), IFluidHandler[].class));
-	}
-
-	public void addBlock(BlockPos localPos, BlockEntity be) {
-		if (be != null && MountedStorage.canUseAsStorage(be))
-			storage.put(localPos, new MountedStorage(be));
-		if (be != null && MountedFluidStorage.canUseAsStorage(be))
-			fluidStorage.put(localPos, new MountedFluidStorage(be));
-	}
-
-	public void read(CompoundTag nbt, HolderLookup.Provider registries, Map<BlockPos, BlockEntity> presentBlockEntities, boolean clientPacket) {
-		storage.clear();
-		NBTHelper.iterateCompoundList(nbt.getList("Storage", Tag.TAG_COMPOUND), c -> storage
-			.put(NBTHelper.readBlockPos(c, "Pos"), MountedStorage.deserialize(c.getCompound("Data"), registries)));
-
-		fluidStorage.clear();
-		NBTHelper.iterateCompoundList(nbt.getList("FluidStorage", Tag.TAG_COMPOUND), c -> fluidStorage
-			.put(NBTHelper.readBlockPos(c, "Pos"), MountedFluidStorage.deserialize(c.getCompound("Data"), registries)));
-
-		if (clientPacket && presentBlockEntities != null)
-			bindTanksAndDepots(presentBlockEntities);
-
-		List<IItemHandlerModifiable> handlers = new ArrayList<>();
-		List<IItemHandlerModifiable> fuelHandlers = new ArrayList<>();
-		for (MountedStorage mountedStorage : storage.values()) {
-			IItemHandlerModifiable itemHandler = mountedStorage.getItemHandler();
-			handlers.add(itemHandler);
-			if (mountedStorage.canUseForFuel())
-				fuelHandlers.add(itemHandler);
+	public void initialize() {
+		if (this.isInitialized()) {
+			throw new IllegalStateException("Mounted storage has already been initialized");
 		}
 
-		inventory = wrapItems(handlers, false);
-		fuelInventory = wrapItems(fuelHandlers, true);
-		fluidInventory = wrapFluids(fluidStorage.values()
-			.stream()
-			.map(MountedFluidStorage::getFluidHandler)
-			.toList());
+		this.allItemStorages = ImmutableMap.copyOf(this.itemsBuilder);
+
+		this.items = new MountedItemStorageWrapper(subMap(
+			this.allItemStorages, storage -> !storage.isInternal()
+		));
+
+		this.allItems = this.items;
+		this.itemsBuilder = null;
+
+		ImmutableMap<BlockPos, MountedItemStorage> fuelMap = subMap(
+			this.allItemStorages, storage -> !storage.isInternal() && storage.providesFuel()
+		);
+		this.fuelItems = fuelMap.isEmpty() ? null : new MountedItemStorageWrapper(fuelMap);
+
+		ImmutableMap<BlockPos, MountedFluidStorage> fluids = ImmutableMap.copyOf(this.fluidsBuilder);
+		this.fluids = new MountedFluidStorageWrapper(fluids);
+		this.fluidsBuilder = null;
+
+		this.syncedItems = ImmutableMap.copyOf(this.syncedItemsBuilder);
+		this.syncedItemsBuilder = null;
+		this.syncedFluids = ImmutableMap.copyOf(this.syncedFluidsBuilder);
+		this.syncedFluidsBuilder = null;
 	}
 
-	public void bindTanksAndDepots(Map<BlockPos, BlockEntity> presentBlockEntities) {
-		for (Entry<BlockPos, MountedStorage> entry : storage.entrySet()) {
-			BlockEntity blockEntity = presentBlockEntities.get(entry.getKey());
-			if (!(blockEntity instanceof DepotBlockEntity depot))
-				return;
-			depot.setHeldItem(entry.getValue().handler.getStackInSlot(0));
-			entry.getValue().blockEntity = depot;
-		}
-		for (Entry<BlockPos, MountedFluidStorage> entry : fluidStorage.entrySet()) {
-			BlockEntity blockEntity = presentBlockEntities.get(entry.getKey());
-			if (!(blockEntity instanceof FluidTankBlockEntity tank))
-				return;
-			IFluidTank tankInventory = tank.getTankInventory();
-			MountedFluidStorage mfs = entry.getValue();
-			if (tankInventory instanceof FluidTank)
-				((FluidTank) tankInventory).setFluid(mfs.tank.getFluid());
-			tank.getFluidLevel()
-				.startWithValue(tank.getFillState());
-			mfs.assignBlockEntity(tank);
+	private boolean isInitialized() {
+		return this.itemsBuilder == null;
+	}
+
+	private void assertInitialized() {
+		if (!this.isInitialized()) {
+			throw new IllegalStateException("MountedStorageManager is uninitialized");
 		}
 	}
 
-	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-		ListTag storageNBT = new ListTag();
-		for (BlockPos pos : storage.keySet()) {
-			CompoundTag c = new CompoundTag();
-			MountedStorage mountedStorage = storage.get(pos);
-			if (!mountedStorage.isValid())
-				continue;
-			if (clientPacket && !mountedStorage.needsSync())
-				continue;
-			c.put("Pos", NbtUtils.writeBlockPos(pos));
-			c.put("Data", mountedStorage.serialize(registries));
-			storageNBT.add(c);
-		}
-
-		ListTag fluidStorageNBT = new ListTag();
-		for (BlockPos pos : fluidStorage.keySet()) {
-			CompoundTag c = new CompoundTag();
-			MountedFluidStorage mountedStorage = fluidStorage.get(pos);
-			if (!mountedStorage.isValid())
-				continue;
-			c.put("Pos", NbtUtils.writeBlockPos(pos));
-			c.put("Data", mountedStorage.serialize(registries));
-			fluidStorageNBT.add(c);
-		}
-
-		nbt.put("Storage", storageNBT);
-		nbt.put("FluidStorage", fluidStorageNBT);
+	protected void reset() {
+		this.allItemStorages = null;
+		this.items = null;
+		this.fuelItems = null;
+		this.fluids = null;
+		this.externalHandlers = new ArrayList<>();
+		this.allItems = null;
+		this.itemsBuilder = new HashMap<>();
+		this.fluidsBuilder = new HashMap<>();
+		this.syncedItemsBuilder = new HashMap<>();
+		this.syncedFluidsBuilder = new HashMap<>();
+		// interactablePositions intentionally not reset
 	}
 
-	public void removeStorageFromWorld() {
-		storage.values()
-			.forEach(MountedStorage::removeStorageFromWorld);
-		fluidStorage.values()
-			.forEach(MountedFluidStorage::removeStorageFromWorld);
-	}
-
-	public void addStorageToWorld(StructureBlockInfo block, BlockEntity blockEntity) {
-		if (storage.containsKey(block.pos())) {
-			MountedStorage mountedStorage = storage.get(block.pos());
-			if (mountedStorage.isValid())
-				mountedStorage.addStorageToWorld(blockEntity);
-		}
-
-		if (fluidStorage.containsKey(block.pos())) {
-			MountedFluidStorage mountedStorage = fluidStorage.get(block.pos());
-			if (mountedStorage.isValid())
-				mountedStorage.addStorageToWorld(blockEntity);
-		}
-	}
-
-	public void clear() {
-		for (int i = 0; i < inventory.getSlots(); i++)
-			if (!inventory.isSlotExternal(i))
-				inventory.setStackInSlot(i, ItemStack.EMPTY);
-		for (int i = 0; i < fluidInventory.getTanks(); i++)
-			fluidInventory.drain(fluidInventory.getFluidInTank(i), FluidAction.EXECUTE);
-	}
-
-	public void updateContainedFluid(BlockPos localPos, FluidStack containedFluid) {
-		MountedFluidStorage mountedFluidStorage = fluidStorage.get(localPos);
-		if (mountedFluidStorage != null)
-			mountedFluidStorage.updateFluid(containedFluid);
-	}
-
-	public void updateContainedItem(BlockPos localPos, List<ItemStack> containedItems) {
-		MountedStorage mountedStorage = storage.get(localPos);
-		if (mountedStorage != null)
-			mountedStorage.updateItems(containedItems);
-	}
-
-	public void attachExternal(IItemHandlerModifiable externalStorage) {
-		inventory = new ContraptionInvWrapper(externalStorage, inventory);
-		fuelInventory = new ContraptionInvWrapper(externalStorage, fuelInventory);
-	}
-
-	public IItemHandlerModifiable getItems() {
-		return inventory;
-	}
-
-	public IItemHandlerModifiable getFuelItems() {
-		return fuelInventory;
-	}
-
-	public IFluidHandler getFluids() {
-		return fluidInventory;
-	}
-
-	public Map<BlockPos, MountedStorage> getMountedItemStorage() {
-		return storage;
-	}
-
-	public Map<BlockPos, MountedFluidStorage> getMountedFluidStorage() {
-		return fluidStorage;
-	}
-
-	public boolean handlePlayerStorageInteraction(Contraption contraption, Player player, BlockPos localPos) {
-		if (player.level().isClientSide()) {
-			BlockEntity localBE = contraption.presentBlockEntities.get(localPos);
-			return MountedStorage.canUseAsStorage(localBE);
-		}
-
-		MountedStorageManager storageManager = contraption.getStorageForSpawnPacket();
-		MountedStorage storage = storageManager.storage.get(localPos);
-		if (storage == null || storage.getItemHandler() == null)
-			return false;
-		IItemHandlerModifiable handler = storage.getItemHandler();
-
-		StructureBlockInfo info = contraption.getBlocks()
-			.get(localPos);
-		if (info != null && info.state().hasProperty(ChestBlock.TYPE)) {
-			ChestType chestType = info.state().getValue(ChestBlock.TYPE);
-			Direction facing = info.state().getOptionalValue(ChestBlock.FACING)
-				.orElse(Direction.SOUTH);
-			Direction connectedDirection =
-				chestType == ChestType.LEFT ? facing.getClockWise() : facing.getCounterClockWise();
-
-			if (chestType != ChestType.SINGLE) {
-				MountedStorage storage2 = storageManager.storage.get(localPos.relative(connectedDirection));
-				if (storage2 != null && storage2.getItemHandler() != null)
-					handler = chestType == ChestType.RIGHT ? new CombinedInvWrapper(handler, storage2.getItemHandler())
-						: new CombinedInvWrapper(storage2.getItemHandler(), handler);
+	public void addBlock(Level level, BlockState state, BlockPos globalPos, BlockPos localPos, @Nullable BlockEntity be) {
+		MountedItemStorageType<?> itemType = MountedStorageTypeRegistry.ITEM_LOOKUP.find(state);
+		if (itemType != null) {
+			MountedItemStorage storage = itemType.mount(level, state, globalPos, be);
+			if (storage != null) {
+				this.addStorage(storage, localPos);
 			}
 		}
 
-		int slotCount = handler.getSlots();
-		if (slotCount == 0)
-			return false;
-		if (slotCount % 9 != 0)
-			return false;
-
-		Supplier<Boolean> stillValid = () -> contraption.entity.isAlive()
-			&& player.distanceToSqr(contraption.entity.toGlobalVector(Vec3.atCenterOf(localPos), 0)) < 64;
-		Component name = info != null ? info.state().getBlock()
-			.getName() : Components.literal("Container");
-		player.openMenu(MountedStorageInteraction.createMenuProvider(name, handler, slotCount, stillValid));
-
-		Vec3 soundPos = contraption.entity.toGlobalVector(Vec3.atCenterOf(localPos), 0);
-		player.level().playSound(null, BlockPos.containing(soundPos), SoundEvents.BARREL_OPEN, SoundSource.BLOCKS, 0.75f, 1f);
-		return true;
+		MountedFluidStorageType<?> fluidType = MountedStorageTypeRegistry.FLUID_LOOKUP.find(state);
+		if (fluidType != null) {
+			MountedFluidStorage storage = fluidType.mount(level, state, globalPos, be);
+			if (storage != null) {
+				this.addStorage(storage, localPos);
+			}
+		}
 	}
 
+	public void unmount(Level level, StructureBlockInfo info, BlockPos globalPos, @Nullable BlockEntity be) {
+		BlockPos localPos = info.pos();
+		BlockState state = info.state();
+
+		MountedItemStorage itemStorage = this.getAllItemStorages().get(localPos);
+		if (itemStorage != null) {
+			MountedItemStorageType<?> expectedType = MountedStorageTypeRegistry.ITEM_LOOKUP.find(state);
+			if (itemStorage.type == expectedType) {
+				itemStorage.unmount(level, state, globalPos, be);
+			}
+		}
+
+		MountedFluidStorage fluidStorage = this.getFluids().storages.get(localPos);
+		if (fluidStorage != null) {
+			MountedFluidStorageType<?> expectedType = MountedStorageTypeRegistry.FLUID_LOOKUP.find(state);
+			if (fluidStorage.type == expectedType) {
+				fluidStorage.unmount(level, state, globalPos, be);
+			}
+		}
+	}
+
+	public void tick(AbstractContraptionEntity entity) {
+		if (this.syncCooldown > 0) {
+			this.syncCooldown--;
+			return;
+		}
+
+		Map<BlockPos, MountedItemStorage> items = new HashMap<>();
+		Map<BlockPos, MountedFluidStorage> fluids = new HashMap<>();
+		this.syncedItems.forEach((pos, storage) -> {
+			if (storage.isDirty()) {
+				items.put(pos, (MountedItemStorage) storage);
+				storage.markClean();
+			}
+		});
+		this.syncedFluids.forEach((pos, storage) -> {
+			if (storage.isDirty()) {
+				fluids.put(pos, (MountedFluidStorage) storage);
+				storage.markClean();
+			}
+		});
+
+		if (!items.isEmpty() || !fluids.isEmpty()) {
+			MountedStorageSyncPacket packet = new MountedStorageSyncPacket(entity.getId(), items, fluids);
+			CatnipServices.NETWORK.sendToClientsTrackingEntity(entity, packet);
+			this.syncCooldown = 8;
+		}
+	}
+
+	public void handleSync(MountedStorageSyncPacket packet, AbstractContraptionEntity entity) {
+		// packet only contains changed storages, grab existing ones before resetting
+		ImmutableMap<BlockPos, MountedItemStorage> items = this.getAllItemStorages();
+		MountedFluidStorageWrapper fluids = this.getFluids();
+		this.reset();
+
+		// track freshly synced storages
+		Map<SyncedMountedStorage, BlockPos> syncedStorages = new IdentityHashMap<>();
+
+		try {
+			// re-add existing ones
+			this.itemsBuilder.putAll(items);
+			this.fluidsBuilder.putAll(fluids.storages);
+			// add newly synced ones, overriding existing ones if present
+			packet.items().forEach((pos, storage) -> {
+				this.itemsBuilder.put(pos, storage);
+				syncedStorages.put((SyncedMountedStorage) storage, pos);
+			});
+			packet.fluids().forEach((pos, storage) -> {
+				this.fluidsBuilder.put(pos, storage);
+				syncedStorages.put((SyncedMountedStorage) storage, pos);
+			});
+		} catch (Throwable t) {
+			// an exception will leave the manager in an invalid state
+			Create.LOGGER.error("An error occurred while syncing a MountedStorageManager", t);
+		}
+
+		this.initialize();
+
+		// call all afterSync methods
+		Contraption contraption = entity.getContraption();
+		syncedStorages.forEach((storage, pos) -> storage.afterSync(contraption, pos));
+	}
+
+	// contraption is provided on the client for initial afterSync storage callbacks
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket, @Nullable Contraption contraption) {
+		this.reset();
+
+		try {
+			NBTHelper.iterateCompoundList(nbt.getList("items", Tag.TAG_COMPOUND), tag -> {
+				BlockPos pos = NBTHelper.readBlockPos(tag, "pos");
+				CompoundTag data = tag.getCompound("storage");
+				MountedItemStorage.CODEC.decode(NbtOps.INSTANCE, data)
+					.result()
+					.map(Pair::getFirst)
+					.ifPresent(storage -> this.addStorage(storage, pos));
+			});
+
+			NBTHelper.iterateCompoundList(nbt.getList("fluids", Tag.TAG_COMPOUND), tag -> {
+				BlockPos pos = NBTHelper.readBlockPos(tag, "pos");
+				CompoundTag data = tag.getCompound("storage");
+				MountedFluidStorage.CODEC.decode(NbtOps.INSTANCE, data)
+					.result()
+					.map(Pair::getFirst)
+					.ifPresent(storage -> this.addStorage(storage, pos));
+			});
+
+			this.readLegacy(registries, nbt);
+
+			if (nbt.contains("interactable_positions")) {
+				this.interactablePositions = new HashSet<>();
+				NBTHelper.iterateCompoundList(nbt.getList("interactable_positions", Tag.TAG_COMPOUND), tag -> {
+					BlockPos pos = new BlockPos(tag.getInt("X"), tag.getInt("Y"), tag.getInt("Z"));
+					this.interactablePositions.add(pos);
+				});
+			}
+		} catch (Throwable t) {
+			Create.LOGGER.error("Error deserializing mounted storage", t);
+			// an exception will leave the manager in an invalid state, initialize must be called
+		}
+
+		this.initialize();
+
+		// for client sync, run initial afterSync callbacks
+		if (!clientPacket || contraption == null)
+			return;
+
+		this.getAllItemStorages().forEach((pos, storage) -> {
+			if (storage instanceof SyncedMountedStorage synced) {
+				synced.afterSync(contraption, pos);
+			}
+		});
+		this.getFluids().storages.forEach((pos, storage) -> {
+			if (storage instanceof SyncedMountedStorage synced) {
+				synced.afterSync(contraption, pos);
+			}
+		});
+	}
+
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		ListTag items = new ListTag();
+		this.getAllItemStorages().forEach((pos, storage) -> {
+				if (!clientPacket || storage instanceof SyncedMountedStorage) {
+					MountedItemStorage.CODEC.encodeStart(NbtOps.INSTANCE, storage).result().ifPresent(encoded -> {
+						CompoundTag tag = new CompoundTag();
+						tag.put("pos", NbtUtils.writeBlockPos(pos));
+						tag.put("storage", encoded);
+						items.add(tag);
+					});
+				}
+			}
+		);
+		if (!items.isEmpty()) {
+			nbt.put("items", items);
+		}
+
+		ListTag fluids = new ListTag();
+		this.getFluids().storages.forEach((pos, storage) -> {
+				if (!clientPacket || storage instanceof SyncedMountedStorage) {
+					MountedFluidStorage.CODEC.encodeStart(NbtOps.INSTANCE, storage).result().ifPresent(encoded -> {
+						CompoundTag tag = new CompoundTag();
+						tag.put("pos", NbtUtils.writeBlockPos(pos));
+						tag.put("storage", encoded);
+						fluids.add(tag);
+					});
+				}
+			}
+		);
+		if (!fluids.isEmpty()) {
+			nbt.put("fluids", fluids);
+		}
+
+		if (clientPacket) {
+			// let the client know of all non-synced ones too
+			SetView<BlockPos> positions = Sets.union(this.getAllItemStorages().keySet(), this.getFluids().storages.keySet());
+			ListTag list = new ListTag();
+			for (BlockPos pos : positions) {
+				list.add(NbtUtils.writeBlockPos(pos));
+			}
+			nbt.put("interactable_positions", list);
+		}
+	}
+
+	public void attachExternal(IItemHandlerModifiable externalStorage) {
+		this.externalHandlers.add(externalStorage);
+		IItemHandlerModifiable[] all = new IItemHandlerModifiable[this.externalHandlers.size() + 1];
+		all[0] = this.items;
+		for (int i = 0; i < this.externalHandlers.size(); i++) {
+			all[i + 1] = this.externalHandlers.get(i);
+		}
+
+		this.allItems = new CombinedInvWrapper(all);
+	}
+
+	/**
+	 * The primary way to access a contraption's inventory. Includes all
+	 * non-internal mounted storages as well as all external storage.
+	 */
+	public CombinedInvWrapper getAllItems() {
+		this.assertInitialized();
+		return this.allItems;
+	}
+
+	/**
+	 * Gets a map of all MountedItemStorages in the contraption, irrelevant of them
+	 * being internal or providing fuel.
+	 * @see MountedItemStorage#isInternal()
+	 * @see MountedItemStorage#providesFuel()
+	 */
+	public ImmutableMap<BlockPos, MountedItemStorage> getAllItemStorages() {
+		this.assertInitialized();
+		return this.allItemStorages;
+	}
+
+	/**
+	 * Gets an item handler wrapping all non-internal mounted storages. This is not
+	 * the whole contraption inventory as it does not include external storages.
+	 * Most often, you want {@link #getAllItems()}, which does.
+	 */
+	public MountedItemStorageWrapper getMountedItems() {
+		this.assertInitialized();
+		return this.items;
+	}
+
+	/**
+	 * Gets an item handler wrapping all non-internal mounted storages that provide fuel.
+	 * May be null if none are present.
+	 */
+	@Nullable
+	public MountedItemStorageWrapper getFuelItems() {
+		this.assertInitialized();
+		return this.fuelItems;
+	}
+
+	/**
+	 * Gets a fluid handler wrapping all mounted fluid storages.
+	 */
+	public MountedFluidStorageWrapper getFluids() {
+		this.assertInitialized();
+		return this.fluids;
+	}
+
+	public boolean handlePlayerStorageInteraction(Contraption contraption, Player player, BlockPos localPos) {
+		if (!(player instanceof ServerPlayer serverPlayer)) {
+			return this.interactablePositions != null && this.interactablePositions.contains(localPos);
+		}
+
+		StructureBlockInfo info = contraption.getBlocks().get(localPos);
+		if (info == null)
+			return false;
+
+		MountedStorageManager storageManager = contraption.getStorage();
+		MountedItemStorage storage = storageManager.getAllItemStorages().get(localPos);
+
+		if (storage != null) {
+			return storage.handleInteraction(serverPlayer, contraption, info);
+		} else {
+			return false;
+		}
+	}
+
+	private void readLegacy(HolderLookup.Provider registries, CompoundTag nbt) {
+		NBTHelper.iterateCompoundList(nbt.getList("Storage", Tag.TAG_COMPOUND), tag -> {
+			BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
+			CompoundTag data = tag.getCompound("Data");
+
+			if (data.contains("Toolbox")) {
+				this.addStorage(ToolboxMountedStorage.fromLegacy(registries, data), pos);
+			} else if (data.contains("NoFuel")) {
+				this.addStorage(ItemVaultMountedStorage.fromLegacy(registries, data), pos);
+			} else if (data.contains("Bottomless")) {
+				ItemStack supplied = ItemStack.parseOptional(registries, data.getCompound("ProvidedStack"));
+				this.addStorage(new CreativeCrateMountedStorage(supplied), pos);
+			} else if (data.contains("Synced")) {
+				this.addStorage(DepotMountedStorage.fromLegacy(registries, data), pos);
+			} else {
+				// we can create a fallback storage safely, it will be validated before unmounting
+				ItemStackHandler handler = new ItemStackHandler();
+				handler.deserializeNBT(registries, data);
+				this.addStorage(new FallbackMountedStorage(handler), pos);
+			}
+		});
+
+		NBTHelper.iterateCompoundList(nbt.getList("FluidStorage", Tag.TAG_COMPOUND), tag -> {
+			BlockPos pos = NBTHelper.readBlockPos(tag, "Pos");
+			CompoundTag data = tag.getCompound("Data");
+
+			if (data.contains("Bottomless")) {
+				this.addStorage(CreativeFluidTankMountedStorage.fromLegacy(registries, data), pos);
+			} else {
+				this.addStorage(FluidTankMountedStorage.fromLegacy(registries, data), pos);
+			}
+		});
+	}
+
+	private void addStorage(MountedItemStorage storage, BlockPos pos) {
+		this.itemsBuilder.put(pos, storage);
+		if (storage instanceof SyncedMountedStorage synced)
+			this.syncedItemsBuilder.put(pos, synced);
+	}
+
+	private void addStorage(MountedFluidStorage storage, BlockPos pos) {
+		this.fluidsBuilder.put(pos, storage);
+		if (storage instanceof SyncedMountedStorage synced)
+			this.syncedFluidsBuilder.put(pos, synced);
+	}
+
+	private static <K, V> ImmutableMap<K, V> subMap(Map<K, V> map, Predicate<V> predicate) {
+		ImmutableMap.Builder<K, V> builder = ImmutableMap.builder();
+		map.forEach((key, value) -> {
+			if (predicate.test(value)) {
+				builder.put(key, value);
+			}
+		});
+		return builder.build();
+	}
 }

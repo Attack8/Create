@@ -62,7 +62,7 @@ public class MountedContraption extends Contraption {
 			return false;
 
 		Axis axis = state.getValue(RAIL_SHAPE) == RailShape.EAST_WEST ? Axis.X : Axis.Z;
-		addBlock(pos, Pair.of(new StructureBlockInfo(pos, AllBlocks.MINECART_ANCHOR.getDefaultState()
+		addBlock(world, pos, Pair.of(new StructureBlockInfo(pos, AllBlocks.MINECART_ANCHOR.getDefaultState()
 			.setValue(BlockStateProperties.HORIZONTAL_AXIS, axis), null), null));
 
 		if (blocks.size() == 1)
@@ -156,7 +156,7 @@ public class MountedContraption extends Contraption {
 
 	public void addExtraInventories(Entity cart) {
 		if (cart instanceof Container container)
-			storage.attachExternal(new ContraptionInvWrapper(true, new InvWrapper(container)));
+			storage.attachExternal(new InvWrapper(container));
 	}
 
 

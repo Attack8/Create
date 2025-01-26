@@ -32,9 +32,9 @@ import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -52,6 +52,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -662,7 +663,7 @@ public class Carriage {
 		public void read(CompoundTag tag, HolderLookup.Provider registries) {
 			cutoff = tag.getFloat("Cutoff");
 			discardTicks = tag.getInt("DiscardTicks");
-			storage.read(tag, registries, null, false);
+			storage.read(tag, registries, false, null);
 			if (tag.contains("Pivot"))
 				pivot = TrackNodeLocation.read(tag.getCompound("Pivot"), null);
 			if (positionAnchor != null)

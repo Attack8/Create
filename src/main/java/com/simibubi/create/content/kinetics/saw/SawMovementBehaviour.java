@@ -82,7 +82,7 @@ public class SawMovementBehaviour extends BlockBreakingMovementBehaviour {
 	}
 
 	public void dropItemFromCutTree(MovementContext context, BlockPos pos, ItemStack stack) {
-		ItemStack remainder = ItemHandlerHelper.insertItem(context.contraption.getSharedInventory(), stack, false);
+		ItemStack remainder = ItemHandlerHelper.insertItem(context.contraption.getStorage().getAllItems(), stack, false);
 		if (remainder.isEmpty())
 			return;
 

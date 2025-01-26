@@ -1,4 +1,4 @@
-// 1.21.1	2025-01-25T15:43:14.387809854	Registrate Provider for create [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-01-26T10:17:25.950228616	Registrate Provider for create [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 60bbdf92d2ac9824ea6144955c74043a6005f79d assets/create/blockstates/acacia_window.json
 6a67703c2697d81b7dc83e9d72a66f9c9ff08383 assets/create/blockstates/acacia_window_pane.json
 c3ae87b62e81d8e9476eccd793bb1548d74c66a1 assets/create/blockstates/adjustable_chain_gearshift.json
@@ -4727,10 +4727,11 @@ ce96b2195cb8ac34d555dbd1fd9f0c4ceaa2ce6f data/create/recipe/weathered_iron_windo
 e6884ff3bfbe4279da5826ad2cbfa3ead990be79 data/create/recipe/weathered_iron_window_pane.json
 f365be4eda73234b73aa49c97b065f1a8baafbf6 data/create/tags/block/brittle.json
 8b6c0b444b15f7fb2d55b9cbcb68537c1269f877 data/create/tags/block/casing.json
-35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/create/tags/block/contraption_inventory_deny.json
+c603fae95069714ac3d256dfa31f8d2639efafa7 data/create/tags/block/chest_mounted_storage.json
 c7ec0dbc18e9c1b58e568ed925287b89df11a136 data/create/tags/block/copycat_allow.json
 876eb9210f4a14898a2fe6d225699c66b5bdfeef data/create/tags/block/copycat_deny.json
 7296238b4c6b81251870addce1de8ecda63381dc data/create/tags/block/corals.json
+35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/create/tags/block/fallback_mounted_storage_blacklist.json
 f675c20350ed60da4878b5d6301f02c8c05624bd data/create/tags/block/fan_processing_catalysts/blasting.json
 0592b99f657415f6546564ed8efa1fcbef07ba15 data/create/tags/block/fan_processing_catalysts/haunting.json
 9386dd9a1d234813f9b8ae4ec88866d396aa1d37 data/create/tags/block/fan_processing_catalysts/smoking.json
@@ -4745,6 +4746,7 @@ f400870b8dbcd14238be3ec99c419093073ba3a6 data/create/tags/block/postboxes.json
 9bc8c13fd80bdbe7f767b91ee1a1042e9aff02b0 data/create/tags/block/roots.json
 55dccb895bbdacfbd6ee9005486cd3fe9df01249 data/create/tags/block/safe_nbt.json
 79418bd729cef417b322cef9b491e7ae83317d61 data/create/tags/block/seats.json
+7d783d948cc49503fb645045fe9ef48906b74341 data/create/tags/block/simple_mounted_storage.json
 8a6ad3c63fb0c436ec8109f39358213930effd5a data/create/tags/block/table_cloths.json
 5def5088f7fd31b80e6f28c1c4ea146aa9d7d15b data/create/tags/block/toolboxes.json
 2589b135c0e96ad29076569e144528fe32ea5b39 data/create/tags/block/tracks.json

@@ -76,7 +76,7 @@ public class FunnelMovementBehaviour implements MovementBehaviour {
 		boolean upTo = context.blockEntityData.getBoolean("UpTo");
 		filterAmount = hasFilter ? filterAmount : 1;
 
-		ItemStack extract = ItemHelper.extract(context.contraption.getSharedInventory(),
+		ItemStack extract = ItemHelper.extract(context.contraption.getStorage().getAllItems(),
 			s -> filter.test(world, s),
 			upTo ? ItemHelper.ExtractionCountMode.UPTO : ItemHelper.ExtractionCountMode.EXACTLY, filterAmount, false);
 
@@ -105,7 +105,7 @@ public class FunnelMovementBehaviour implements MovementBehaviour {
 			if (!filter.test(context.world, toInsert))
 				continue;
 			ItemStack remainder =
-				ItemHandlerHelper.insertItemStacked(context.contraption.getSharedInventory(), toInsert, false);
+				ItemHandlerHelper.insertItemStacked(context.contraption.getStorage().getAllItems(), toInsert, false);
 			if (remainder.getCount() == toInsert.getCount())
 				continue;
 			if (remainder.isEmpty()) {

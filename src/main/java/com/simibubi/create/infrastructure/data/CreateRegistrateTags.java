@@ -111,6 +111,18 @@ public class CreateRegistrateTags {
 			.addTag(BlockTags.PRESSURE_PLATES)
 			.addTag(BlockTags.RAILS);
 
+		// tags aren't used here because the implementations of modded entries are unknown
+		prov.tag(AllBlockTags.CHEST_MOUNTED_STORAGE.tag).add(
+			Blocks.CHEST, Blocks.TRAPPED_CHEST
+		);
+		prov.tag(AllBlockTags.SIMPLE_MOUNTED_STORAGE.tag).add(
+			Blocks.BARREL, Blocks.SHULKER_BOX,
+			Blocks.WHITE_SHULKER_BOX, Blocks.ORANGE_SHULKER_BOX, Blocks.MAGENTA_SHULKER_BOX, Blocks.LIGHT_BLUE_SHULKER_BOX,
+			Blocks.YELLOW_SHULKER_BOX, Blocks.LIME_SHULKER_BOX, Blocks.PINK_SHULKER_BOX, Blocks.GRAY_SHULKER_BOX,
+			Blocks.LIGHT_GRAY_SHULKER_BOX, Blocks.CYAN_SHULKER_BOX, Blocks.PURPLE_SHULKER_BOX, Blocks.BLUE_SHULKER_BOX,
+			Blocks.BROWN_SHULKER_BOX, Blocks.GREEN_SHULKER_BOX, Blocks.RED_SHULKER_BOX, Blocks.BLACK_SHULKER_BOX
+		);
+
 		prov.tag(AllBlockTags.ROOTS.tag)
 				.add(Blocks.MANGROVE_ROOTS);
 

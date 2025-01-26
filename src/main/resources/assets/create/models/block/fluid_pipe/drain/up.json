@@ -8,7 +8,7 @@
 	"elements": [
 		{
 			"from": [2.95, 14, 2.95],
-			"to": [13.05, 16.95, 13.05],
+			"to": [13.05, 17.1, 13.05],
 			"rotation": {"angle": 0, "axis": "z", "origin": [8, 8, 8]},
 			"faces": {
 				"north": {"uv": [9, 16, 10.5, 11], "rotation": 90, "texture": "#0"},

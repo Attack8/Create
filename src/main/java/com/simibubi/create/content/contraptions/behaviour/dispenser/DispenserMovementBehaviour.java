@@ -1,8 +1,9 @@
 package com.simibubi.create.content.contraptions.behaviour.dispenser;
 
 import java.util.HashMap;
-
-import org.jetbrains.annotations.Nullable;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.foundation.mixin.accessor.DispenserBlockAccessor;
@@ -21,13 +22,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.entity.DispenserBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 
 public class DispenserMovementBehaviour extends DropperMovementBehaviour {
-	private static final HashMap<Item, IMovedDispenseItemBehaviour> MOVED_DISPENSE_ITEM_BEHAVIOURS = new HashMap<>();
-	private static final HashMap<Item, IMovedDispenseItemBehaviour> MOVED_PROJECTILE_DISPENSE_BEHAVIOURS = new HashMap<>();
+	private static final Map<Item, IMovedDispenseItemBehaviour> movedDispenseItemBehaviors = new HashMap<>();
+	private static final Set<Item> blacklist = new HashSet<>();
+
 	private static boolean spawnEggsRegistered = false;
 
 	public static void gatherMovedDispenseItemBehaviours() {
@@ -36,7 +36,7 @@ public class DispenserMovementBehaviour extends DropperMovementBehaviour {
 
 	public static void registerMovedDispenseItemBehaviour(Item item,
 		IMovedDispenseItemBehaviour movedDispenseItemBehaviour) {
-		MOVED_DISPENSE_ITEM_BEHAVIOURS.put(item, movedDispenseItemBehaviour);
+		movedDispenseItemBehaviors.put(item, movedDispenseItemBehaviour);
 	}
 
 	public static DispenseItemBehavior getDispenseMethod(Level level, ItemStack itemstack) {
@@ -44,70 +44,71 @@ public class DispenserMovementBehaviour extends DropperMovementBehaviour {
 	}
 
 	@Override
-	protected void activate(MovementContext context, BlockPos pos) {
+	protected IMovedDispenseItemBehaviour getDispenseBehavior(MovementContext context, BlockPos pos, ItemStack stack) {
 		if (!spawnEggsRegistered) {
 			spawnEggsRegistered = true;
 			IMovedDispenseItemBehaviour.initSpawnEggs();
 		}
 
-		DispenseItemLocation location = getDispenseLocation(context);
-		if (location.isEmpty()) {
-			context.world.levelEvent(1001, pos, 0);
-		} else {
-			ItemStack itemStack = getItemStackAt(location, context);
-			// Special dispense item behaviour for moving contraptions
-			if (MOVED_DISPENSE_ITEM_BEHAVIOURS.containsKey(itemStack.getItem())) {
-				setItemStackAt(location, MOVED_DISPENSE_ITEM_BEHAVIOURS.get(itemStack.getItem()).dispense(itemStack, context, pos), context);
-				return;
-			}
-
-			ItemStack backup = itemStack.copy();
-			// If none is there, try vanilla registry
-			try {
-				if (MOVED_PROJECTILE_DISPENSE_BEHAVIOURS.containsKey(itemStack.getItem())) {
-					setItemStackAt(location, MOVED_PROJECTILE_DISPENSE_BEHAVIOURS.get(itemStack.getItem()).dispense(itemStack, context, pos), context);
-					return;
-				}
-
-				DispenseItemBehavior behavior = getDispenseMethod(context.world, itemStack);
-				if (behavior instanceof ProjectileDispenseBehavior projectileDispenseBehavior) { // Projectile behaviours can be converted most of the time
-					IMovedDispenseItemBehaviour movedBehaviour = MovedProjectileDispenserBehaviour.of(projectileDispenseBehavior);
-					setItemStackAt(location, movedBehaviour.dispense(itemStack, context, pos), context);
-					MOVED_PROJECTILE_DISPENSE_BEHAVIOURS.put(itemStack.getItem(), movedBehaviour); // buffer conversion if successful
-					return;
-				}
-
-				Vec3 facingVec = Vec3.atLowerCornerOf(context.state.getValue(DispenserBlock.FACING).getNormal());
-				facingVec = context.rotation.apply(facingVec);
-				facingVec.normalize();
-				Direction clostestFacing = Direction.getNearest(facingVec.x, facingVec.y, facingVec.z);
-
-				MinecraftServer server = context.world.getServer();
-				ServerLevel serverLevel = server != null ? server.getLevel(context.world.dimension()) : null;
-
-				BlockState state;
-				if (context.state.hasProperty(BlockStateProperties.FACING) && clostestFacing != null) {
-					state = context.state.setValue(BlockStateProperties.FACING, clostestFacing);
-				} else {
-					state = context.state;
-				}
-
-				@Nullable DispenserBlockEntity blockEntity = null;
-				if (context.world.getBlockEntity(pos) instanceof DispenserBlockEntity dispenserBlockEntity)
-					blockEntity = dispenserBlockEntity;
-
-				BlockSource blockSource = new BlockSource(serverLevel, pos, state, blockEntity);
-
-				if (behavior.getClass() != DefaultDispenseItemBehavior.class) { // There is a dispense item behaviour registered for the vanilla dispenser
-					setItemStackAt(location, behavior.dispense(blockSource, itemStack), context);
-					return;
-				}
-			} catch (NullPointerException ignored) {
-				itemStack = backup; // Something went wrong with the BE being null in ContraptionBlockSource, reset the stack
-			}
-
-			setItemStackAt(location, DEFAULT_BEHAVIOUR.dispense(itemStack, context, pos), context);  // the default: launch the item
+		Item item = stack.getItem();
+		// return registered/cached behavior if present
+		if (movedDispenseItemBehaviors.containsKey(item)) {
+			return movedDispenseItemBehaviors.get(item);
 		}
+
+		// if there isn't one, try to create one from a vanilla behavior
+		if (blacklist.contains(item)) {
+			// unless it's been blacklisted, which means a behavior was created already and errored
+			return MovedDefaultDispenseItemBehaviour.INSTANCE;
+		}
+
+		DispenseItemBehavior behavior = getDispenseMethod(context.world, stack);
+		// no behavior or default, use the moved default
+		if (behavior == null || behavior.getClass() == DefaultDispenseItemBehavior.class)
+			return MovedDefaultDispenseItemBehaviour.INSTANCE;
+
+		// projectile-specific behaviors are pretty straightforward to convert
+		if (behavior instanceof ProjectileDispenseBehavior projectile) {
+			IMovedDispenseItemBehaviour movedBehaviour = MovedProjectileDispenserBehaviour.of(projectile);
+			// cache it for later
+			registerMovedDispenseItemBehaviour(item, movedBehaviour);
+			return movedBehaviour;
+		}
+
+		MinecraftServer server = context.world.getServer();
+		ServerLevel serverLevel = server != null ? server.getLevel(context.world.dimension()) : null;
+
+		DispenserBlockEntity blockEntity = null;
+		if (context.world.getBlockEntity(pos) instanceof DispenserBlockEntity dispenserBlockEntity)
+			blockEntity = dispenserBlockEntity;
+
+		// other behaviors are more convoluted due to BlockSource providing a BlockEntity.
+		Vec3 normal = getRotatedFacingNormal(context);
+		Direction nearestFacing = Direction.getNearest(normal.x, normal.y, normal.z);
+		BlockSource source = new BlockSource(serverLevel, pos, context.state, blockEntity);
+		IMovedDispenseItemBehaviour movedBehavior = new FallbackMovedDispenseBehavior(item, behavior, source);
+		registerMovedDispenseItemBehaviour(item, movedBehavior);
+		return movedBehavior;
 	}
 
+	private static Vec3 getRotatedFacingNormal(MovementContext ctx) {
+		Direction facing = ctx.state.getValue(DispenserBlock.FACING);
+		Vec3 normal = Vec3.atLowerCornerOf(facing.getNormal());
+		return ctx.rotation.apply(normal);
+	}
+
+	private record FallbackMovedDispenseBehavior(Item item, DispenseItemBehavior wrapped, BlockSource source) implements IMovedDispenseItemBehaviour {
+		@Override
+		public ItemStack dispense(ItemStack stack, MovementContext context, BlockPos pos) {
+			ItemStack backup = stack.copy();
+			try {
+				return this.wrapped.dispense(this.source, stack);
+			} catch (NullPointerException ignored) {
+				// error due to lack of a BlockEntity. Un-register self to avoid continuing to fail
+				movedDispenseItemBehaviors.remove(this.item);
+				blacklist.add(this.item);
+				return backup;
+			}
+		}
+	}
 }

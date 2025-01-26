@@ -507,7 +507,7 @@ public class FluidTankBlockEntity extends SmartBlockEntity implements IHaveGoggl
 		registerAwardables(behaviours, AllAdvancements.STEAM_ENGINE_MAXED, AllAdvancements.PIPE_ORGAN);
 	}
 
-	public IFluidTank getTankInventory() {
+	public FluidTank getTankInventory() {
 		return tankInventory;
 	}
 

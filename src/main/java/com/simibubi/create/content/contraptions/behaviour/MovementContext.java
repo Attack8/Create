@@ -1,7 +1,13 @@
 package com.simibubi.create.content.contraptions.behaviour;
 
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.google.common.base.Suppliers;
+import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorage;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
 
@@ -35,6 +41,9 @@ public class MovementContext {
 
 	private FilterItemStack filter;
 
+	private final Supplier<MountedItemStorage> itemStorage;
+	private final Supplier<MountedFluidStorage> fluidStorage;
+
 	public MovementContext(Level world, StructureBlockInfo info, Contraption contraption) {
 		this.world = world;
 		this.state = info.state();
@@ -51,6 +60,8 @@ public class MovementContext {
 		data = new CompoundTag();
 		stall = false;
 		filter = null;
+		this.itemStorage = Suppliers.memoize(() -> contraption.getStorage().getAllItemStorages().get(this.localPos));
+		this.fluidStorage = Suppliers.memoize(() -> contraption.getStorage().getFluids().storages.get(this.localPos));
 	}
 
 	public float getAnimationSpeed() {
@@ -94,4 +105,13 @@ public class MovementContext {
 		return filter = FilterItemStack.of(world.registryAccess(), blockEntityData.getCompound("Filter"));
 	}
 
+	@Nullable
+	public MountedItemStorage getItemStorage() {
+		return this.itemStorage.get();
+	}
+
+	@Nullable
+	public MountedFluidStorage getFluidStorage() {
+		return this.fluidStorage.get();
+	}
 }

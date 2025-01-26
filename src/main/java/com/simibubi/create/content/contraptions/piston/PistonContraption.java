@@ -190,8 +190,8 @@ public class PistonContraption extends TranslatingContraption {
 	}
 
 	@Override
-	public void addBlock(BlockPos pos, Pair<StructureBlockInfo, BlockEntity> capture) {
-		super.addBlock(pos.relative(orientation, -initialExtensionProgress), capture);
+	public void addBlock(Level level, BlockPos pos, Pair<StructureBlockInfo, BlockEntity> capture) {
+		super.addBlock(level, pos.relative(orientation, -initialExtensionProgress), capture);
 	}
 
 	@Override
