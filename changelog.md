@@ -66,11 +66,11 @@ Gameplay
 
 Bug Fixes
 - Deployers can no longer take a seat
-- Fixed contraptions keeping pressure plates and tripwires activated
+- Fixed contraptions keeping pressure plates and tripwires activated (#7255)
 - Steam engine placement assist now shows a normal shaft
 - Fixed schedule screen not showing tooltips in the entry editor
 - Fixed tracks creating signal block intersections despite being in different dimensions
-- Fixed non-effect fans resetting processed belt items
+- Fixed non-effect fans resetting processed belt items (#7298)
 - Fixed mechanical saw considering scaffolding as leaves
 - Fixed entity name display source not working for players on signs
 - Fixed certain blocks messing up the order scheduled ticks (#7141)
@@ -82,7 +82,6 @@ Bug Fixes
 - Fixed redstone links not updating their redstone output when they've been taken out of receiver mode (#7226)
 - Fixed rare crash related to sliding doors (#6184)
 - Verify that schematics are gzip-encoded before trying to read from them (#6087)
-- Added workaround for create_tracks.dat getting corrupted during crashes, the mod will try to restore the old track data stored in the create_tracks.dat_old file if the current one is corrupted
 - Fixed ConditionContext nbt in trains containing a large number of empty tags
 - Fixed deployers not placing fish from fish buckets (#3705)
 - Fixed gasses not being visible in basins and item drains (#7236)

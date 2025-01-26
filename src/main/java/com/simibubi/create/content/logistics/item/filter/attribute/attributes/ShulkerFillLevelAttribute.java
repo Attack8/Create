@@ -50,7 +50,7 @@ public record ShulkerFillLevelAttribute(ShulkerLevels levels) implements ItemAtt
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.SHULKER_FILL_LEVEL.value();
+		return AllItemAttributeTypes.SHULKER_FILL_LEVEL;
 	}
 
 	enum ShulkerLevels implements StringRepresentable {

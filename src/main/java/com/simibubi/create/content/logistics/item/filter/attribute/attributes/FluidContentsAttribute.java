@@ -58,7 +58,7 @@ public record FluidContentsAttribute(@Nullable Fluid fluid) implements ItemAttri
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.HAS_FLUID.value();
+		return AllItemAttributeTypes.HAS_FLUID;
 	}
 
 	public static class Type implements ItemAttributeType {

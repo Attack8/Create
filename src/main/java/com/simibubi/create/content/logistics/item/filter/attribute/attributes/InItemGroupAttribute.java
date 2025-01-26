@@ -69,6 +69,11 @@ public class InItemGroupAttribute implements ItemAttribute {
 	}
 
 	@Override
+	public ItemAttributeType getType() {
+		return AllItemAttributeTypes.IN_ITEM_GROUP;
+	}
+
+	@Override
 	public final boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof InItemGroupAttribute that)) return false;
@@ -79,11 +84,6 @@ public class InItemGroupAttribute implements ItemAttribute {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(group);
-	}
-
-	@Override
-	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.IN_ITEM_GROUP.value();
 	}
 
 	public static class Type implements ItemAttributeType {

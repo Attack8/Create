@@ -41,7 +41,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class AllItemAttributeTypes {
 	private static final DeferredRegister<ItemAttributeType> REGISTER = DeferredRegister.create(AllRegistries.ITEM_ATTRIBUTE_TYPES, Create.ID);
 
-	public static final Holder<ItemAttributeType>
+	public static final ItemAttributeType
 		PLACEABLE = singleton("placeable", s -> s.getItem() instanceof BlockItem),
 		CONSUMABLE = singleton("consumable", s -> s.has(DataComponents.FOOD)),
 		FLUID_CONTAINER = singleton("fluid_container", s -> s.getCapability(Capabilities.FluidHandler.ITEM) != null),
@@ -93,16 +93,17 @@ public class AllItemAttributeTypes {
 						.getMaxLevel() <= e.getIntValue());
 	}
 
-	private static Holder<ItemAttributeType> singleton(String id, Predicate<ItemStack> predicate) {
+	private static ItemAttributeType singleton(String id, Predicate<ItemStack> predicate) {
 		return register(id, new SingletonItemAttribute.Type(type -> new SingletonItemAttribute(type, (stack, level) -> predicate.test(stack), id)));
 	}
 
-	private static Holder<ItemAttributeType> singleton(String id, BiPredicate<ItemStack, Level> predicate) {
+	private static ItemAttributeType singleton(String id, BiPredicate<ItemStack, Level> predicate) {
 		return register(id, new SingletonItemAttribute.Type(type -> new SingletonItemAttribute(type, predicate, id)));
 	}
 
-	private static Holder<ItemAttributeType> register(String id, ItemAttributeType type) {
-		return REGISTER.register(id, () -> type);
+	private static ItemAttributeType register(String id, ItemAttributeType type) {
+		REGISTER.register(id, () -> type);
+		return type;
 	}
 
 	@ApiStatus.Internal

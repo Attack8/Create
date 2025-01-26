@@ -45,7 +45,7 @@ public record BookAuthorAttribute(String author) implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.BOOK_AUTHOR.value();
+		return AllItemAttributeTypes.BOOK_AUTHOR;
 	}
 
 	public static class Type implements ItemAttributeType {

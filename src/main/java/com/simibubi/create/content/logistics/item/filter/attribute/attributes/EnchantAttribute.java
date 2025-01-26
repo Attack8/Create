@@ -45,7 +45,7 @@ public record EnchantAttribute(@Nullable Holder<Enchantment> enchantment) implem
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.HAS_ENCHANT.value();
+		return AllItemAttributeTypes.HAS_ENCHANT;
 	}
 
 	public static class Type implements ItemAttributeType {

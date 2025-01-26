@@ -47,7 +47,7 @@ public record AddedByAttribute(String modId) implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.ADDED_BY.value();
+		return AllItemAttributeTypes.ADDED_BY;
 	}
 
 	public static class Type implements ItemAttributeType {

@@ -74,7 +74,7 @@ public record ColorAttribute(DyeColor color) implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.HAS_COLOR.value();
+		return AllItemAttributeTypes.HAS_COLOR;
 	}
 
 	public static class Type implements ItemAttributeType {

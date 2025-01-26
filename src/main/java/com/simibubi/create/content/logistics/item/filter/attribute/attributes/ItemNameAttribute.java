@@ -53,7 +53,7 @@ public record ItemNameAttribute(String itemName) implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.HAS_NAME.value();
+		return AllItemAttributeTypes.HAS_NAME;
 	}
 
 	public static class Type implements ItemAttributeType {

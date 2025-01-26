@@ -42,7 +42,7 @@ public record InTagAttribute(TagKey<Item> tag) implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.IN_TAG.value();
+		return AllItemAttributeTypes.IN_TAG;
 	}
 
 	public static class Type implements ItemAttributeType {

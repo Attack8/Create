@@ -46,7 +46,7 @@ public record BookCopyAttribute(int generation) implements ItemAttribute {
 
 	@Override
 	public ItemAttributeType getType() {
-		return AllItemAttributeTypes.BOOK_COPY.value();
+		return AllItemAttributeTypes.BOOK_COPY;
 	}
 
 	public static class Type implements ItemAttributeType {
