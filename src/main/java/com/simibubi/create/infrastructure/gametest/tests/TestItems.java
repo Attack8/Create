@@ -3,6 +3,7 @@ package com.simibubi.create.infrastructure.gametest.tests;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.simibubi.create.AllBlockEntityTypes;
@@ -10,6 +11,8 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.logistics.depot.DepotBlockEntity;
 import com.simibubi.create.content.logistics.tunnel.BrassTunnelBlockEntity.SelectionMode;
+import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
+import com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
 import com.simibubi.create.content.redstone.nixieTube.NixieTubeBlockEntity;
 import com.simibubi.create.content.trains.display.FlapDisplayBlockEntity;
 import com.simibubi.create.content.trains.display.FlapDisplayLayout;
@@ -74,6 +77,25 @@ public class TestItems {
 				helper.fail("Unexpected count on depot 1: " + held1Count);
 			if (!held2Empty && held2Count != 1)
 				helper.fail("Unexpected count on depot 2: " + held2Count);
+		});
+	}
+
+	@GameTest(template = "arm_multi_output", timeoutTicks = CreateGameTestHelper.TEN_SECONDS)
+	public static void armMultiOutput(CreateGameTestHelper helper) {
+		BlockPos lever = new BlockPos(2, 3, 1);
+		BlockPos[] blazeBurners = IntStream.rangeClosed(6, 8)
+			.boxed()
+			.flatMap(x -> IntStream.rangeClosed(1, 3)
+				.mapToObj(z -> new BlockPos(x, 2, z)))
+			.toArray(BlockPos[]::new);
+		helper.pullLever(lever);
+		helper.succeedWhen(() -> {
+			for (BlockPos pos : blazeBurners)
+				helper.assertBlockState(
+					pos,
+					state -> state.getValue(BlazeBurnerBlock.HEAT_LEVEL) == HeatLevel.KINDLED,
+					() -> "Blaze burner isn't lit!"
+				);
 		});
 	}
 

@@ -121,12 +121,12 @@ public class CreateAdvancement {
 
 		;
 
-		private AdvancementType advancementType;
-		private boolean toast;
-		private boolean announce;
-		private boolean hide;
+		private final AdvancementType advancementType;
+		private final boolean toast;
+		private final boolean announce;
+		private final boolean hide;
 
-		private TaskType(AdvancementType advancementType, boolean toast, boolean announce, boolean hide) {
+		TaskType(AdvancementType advancementType, boolean toast, boolean announce, boolean hide) {
 			this.advancementType = advancementType;
 			this.toast = toast;
 			this.announce = announce;

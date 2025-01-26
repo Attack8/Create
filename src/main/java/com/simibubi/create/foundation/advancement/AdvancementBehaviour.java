@@ -1,5 +1,6 @@
 package com.simibubi.create.foundation.advancement;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -24,7 +25,7 @@ public class AdvancementBehaviour extends BlockEntityBehaviour {
 	public static final BehaviourType<AdvancementBehaviour> TYPE = new BehaviourType<>();
 
 	private UUID playerId;
-	private Set<CreateAdvancement> advancements;
+	private final Set<CreateAdvancement> advancements;
 
 	public AdvancementBehaviour(SmartBlockEntity be, CreateAdvancement... advancements) {
 		super(be);
@@ -33,8 +34,7 @@ public class AdvancementBehaviour extends BlockEntityBehaviour {
 	}
 
 	public void add(CreateAdvancement... advancements) {
-		for (CreateAdvancement advancement : advancements)
-			this.advancements.add(advancement);
+		Collections.addAll(this.advancements, advancements);
 	}
 
 	public boolean isOwnerPresent() {

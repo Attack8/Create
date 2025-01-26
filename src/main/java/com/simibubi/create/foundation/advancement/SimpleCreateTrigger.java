@@ -14,7 +14,6 @@ import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.EntityPredicate;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.ExtraCodecs;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -27,8 +26,8 @@ public class SimpleCreateTrigger extends CriterionTriggerBase<SimpleCreateTrigge
 		super.trigger(player, null);
 	}
 
-	public com.simibubi.create.foundation.advancement.SimpleCreateTrigger.Instance instance() {
-		return new com.simibubi.create.foundation.advancement.SimpleCreateTrigger.Instance();
+	public SimpleCreateTrigger.Instance instance() {
+		return new SimpleCreateTrigger.Instance();
 	}
 
 	@Override
