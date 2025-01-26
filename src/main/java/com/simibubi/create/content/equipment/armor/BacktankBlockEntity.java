@@ -3,6 +3,7 @@ package com.simibubi.create.content.equipment.armor;
 import java.util.List;
 
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -16,6 +17,7 @@ import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap.Builder;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -140,6 +142,16 @@ public class BacktankBlockEntity extends KineticBlockEntity implements Nameable 
 		componentPatch = CatnipCodecUtils.decode(DataComponentPatch.CODEC, compound).orElse(DataComponentPatch.EMPTY);
 		if (prev != 0 && prev != airLevel && airLevel == BacktankUtil.maxAir(capacityEnchantLevel) && clientPacket)
 			playFilledEffect();
+	}
+
+	@Override
+	protected void applyImplicitComponents(DataComponentInput componentInput) {
+		airLevel = componentInput.getOrDefault(AllDataComponents.BACKTANK_AIR, 0);
+	}
+
+	@Override
+	protected void collectImplicitComponents(Builder components) {
+		components.set(AllDataComponents.BACKTANK_AIR, airLevel);
 	}
 
 	protected void playFilledEffect() {

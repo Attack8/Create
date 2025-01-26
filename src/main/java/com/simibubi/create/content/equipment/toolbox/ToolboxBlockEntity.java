@@ -12,6 +12,7 @@ import java.util.WeakHashMap;
 
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.animatedContainer.AnimatedContainerBehaviour;
@@ -23,6 +24,7 @@ import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap.Builder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -383,4 +385,15 @@ public class ToolboxBlockEntity extends SmartBlockEntity implements MenuProvider
 		colorProvider.reset();
 	}
 
+	@Override
+	protected void applyImplicitComponents(DataComponentInput componentInput) {
+		setUniqueId(componentInput.get(AllDataComponents.TOOLBOX_UUID));
+		readInventory(componentInput.getOrDefault(AllDataComponents.TOOLBOX_INVENTORY, ItemContainerContents.EMPTY));
+	}
+
+	@Override
+	protected void collectImplicitComponents(Builder components) {
+		components.set(AllDataComponents.TOOLBOX_UUID, uniqueId);
+		components.set(AllDataComponents.TOOLBOX_INVENTORY, ItemHelper.containerContentsFromHandler(inventory));
+	}
 }

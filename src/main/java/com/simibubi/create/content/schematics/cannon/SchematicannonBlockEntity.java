@@ -40,6 +40,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap.Builder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -881,6 +882,21 @@ public class SchematicannonBlockEntity extends SmartBlockEntity implements MenuP
 	@OnlyIn(Dist.CLIENT)
 	public AABB getRenderBoundingBox() {
 		return AABB.INFINITE;
+	}
+
+	@Override
+	protected void applyImplicitComponents(DataComponentInput componentInput) {
+		SchematicannonOptions options = componentInput.getOrDefault(AllDataComponents.SCHEMATICANNON_OPTIONS,
+				new SchematicannonOptions(2, true, false));
+		replaceMode = options.replaceMode;
+		skipMissing = options.skipMissing;
+		replaceBlockEntities = options.replaceBlockEntities;
+	}
+
+	@Override
+	protected void collectImplicitComponents(Builder components) {
+		components.set(AllDataComponents.SCHEMATICANNON_OPTIONS,
+			new SchematicannonOptions(replaceMode, skipMissing, replaceBlockEntities));
 	}
 
 	public enum State {

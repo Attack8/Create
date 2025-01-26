@@ -360,7 +360,6 @@ public class AllBlocks {
 					.setRolls(ConstantValue.exactly(1))
 					.add(LootItem.lootTableItem(AllBlocks.SCHEMATICANNON.get()
 						.asItem())
-						// TODO 1.21: Make sure this works
 						.apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
 							.include(AllDataComponents.SCHEMATICANNON_OPTIONS.value())))));
 			})
