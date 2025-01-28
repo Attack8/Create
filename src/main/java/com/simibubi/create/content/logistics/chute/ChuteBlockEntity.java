@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.Create;
-import com.simibubi.create.content.equipment.goggles.IHaveGoggleInformation;
+import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
 import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour;
 import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour.TransportedResult;
@@ -754,10 +754,10 @@ public class ChuteBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 			.style(ChatFormatting.YELLOW)
 			.forGoggles(tooltip);
 		if (!item.isEmpty())
-            CreateLang.translate("tooltip.chute.contains", Component.translatable(item.getDescriptionId())
-                .getString(), item.getCount())
-                .style(ChatFormatting.GREEN)
-                .forGoggles(tooltip);
+			CreateLang.translate("tooltip.chute.contains", Component.translatable(item.getDescriptionId())
+					.getString(), item.getCount())
+				.style(ChatFormatting.GREEN)
+				.forGoggles(tooltip);
 
 		return true;
 	}

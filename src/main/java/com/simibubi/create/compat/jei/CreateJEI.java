@@ -55,7 +55,6 @@ import com.simibubi.create.content.kinetics.fan.processing.SplashingRecipe;
 import com.simibubi.create.content.kinetics.press.MechanicalPressBlockEntity;
 import com.simibubi.create.content.kinetics.press.PressingRecipe;
 import com.simibubi.create.content.kinetics.saw.CuttingRecipe;
-import com.simibubi.create.content.kinetics.saw.SawBlockEntity;
 import com.simibubi.create.content.logistics.filter.AbstractFilterScreen;
 import com.simibubi.create.content.logistics.redstoneRequester.RedstoneRequesterScreen;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
@@ -78,6 +77,7 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import mezz.jei.api.registration.IExtraIngredientRegistration;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
@@ -87,10 +87,14 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.createmod.catnip.config.ConfigBase.ConfigBool;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
@@ -101,7 +105,8 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.fml.ModList;
+
+import net.neoforged.neoforge.fluids.FluidStack;
 
 @JeiPlugin
 @SuppressWarnings("unused")
@@ -356,6 +361,25 @@ public class CreateJEI implements IModPlugin {
 		PotionFluid potionFluid = AllFluids.POTION.get();
 		registration.registerSubtypeInterpreter(NeoForgeTypes.FLUID_STACK, potionFluid.getSource(), interpreter);
 		registration.registerSubtypeInterpreter(NeoForgeTypes.FLUID_STACK, potionFluid.getFlowing(), interpreter);
+	}
+
+	@Override
+	public void registerExtraIngredients(IExtraIngredientRegistration registration) {
+		RegistryAccess registryAccess = Minecraft.getInstance().level.registryAccess();
+		List<Reference<Potion>> potions = registryAccess.lookupOrThrow(Registries.POTION)
+			.listElements()
+			.toList();
+		Collection<FluidStack> potionFluids = new ArrayList<>(potions.size() * 3);
+		for (Reference<Potion> potion : potions) {
+			// @goshante: Ingame potion fluids always have Bottle tag that specifies
+			// to what bottle type this potion belongs
+			// Potion fluid without this tag wouldn't be recognized by other mods
+			for (PotionFluid.BottleType bottleType : PotionFluid.BottleType.values()) {
+				FluidStack potionFluid = PotionFluid.of(1000, new PotionContents(potion), bottleType);
+				potionFluids.add(potionFluid);
+			}
+		}
+		registration.addExtraIngredients(NeoForgeTypes.FLUID_STACK, potionFluids);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

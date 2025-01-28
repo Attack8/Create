@@ -31,19 +31,28 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 public class PotionFluid extends VirtualFluid {
 
-	public PotionFluid(Properties properties) {
-		super(properties);
+	public static PotionFluid createSource(Properties properties) {
+		return new PotionFluid(properties, true);
 	}
 
-	public static FluidStack of(int amount, PotionContents potionContents) {
-		FluidStack fluidStack = new FluidStack(AllFluids.POTION.get()
-			.getSource(), amount);
+	public static PotionFluid createFlowing(Properties properties) {
+		return new PotionFluid(properties, false);
+	}
+
+	public PotionFluid(Properties properties, boolean source) {
+		super(properties, source);
+	}
+
+	public static FluidStack of(int amount, PotionContents potionContents, BottleType bottleType) {
+		FluidStack fluidStack;
+		fluidStack = new FluidStack(AllFluids.POTION.get().getSource(), amount);
 		addPotionToFluidStack(fluidStack, potionContents);
+		fluidStack.set(AllDataComponents.POTION_FLUID_BOTTLE_TYPE, bottleType);
 		return fluidStack;
 	}
 
 	public static FluidStack withEffects(int amount, PotionContents potionContents) {
-		FluidStack fluidStack = of(amount, potionContents);
+		FluidStack fluidStack = of(amount, potionContents, BottleType.REGULAR);
 		appendEffects(fluidStack, potionContents.customEffects());
 		return fluidStack;
 	}

@@ -11,6 +11,9 @@ import com.simibubi.create.content.fluids.transfer.EmptyingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 
+import com.simibubi.create.foundation.item.ItemHelper;
+
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
@@ -22,6 +25,7 @@ import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackLinkedSet;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -40,6 +44,7 @@ public class ItemDrainCategory extends CreateRecipeCategory<EmptyingRecipe> {
 	}
 
 	public static void consumeRecipes(Consumer<RecipeHolder<EmptyingRecipe>> consumer, IIngredientManager ingredientManager) {
+		ObjectOpenCustomHashSet<ItemStack> emptiedItems = new ObjectOpenCustomHashSet<>(ItemStackLinkedSet.TYPE_AND_TAG);
 		for (ItemStack stack : ingredientManager.getAllIngredients(VanillaTypes.ITEM_STACK)) {
 			if (PotionFluidHandler.isPotionItem(stack)) {
 				FluidStack fluidFromPotionItem = PotionFluidHandler.getFluidFromPotionItem(stack);
@@ -67,6 +72,11 @@ public class ItemDrainCategory extends CreateRecipeCategory<EmptyingRecipe> {
 			if (result.isEmpty())
 				continue;
 
+			// There can be a lot of duplicate empty tanks (e.g. from emptying tanks with different fluids). Merge
+			// them to reduce memory usage. If the item is exactly the same as the input, just use the input stack
+			// instead of the copy.
+			result = ItemHelper.sameItem(stack, result) ? stack : emptiedItems.addOrGet(result);
+
 			Ingredient ingredient = Ingredient.of(stack);
 			ResourceLocation itemName = RegisteredObjectsHelper.getKeyOrThrow(stack.getItem());
 			ResourceLocation fluidName = RegisteredObjectsHelper.getKeyOrThrow(extracted.getFluid());
@@ -92,7 +102,7 @@ public class ItemDrainCategory extends CreateRecipeCategory<EmptyingRecipe> {
 				.addSlot(RecipeIngredientRole.OUTPUT, 132, 8)
 				.setBackground(getRenderedSlot(), -1, -1)
 				.addIngredient(NeoForgeTypes.FLUID_STACK, withImprovedVisibility(recipe.getResultingFluid()))
-				.addTooltipCallback(addFluidTooltip(recipe.getResultingFluid().getAmount()));
+				.addRichTooltipCallback(addFluidTooltip(recipe.getResultingFluid().getAmount()));
 		builder
 				.addSlot(RecipeIngredientRole.OUTPUT, 132, 27)
 				.setBackground(getRenderedSlot(), -1, -1)

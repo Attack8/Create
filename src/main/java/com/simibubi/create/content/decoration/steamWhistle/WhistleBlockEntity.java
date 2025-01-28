@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.decoration.steamWhistle.WhistleBlock.WhistleSize;
 import com.simibubi.create.content.decoration.steamWhistle.WhistleExtenderBlock.WhistleExtenderShape;
-import com.simibubi.create.content.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
 import com.simibubi.create.content.kinetics.steamEngine.SteamJetParticleData;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
@@ -89,7 +89,7 @@ public class WhistleBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 		FluidTankBlockEntity tank = getTank();
 		boolean powered = isPowered()
 			&& (tank != null && tank.boiler.isActive() && (tank.boiler.passiveHeat || tank.boiler.activeHeat > 0)
-				|| isVirtual());
+			|| isVirtual());
 		animation.chase(powered ? 1 : 0, powered ? .5f : .4f, powered ? Chaser.EXP : Chaser.LINEAR);
 		animation.tickChaser();
 		CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> this.tickAudio(getOctave(), powered));

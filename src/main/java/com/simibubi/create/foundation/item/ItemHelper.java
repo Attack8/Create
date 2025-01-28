@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.simibubi.create.content.logistics.box.PackageEntity;
+import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.mixin.accessor.ItemStackHandlerAccessor;
 
 import net.createmod.catnip.data.Pair;
@@ -24,7 +25,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
+import net.neoforged.neoforge.capabilities.Capabilities.ItemHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -79,6 +82,13 @@ public class ItemHelper {
 				return false;
 		}
 		return true;
+	}
+
+	public static <T extends IBE<? extends BlockEntity>> int calcRedstoneFromBlockEntity(T ibe, Level level, BlockPos pos) {
+		return ibe.getBlockEntityOptional(level, pos)
+				.map(be -> level.getCapability(ItemHandler.BLOCK, pos, null))
+				.map(ItemHelper::calcRedstoneFromInventory)
+				.orElse(0);
 	}
 
 	public static int calcRedstoneFromInventory(@Nullable IItemHandler inv) {

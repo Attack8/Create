@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllRegistries;
@@ -41,7 +42,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.WorldlyContainer;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CampfireCookingRecipe;
@@ -64,8 +64,6 @@ import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
-import org.jetbrains.annotations.ApiStatus.Internal;
 
 public class AllArmInteractionPointTypes {
 	private static final DeferredRegister<ArmInteractionPointType> REGISTER = DeferredRegister.create(AllRegistries.Keys.ARM_INTERACTION_POINT_TYPES, Create.ID);
@@ -607,45 +605,30 @@ public class AllArmInteractionPointTypes {
 
 		@Override
 		public ItemStack insert(ItemStack stack, boolean simulate) {
-			Item item = stack.getItem();
 			if (stack.get(DataComponents.JUKEBOX_PLAYABLE) == null)
 				return stack;
-			if (cachedState.getOptionalValue(JukeboxBlock.HAS_RECORD)
-				.orElse(true))
+			if (cachedState.getOptionalValue(JukeboxBlock.HAS_RECORD).orElse(true))
 				return stack;
-			BlockEntity blockEntity = level.getBlockEntity(pos);
-			if (!(blockEntity instanceof JukeboxBlockEntity jukeboxBE))
+			if (!(level.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBE))
 				return stack;
-			if (!jukeboxBE.getTheItem()
-				.isEmpty())
+			if (!jukeboxBE.getTheItem().isEmpty())
 				return stack;
 			ItemStack remainder = stack.copy();
 			ItemStack toInsert = remainder.split(1);
-			if (!simulate) {
+			if (!simulate)
 				jukeboxBE.setTheItem(toInsert);
-				level.setBlock(pos, cachedState.setValue(JukeboxBlock.HAS_RECORD, true), 2);
-				level.levelEvent(null, 1010, pos, Item.getId(item));
-			}
 			return remainder;
 		}
 
 		@Override
 		public ItemStack extract(int slot, int amount, boolean simulate) {
-			if (!cachedState.getOptionalValue(JukeboxBlock.HAS_RECORD)
-				.orElse(false))
+			if (!cachedState.getOptionalValue(JukeboxBlock.HAS_RECORD).orElse(false))
 				return ItemStack.EMPTY;
-			BlockEntity blockEntity = level.getBlockEntity(pos);
-			if (!(blockEntity instanceof JukeboxBlockEntity jukeboxBE))
+			if (!(level.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBE))
 				return ItemStack.EMPTY;
-			ItemStack record = jukeboxBE.getTheItem();
-			if (record.isEmpty())
-				return ItemStack.EMPTY;
-			if (!simulate) {
-				level.levelEvent(1010, pos, 0);
-				jukeboxBE.clearContent();
-				level.setBlock(pos, cachedState.setValue(JukeboxBlock.HAS_RECORD, false), 2);
-			}
-			return record;
+			if (!simulate)
+				return jukeboxBE.removeItem(slot, amount);
+			return jukeboxBE.getTheItem();
 		}
 	}
 

@@ -56,12 +56,6 @@ public class CardboardSwordItem extends SwordItem {
 		return enchantment == Enchantments.KNOCKBACK;
 	}
 
-	@Override
-	public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-		AllSoundEvents.CARDBOARD_SWORD.playFrom(entity, 0.75f, 1.85f);
-		return super.onLeftClickEntity(stack, player, entity);
-	}
-
 	@SubscribeEvent
 	public static void cardboardSwordsMakeNoiseOnClick(PlayerInteractEvent.LeftClickBlock event) {
 		ItemStack itemStack = event.getItemStack();
@@ -85,9 +79,8 @@ public class CardboardSwordItem extends SwordItem {
 		if (!(AllItems.CARDBOARD_SWORD.isIn(stack)))
 			return;
 
-		// Previously this was listening to LivingEntityAttackEvent, but that got merged, and so if we cancel this event
-		// onLeftClickEntity won't be called, so lets just call it manually over here
-		stack.getItem().onLeftClickEntity(stack, attacker, target);
+		AllSoundEvents.CARDBOARD_SWORD.playFrom(attacker, 0.75f, 1.85f);
+
 		event.setCanceled(true);
 
 		// Reference player.attack()

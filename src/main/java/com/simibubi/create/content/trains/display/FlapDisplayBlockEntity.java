@@ -319,7 +319,7 @@ public class FlapDisplayBlockEntity extends KineticBlockEntity {
 	public int getLineColor(int line) {
 		DyeColor color = colour[line];
 		return color == null ? 0xFF_D3C6BA
-			: DyeHelper.DYE_TABLE.get(color)
+			: DyeHelper.getDyeColors(color)
 				.getFirst() | 0xFF_000000;
 	}
 

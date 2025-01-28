@@ -3,10 +3,13 @@ package com.simibubi.create.content.redstone.link.controller;
 import java.util.List;
 import java.util.UUID;
 
+import com.simibubi.create.AllDataComponents;
+import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
+import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -20,16 +23,17 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class LecternControllerBlockEntity extends SmartBlockEntity {
-
-	private ItemStack controller = ItemStack.EMPTY;
+	private ItemContainerContents controllerData = ItemContainerContents.EMPTY;
 	private UUID user;
 	private UUID prevUser;	// used only on client
 	private boolean deactivatedThisTick;	// used only on server
@@ -44,7 +48,7 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 	@Override
 	protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.write(compound, registries, clientPacket);
-		compound.put("Controller", controller.saveOptional(registries));
+		compound.put("ControllerData", CatnipCodecUtils.encode(ItemContainerContents.CODEC, controllerData).orElseThrow());
 		if (user != null)
 			compound.putUUID("User", user);
 	}
@@ -52,18 +56,20 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 	@Override
 	public void writeSafe(CompoundTag compound, HolderLookup.Provider registries) {
 		super.writeSafe(compound, registries);
-		compound.put("Controller", controller.saveOptional(registries));
+		compound.put("ControllerData", CatnipCodecUtils.encode(ItemContainerContents.CODEC, controllerData).orElseThrow());
 	}
 
 	@Override
 	protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
 		super.read(compound, registries, clientPacket);
-		controller = ItemStack.parseOptional(registries, compound.getCompound("Controller"));
+
+		controllerData = CatnipCodecUtils.decode(ItemContainerContents.CODEC, compound.getCompound("ControllerData"))
+			.orElse(ItemContainerContents.EMPTY);
 		user = compound.hasUUID("User") ? compound.getUUID("User") : null;
 	}
 
 	public ItemStack getController() {
-		return controller;
+		return getController();
 	}
 
 	public boolean hasUser() { return user != null; }
@@ -139,8 +145,8 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 	}
 
 	public void setController(ItemStack newController) {
-		controller = newController;
 		if (newController != null) {
+			controllerData = newController.getOrDefault(AllDataComponents.LINKED_CONTROLLER_ITEMS, ItemContainerContents.EMPTY);
 			AllSoundEvents.CONTROLLER_PUT.playOnServer(level, worldPosition);
 		}
 	}
@@ -149,7 +155,7 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 		ItemStack newController = stack.copy();
 		stack.setCount(0);
 		if (player.getItemInHand(hand).isEmpty()) {
-			player.setItemInHand(hand, controller);
+			player.setItemInHand(hand, createLinkedController());
 		} else {
 			dropController(state);
 		}
@@ -165,10 +171,10 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 		double x = worldPosition.getX() + 0.5 + 0.25 * dir.getStepX();
 		double y = worldPosition.getY() + 1;
 		double z = worldPosition.getZ() + 0.5 + 0.25 * dir.getStepZ();
-		ItemEntity itementity = new ItemEntity(level, x, y, z, controller.copy());
+		ItemEntity itementity = new ItemEntity(level, x, y, z, createLinkedController());
 		itementity.setDefaultPickUpDelay();
 		level.addFreshEntity(itementity);
-		controller = null;
+		controllerData = ItemContainerContents.EMPTY;
 	}
 
 	public static boolean playerInRange(Player player, Level world, BlockPos pos) {
@@ -177,4 +183,9 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 		return player.distanceToSqr(Vec3.atCenterOf(pos)) < reach * reach;
 	}
 
+	private ItemStack createLinkedController() {
+		ItemStack stack = AllItems.LINKED_CONTROLLER.asStack();
+		stack.set(AllDataComponents.LINKED_CONTROLLER_ITEMS, controllerData);
+		return stack;
+	}
 }

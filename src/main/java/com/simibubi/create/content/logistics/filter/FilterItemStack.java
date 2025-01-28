@@ -6,10 +6,8 @@ import java.util.List;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.fluids.transfer.GenericItemEmptying;
-import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
-import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
-import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.box.PackageItem;
+import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.HolderLookup;
@@ -17,6 +15,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -27,15 +26,18 @@ public class FilterItemStack {
 
 	public static FilterItemStack of(ItemStack filter) {
 		if (!filter.isComponentsPatchEmpty()) {
-			filter.remove(DataComponents.ENCHANTMENTS);
-			filter.remove(DataComponents.STORED_ENCHANTMENTS);
-			filter.remove(DataComponents.ATTRIBUTE_MODIFIERS);
-			if (AllItems.FILTER.isIn(filter))
+			if (AllItems.FILTER.isIn(filter)) {
+				trimFilterComponents(filter);
 				return new ListFilterItemStack(filter);
-			if (AllItems.ATTRIBUTE_FILTER.isIn(filter))
+			}
+			if (AllItems.ATTRIBUTE_FILTER.isIn(filter)) {
+				trimFilterComponents(filter);
 				return new AttributeFilterItemStack(filter);
-			if (AllItems.PACKAGE_FILTER.isIn(filter))
+			}
+			if (AllItems.PACKAGE_FILTER.isIn(filter)) {
+				trimFilterComponents(filter);
 				return new PackageFilterItemStack(filter);
+			}
 		}
 
 		return new FilterItemStack(filter);
@@ -47,6 +49,11 @@ public class FilterItemStack {
 
 	public static FilterItemStack empty() {
 		return of(ItemStack.EMPTY);
+	}
+
+	private static void trimFilterComponents(ItemStack filter) {
+		filter.remove(DataComponents.ENCHANTMENTS);
+		filter.remove(DataComponents.ATTRIBUTE_MODIFIERS);
 	}
 
 	public boolean isEmpty() {
@@ -197,35 +204,35 @@ public class FilterItemStack {
 				boolean matches = attribute.appliesTo(stack, world) != inverted;
 
 				if (matches) {
-                    switch (whitelistMode) {
-                        case BLACKLIST -> {
-                            return false;
-                        }
-                        case WHITELIST_CONJ -> {
+					switch (whitelistMode) {
+						case BLACKLIST -> {
+							return false;
+						}
+						case WHITELIST_CONJ -> {
 							continue;
-                        }
-                        case WHITELIST_DISJ -> {
-                            return true;
-                        }
-                    }
+						}
+						case WHITELIST_DISJ -> {
+							return true;
+						}
+					}
 				} else {
-                    switch (whitelistMode) {
-                        case BLACKLIST, WHITELIST_DISJ -> {
+					switch (whitelistMode) {
+						case BLACKLIST, WHITELIST_DISJ -> {
 							continue;
-                        }
-                        case WHITELIST_CONJ -> {
-                            return false;
-                        }
-                    }
+						}
+						case WHITELIST_CONJ -> {
+							return false;
+						}
+					}
 				}
 			}
 
-            return switch (whitelistMode) {
-                case BLACKLIST, WHITELIST_CONJ -> true;
-                case WHITELIST_DISJ -> false;
-            };
+			return switch (whitelistMode) {
+				case BLACKLIST, WHITELIST_CONJ -> true;
+				case WHITELIST_DISJ -> false;
+			};
 
-        }
+		}
 
 	}
 

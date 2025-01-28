@@ -40,7 +40,7 @@ public record ServerDebugInfoPacket(String serverInfo) implements ClientboundPac
 		String text = output.toString();
 		Minecraft.getInstance().keyboardHandler.setClipboard(text);
 		CreateLang.translate("command.debuginfo.saved_to_clipboard")
-				.color(DyeHelper.DYE_TABLE.get(DyeColor.LIME)
+				.color(DyeHelper.getDyeColors(DyeColor.LIME)
 						.getFirst())
 				.sendChat(player);
 	}

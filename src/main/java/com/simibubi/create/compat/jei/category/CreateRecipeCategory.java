@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 import com.simibubi.create.AllFluids;
@@ -18,7 +17,7 @@ import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotTooltipCallback;
+import mezz.jei.api.gui.ingredient.IRecipeSlotRichTooltipCallback;
 import mezz.jei.api.neoforge.NeoForgeTypes;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
@@ -110,11 +109,11 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 		return recipe.getResultItem(level.registryAccess());
 	}
 
-	public static IRecipeSlotTooltipCallback addStochasticTooltip(ProcessingOutput output) {
+	public static IRecipeSlotRichTooltipCallback addStochasticTooltip(ProcessingOutput output) {
 		return (view, tooltip) -> {
 			float chance = output.getChance();
 			if (chance != 1)
-				tooltip.add(1, CreateLang.translateDirect("recipe.processing.chance", chance < 0.01 ? "<1" : (int) (chance * 100))
+				tooltip.add(CreateLang.translateDirect("recipe.processing.chance", chance < 0.01 ? "<1" : (int) (chance * 100))
 					.withStyle(ChatFormatting.GOLD));
 		};
 	}
@@ -132,11 +131,11 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 		return display;
 	}
 
-	public static IRecipeSlotTooltipCallback addFluidTooltip() {
+	public static IRecipeSlotRichTooltipCallback addFluidTooltip() {
 		return addFluidTooltip(-1);
 	}
 
-	public static IRecipeSlotTooltipCallback addFluidTooltip(int mbAmount) {
+	public static IRecipeSlotRichTooltipCallback addFluidTooltip(int mbAmount) {
 		return (view, tooltip) -> {
 			Optional<FluidStack> displayed = view.getDisplayedIngredient(NeoForgeTypes.FLUID_STACK);
 			if (displayed.isEmpty())
@@ -145,26 +144,14 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 			FluidStack fluidStack = displayed.get();
 
 			if (fluidStack.getFluid().isSame(AllFluids.POTION.get())) {
-				Component name = fluidStack.getHoverName();
-				if (tooltip.isEmpty())
-					tooltip.add(0, name);
-				else
-					tooltip.set(0, name);
-
 				ArrayList<Component> potionTooltip = new ArrayList<>();
 				PotionFluidHandler.addPotionTooltip(fluidStack, potionTooltip, 1);
-				tooltip.addAll(1, potionTooltip.stream().toList());
+				tooltip.addAll(potionTooltip.stream().toList());
 			}
 
 			int amount = mbAmount == -1 ? fluidStack.getAmount() : mbAmount;
-            Component text = Component.literal(String.valueOf(amount)).append(CreateLang.translateDirect("generic.unit.millibuckets")).withStyle(ChatFormatting.GOLD);
-			if (tooltip.isEmpty())
-				tooltip.add(0, text);
-			else {
-				List<Component> siblings = tooltip.get(0).getSiblings();
-                siblings.add(Component.literal(" "));
-				siblings.add(text);
-			}
+			Component text = Component.literal(String.valueOf(amount)).append(CreateLang.translateDirect("generic.unit.millibuckets")).withStyle(ChatFormatting.GOLD);
+			tooltip.add(text);
 		};
 	}
 
@@ -187,7 +174,9 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 		};
 	}
 
-	public record Info<T extends Recipe<?>>(RecipeType<T> recipeType, Component title, IDrawable background, IDrawable icon, Supplier<List<RecipeHolder<T>>> recipes, List<Supplier<? extends ItemStack>> catalysts) {
+	public record Info<T extends Recipe<?>>(RecipeType<T> recipeType, Component title, IDrawable background,
+											IDrawable icon, Supplier<List<RecipeHolder<T>>> recipes,
+											List<Supplier<? extends ItemStack>> catalysts) {
 	}
 
 	public interface Factory<T extends Recipe<?>> {

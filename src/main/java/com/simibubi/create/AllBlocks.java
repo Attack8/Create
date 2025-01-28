@@ -17,6 +17,7 @@ import static com.simibubi.create.foundation.data.TagGen.tagBlockAndItem;
 
 import com.simibubi.create.AllTags.AllBlockTags;
 import com.simibubi.create.AllTags.AllItemTags;
+import com.simibubi.create.api.contraption.train.TrainConductorHandler;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsBlock;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovingInteraction;
@@ -209,7 +210,6 @@ import com.simibubi.create.content.processing.basin.BasinGenerator;
 import com.simibubi.create.content.processing.basin.BasinMovementBehaviour;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlockItem;
-import com.simibubi.create.content.processing.burner.BlazeBurnerInteractionBehaviour;
 import com.simibubi.create.content.processing.burner.BlazeBurnerMovementBehaviour;
 import com.simibubi.create.content.processing.burner.LitBlazeBurnerBlock;
 import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
@@ -362,7 +362,7 @@ public class AllBlocks {
 					.when(survivesExplosion)
 					.setRolls(ConstantValue.exactly(1))
 					.add(LootItem.lootTableItem(AllBlocks.SCHEMATICANNON.get()
-						.asItem())
+							.asItem())
 						.apply(CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY)
 							.include(AllDataComponents.SCHEMATICANNON_OPTIONS)))));
 			})
@@ -772,7 +772,7 @@ public class AllBlocks {
 			.loot((lt, block) -> lt.add(block, BlazeBurnerBlock.buildLootTable()))
 			.blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
 			.onRegister(movementBehaviour(new BlazeBurnerMovementBehaviour()))
-			.onRegister(interactionBehaviour(new BlazeBurnerInteractionBehaviour()))
+			.onRegister(block -> TrainConductorHandler.registerBlazeBurner())
 			.item(BlazeBurnerBlockItem::withBlaze)
 			.model(AssetLookup.customBlockItemModel("blaze_burner", "block_with_blaze"))
 			.build()
@@ -793,8 +793,8 @@ public class AllBlocks {
 					.modelFile(p.models()
 						.getExistingFile(p.modLoc("block/blaze_burner/"
 							+ (state.getValue(LitBlazeBurnerBlock.FLAME_TYPE) == LitBlazeBurnerBlock.FlameType.SOUL
-								? "block_with_soul_fire"
-								: "block_with_fire"))))
+							? "block_with_soul_fire"
+							: "block_with_fire"))))
 					.build()))
 			.register();
 
@@ -2702,10 +2702,10 @@ public class AllBlocks {
 
 	public static final CopperBlockSet COPPER_SHINGLES = new CopperBlockSet(REGISTRATE, "copper_shingles",
 		"copper_roof_top", CopperBlockSet.DEFAULT_VARIANTS, (c, p) -> {
-			p.stonecutting(DataIngredient.tag(Tags.Items.INGOTS_COPPER), RecipeCategory.BUILDING_BLOCKS,
-				c::get, 2);
-		}, (ws, block) -> connectedTextures(() -> new RoofBlockCTBehaviour(AllSpriteShifts.COPPER_SHINGLES.get(ws)))
-			.accept(block));
+		p.stonecutting(DataIngredient.tag(Tags.Items.INGOTS_COPPER), RecipeCategory.BUILDING_BLOCKS,
+			c::get, 2);
+	}, (ws, block) -> connectedTextures(() -> new RoofBlockCTBehaviour(AllSpriteShifts.COPPER_SHINGLES.get(ws)))
+		.accept(block));
 
 	public static final CopperBlockSet COPPER_TILES =
 		new CopperBlockSet(REGISTRATE, "copper_tiles", "copper_roof_top", CopperBlockSet.DEFAULT_VARIANTS, (c, p) -> {
@@ -2716,6 +2716,7 @@ public class AllBlocks {
 
 	// Load this class
 
-	public static void register() {}
+	public static void register() {
+	}
 
 }

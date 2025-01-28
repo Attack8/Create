@@ -19,6 +19,7 @@ import net.neoforged.fml.ModList;
 public enum Mods {
 	AETHER,
 	AETHER_II,
+	BETTEREND,
 	COMPUTERCRAFT,
 	CONNECTIVITY,
 	CURIOS,

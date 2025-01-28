@@ -186,29 +186,30 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 	/* Fluids */
 
 	public <T extends BaseFlowingFluid> FluidBuilder<T, CreateRegistrate> virtualFluid(String name,
-		FluidBuilder.FluidTypeFactory typeFactory, NonNullFunction<BaseFlowingFluid.Properties, T> factory) {
+		FluidBuilder.FluidTypeFactory typeFactory, NonNullFunction<BaseFlowingFluid.Properties, T> sourceFactory,
+		NonNullFunction<BaseFlowingFluid.Properties, T> flowingFactory) {
 		return entry(name,
 			c -> new VirtualFluidBuilder<>(self(), self(), name, c, ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_still"),
-				ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"), typeFactory, factory));
+				ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"), typeFactory, sourceFactory, flowingFactory));
 	}
 
 	public <T extends BaseFlowingFluid> FluidBuilder<T, CreateRegistrate> virtualFluid(String name,
 		ResourceLocation still, ResourceLocation flow, FluidBuilder.FluidTypeFactory typeFactory,
-		NonNullFunction<BaseFlowingFluid.Properties, T> factory) {
-		return entry(name, c -> new VirtualFluidBuilder<>(self(), self(), name, c, still, flow, typeFactory, factory));
+		NonNullFunction<BaseFlowingFluid.Properties, T> sourceFactory, NonNullFunction<BaseFlowingFluid.Properties, T> flowingFactory) {
+		return entry(name, c -> new VirtualFluidBuilder<>(self(), self(), name, c, still, flow, typeFactory, sourceFactory, flowingFactory));
 	}
 
 	public FluidBuilder<VirtualFluid, CreateRegistrate> virtualFluid(String name) {
 		return entry(name,
 			c -> new VirtualFluidBuilder<VirtualFluid, CreateRegistrate>(self(), self(), name, c,
 				ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_still"), ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"),
-				CreateRegistrate::defaultFluidType, VirtualFluid::new));
+				CreateRegistrate::defaultFluidType, VirtualFluid::createSource, VirtualFluid::createFlowing));
 	}
 
 	public FluidBuilder<VirtualFluid, CreateRegistrate> virtualFluid(String name, ResourceLocation still,
 		ResourceLocation flow) {
 		return entry(name, c -> new VirtualFluidBuilder<>(self(), self(), name, c, still, flow,
-			CreateRegistrate::defaultFluidType, VirtualFluid::new));
+			CreateRegistrate::defaultFluidType, VirtualFluid::createSource, VirtualFluid::createFlowing));
 	}
 
 	public FluidBuilder<BaseFlowingFluid.Flowing, CreateRegistrate> standardFluid(String name) {

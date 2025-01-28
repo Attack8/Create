@@ -69,6 +69,7 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.ItemLike;
@@ -498,13 +499,15 @@ public class BuilderTransformers {
 	public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> tableCloth(String name,
 		NonNullSupplier<? extends Block> initialProps, boolean dyed) {
 		return b -> {
+			TagKey<Block> soundTag = dyed ? BlockTags.COMBINATION_STEP_SOUND_BLOCKS : BlockTags.INSIDE_STEP_SOUND_BLOCKS;
+
 			ItemBuilder<TableClothBlockItem, BlockBuilder<B, P>> item = b.initialProperties(initialProps)
 				.addLayer(() -> RenderType::cutoutMipped)
 				.blockstate((c, p) -> p.simpleBlock(c.get(), p.models()
 					.withExistingParent(name + "_table_cloth", p.modLoc("block/table_cloth/block"))
 					.texture("0", p.modLoc("block/table_cloth/" + name))))
 				.onRegister(CreateRegistrate.blockModel(() -> TableClothModel::new))
-				.tag(AllBlockTags.TABLE_CLOTHS.tag)
+				.tag(AllBlockTags.TABLE_CLOTHS.tag, soundTag)
 				.onRegisterAfter(Registries.ITEM, v -> ItemDescription.useKey(v, "block.create.table_cloth"))
 				.item(TableClothBlockItem::new);
 

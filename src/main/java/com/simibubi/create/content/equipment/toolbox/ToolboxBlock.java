@@ -12,6 +12,7 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.foundation.block.IBE;
+import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.mixin.accessor.ItemStackHandlerAccessor;
 import com.simibubi.create.foundation.utility.BlockHelper;
 
@@ -28,7 +29,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -45,6 +45,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.neoforge.common.util.FakePlayer;
 
 public class ToolboxBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock, IBE<ToolboxBlockEntity> {
@@ -184,9 +185,14 @@ public class ToolboxBlock extends HorizontalDirectionalBlock implements SimpleWa
 		return color;
 	}
 
-	public static Ingredient getMainBox() {
-		return Ingredient.of(AllBlocks.TOOLBOXES.get(DyeColor.BROWN)
-			.get());
+	@Override
+	public boolean hasAnalogOutputSignal(BlockState pState) {
+		return true;
+	}
+
+	@Override
+	public int getAnalogOutputSignal(BlockState pState, Level pLevel, BlockPos pPos) {
+		return ItemHelper.calcRedstoneFromBlockEntity(this, pLevel, pPos);
 	}
 
 	@Override

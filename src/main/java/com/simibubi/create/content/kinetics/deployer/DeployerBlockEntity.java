@@ -27,10 +27,10 @@ import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
-import net.createmod.catnip.lang.Lang;
-import net.createmod.catnip.nbt.NBTHelper;
-import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.lang.Lang;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -60,6 +60,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -557,7 +558,10 @@ public class DeployerBlockEntity extends KineticBlockEntity {
 
 		ItemStack heldItemMainhand = player.getMainHandItem();
 		if (heldItemMainhand.getItem() instanceof SandPaperItem) {
-			return checkRecipe(AllRecipeTypes.SANDPAPER_POLISHING, new SingleRecipeInput(stack), level).orElse(null);
+			Optional<RecipeHolder<Recipe<RecipeInput>>> polishingRecipe = checkRecipe(AllRecipeTypes.SANDPAPER_POLISHING, new SingleRecipeInput(stack), level);
+			if (polishingRecipe.isPresent()) {
+				return polishingRecipe.get();
+			}
 		}
 
 		recipeInv.setStackInSlot(0, stack);

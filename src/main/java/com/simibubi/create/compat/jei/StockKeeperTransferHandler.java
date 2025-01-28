@@ -23,9 +23,8 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
-import mezz.jei.api.recipe.transfer.IRecipeTransferHandler;
+import mezz.jei.api.recipe.transfer.IUniversalRecipeTransferHandler;
 import mezz.jei.common.transfer.RecipeTransferOperationsResult;
 import mezz.jei.common.transfer.RecipeTransferUtil;
 import mezz.jei.library.transfer.RecipeTransferErrorMissingSlots;
@@ -45,8 +44,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-public class StockKeeperTransferHandler implements IRecipeTransferHandler<StockKeeperRequestMenu, Object> {
-
+public class StockKeeperTransferHandler implements IUniversalRecipeTransferHandler<StockKeeperRequestMenu> {
 	private IJeiHelpers helpers;
 
 	public StockKeeperTransferHandler(IJeiHelpers helpers) {
@@ -61,11 +59,6 @@ public class StockKeeperTransferHandler implements IRecipeTransferHandler<StockK
 	@Override
 	public Optional<MenuType<StockKeeperRequestMenu>> getMenuType() {
 		return Optional.of(AllMenuTypes.STOCK_KEEPER_REQUEST.get());
-	}
-
-	@Override
-	public RecipeType<Object> getRecipeType() {
-		return null;
 	}
 
 	@Override
@@ -137,5 +130,4 @@ public class StockKeeperTransferHandler implements IRecipeTransferHandler<StockK
 
 		return null;
 	}
-
 }

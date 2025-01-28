@@ -7,13 +7,14 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
+import com.simibubi.create.content.fluids.VirtualFluid;
+
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.simibubi.create.content.decoration.palettes.AllPaletteStoneTypes;
-import com.simibubi.create.content.fluids.VirtualFluid;
 import com.simibubi.create.content.fluids.potion.PotionFluid;
 import com.simibubi.create.content.fluids.potion.PotionFluid.PotionFluidType;
 import com.simibubi.create.infrastructure.config.AllConfigs;
@@ -46,7 +47,7 @@ public class AllFluids {
 	}
 
 	public static final FluidEntry<PotionFluid> POTION =
-		REGISTRATE.virtualFluid("potion", PotionFluidType::new, PotionFluid::new)
+		REGISTRATE.virtualFluid("potion", PotionFluidType::new, PotionFluid::createSource, PotionFluid::createFlowing)
 			.lang("Potion")
 			.register();
 

@@ -29,7 +29,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.neoforged.neoforge.capabilities.Capabilities;
+
+import net.neoforged.neoforge.capabilities.Capabilities.FluidHandler;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
@@ -59,13 +60,21 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 				continue;
 			}
 
-			IFluidHandlerItem capability = stack.getCapability(Capabilities.FluidHandler.ITEM);
+			IFluidHandlerItem capability = stack.getCapability(FluidHandler.ITEM);
 			if (capability == null)
 				continue;
 
+			int numTanks = capability.getTanks();
+			FluidStack existingFluid = numTanks == 1 ? capability.getFluidInTank(0) : FluidStack.EMPTY;
+
 			for (FluidStack fluidStack : fluidStacks) {
+				// Hoist the fluid equality check to avoid the work of copying the stack + populating capabilities
+				// when most fluids will not match
+				if (numTanks == 1 && (!existingFluid.isEmpty() && !FluidStack.isSameFluidSameComponents(existingFluid, fluidStack))) {
+					continue;
+				}
 				ItemStack copy = stack.copy();
-				IFluidHandlerItem fhi = copy.getCapability(Capabilities.FluidHandler.ITEM);
+				IFluidHandlerItem fhi = copy.getCapability(FluidHandler.ITEM);
 				if (fhi != null) {
 					if (!GenericItemFilling.isFluidHandlerValid(copy, fhi))
 						return;
@@ -104,7 +113,7 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 				.addSlot(RecipeIngredientRole.INPUT, 27, 32)
 				.setBackground(getRenderedSlot(), -1, -1)
 				.addIngredients(NeoForgeTypes.FLUID_STACK, withImprovedVisibility(recipe.getRequiredFluid().getMatchingFluidStacks()))
-				.addTooltipCallback(addFluidTooltip(recipe.getRequiredFluid().getRequiredAmount()));
+				.addRichTooltipCallback(addFluidTooltip(recipe.getRequiredFluid().getRequiredAmount()));
 		builder
 				.addSlot(RecipeIngredientRole.OUTPUT, 132, 51)
 				.setBackground(getRenderedSlot(), -1, -1)

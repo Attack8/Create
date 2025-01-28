@@ -8,6 +8,10 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
+import com.simibubi.create.api.equipment.goggles.IHaveCustomOverlayIcon;
+import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
+import com.simibubi.create.api.equipment.goggles.IHaveHoveringInformation;
+import com.simibubi.create.api.equipment.goggles.IProxyHoveringInformation;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.content.contraptions.IDisplayAssemblyExceptions;
 import com.simibubi.create.content.contraptions.piston.MechanicalPistonBlock;
@@ -20,9 +24,9 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CClient;
 
+import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.gui.element.BoxElement;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.outliner.Outline;
 import net.createmod.catnip.outliner.Outliner;
@@ -98,11 +102,10 @@ public class GoggleOverlayRenderer {
 		boolean hoverAddedInformation = false;
 
 		ItemStack item = AllItems.GOGGLES.asStack();
+		List<Component> tooltip = new ArrayList<>();
 
 		if (be instanceof IHaveCustomOverlayIcon customOverlayIcon)
 			item = customOverlayIcon.getIcon(isShifting);
-
-		List<Component> tooltip = new ArrayList<>();
 
 		if (hasGoggleInformation && wearingGoggles) {
 			IHaveGoggleInformation gte = (IHaveGoggleInformation) be;

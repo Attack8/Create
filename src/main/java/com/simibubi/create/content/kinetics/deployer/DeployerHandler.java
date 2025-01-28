@@ -193,8 +193,9 @@ public class DeployerHandler {
 					if (stack.has(DataComponents.FOOD)) {
 						FoodProperties foodProperties = item.getFoodProperties(stack, player);
 						if (foodProperties != null && playerEntity.canEat(foodProperties.canAlwaysEat())) {
-							playerEntity.eat(world, stack);
-							player.spawnedItemEffects = stack.copy();
+							ItemStack copy = stack.copy();
+							player.setItemInHand(hand, stack.finishUsingItem(world, playerEntity));
+							player.spawnedItemEffects = copy;
 							success = true;
 						}
 					}
