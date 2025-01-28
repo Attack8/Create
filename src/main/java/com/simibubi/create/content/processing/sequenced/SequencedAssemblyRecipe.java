@@ -19,10 +19,10 @@ import com.simibubi.create.foundation.fluid.FluidIngredient;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import io.netty.buffer.ByteBuf;
-import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -97,13 +97,13 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 
 		for (RecipeHolder<SequencedAssemblyRecipe> holder : all) {
 			if (holder.value().appliesTo(holder.id(), item)) {
-				ProcessingRecipe<?> recipe = holder.value().getNextRecipe(item).getRecipe();
+			ProcessingRecipe<?> recipe = holder.value().getNextRecipe(item).getRecipe();
 
 				if (recipe.getType() == type && recipeClass.isInstance(recipe)) {
 					recipe.enforceNextResult(() -> holder.value().advance(holder.id(), item));
 					R castedRecipe = recipeClass.cast(recipe);
 					result.add(new RecipeHolder<>(recipe.id, castedRecipe));
-				}
+			}
 			}
 		}
 
@@ -165,9 +165,9 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 		//noinspection DataFlowIssue
 		return getTransitionalItem().getItem() == input.getItem() && input
 			.has(AllDataComponents.SEQUENCED_ASSEMBLY) && input
-				.get(AllDataComponents.SEQUENCED_ASSEMBLY)
-				.id()
-				.equals(id);
+			.get(AllDataComponents.SEQUENCED_ASSEMBLY)
+			.id()
+			.equals(id);
 	}
 
 	private SequencedRecipe<?> getNextRecipe(ItemStack input) {
@@ -244,7 +244,7 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 		int step = sequencedAssemblyRecipe.getStep(stack);
 		int total = length * sequencedAssemblyRecipe.loops;
 		List<Component> tooltip = event.getToolTip();
-		tooltip.add(Lang.IMMUTABLE_EMPTY);
+		tooltip.add(CommonComponents.EMPTY);
 		tooltip.add(CreateLang.translateDirect("recipe.sequenced_assembly")
 			.withStyle(ChatFormatting.GRAY));
 		tooltip.add(CreateLang.translateDirect("recipe.assembly.progress", step, total)
@@ -261,9 +261,9 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 				tooltip.add(CreateLang.translateDirect("recipe.assembly.next", textComponent)
 					.withStyle(ChatFormatting.AQUA));
 			else {
-                tooltip.add(Component.literal("-> ").append(textComponent)
-                    .withStyle(ChatFormatting.DARK_AQUA));
-            }
+				tooltip.add(Component.literal("-> ").append(textComponent)
+					.withStyle(ChatFormatting.DARK_AQUA));
+			}
 		}
 
 	}

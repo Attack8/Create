@@ -22,11 +22,13 @@ import com.simibubi.create.infrastructure.config.CKinetics;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.lang.LangBuilder;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 public class KineticStats implements TooltipModifier {
@@ -52,7 +54,7 @@ public class KineticStats implements TooltipModifier {
 		List<Component> kineticStats = getKineticStats(block, context.getEntity());
 		if (!kineticStats.isEmpty()) {
 			List<Component> tooltip = context.getToolTip();
-			tooltip.add(Lang.IMMUTABLE_EMPTY);
+			tooltip.add(CommonComponents.EMPTY);
 			tooltip.addAll(kineticStats);
 		}
 	}

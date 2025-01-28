@@ -13,9 +13,9 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.gui.AbstractSimiScreen;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +44,7 @@ public abstract class ZapperScreen extends AbstractSimiScreen {
 		this.background = background;
 		this.zapper = zapper;
 		this.hand = hand;
-		title = Lang.IMMUTABLE_EMPTY;
+		title = CommonComponents.EMPTY;
 		brightColor = 0xFEFEFE;
 		fontColor = AllGuiTextures.FONT_COLOR;
 
@@ -119,9 +119,9 @@ public abstract class ZapperScreen extends AbstractSimiScreen {
 
 	protected void renderZapper(GuiGraphics graphics, int x, int y) {
 		GuiGameElement.of(zapper)
-				.scale(4)
-				.at(x + background.getWidth(), y + background.getHeight() - 48, -200)
-				.render(graphics);
+			.scale(4)
+			.at(x + background.getWidth(), y + background.getHeight() - 48, -200)
+			.render(graphics);
 	}
 
 	protected void renderBlock(GuiGraphics graphics, int x, int y) {

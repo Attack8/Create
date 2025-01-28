@@ -8,12 +8,12 @@ import com.simibubi.create.content.fluids.potion.PotionFluid.BottleType;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
 
-import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.effect.MobEffect;
@@ -32,6 +32,7 @@ import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluids;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -83,7 +84,7 @@ public class PotionFluidHandler {
 		return switch (type) {
 			case LINGERING -> Items.LINGERING_POTION;
 			case SPLASH -> Items.SPLASH_POTION;
-			default -> Items.POTION;
+				default -> Items.POTION;
 		};
 	}
 
@@ -103,15 +104,15 @@ public class PotionFluidHandler {
 		List<MobEffectInstance> list = fs.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).customEffects();
 		List<Pair<Holder<Attribute>, AttributeModifier>> list1 = Lists.newArrayList();
 		if (list.isEmpty()) {
-            tooltip.add((Component.translatable("effect.none")).withStyle(ChatFormatting.GRAY));
+			tooltip.add((Component.translatable("effect.none")).withStyle(ChatFormatting.GRAY));
 		} else {
 			for (MobEffectInstance effectinstance : list) {
-                MutableComponent textcomponent = Component.translatable(effectinstance.getDescriptionId());
+				MutableComponent textcomponent = Component.translatable(effectinstance.getDescriptionId());
 				Holder<MobEffect> effect = effectinstance.getEffect();
 				effect.value().createModifiers(effectinstance.getAmplifier(), (attributeHolder, attributeModifier) -> list1.add(Pair.of(attributeHolder, attributeModifier)));
 
 				if (effectinstance.getAmplifier() > 0) {
-                    textcomponent.append(" ")
+					textcomponent.append(" ")
 						.append(Component.translatable("potion.potency." + effectinstance.getAmplifier()).getString());
 				}
 
@@ -127,8 +128,8 @@ public class PotionFluidHandler {
 		}
 
 		if (!list1.isEmpty()) {
-			tooltip.add(Lang.IMMUTABLE_EMPTY);
-            tooltip.add((Component.translatable("potion.whenDrank")).withStyle(ChatFormatting.DARK_PURPLE));
+			tooltip.add(CommonComponents.EMPTY);
+			tooltip.add((Component.translatable("potion.whenDrank")).withStyle(ChatFormatting.DARK_PURPLE));
 
 			for (Pair<Holder<Attribute>, AttributeModifier> pair : list1) {
 				AttributeModifier attributemodifier2 = pair.getSecond();
@@ -146,14 +147,14 @@ public class PotionFluidHandler {
 						"attribute.modifier.plus." + attributemodifier2.operation().id(),
 							ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d1),
 						Component.translatable(pair.getFirst().value().getDescriptionId())))
-							.withStyle(ChatFormatting.BLUE));
+						.withStyle(ChatFormatting.BLUE));
 				} else if (d0 < 0.0D) {
 					d1 = d1 * -1.0D;
 					tooltip.add((Component.translatable(
 						"attribute.modifier.take." + attributemodifier2.operation().id(),
 						ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d1),
 						Component.translatable(pair.getFirst().value().getDescriptionId())))
-							.withStyle(ChatFormatting.RED));
+						.withStyle(ChatFormatting.RED));
 				}
 			}
 		}

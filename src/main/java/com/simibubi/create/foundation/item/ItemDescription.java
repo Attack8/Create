@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import net.createmod.catnip.lang.Lang;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,13 +21,16 @@ import net.createmod.catnip.lang.FontHelper.Palette;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
+
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
-public record ItemDescription(ImmutableList<Component> lines, ImmutableList<Component> linesOnShift, ImmutableList<Component> linesOnCtrl) {
+public record ItemDescription(ImmutableList<Component> lines, ImmutableList<Component> linesOnShift,
+							  ImmutableList<Component> linesOnCtrl) {
 	private static final Map<Item, Supplier<String>> CUSTOM_TOOLTIP_KEYS = new IdentityHashMap<>();
 
 	@Nullable
@@ -144,7 +145,7 @@ public record ItemDescription(ImmutableList<Component> lines, ImmutableList<Comp
 			}
 
 			if (!behaviours.isEmpty()) {
-				linesOnShift.add(Lang.IMMUTABLE_EMPTY);
+				linesOnShift.add(CommonComponents.EMPTY);
 			}
 
 			for (Pair<String, String> behaviourPair : behaviours) {
@@ -183,7 +184,7 @@ public record ItemDescription(ImmutableList<Component> lines, ImmutableList<Comp
 					}
 
 					if (hasControls) {
-                        MutableComponent tabBuilder = Component.empty();
+						MutableComponent tabBuilder = Component.empty();
 						tabBuilder.append(Component.literal(holdCtrl[0]).withStyle(DARK_GRAY));
 						tabBuilder.append(keyCtrl.plainCopy()
 							.withStyle(ctrl ? WHITE : GRAY));
@@ -192,7 +193,7 @@ public record ItemDescription(ImmutableList<Component> lines, ImmutableList<Comp
 					}
 
 					if (hasDescription) {
-                        MutableComponent tabBuilder = Component.empty();
+						MutableComponent tabBuilder = Component.empty();
 						tabBuilder.append(Component.literal(holdDesc[0]).withStyle(DARK_GRAY));
 						tabBuilder.append(keyShift.plainCopy()
 							.withStyle(shift ? WHITE : GRAY));
@@ -201,7 +202,7 @@ public record ItemDescription(ImmutableList<Component> lines, ImmutableList<Comp
 					}
 
 					if (shift || ctrl)
-						list.add(hasDescription && hasControls ? 2 : 1, Lang.IMMUTABLE_EMPTY);
+						list.add(hasDescription && hasControls ? 2 : 1, CommonComponents.EMPTY);
 				}
 			}
 

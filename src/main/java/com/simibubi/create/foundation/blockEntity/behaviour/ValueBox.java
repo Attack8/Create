@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
@@ -30,8 +30,8 @@ import net.minecraft.world.phys.Vec3;
 public class ValueBox extends ChasingAABBOutline {
 
 	protected Component label;
-	protected Component sublabel = Lang.IMMUTABLE_EMPTY;
-	protected Component scrollTooltip = Lang.IMMUTABLE_EMPTY;
+	protected Component sublabel = CommonComponents.EMPTY;
+	protected Component scrollTooltip = CommonComponents.EMPTY;
 	protected Vec3 labelOffset = Vec3.ZERO;
 
 	public int overrideColor = -1;
@@ -112,7 +112,8 @@ public class ValueBox extends ChasingAABBOutline {
 		return outline;
 	}
 
-	public void renderContents(PoseStack ms, MultiBufferSource buffer) {}
+	public void renderContents(PoseStack ms, MultiBufferSource buffer) {
+	}
 
 	public static class ItemValueBox extends ValueBox {
 		ItemStack stack;
@@ -232,13 +233,13 @@ public class ValueBox extends ChasingAABBOutline {
 	}
 
 	private static void drawString(PoseStack ms, MultiBufferSource buffer, Component text, float x, float y,
-		int color) {
+								   int color) {
 		Minecraft.getInstance().font.drawInBatch(text, x, y, color, false, ms.last()
 			.pose(), buffer, Font.DisplayMode.NORMAL, 0, LightTexture.FULL_BRIGHT);
 	}
 
 	private static void drawString8x(PoseStack ms, MultiBufferSource buffer, Component text, float x, float y,
-		int color) {
+									 int color) {
 		Minecraft.getInstance().font.drawInBatch8xOutline(text.getVisualOrderText(), x, y, color, 0xff333333, ms.last()
 			.pose(), buffer, LightTexture.FULL_BRIGHT);
 	}

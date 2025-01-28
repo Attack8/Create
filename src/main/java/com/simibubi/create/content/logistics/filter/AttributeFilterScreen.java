@@ -19,14 +19,13 @@ import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.data.Pair;
-import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
@@ -93,9 +92,9 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		});
 		blacklist.setToolTip(denyN);
 
-		whitelistDisIndicator = new Indicator(x + 47, y + 55, Lang.IMMUTABLE_EMPTY);
-		whitelistConIndicator = new Indicator(x + 65, y + 55, Lang.IMMUTABLE_EMPTY);
-		blacklistIndicator = new Indicator(x + 83, y + 55, Lang.IMMUTABLE_EMPTY);
+		whitelistDisIndicator = new Indicator(x + 47, y + 55, CommonComponents.EMPTY);
+		whitelistConIndicator = new Indicator(x + 65, y + 55, CommonComponents.EMPTY);
+		blacklistIndicator = new Indicator(x + 83, y + 55, CommonComponents.EMPTY);
 
 		addRenderableWidgets(blacklist, whitelistCon, whitelistDis, blacklistIndicator, whitelistConIndicator,
 			whitelistDisIndicator);
@@ -113,10 +112,10 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 
 		handleIndicators();
 
-		attributeSelectorLabel = new Label(x + 43, y + 28, Lang.IMMUTABLE_EMPTY).colored(0xF3EBDE)
+		attributeSelectorLabel = new Label(x + 43, y + 28, CommonComponents.EMPTY).colored(0xF3EBDE)
 			.withShadow();
 		attributeSelector = new SelectionScrollInput(x + 39, y + 23, 137, 18);
-		attributeSelector.forOptions(Arrays.asList(Lang.IMMUTABLE_EMPTY));
+		attributeSelector.forOptions(Arrays.asList(CommonComponents.EMPTY));
 		attributeSelector.removeCallback();
 		referenceItemChanged(menu.ghostInventory.getStackInSlot(0));
 
@@ -127,11 +126,11 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		selectedAttributes.add((menu.selectedAttributes.isEmpty() ? noSelectedT : selectedT).plainCopy()
 			.withStyle(ChatFormatting.YELLOW));
 		menu.selectedAttributes.forEach(at -> {
-            selectedAttributes.add(Component.literal("- ")
-                .append(at.attribute()
-                    .format(at.inverted()))
-                .withStyle(ChatFormatting.GRAY));
-        });
+			selectedAttributes.add(Component.literal("- ")
+				.append(at.attribute()
+					.format(at.inverted()))
+				.withStyle(ChatFormatting.GRAY));
+		});
 	}
 
 	private void referenceItemChanged(ItemStack stack) {
@@ -245,7 +244,7 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		if (menu.selectedAttributes.size() == 1)
 			selectedAttributes.set(0, selectedT.plainCopy()
 				.withStyle(ChatFormatting.YELLOW));
-        selectedAttributes.add(Component.literal("- ").append(itemAttribute.format(inverted))
+		selectedAttributes.add(Component.literal("- ").append(itemAttribute.format(inverted))
 			.withStyle(ChatFormatting.GRAY));
 		return true;
 	}

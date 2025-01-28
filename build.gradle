@@ -136,7 +136,7 @@ repositories {
 dependencies {
     jarJar(implementation("com.tterrag.registrate:Registrate:${registrate_version}"))
 
-    jarJar("dev.engine-room.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}") {
+    jarJar("dev.engine-room.flywheel:flywheel-neoforge-${flywheel_minecraft_version}:${flywheel_version}") {
         version {
             strictly "[1.0,2.0)"
         }

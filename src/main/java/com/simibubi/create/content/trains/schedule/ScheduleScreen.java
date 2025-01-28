@@ -46,7 +46,6 @@ import net.createmod.catnip.data.IntAttached;
 import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
-import net.createmod.catnip.lang.Lang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -54,6 +53,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -114,7 +114,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		confirmButton.withCallback(() -> minecraft.player.closeContainer());
 		addRenderableWidget(confirmButton);
 
-		cyclicIndicator = new Indicator(leftPos + 21, topPos + 196, Lang.IMMUTABLE_EMPTY);
+		cyclicIndicator = new Indicator(leftPos + 21, topPos + 196, CommonComponents.EMPTY);
 		cyclicIndicator.state = schedule.cyclic ? State.ON : State.OFF;
 
 		List<Component> tip = new ArrayList<>();
@@ -179,7 +179,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		resetProgress.visible = false;
 
 		scrollInput = new SelectionScrollInput(leftPos + 56, topPos + 65, 143, 16);
-		scrollInputLabel = new Label(leftPos + 59, topPos + 69, Lang.IMMUTABLE_EMPTY).withShadow();
+		scrollInputLabel = new Label(leftPos + 59, topPos + 69, CommonComponents.EMPTY).withShadow();
 		editorConfirm = new IconButton(leftPos + 56 + 168, topPos + 65 + 22, AllIcons.I_CONFIRM);
 		if (allowDeletion)
 			editorDelete = new IconButton(leftPos + 56 - 45, topPos + 65 + 22, AllIcons.I_TRASH);
@@ -325,7 +325,8 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 			String filter = destination.getFilterForRegex();
 			if (filter.isBlank())
 				continue;
-			Graphs: for (Iterator<TrackGraph> iterator = viableGraphs.iterator(); iterator.hasNext();) {
+			Graphs:
+			for (Iterator<TrackGraph> iterator = viableGraphs.iterator(); iterator.hasNext(); ) {
 				TrackGraph trackGraph = iterator.next();
 				for (GlobalStation station : trackGraph.getPoints(EdgePointType.STATION)) {
 					if (station.name.matches(filter))
@@ -484,7 +485,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 	}
 
 	public int renderScheduleEntry(GuiGraphics graphics, ScheduleEntry entry, int yOffset, int mouseX, int mouseY,
-		float partialTicks) {
+								   float partialTicks) {
 		int zLevel = -100;
 
 		AllGuiTextures light = AllGuiTextures.SCHEDULE_CARD_LIGHT;
@@ -536,7 +537,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 	}
 
 	public void renderScheduleConditions(GuiGraphics graphics, ScheduleEntry entry, int yOffset, int mouseX, int mouseY,
-		float partialTicks, int cardHeight, int entryIndex) {
+										 float partialTicks, int cardHeight, int entryIndex) {
 		int cardWidth = CARD_WIDTH;
 		int cardHeader = CARD_HEADER;
 
@@ -606,7 +607,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 	}
 
 	protected int renderInput(GuiGraphics graphics, Pair<ItemStack, Component> pair, int x, int y, boolean clean,
-		int minSize) {
+							  int minSize) {
 		ItemStack stack = pair.getFirst();
 		Component text = pair.getSecond();
 		boolean hasItem = !stack.isEmpty();
@@ -651,7 +652,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		if (editingCondition != null || editingDestination != null)
 			return false;
 
-		Component empty = Lang.IMMUTABLE_EMPTY;
+		Component empty = CommonComponents.EMPTY;
 
 		int mx = (int) mouseX;
 		int my = (int) mouseY;
@@ -982,7 +983,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		super.renderForeground(graphics, mouseX, mouseY, partialTicks);
 
 		GuiGameElement.of(menu.contentHolder).<GuiGameElement
-			.GuiRenderBuilder>at(leftPos + AllGuiTextures.SCHEDULE.getWidth(),
+				.GuiRenderBuilder>at(leftPos + AllGuiTextures.SCHEDULE.getWidth(),
 				topPos + AllGuiTextures.SCHEDULE.getHeight() - 56, -200)
 			.scale(3)
 			.render(graphics);
@@ -1034,7 +1035,7 @@ public class ScheduleScreen extends AbstractSimiContainerScreen<ScheduleMenu> im
 		formattedcharsequence = editingCondition == null ? CreateLang.translateDirect("schedule.instruction.editor")
 			.getVisualOrderText()
 			: CreateLang.translateDirect("schedule.condition.editor")
-				.getVisualOrderText();
+			.getVisualOrderText();
 		graphics.drawString(font, formattedcharsequence, (float) (center - font.width(formattedcharsequence) / 2),
 			(float) topPos + 44, 0x505050, false);
 

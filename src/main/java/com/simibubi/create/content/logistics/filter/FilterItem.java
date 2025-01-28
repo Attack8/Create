@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 
 import com.simibubi.create.AllDataComponents;
@@ -21,6 +20,7 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.TypedDataComponent;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -35,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -80,7 +81,7 @@ public class FilterItem extends Item implements MenuProvider {
 		List<Component> makeSummary = makeSummary(stack);
 		if (makeSummary.isEmpty())
 			return;
-		tooltip.add(Component.literal(" "));
+		tooltip.add(CommonComponents.SPACE);
 		tooltip.addAll(makeSummary);
 	}
 
@@ -98,7 +99,7 @@ public class FilterItem extends Item implements MenuProvider {
 			int count = 0;
 			for (int i = 0; i < filterItems.getSlots(); i++) {
 				if (count > 3) {
-                    list.add(Component.literal("- ...")
+					list.add(Component.literal("- ...")
 						.withStyle(ChatFormatting.DARK_GRAY));
 					break;
 				}
@@ -106,7 +107,7 @@ public class FilterItem extends Item implements MenuProvider {
 				ItemStack filterStack = filterItems.getStackInSlot(i);
 				if (filterStack.isEmpty())
 					continue;
-                list.add(Component.literal("- ")
+				list.add(Component.literal("- ")
 					.append(filterStack.getHoverName())
 					.withStyle(ChatFormatting.GRAY));
 				count++;
@@ -121,8 +122,8 @@ public class FilterItem extends Item implements MenuProvider {
 			list.add((whitelistMode == AttributeFilterWhitelistMode.WHITELIST_CONJ
 				? CreateLang.translateDirect("gui.attribute_filter.allow_list_conjunctive")
 				: whitelistMode == AttributeFilterWhitelistMode.WHITELIST_DISJ
-					? CreateLang.translateDirect("gui.attribute_filter.allow_list_disjunctive")
-					: CreateLang.translateDirect("gui.attribute_filter.deny_list")).withStyle(ChatFormatting.GOLD));
+				? CreateLang.translateDirect("gui.attribute_filter.allow_list_disjunctive")
+				: CreateLang.translateDirect("gui.attribute_filter.deny_list")).withStyle(ChatFormatting.GOLD));
 
 			int count = 0;
 			List<ItemAttribute.ItemAttributeEntry> attributes = filter.getOrDefault(AllDataComponents.ATTRIBUTE_FILTER_MATCHED_ATTRIBUTES, new ArrayList<>());
@@ -133,11 +134,11 @@ public class FilterItem extends Item implements MenuProvider {
 					continue;
 				boolean inverted = attributeEntry.inverted();
 				if (count > 3) {
-                    list.add(Component.literal("- ...")
+					list.add(Component.literal("- ...")
 						.withStyle(ChatFormatting.DARK_GRAY));
 					break;
 				}
-                list.add(Component.literal("- ")
+				list.add(Component.literal("- ")
 					.append(attribute.format(inverted)));
 				count++;
 			}

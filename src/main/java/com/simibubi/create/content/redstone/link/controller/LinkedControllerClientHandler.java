@@ -7,8 +7,6 @@ import java.util.List;
 
 import net.createmod.catnip.platform.CatnipServices;
 
-import net.createmod.catnip.lang.Lang;
-
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -33,6 +31,7 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -191,7 +190,7 @@ public class LinkedControllerClientHandler {
 				.getShape(mc.level, selectedLocation);
 			if (!shape.isEmpty())
 				Outliner.getInstance().showAABB("controller", shape.bounds()
-					.move(selectedLocation))
+						.move(selectedLocation))
 					.colored(0xB73C2D)
 					.lineWidth(1 / 16f);
 
@@ -200,8 +199,8 @@ public class LinkedControllerClientHandler {
 				if (linkBehaviour != null) {
 					CatnipServices.NETWORK.sendToServer(new LinkedControllerBindPacket(integer, selectedLocation));
 					CreateLang.translate("linked_controller.key_bound", controls.get(integer)
-						.getTranslatedKeyMessage()
-						.getString())
+							.getTranslatedKeyMessage()
+							.getString())
 						.sendStatus(mc.player);
 				}
 				MODE = Mode.IDLE;
@@ -215,8 +214,7 @@ public class LinkedControllerClientHandler {
 
 	public static void renderOverlay(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
 		int width1 = guiGraphics.guiWidth();
-		int height1 = guiGraphics.guiHeight();
-
+									 int height1 = guiGraphics.guiHeight();
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.options.hideGui)
 			return;
@@ -226,7 +224,7 @@ public class LinkedControllerClientHandler {
 
 		PoseStack poseStack = guiGraphics.pose();
 		poseStack.pushPose();
-		Screen tooltipScreen = new Screen(Lang.IMMUTABLE_EMPTY) {
+		Screen tooltipScreen = new Screen(CommonComponents.EMPTY) {
 		};
 		tooltipScreen.init(mc, width1, height1);
 

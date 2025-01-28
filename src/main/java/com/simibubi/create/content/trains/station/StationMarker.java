@@ -3,8 +3,6 @@ package com.simibubi.create.content.trains.station;
 import java.util.Objects;
 import java.util.Optional;
 
-import net.createmod.catnip.lang.Lang;
-
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllMapDecorationTypes;
 import com.simibubi.create.content.trains.track.TrackTargetingBehaviour;
@@ -15,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.saveddata.maps.MapDecoration;
@@ -36,7 +35,7 @@ public class StationMarker {
 		BlockPos source = NBTHelper.readBlockPos(tag, "source");
 		BlockPos target = NBTHelper.readBlockPos(tag, "target");
 		Component name = Component.Serializer.fromJson(tag.getString("name"), registries);
-		if (name == null) name = Lang.IMMUTABLE_EMPTY;
+		if (name == null) name = CommonComponents.EMPTY;
 
 		return new StationMarker(source, target, name);
 	}

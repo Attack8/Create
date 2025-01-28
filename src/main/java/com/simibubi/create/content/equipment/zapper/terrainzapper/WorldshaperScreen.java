@@ -16,9 +16,9 @@ import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import net.createmod.catnip.lang.Lang;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -43,7 +43,7 @@ public class WorldshaperScreen extends ZapperScreen {
 	protected Indicator acrossMaterialsIndicator;
 
 	protected TerrainBrushes currentBrush;
-	protected int[] currentBrushParams = new int[] { 1, 1, 1 };
+	protected int[] currentBrushParams = new int[]{1, 1, 1};
 	protected boolean currentFollowDiagonals;
 	protected boolean currentAcrossMaterials;
 	protected TerrainTools currentTool;
@@ -78,7 +78,7 @@ public class WorldshaperScreen extends ZapperScreen {
 		int x = guiLeft;
 		int y = guiTop;
 
-		brushLabel = new Label(x + 61, y + 25, Lang.IMMUTABLE_EMPTY).withShadow();
+		brushLabel = new Label(x + 61, y + 25, CommonComponents.EMPTY).withShadow();
 		brushInput = new SelectionScrollInput(x + 56, y + 20, 77, 18).forOptions(brushOptions)
 			.titled(CreateLang.translateDirect("gui.terrainzapper.brush"))
 			.writingTo(brushLabel)
@@ -107,7 +107,7 @@ public class WorldshaperScreen extends ZapperScreen {
 		brushParams.clear();
 
 		for (int index = 0; index < 3; index++) {
-			Label label = new Label(x + 65 + 20 * index, y + 45, Lang.IMMUTABLE_EMPTY).withShadow();
+			Label label = new Label(x + 65 + 20 * index, y + 45, CommonComponents.EMPTY).withShadow();
 
 			final int finalIndex = index;
 			ScrollInput input = new ScrollInput(x + 56 + 20 * index, y + 40, 18, 18)
@@ -151,10 +151,10 @@ public class WorldshaperScreen extends ZapperScreen {
 		if (currentBrush.hasConnectivityOptions()) {
 			int x1 = x + 7 + 4 * 18;
 			int y1 = y + 79;
-			followDiagonalsIndicator = new Indicator(x1, y1 - 6, Lang.IMMUTABLE_EMPTY);
+			followDiagonalsIndicator = new Indicator(x1, y1 - 6, CommonComponents.EMPTY);
 			followDiagonals = new IconButton(x1, y1, AllIcons.I_FOLLOW_DIAGONAL);
 			x1 += 18;
-			acrossMaterialsIndicator = new Indicator(x1, y1 - 6, Lang.IMMUTABLE_EMPTY);
+			acrossMaterialsIndicator = new Indicator(x1, y1 - 6, CommonComponents.EMPTY);
 			acrossMaterials = new IconButton(x1, y1, AllIcons.I_FOLLOW_MATERIAL);
 
 			followDiagonals.withCallback(() -> {

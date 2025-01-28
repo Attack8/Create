@@ -27,7 +27,6 @@ import com.simibubi.create.infrastructure.config.CClient;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.gui.element.BoxElement;
 import net.createmod.catnip.gui.element.GuiGameElement;
-import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.outliner.Outline;
 import net.createmod.catnip.outliner.Outliner;
 import net.createmod.catnip.outliner.Outliner.OutlineEntry;
@@ -40,6 +39,7 @@ import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
@@ -114,7 +114,7 @@ public class GoggleOverlayRenderer {
 
 		if (hasHoveringInformation) {
 			if (!tooltip.isEmpty())
-				tooltip.add(Lang.IMMUTABLE_EMPTY);
+				tooltip.add(CommonComponents.EMPTY);
 			IHaveHoveringInformation hte = (IHaveHoveringInformation) be;
 			hoverAddedInformation = hte.addToTooltip(tooltip, isShifting);
 
@@ -161,7 +161,7 @@ public class GoggleOverlayRenderer {
 				return;
 			}
 			if (!tooltip.isEmpty())
-				tooltip.add(Lang.IMMUTABLE_EMPTY);
+				tooltip.add(CommonComponents.EMPTY);
 
 			CreateLang.translate("gui.goggles.pole_length")
 				.text(" " + poles)

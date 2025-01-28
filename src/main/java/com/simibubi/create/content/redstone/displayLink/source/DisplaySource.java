@@ -14,19 +14,21 @@ import com.simibubi.create.content.trains.display.FlapDisplayLayout;
 import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
 
 import net.createmod.catnip.nbt.NBTProcessors;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public abstract class DisplaySource extends DisplayBehaviour {
 
 	public static final List<MutableComponent> EMPTY = ImmutableList.of(Component.empty());
-    public static final MutableComponent EMPTY_LINE = Component.empty();
-    public static final MutableComponent WHITESPACE;
+	public static final MutableComponent EMPTY_LINE = Component.empty();
+	public static final MutableComponent WHITESPACE;
 
 	static {
-		WHITESPACE = Component.literal(" ");
+		WHITESPACE = CommonComponents.space();
 	}
 
 	public abstract List<MutableComponent> provideText(DisplayLinkContext context, DisplayTargetStats stats);
@@ -51,13 +53,21 @@ public abstract class DisplaySource extends DisplayBehaviour {
 		activeTarget.acceptText(line, text, context);
 	}
 
-	public void onSignalReset(DisplayLinkContext context) {};
+	public void onSignalReset(DisplayLinkContext context) {
+	}
 
-	public void populateData(DisplayLinkContext context) {};
+	;
+
+	public void populateData(DisplayLinkContext context) {
+	}
+
+	;
 
 	public int getPassiveRefreshTicks() {
 		return 100;
-	};
+	}
+
+	;
 
 	public boolean shouldPassiveReset() {
 		return true;
@@ -76,7 +86,7 @@ public abstract class DisplaySource extends DisplayBehaviour {
 	}
 
 	public void loadFlapDisplayLayout(DisplayLinkContext context, FlapDisplayBlockEntity flapDisplay,
-		FlapDisplayLayout layout) {
+									  FlapDisplayLayout layout) {
 		if (!layout.isLayout("Default"))
 			layout.loadDefault(flapDisplay.getMaxCharCount());
 	}
@@ -89,6 +99,7 @@ public abstract class DisplaySource extends DisplayBehaviour {
 
 	@OnlyIn(Dist.CLIENT)
 	public void initConfigurationWidgets(DisplayLinkContext context, ModularGuiLineBuilder builder,
-		boolean isFirstLine) {}
+										 boolean isFirstLine) {
+	}
 
 }

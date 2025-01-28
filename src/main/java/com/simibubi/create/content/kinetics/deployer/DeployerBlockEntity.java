@@ -28,7 +28,6 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.lang.Lang;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.ChatFormatting;
@@ -38,6 +37,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -508,14 +508,14 @@ public class DeployerBlockEntity extends KineticBlockEntity {
 			.forGoggles(tooltip);
 
 		if (!heldItem.isEmpty())
-            CreateLang.translate("tooltip.deployer.contains", Component.translatable(heldItem.getDescriptionId())
-                .getString(), heldItem.getCount())
-                .style(ChatFormatting.GREEN)
-                .forGoggles(tooltip);
+			CreateLang.translate("tooltip.deployer.contains", Component.translatable(heldItem.getDescriptionId())
+					.getString(), heldItem.getCount())
+				.style(ChatFormatting.GREEN)
+				.forGoggles(tooltip);
 
 		float stressAtBase = calculateStressApplied();
 		if (StressImpact.isEnabled() && !Mth.equal(stressAtBase, 0)) {
-			tooltip.add(Lang.IMMUTABLE_EMPTY);
+			tooltip.add(CommonComponents.EMPTY);
 			addStressImpactStats(tooltip, stressAtBase);
 		}
 
