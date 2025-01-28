@@ -70,22 +70,22 @@ public class SpoutCategory extends CreateRecipeCategory<FillingRecipe> {
 			for (FluidStack fluidStack : fluidStacks) {
 				// Hoist the fluid equality check to avoid the work of copying the stack + populating capabilities
 				// when most fluids will not match
-				if (numTanks == 1 && (!existingFluid.isEmpty() && !FluidStack.isSameFluidSameComponents(existingFluid, fluidStack))) {
+				if (numTanks == 1 && (!existingFluid.isEmpty() && !FluidStack.isSameFluidSameComponents(existingFluid, fluidStack)))
 					continue;
-				}
+
 				ItemStack copy = stack.copy();
 				IFluidHandlerItem fhi = copy.getCapability(FluidHandler.ITEM);
 				if (fhi != null) {
 					if (!GenericItemFilling.isFluidHandlerValid(copy, fhi))
-						return;
+						continue;
 					FluidStack fluidCopy = fluidStack.copy();
 					fluidCopy.setAmount(1000);
 					fhi.fill(fluidCopy, FluidAction.EXECUTE);
 					ItemStack container = fhi.getContainer();
 					if (ItemHelper.sameItem(container, copy))
-						return;
+						continue;
 					if (container.isEmpty())
-						return;
+						continue;
 
 					Ingredient bucket = Ingredient.of(stack);
 					ResourceLocation itemName = RegisteredObjectsHelper.getKeyOrThrow(stack.getItem());

@@ -31,8 +31,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-
 import net.minecraft.world.item.crafting.RecipeHolder;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 
 @ParametersAreNonnullByDefault
@@ -144,8 +144,8 @@ public abstract class CreateRecipeCategory<T extends Recipe<?>> implements IReci
 			FluidStack fluidStack = displayed.get();
 
 			if (fluidStack.getFluid().isSame(AllFluids.POTION.get())) {
-				ArrayList<Component> potionTooltip = new ArrayList<>();
-				PotionFluidHandler.addPotionTooltip(fluidStack, potionTooltip, 1);
+				List<Component> potionTooltip = new ArrayList<>();
+				PotionFluidHandler.addPotionTooltip(fluidStack, potionTooltip::add, 1);
 				tooltip.addAll(potionTooltip.stream().toList());
 			}
 

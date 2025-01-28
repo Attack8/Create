@@ -25,10 +25,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionBrewing;
 import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.neoforge.common.brewing.BrewingRecipe;
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -103,11 +103,6 @@ public class PotionMixingRecipes {
 
 			for (Map.Entry<ResourceKey<Potion>, Potion> potionEntry : BuiltInRegistries.POTION.entrySet()) {
 				Potion potion = potionEntry.getValue();
-
-				// FIXME 1.21: checkover
-				if (potion == Potions.WATER) {
-					continue;
-				}
 
 				FluidStack fromFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(BuiltInRegistries.POTION.wrapAsHolder(potion)), Optional.empty(), potion.getEffects()), fromBottleType, 1000);
 				FluidStack toFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(BuiltInRegistries.POTION.wrapAsHolder(potion)), Optional.empty(), potion.getEffects()), toBottleType, 1000);

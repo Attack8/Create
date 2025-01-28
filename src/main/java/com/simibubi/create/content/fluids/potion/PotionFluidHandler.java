@@ -1,6 +1,7 @@
 package com.simibubi.create.content.fluids.potion;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 import com.simibubi.create.AllDataComponents;
@@ -38,6 +39,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class PotionFluidHandler {
+	private static final Component NO_EFFECT = Component.translatable("effect.none").withStyle(ChatFormatting.GRAY);
 
 	public static boolean isPotionItem(ItemStack stack) {
 		return stack.getItem() instanceof PotionItem && !(stack.getCraftingRemainingItem()
@@ -84,7 +86,7 @@ public class PotionFluidHandler {
 		return switch (type) {
 			case LINGERING -> Items.LINGERING_POTION;
 			case SPLASH -> Items.SPLASH_POTION;
-				default -> Items.POTION;
+			default -> Items.POTION;
 		};
 	}
 
@@ -98,67 +100,67 @@ public class PotionFluidHandler {
 		return potionStack;
 	}
 
-	// Modified version of PotionUtils#addPotionTooltip
+	// Modified version of PotionContents#addPotionTooltip
 	@OnlyIn(Dist.CLIENT)
-	public static void addPotionTooltip(FluidStack fs, List<Component> tooltip, float factor) {
-		List<MobEffectInstance> list = fs.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).customEffects();
-		List<Pair<Holder<Attribute>, AttributeModifier>> list1 = Lists.newArrayList();
-		if (list.isEmpty()) {
-			tooltip.add((Component.translatable("effect.none")).withStyle(ChatFormatting.GRAY));
-		} else {
-			for (MobEffectInstance effectinstance : list) {
-				MutableComponent textcomponent = Component.translatable(effectinstance.getDescriptionId());
-				Holder<MobEffect> effect = effectinstance.getEffect();
-				effect.value().createModifiers(effectinstance.getAmplifier(), (attributeHolder, attributeModifier) -> list1.add(Pair.of(attributeHolder, attributeModifier)));
+	public static void addPotionTooltip(FluidStack fs, Consumer<Component> tooltipAdder, float durationFactor) {
+		Iterable<MobEffectInstance> effects = fs.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getAllEffects();
 
-				if (effectinstance.getAmplifier() > 0) {
-					textcomponent.append(" ")
-						.append(Component.translatable("potion.potency." + effectinstance.getAmplifier()).getString());
-				}
+		List<Pair<Holder<Attribute>, AttributeModifier>> list = Lists.newArrayList();
 
-				if (effectinstance.getDuration() > 20) {
-					textcomponent.append(" (")
-						.append(MobEffectUtil.formatDuration(effectinstance, factor, Minecraft.getInstance().level.tickRateManager().tickrate()))
-						.append(")");
-				}
-
-				tooltip.add(textcomponent.withStyle(effect.value().getCategory()
-					.getTooltipFormatting()));
+		boolean flag = true;
+		for (MobEffectInstance mobeffectinstance : effects) {
+			flag = false;
+			MutableComponent mutablecomponent = Component.translatable(mobeffectinstance.getDescriptionId());
+			Holder<MobEffect> holder = mobeffectinstance.getEffect();
+			holder.value().createModifiers(mobeffectinstance.getAmplifier(),
+				(h, m) -> list.add(Pair.of(h, m)));
+			if (mobeffectinstance.getAmplifier() > 0) {
+				mutablecomponent.append(" ")
+					.append(Component.translatable("potion.potency." + mobeffectinstance.getAmplifier()).getString());
 			}
+
+			if (!mobeffectinstance.endsWithin(20)) {
+				mutablecomponent.append(" (")
+					.append(MobEffectUtil.formatDuration(mobeffectinstance, durationFactor, Minecraft.getInstance().level.tickRateManager().tickrate()))
+					.append(")");
+			}
+
+			tooltipAdder.accept(mutablecomponent.withStyle(holder.value().getCategory().getTooltipFormatting()));
 		}
 
-		if (!list1.isEmpty()) {
-			tooltip.add(CommonComponents.EMPTY);
-			tooltip.add((Component.translatable("potion.whenDrank")).withStyle(ChatFormatting.DARK_PURPLE));
+		if (flag)
+			tooltipAdder.accept(NO_EFFECT);
 
-			for (Pair<Holder<Attribute>, AttributeModifier> pair : list1) {
-				AttributeModifier attributemodifier2 = pair.getSecond();
-				double d0 = attributemodifier2.amount();
-				double d1;
-				if (attributemodifier2.operation() != AttributeModifier.Operation.ADD_MULTIPLIED_BASE
-					&& attributemodifier2.operation() != AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
-					d1 = attributemodifier2.amount();
+		if (!list.isEmpty()) {
+			tooltipAdder.accept(CommonComponents.EMPTY);
+			tooltipAdder.accept((Component.translatable("potion.whenDrank")).withStyle(ChatFormatting.DARK_PURPLE));
+
+			for (Pair<Holder<Attribute>, AttributeModifier> pair : list) {
+				AttributeModifier attributemodifier = pair.getSecond();
+				double d1 = attributemodifier.amount();
+				double d0;
+				if (attributemodifier.operation() != AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+					&& attributemodifier.operation() != AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
+					d0 = attributemodifier.amount();
 				} else {
-					d1 = attributemodifier2.amount() * 100.0D;
+					d0 = attributemodifier.amount() * 100.0D;
 				}
 
-				if (d0 > 0.0D) {
-					tooltip.add((Component.translatable(
-						"attribute.modifier.plus." + attributemodifier2.operation().id(),
-							ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d1),
+				if (d1 > 0.0D) {
+					tooltipAdder.accept((Component.translatable(
+						"attribute.modifier.plus." + attributemodifier.operation().id(),
+						ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d0),
 						Component.translatable(pair.getFirst().value().getDescriptionId())))
 						.withStyle(ChatFormatting.BLUE));
-				} else if (d0 < 0.0D) {
-					d1 = d1 * -1.0D;
-					tooltip.add((Component.translatable(
-						"attribute.modifier.take." + attributemodifier2.operation().id(),
-						ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d1),
+				} else if (d1 < 0.0D) {
+					d0 = d0 * -1.0D;
+					tooltipAdder.accept((Component.translatable(
+						"attribute.modifier.take." + attributemodifier.operation().id(),
+						ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(d0),
 						Component.translatable(pair.getFirst().value().getDescriptionId())))
 						.withStyle(ChatFormatting.RED));
 				}
 			}
 		}
-
 	}
-
 }
