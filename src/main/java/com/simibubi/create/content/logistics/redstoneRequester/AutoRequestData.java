@@ -15,7 +15,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-public class AutoRequestData {
+public record AutoRequestData(PackageOrder encodedRequest, String encodedTargetAddress, BlockPos targetOffset,
+							  String targetDim, boolean isValid, PackageOrder encodedRequestContext) {
 	public static final Codec<AutoRequestData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 		PackageOrder.CODEC.fieldOf("encoded_request").forGetter(i -> i.encodedRequest),
 		Codec.STRING.fieldOf("encoded_target_address").forGetter(i -> i.encodedTargetAddress),
@@ -35,39 +36,34 @@ public class AutoRequestData {
 	    AutoRequestData::new
 	);
 
-	public PackageOrder encodedRequest = PackageOrder.empty();
-	public PackageOrder encodedRequestContext = PackageOrder.empty();
-	public String encodedTargetAddress = "";
-	public BlockPos targetOffset = BlockPos.ZERO;
-	public String targetDim = "null";
-	public boolean isValid = false;
-
-	public AutoRequestData() {}
-
-	public AutoRequestData(PackageOrder encodedRequest, String encodedTargetAdress, BlockPos targetOffset, String targetDim, boolean isValid, PackageOrder encodedRequestContext) {
-		this.encodedRequest = encodedRequest;
-		this.encodedRequestContext = encodedRequestContext;
-		this.encodedTargetAddress = encodedTargetAdress;
-		this.targetOffset = targetOffset;
-		this.targetDim = targetDim;
-		this.isValid = isValid;
+	public AutoRequestData() {
+		this(PackageOrder.empty(), "", BlockPos.ZERO, "null", false, PackageOrder.empty());
 	}
 
 	public AutoRequestData copy() {
-		AutoRequestData data = new AutoRequestData();
-		data.encodedRequest = encodedRequest;
-		data.encodedRequestContext = encodedRequestContext;
-		data.encodedTargetAddress = encodedTargetAddress;
-		data.targetOffset = targetOffset;
-		data.targetDim = targetDim;
-		data.isValid = isValid;
-		return data;
+		return new AutoRequestData(
+			encodedRequest,
+			encodedTargetAddress,
+			targetOffset,
+			targetDim,
+			isValid,
+			encodedRequestContext
+		);
+	}
+
+	public AutoRequestData copyWithOffset(BlockPos position) {
+		return new AutoRequestData(
+			encodedRequest,
+			encodedTargetAddress,
+			position.offset(targetOffset),
+			targetDim,
+			isValid,
+			encodedRequestContext
+		);
 	}
 
 	public void writeToItem(BlockPos position, ItemStack itemStack) {
-		AutoRequestData copy = copy();
-		copy.targetOffset = position.offset(targetOffset);
-		itemStack.set(AllDataComponents.AUTO_REQUEST_DATA, copy);
+		itemStack.set(AllDataComponents.AUTO_REQUEST_DATA, copyWithOffset(position));
 	}
 
 	public static AutoRequestData readFromItem(Level level, Player player, BlockPos position, ItemStack itemStack) {
@@ -75,11 +71,20 @@ public class AutoRequestData {
 		if (requestData == null)
 			return null;
 
-		requestData.targetOffset = requestData.targetOffset.subtract(position);
-		requestData.isValid =
+		BlockPos targetOffset = requestData.targetOffset.subtract(position);
+		boolean isValid =
 			requestData.targetOffset.closerThan(BlockPos.ZERO, 128) && requestData.targetDim.equals(level.dimension()
 				.location()
 				.toString());
+
+		requestData = new AutoRequestData(
+			requestData.encodedRequest,
+			requestData.encodedTargetAddress,
+			targetOffset,
+			requestData.targetDim,
+			isValid,
+			requestData.encodedRequestContext
+		);
 
 		if (player != null)
 			CreateLang

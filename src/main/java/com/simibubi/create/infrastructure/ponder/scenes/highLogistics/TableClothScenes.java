@@ -107,10 +107,14 @@ public class TableClothScenes {
 		scene.world()
 			.modifyBlockEntity(util.grid()
 				.at(3, 2, 3), TableClothBlockEntity.class, be -> {
-					AutoRequestData d = new AutoRequestData();
-					d.encodedRequest = new PackageOrder(List.of(new BigItemStack(grass)));
-					d.isValid = true;
-					be.requestData = d;
+				be.requestData = new AutoRequestData(
+					new PackageOrder(List.of(new BigItemStack(grass))),
+					"",
+					BlockPos.ZERO,
+					"null",
+					true,
+					PackageOrder.empty()
+				);
 					be.priceTag.setFilter(new ItemStack(Items.DIAMOND));
 					be.priceTag.count = 1;
 					be.facing = Direction.NORTH;
@@ -245,10 +249,14 @@ public class TableClothScenes {
 		scene.world()
 			.modifyBlockEntity(util.grid()
 				.at(5, 2, 1), TableClothBlockEntity.class, be -> {
-					AutoRequestData d = new AutoRequestData();
-					d.encodedRequest = new PackageOrder(List.of(new BigItemStack(logItem1)));
-					d.isValid = true;
-					be.requestData = d;
+				be.requestData = new AutoRequestData(
+					new PackageOrder(List.of(new BigItemStack(logItem1))),
+					"",
+					BlockPos.ZERO,
+					"null",
+					true,
+					PackageOrder.empty()
+				);
 					be.facing = Direction.NORTH;
 				});
 

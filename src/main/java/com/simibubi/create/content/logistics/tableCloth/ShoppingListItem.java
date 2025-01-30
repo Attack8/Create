@@ -76,7 +76,7 @@ public class ShoppingListItem extends Item {
 				if (!(level.getBlockEntity(entry.getValue()) instanceof TableClothBlockEntity dcbe))
 					continue;
 				input.add(dcbe.getPaymentItem(), dcbe.getPaymentAmount() * entry.getFirst());
-				for (BigItemStack stackEntry : dcbe.requestData.encodedRequest.stacks())
+				for (BigItemStack stackEntry : dcbe.requestData.encodedRequest().stacks())
 					output.add(stackEntry.stack, stackEntry.count * entry.getFirst());
 			}
 

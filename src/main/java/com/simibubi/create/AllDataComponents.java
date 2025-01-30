@@ -286,11 +286,6 @@ public class AllDataComponents {
 			builder -> builder.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL)
 	);
 
-	public static final DataComponentType<BlockPos> DISPLAY_LINK_SELECTED_POS = register(
-			"display_link_selected_pos",
-			builder -> builder.persistent(BlockPos.CODEC).networkSynchronized(BlockPos.STREAM_CODEC)
-	);
-
 	public static final DataComponentType<BottleType> POTION_FLUID_BOTTLE_TYPE = register(
 			"potion_fluid_bottle_type",
 			builder -> builder.persistent(BottleType.CODEC).networkSynchronized(BottleType.STREAM_CODEC)

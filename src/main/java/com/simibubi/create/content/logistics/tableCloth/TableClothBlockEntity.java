@@ -21,9 +21,9 @@ import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringB
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.codecs.CatnipCodecUtils;
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.data.IntAttached;
 import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -75,7 +75,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 	public List<ItemStack> getItemsForRender() {
 		if (isShop()) {
 			if (renderedItemsForShop == null)
-				renderedItemsForShop = requestData.encodedRequest.stacks()
+				renderedItemsForShop = requestData.encodedRequest().stacks()
 					.stream()
 					.map(b -> b.stack)
 					.limit(4)
@@ -102,7 +102,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 	}
 
 	public boolean isShop() {
-		return !requestData.encodedRequest.isEmpty();
+		return !requestData.encodedRequest().isEmpty();
 	}
 
 	public ItemInteractionResult use(Player player, BlockHitResult ray) {
@@ -185,7 +185,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 		}
 
 		UUID tickerID = null;
-		BlockPos tickerPos = requestData.targetOffset.offset(worldPosition);
+		BlockPos tickerPos = requestData.targetOffset().offset(worldPosition);
 		if (level.getBlockEntity(tickerPos) instanceof StockTickerBlockEntity stbe && stbe.isKeeperPresent())
 			tickerID = stbe.behaviour.freqId;
 
@@ -247,7 +247,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 		}
 
 		ItemStack newListItem =
-			ShoppingListItem.saveList(AllItems.SHOPPING_LIST.asStack(), list, requestData.encodedTargetAddress);
+			ShoppingListItem.saveList(AllItems.SHOPPING_LIST.asStack(), list, requestData.encodedTargetAddress());
 
 		if (player.getItemInHand(InteractionHand.MAIN_HAND)
 			.isEmpty())
@@ -260,7 +260,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 	}
 
 	public int getStockLevelForTrade(@Nullable ShoppingList otherPurchases) {
-		BlockPos tickerPos = requestData.targetOffset.offset(worldPosition);
+		BlockPos tickerPos = requestData.targetOffset().offset(worldPosition);
 		if (!(level.getBlockEntity(tickerPos) instanceof StockTickerBlockEntity stbe))
 			return 0;
 
@@ -282,7 +282,7 @@ public class TableClothBlockEntity extends SmartBlockEntity {
 				.getFirst();
 
 		int smallestQuotient = Integer.MAX_VALUE;
-		for (BigItemStack entry : requestData.encodedRequest.stacks())
+		for (BigItemStack entry : requestData.encodedRequest().stacks())
 			if (entry.count > 0)
 				smallestQuotient = Math.min(smallestQuotient,
 					(recentSummary.getCountOf(entry.stack) - modifierSummary.getCountOf(entry.stack)) / entry.count);

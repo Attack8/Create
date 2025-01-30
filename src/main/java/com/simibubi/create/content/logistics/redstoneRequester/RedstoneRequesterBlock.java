@@ -98,15 +98,11 @@ public class RedstoneRequesterBlock extends Block implements IBE<RedstoneRequest
 		if (!isRequester && !isShopCloth)
 			return;
 
-		AutoRequestData autoRequestData = new AutoRequestData();
-		autoRequestData.encodedRequest = order;
-		autoRequestData.encodedRequestContext = orderContext;
-		autoRequestData.encodedTargetAddress = address;
-		autoRequestData.targetOffset = be.getBlockPos();
-		autoRequestData.targetDim = player.level()
+		String targetDim = player.level()
 			.dimension()
 			.location()
 			.toString();
+		AutoRequestData autoRequestData = new AutoRequestData(order, address, be.getBlockPos(), targetDim, false, orderContext);
 
 		autoRequestData.writeToItem(BlockPos.ZERO, stack);
 
@@ -127,7 +123,7 @@ public class RedstoneRequesterBlock extends Block implements IBE<RedstoneRequest
 		AutoRequestData data = pStack.get(AllDataComponents.AUTO_REQUEST_DATA);
 
 		//noinspection DataFlowIssue
-		for (BigItemStack entry : data.encodedRequest.stacks()) {
+		for (BigItemStack entry : data.encodedRequest().stacks()) {
 			pTooltip.add(entry.stack.getHoverName()
 				.copy()
 				.append(" x")
@@ -148,9 +144,9 @@ public class RedstoneRequesterBlock extends Block implements IBE<RedstoneRequest
 			AutoRequestData data = AutoRequestData.readFromItem(pLevel, player, requesterPos, pStack);
 			if (data == null)
 				return;
-			rrbe.encodedRequest = data.encodedRequest;
-			rrbe.encodedRequestContext = data.encodedRequestContext;
-			rrbe.encodedTargetAdress = data.encodedTargetAddress;
+			rrbe.encodedRequest = data.encodedRequest();
+			rrbe.encodedRequestContext = data.encodedRequestContext();
+			rrbe.encodedTargetAdress = data.encodedTargetAddress();
 		});
 	}
 
