@@ -1182,6 +1182,7 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 		UA_TREE_FERTILIZER = create(AllItems.TREE_FERTILIZER::get).returns(2)
 			.unlockedBy(() -> Items.BONE_MEAL)
 			.whenModLoaded(Mods.UA.getId())
+			.fromMod(Mods.UA.getId())
 			.viaShapeless(b -> b.requires(Ingredient.of(ItemTags.SMALL_FLOWERS), 2)
 					.requires(AllItemTags.UA_CORAL.tag).requires(Items.BONE_MEAL))
 
@@ -1231,7 +1232,7 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 			String metalName = metal.getName(mod);
 			ResourceLocation ingot = mod.ingotOf(metalName);
 			String modId = mod.getId();
-			create(ingot).withSuffix("_compat_" + modId)
+			create(ingot).fromMod(modId)
 				.whenModLoaded(modId)
 				.viaCooking(ingredient::get)
 				.rewardXP(.1f)
@@ -1308,12 +1309,14 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 
 		private Supplier<ItemPredicate> unlockedBy;
 		private int amount;
+		private String modId;
 
 		private GeneratedRecipeBuilder(String path) {
 			this.path = path;
 			this.recipeConditions = new ArrayList<>();
 			this.suffix = "";
 			this.amount = 1;
+			this.modId = "";
 		}
 
 		public GeneratedRecipeBuilder(String path, Supplier<? extends ItemLike> result) {
@@ -1342,6 +1345,11 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 			this.unlockedBy = () -> ItemPredicate.Builder.item()
 				.of(tag.get())
 				.build();
+			return this;
+		}
+
+		GeneratedRecipeBuilder fromMod(String modId) {
+			this.modId = modId;
 			return this;
 		}
 
@@ -1401,11 +1409,13 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 		}
 
 		private ResourceLocation createSimpleLocation(String recipeType) {
-			return Create.asResource(recipeType + "/" + getRegistryName().getPath() + suffix);
+			String modFolder = modId.isEmpty() ? "" : "/compat/" + modId;
+			return Create.asResource(recipeType + modFolder + "/" + getRegistryName().getPath() + suffix);
 		}
 
 		private ResourceLocation createLocation(String recipeType) {
-			return Create.asResource(recipeType + "/" + path + "/" + getRegistryName().getPath() + suffix);
+			String modFolder = modId.isEmpty() ? "" : "/compat/" + modId;
+			return Create.asResource(recipeType + "/" + path + modFolder + "/" + getRegistryName().getPath() + suffix);
 		}
 
 		private ResourceLocation getRegistryName() {
