@@ -758,7 +758,9 @@ public abstract class Contraption {
 			c -> superglue.add(SuperGlueEntity.readBoundingBox(c)));
 
 		seats.clear();
-		NBTHelper.iterateCompoundList(nbt.getList("Seats", Tag.TAG_COMPOUND), c -> seats.add(NBTHelper.readBlockPos(c, "Pos")));
+		NBTHelper.iterateCompoundList(nbt.getList("Seats", Tag.TAG_COMPOUND),
+			c -> seats.add(c.contains("Pos") ? NBTHelper.readBlockPos(c, "Pos")
+				: new BlockPos(c.getInt("X"), c.getInt("Y"), c.getInt("Z"))));
 
 		seatMapping.clear();
 		NBTHelper.iterateCompoundList(nbt.getList("Passengers", Tag.TAG_COMPOUND),

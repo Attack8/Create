@@ -285,10 +285,15 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 		}
 	}
 
-	// TODO - Lookover
 	@Override
 	public Vec3 getPassengerRidingPosition(Entity entity) {
-		return new Vec3(0, entity.getDimensions(getPose()).height(), 0);
+		return position().add(0, entity.getDimensions(getPose())
+			.height(), 0);
+	}
+
+	@Override
+	protected Vec3 getPassengerAttachmentPoint(Entity entity, EntityDimensions dimensions, float partialTick) {
+		return super.getPassengerAttachmentPoint(entity, dimensions, partialTick).add(0, 2 / 16f, 0);
 	}
 
 	@Override

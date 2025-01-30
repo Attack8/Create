@@ -249,8 +249,11 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 			return null;
 
 		Vec3 transformedVector = toGlobalVector(Vec3.atLowerCornerOf(seat)
-			.add(.5, -passenger.getVehicleAttachmentPoint(this).y + ySize + .125, .5), partialTicks)
-				.add(VecHelper.getCenterOf(BlockPos.ZERO))
+			.add(.5,
+				-passenger.getVehicleAttachmentPoint(this).y + ySize + .125
+					- SeatEntity.getCustomEntitySeatOffset(passenger),
+				.5),
+			partialTicks).add(VecHelper.getCenterOf(BlockPos.ZERO))
 				.subtract(0.5, ySize, 0.5);
 		return transformedVector;
 	}

@@ -79,7 +79,7 @@ public class SeatEntity extends Entity implements IEntityWithComplexSpawn {
 		if (entity instanceof Spider)
 			return 1 / 8.0;
 		if (entity instanceof PackageEntity)
-			return 1 / 4f;
+			return 3 / 32f;
 		return 0;
 	}
 

@@ -24,7 +24,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class DepotMountedStorage extends WrapperMountedItemStorage<Handler> implements SyncedMountedStorage {
-	public static final MapCodec<DepotMountedStorage> CODEC = ItemStack.CODEC.xmap(
+	public static final MapCodec<DepotMountedStorage> CODEC = ItemStack.OPTIONAL_CODEC.xmap(
 		DepotMountedStorage::new, DepotMountedStorage::getItem
 	).fieldOf("value");
 
