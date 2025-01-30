@@ -102,7 +102,7 @@ public class RedstoneRequesterBlock extends Block implements IBE<RedstoneRequest
 			.dimension()
 			.location()
 			.toString();
-		AutoRequestData autoRequestData = new AutoRequestData(order, address, be.getBlockPos(), targetDim, false, orderContext);
+		AutoRequestData autoRequestData = new AutoRequestData(order, orderContext, address, be.getBlockPos(), targetDim, false);
 
 		autoRequestData.writeToItem(BlockPos.ZERO, stack);
 
