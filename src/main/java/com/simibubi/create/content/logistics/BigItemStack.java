@@ -26,8 +26,8 @@ public class BigItemStack {
 
 	public static final int INF = 1_000_000_000;
 
-	public final ItemStack stack;
-	public final int count;
+	public ItemStack stack;
+	public int count;
 
 	public BigItemStack(ItemStack stack) {
 		this(stack, 1);
