@@ -484,10 +484,10 @@ public class MillingRecipeGen extends ProcessingRecipeGen {
 		BWG_WHITE_ALLIUM_BUSH = bwgFlower("white_allium_flower_bush", List.of(1f,.05f,.25f),
 				List.of(Items.WHITE_DYE, Items.GREEN_DYE, Items.WHITE_DYE), List.of(3,2,2)),
 
-		BWG_WHITE_SAGE = bwgFlower(Mods.BWG.recipeId("white_sage"), List.of(1f, .1f),
+		BWG_WHITE_SAGE = bwgFlower("white_sage", List.of(1f, .1f),
 				List.of(Items.WHITE_DYE, Items.GRAY_DYE), List.of(2,1)),
 
-		BWG_WINTER_CYCLAMEN = bwgFlower(Mods.BWG.recipeId("winter_cyclamen"), List.of(1f, .1f),
+		BWG_WINTER_CYCLAMEN = bwgFlower("winter_cyclamen", List.of(1f, .1f),
 				List.of(Items.CYAN_DYE, Items.GREEN_DYE), List.of(2,1)),
 
 		BWG_WINTER_ROSE = bwgFlower("winter_rose", List.of(1f,.1f),
