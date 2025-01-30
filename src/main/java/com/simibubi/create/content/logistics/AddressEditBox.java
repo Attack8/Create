@@ -24,13 +24,18 @@ public class AddressEditBox extends EditBox {
 
 	private DestinationSuggestions destinationSuggestions;
 	private Consumer<String> mainResponder;
+	private String prevValue = "=)";
 
 	public AddressEditBox(Screen screen, Font pFont, int pX, int pY, int pWidth, int pHeight, boolean anchorToBottom) {
         super(pFont, pX, pY, pWidth, pHeight, Component.empty());
 		destinationSuggestions = AddressEditBoxHelper.createSuggestions(screen, this, anchorToBottom);
 		destinationSuggestions.setAllowSuggestions(true);
 		destinationSuggestions.updateCommandInfo();
-		mainResponder = t -> destinationSuggestions.updateCommandInfo();
+		mainResponder = t -> {
+			if (t.equals(prevValue))
+				destinationSuggestions.updateCommandInfo();
+			prevValue = t;
+		};
 		setResponder(mainResponder);
 		setBordered(false);
 		setFocused(false);
@@ -63,8 +68,8 @@ public class AddressEditBox extends EditBox {
 		boolean wasFocused = isFocused();
 		if (super.mouseClicked(pMouseX, pMouseY, pButton)) {
 			if (!wasFocused) {
-				setHighlightPos(getValue().length());
-				setCursorPosition(0);
+				setHighlightPos(0);
+				setCursorPosition(getValue().length());
 			}
 			return true;
 		}
@@ -81,8 +86,6 @@ public class AddressEditBox extends EditBox {
 	@Override
 	public void setFocused(boolean focused) {
 		super.setFocused(focused);
-		if (!focused)
-			setHighlightPos(getCursorPosition());
 	}
 
 	@Override

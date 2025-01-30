@@ -101,13 +101,13 @@ public abstract class PackagePortBlockEntity extends SmartBlockEntity implements
 
 	@Override
 	public void invalidate() {
-		if (target != null)
-			target.deregister(this, level, worldPosition);
 		super.invalidate();
 	}
 
 	@Override
 	public void destroy() {
+		if (target != null)
+			target.deregister(this, level, worldPosition);
 		super.destroy();
 		for (int i = 0; i < inventory.getSlots(); i++)
 			drop(inventory.getStackInSlot(i));

@@ -31,6 +31,7 @@ public class RedstoneRequesterBlockEntity extends StockCheckingBlockEntity imple
 
 	public boolean allowPartialRequests;
 	public PackageOrder encodedRequest = PackageOrder.empty();
+	public PackageOrder encodedRequestContext = PackageOrder.empty();
 	public String encodedTargetAdress = "";
 
 	public boolean lastRequestSucceeded;
@@ -78,7 +79,7 @@ public class RedstoneRequesterBlockEntity extends StockCheckingBlockEntity imple
 			}
 		}
 
-		broadcastPackageRequest(RequestType.REDSTONE, encodedRequest, null, encodedTargetAdress);
+		broadcastPackageRequest(RequestType.REDSTONE, encodedRequest, null, encodedTargetAdress, encodedRequestContext.isEmpty() ? null : encodedRequestContext);
 		if (level instanceof ServerLevel serverLevel)
 			CatnipServices.NETWORK.sendToClientsAround(serverLevel, worldPosition, 32, new RedstoneRequesterEffectPacket(worldPosition, anySucceeded));
 		lastRequestSucceeded = true;
@@ -91,6 +92,7 @@ public class RedstoneRequesterBlockEntity extends StockCheckingBlockEntity imple
 		lastRequestSucceeded = tag.getBoolean("Success");
 		allowPartialRequests = tag.getBoolean("AllowPartial");
 		encodedRequest = CatnipCodecUtils.decode(PackageOrder.CODEC, tag.getCompound("EncodedRequest")).orElse(PackageOrder.empty());
+		encodedRequestContext = CatnipCodecUtils.decode(PackageOrder.CODEC, tag.getCompound("EncodedRequestContext")).orElse(PackageOrder.empty());
 		encodedTargetAdress = tag.getString("EncodedAddress");
 	}
 
@@ -100,6 +102,7 @@ public class RedstoneRequesterBlockEntity extends StockCheckingBlockEntity imple
 		tag.putBoolean("AllowPartial", allowPartialRequests);
 		tag.putString("EncodedAddress", encodedTargetAdress);
 		tag.put("EncodedRequest", CatnipCodecUtils.encode(PackageOrder.CODEC, encodedRequest).orElseThrow());
+		tag.put("EncodedRequestContext", CatnipCodecUtils.encode(PackageOrder.CODEC, encodedRequestContext).orElseThrow());
 	}
 
 	@Override
@@ -110,6 +113,7 @@ public class RedstoneRequesterBlockEntity extends StockCheckingBlockEntity imple
 		tag.putBoolean("AllowPartial", allowPartialRequests);
 		tag.putString("EncodedAddress", encodedTargetAdress);
 		tag.put("EncodedRequest", CatnipCodecUtils.encode(PackageOrder.CODEC, encodedRequest).orElseThrow());
+		tag.put("EncodedRequestContext", CatnipCodecUtils.encode(PackageOrder.CODEC, encodedRequestContext).orElseThrow());
 	}
 
 	public InteractionResult use(Player player) {

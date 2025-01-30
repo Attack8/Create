@@ -114,6 +114,11 @@ public class PostboxBlock extends HorizontalDirectionalBlock
 		return getBlockEntityOptional(pLevel, pPos).map(pbe -> pbe.getComparatorOutput())
 			.orElse(0);
 	}
+	
+	@Override
+	public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pMovedByPiston) {
+		IBE.onRemove(pState, pLevel, pPos, pNewState);
+	}
 
 	@Override
 	protected @NotNull MapCodec<? extends HorizontalDirectionalBlock> codec() {

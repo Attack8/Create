@@ -7,7 +7,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.simibubi.create.Create;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.builders.BuilderCallback;
 import com.tterrag.registrate.builders.EntityBuilder;
@@ -20,6 +19,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+
 
 @ParametersAreNonnullByDefault
 public class CreateEntityBuilder<T extends Entity, P> extends EntityBuilder<T, P> {
@@ -56,7 +56,7 @@ public class CreateEntityBuilder<T extends Entity, P> extends EntityBuilder<T, P
 	}
 
 	protected void registerVisualizer() {
-		OneTimeEventReceiver.addModListener(Create.REGISTRATE, FMLClientSetupEvent.class, $ -> {
+		OneTimeEventReceiver.addModListener(getOwner(), FMLClientSetupEvent.class, $ -> {
 			var visualFactory = this.visualFactory;
 			if (visualFactory != null) {
 				Predicate<@NotNull T> renderNormally = this.renderNormally;

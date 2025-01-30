@@ -21,7 +21,8 @@ public class AutoRequestData {
 		Codec.STRING.fieldOf("encoded_target_address").forGetter(i -> i.encodedTargetAddress),
 		BlockPos.CODEC.fieldOf("target_offset").forGetter(i -> i.targetOffset),
 		Codec.STRING.fieldOf("target_dim").forGetter(i -> i.targetDim),
-		Codec.BOOL.fieldOf("is_valid").forGetter(i -> i.isValid)
+		Codec.BOOL.fieldOf("is_valid").forGetter(i -> i.isValid),
+		PackageOrder.CODEC.fieldOf("encoded_request_context").forGetter(i -> i.encodedRequestContext)
 	).apply(instance, AutoRequestData::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, AutoRequestData> STREAM_CODEC = StreamCodec.composite(
@@ -30,10 +31,12 @@ public class AutoRequestData {
 	    BlockPos.STREAM_CODEC, i -> i.targetOffset,
 	    ByteBufCodecs.STRING_UTF8, i -> i.targetDim,
 	    ByteBufCodecs.BOOL, i -> i.isValid,
+	    PackageOrder.STREAM_CODEC, i -> i.encodedRequestContext,
 	    AutoRequestData::new
 	);
 
 	public PackageOrder encodedRequest = PackageOrder.empty();
+	public PackageOrder encodedRequestContext = PackageOrder.empty();
 	public String encodedTargetAddress = "";
 	public BlockPos targetOffset = BlockPos.ZERO;
 	public String targetDim = "null";
@@ -41,8 +44,9 @@ public class AutoRequestData {
 
 	public AutoRequestData() {}
 
-	public AutoRequestData(PackageOrder encodedRequest, String encodedTargetAdress, BlockPos targetOffset, String targetDim, boolean isValid) {
+	public AutoRequestData(PackageOrder encodedRequest, String encodedTargetAdress, BlockPos targetOffset, String targetDim, boolean isValid, PackageOrder encodedRequestContext) {
 		this.encodedRequest = encodedRequest;
+		this.encodedRequestContext = encodedRequestContext;
 		this.encodedTargetAddress = encodedTargetAdress;
 		this.targetOffset = targetOffset;
 		this.targetDim = targetDim;
@@ -52,6 +56,7 @@ public class AutoRequestData {
 	public AutoRequestData copy() {
 		AutoRequestData data = new AutoRequestData();
 		data.encodedRequest = encodedRequest;
+		data.encodedRequestContext = encodedRequestContext;
 		data.encodedTargetAddress = encodedTargetAddress;
 		data.targetOffset = targetOffset;
 		data.targetDim = targetDim;

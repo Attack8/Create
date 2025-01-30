@@ -3,7 +3,9 @@ package com.simibubi.create.compat.jei;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -87,10 +89,12 @@ import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IIngredientManager;
 import net.createmod.catnip.config.ConfigBase.ConfigBool;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
@@ -105,7 +109,6 @@ import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.SmokingRecipe;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-
 import net.neoforged.neoforge.fluids.FluidStack;
 
 @JeiPlugin
@@ -370,14 +373,27 @@ public class CreateJEI implements IModPlugin {
 			.listElements()
 			.toList();
 		Collection<FluidStack> potionFluids = new ArrayList<>(potions.size() * 3);
+		Set<Set<Holder<MobEffect>>> visitedEffects = new HashSet<>();
 		for (Reference<Potion> potion : potions) {
 			// @goshante: Ingame potion fluids always have Bottle tag that specifies
 			// to what bottle type this potion belongs
 			// Potion fluid without this tag wouldn't be recognized by other mods
-			for (PotionFluid.BottleType bottleType : PotionFluid.BottleType.values()) {
-				FluidStack potionFluid = PotionFluid.of(1000, new PotionContents(potion), bottleType);
-				potionFluids.add(potionFluid);
+			
+//			for (PotionFluid.BottleType bottleType : PotionFluid.BottleType.values()) {
+//				FluidStack potionFluid = PotionFluid.of(1000, new PotionContents(potion), bottleType);
+//				potionFluids.add(potionFluid);
+//			}
+			
+			PotionContents potionContents = new PotionContents(potion);
+			
+			if (potionContents.hasEffects()) {
+				Set<Holder<MobEffect>> effectSet = new HashSet<>();
+				potionContents.forEachEffect(mei -> effectSet.add(mei.getEffect()));
+				if (!visitedEffects.add(effectSet))
+					continue;
 			}
+			
+			potionFluids.add(PotionFluid.of(1000, potionContents, PotionFluid.BottleType.REGULAR));
 		}
 		registration.addExtraIngredients(NeoForgeTypes.FLUID_STACK, potionFluids);
 	}

@@ -77,9 +77,12 @@ public class RuntimeDataGenerator {
 			ResourceLocation buttonId = base.withSuffix("button");
 			ResourceLocation signId = base.withSuffix("sign");
 
-			if (!noStrippedVariant)
+			if (!noStrippedVariant) {
 				simpleWoodRecipe(nonStrippedId, itemId);
-			simpleWoodRecipe(TagKey.create(Registries.ITEM, nonStrippedId.withSuffix("s")), planksId, 6);
+				simpleWoodRecipe(itemId, planksId, 6);
+			} else {
+				simpleWoodRecipe(TagKey.create(Registries.ITEM, nonStrippedId.withSuffix("s")), planksId, 6);
+			}
 
 			if (!path.contains("_wood") && !path.contains("_hyphae") && BuiltInRegistries.ITEM.containsKey(planksId)) {
 				simpleWoodRecipe(planksId, stairsId);

@@ -56,6 +56,9 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 
 	private boolean failedLastExport;
 	private FrogportSounds sounds;
+	
+	private ItemStack deferAnimationStart;
+	private boolean deferAnimationInward;
 
 	private AdvancementBehaviour advancements;
 
@@ -129,6 +132,11 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 	@Override
 	public void tick() {
 		super.tick();
+		
+		if (deferAnimationStart != null) {
+			startAnimation(deferAnimationStart, deferAnimationInward);
+			deferAnimationStart = null;
+		}
 
 		if (anticipationProgress.getValue() == 1)
 			anticipationProgress.updateChaseTarget(0);
@@ -303,7 +311,7 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 	protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
 		super.write(tag, registries, clientPacket);
 		tag.putFloat("PlacedYaw", passiveYaw);
-		if (animatedPackage != null) {
+		if (animatedPackage != null && isAnimationInProgress()) {
 			tag.put("AnimatedPackage", animatedPackage.saveOptional(registries));
 			tag.putBoolean("Deposit", currentlyDepositing);
 		}
@@ -322,8 +330,10 @@ public class FrogportBlockEntity extends PackagePortBlockEntity implements IHave
 		failedLastExport = tag.getBoolean("FailedLastExport");
 		if (!clientPacket)
 			animatedPackage = null;
-		if (tag.contains("AnimatedPackage"))
-			startAnimation(ItemStack.parseOptional(registries, tag.getCompound("AnimatedPackage")), tag.getBoolean("Deposit"));
+		if (tag.contains("AnimatedPackage")) {
+			deferAnimationInward = tag.getBoolean("Deposit");
+			deferAnimationStart = ItemStack.parseOptional(registries, tag.getCompound("AnimatedPackage"));
+		}
 		if (clientPacket && tag.contains("Anticipate"))
 			anticipate();
 	}

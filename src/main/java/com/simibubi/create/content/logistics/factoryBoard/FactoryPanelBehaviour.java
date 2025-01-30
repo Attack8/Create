@@ -485,7 +485,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 		sendEffect(getPanelPosition(), true);
 
 		if (!LogisticsManager.broadcastPackageRequest(network, RequestType.RESTOCK, order,
-			packager.targetInventory.getInventory(), recipeAddress))
+			packager.targetInventory.getInventory(), recipeAddress, null))
 			return;
 
 		restockerPromises.add(new RequestPromise(orderedItem));
@@ -613,7 +613,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 	}
 
 	public boolean isMissingAddress() {
-		return !targetedBy.isEmpty() && count != 0 && recipeAddress.isBlank();
+		return (!targetedBy.isEmpty() || panelBE().restocker) && count != 0 && recipeAddress.isBlank();
 	}
 
 	@Override

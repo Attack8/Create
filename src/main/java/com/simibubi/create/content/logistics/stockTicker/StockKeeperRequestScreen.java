@@ -28,6 +28,7 @@ import com.simibubi.create.content.contraptions.actors.seat.SeatEntity;
 import com.simibubi.create.content.equipment.clipboard.ClipboardEntry;
 import com.simibubi.create.content.logistics.AddressEditBox;
 import com.simibubi.create.content.logistics.BigItemStack;
+import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelScreen;
 import com.simibubi.create.content.logistics.packager.InventorySummary;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlockEntity;
@@ -72,6 +73,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.phys.AABB;
 
@@ -145,6 +147,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 
 	private Set<Integer> hiddenCategories;
 	private InventorySummary forcedEntries;
+	private boolean canRequestCraftingPackage;
 
 	public StockKeeperRequestScreen(StockKeeperRequestMenu container, Inventory inv, Component title) {
 		super(container, inv, title);
@@ -166,6 +169,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		refreshSearchNextTick = false;
 		moveToTopNextTick = false;
 		menu.screenReference = this;
+		canRequestCraftingPackage = false;
 		hiddenCategories =
 			new HashSet<>(blockEntity.hiddenCategoriesByPlayer.getOrDefault(menu.player.getUUID(), List.of()));
 
@@ -241,7 +245,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		boolean initial = addressBox == null;
 		String previouslyUsedAddress = initial ? blockEntity.previouslyUsedAddress : addressBox.getValue();
 		addressBox =
-			new AddressEditBox(this, new NoShadowFontWrapper(font), x + 27, y + windowHeight - 36, 90, 10, true);
+			new AddressEditBox(this, new NoShadowFontWrapper(font), x + 27, y + windowHeight - 36, 92, 10, true);
 		addressBox.setTextColor(0x714A40);
 		addressBox.setValue(previouslyUsedAddress);
 		addRenderableWidget(addressBox);
@@ -1298,7 +1302,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 	public void removed() {
 		BlockPos pos = blockEntity.getBlockPos();
 		CatnipServices.NETWORK.sendToServer(new PackageOrderRequestPacket(pos, new PackageOrder(Collections.emptyList()),
-			addressBox.getValue(), false));
+			addressBox.getValue(), false, PackageOrder.empty()));
 		CatnipServices.NETWORK.sendToServer(new StockKeeperCategoryHidingPacket(pos, new ArrayList<>(hiddenCategories)));
 		super.removed();
 	}
@@ -1317,9 +1321,14 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 				continue;
 			forcedEntries.add(toOrder.stack.copy(), -1 - Math.max(0, countOf - toOrder.count));
 		}
+		
+		PackageOrder craftingRequest = PackageOrder.empty();
+		if (canRequestCraftingPackage && !itemsToOrder.isEmpty() && !recipesToOrder.isEmpty())
+			if (recipesToOrder.get(0).recipe instanceof CraftingRecipe cr)
+				craftingRequest = new PackageOrder(FactoryPanelScreen.convertRecipeToPackageOrderContext(cr, itemsToOrder));
 
 		CatnipServices.NETWORK.sendToServer(new PackageOrderRequestPacket(blockEntity.getBlockPos(), new PackageOrder(itemsToOrder),
-				addressBox.getValue(), encodeRequester));
+				addressBox.getValue(), encodeRequester, craftingRequest));
 
 		itemsToOrder = new ArrayList<>();
 		recipesToOrder = new ArrayList<>();
@@ -1446,6 +1455,14 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 				}
 			}
 		}
+		
+		canRequestCraftingPackage = false;
+		if (recipesToOrder.size() != 1)
+			return;
+		for (BigItemStack ordered : itemsToOrder)
+			if (usedItems.getCountOf(ordered.stack) != ordered.count)
+				return;
+		canRequestCraftingPackage = true;
 	}
 
 	private Pair<Integer, List<List<BigItemStack>>> maxCraftable(CraftableBigItemStack cbis, InventorySummary summary,
