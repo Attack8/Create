@@ -283,9 +283,8 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 			tickActors();
 		boolean isStalled = isStalled();
 
-		if (riding.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
-			MinecartController controller = riding.getData(AllAttachmentTypes.MINECART_CONTROLLER);
-
+		MinecartController controller = riding.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+		if (controller != MinecartController.EMPTY) {
 			if (!level().isClientSide())
 				controller.setStalledExternally(isStalled);
 		} else {
@@ -500,7 +499,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	public Vec3 getVehicleAttachmentPoint(Entity entity) {
 		return entity instanceof AbstractContraptionEntity ? Vec3.ZERO : new Vec3(0,0.25,0);
 	}
-	
+
 	@Override
 	public Vec3 getAnchorVec() {
 		Vec3 anchorVec = super.getAnchorVec();

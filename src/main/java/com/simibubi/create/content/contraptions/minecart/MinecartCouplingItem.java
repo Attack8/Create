@@ -4,8 +4,8 @@ import com.simibubi.create.AllAttachmentTypes;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartController;
 
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -37,11 +37,9 @@ public class MinecartCouplingItem extends Item {
 		Player player = event.getEntity();
 		if (player == null)
 			return;
-		if (!minecart.hasData(AllAttachmentTypes.MINECART_CONTROLLER))
-			return;
 		MinecartController controller =
 			minecart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
-		if (!controller.isPresent())
+		if (controller == MinecartController.EMPTY || !controller.isPresent())
 			return;
 
 		ItemStack heldItem = player.getItemInHand(event.getHand());

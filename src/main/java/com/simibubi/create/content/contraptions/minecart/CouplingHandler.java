@@ -35,8 +35,8 @@ public class CouplingHandler {
 	public static void preventEntitiesFromMoutingOccupiedCart(EntityMountEvent event) {
 		Entity e = event.getEntityBeingMounted();
 
-		if (e.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
-			MinecartController controller = e.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+		MinecartController controller = e.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+		if (controller != MinecartController.EMPTY) {
 			if (event.getEntityMounting() instanceof AbstractContraptionEntity)
 				return;
 			if (controller.isCoupledThroughContraption()) {

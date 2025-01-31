@@ -15,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -37,7 +38,7 @@ public record MinecartControllerUpdatePacket(int entityId, @Nullable CompoundTag
 			return;
 		if (entityByID.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
 			if (nbt == null) {
-				entityByID.setData(AllAttachmentTypes.MINECART_CONTROLLER, MinecartController.EMPTY);
+				entityByID.removeData(AllAttachmentTypes.MINECART_CONTROLLER);
 			} else {
 				MinecartController controller = entityByID.getData(AllAttachmentTypes.MINECART_CONTROLLER);
 				controller.deserializeNBT(player.registryAccess(), nbt);

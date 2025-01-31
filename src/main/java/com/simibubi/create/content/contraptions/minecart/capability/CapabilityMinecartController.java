@@ -74,8 +74,8 @@ public class CapabilityMinecartController {
 
 			cartsWithCoupling.remove(uniqueID);
 
-			if (cart.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
-				MinecartController controller = cart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+			MinecartController controller = cart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+			if (controller != MinecartController.EMPTY) {
 				carts.put(uniqueID, controller);
 				if (controller.isLeadingCoupling())
 					cartsWithCoupling.add(uniqueID);
@@ -106,10 +106,9 @@ public class CapabilityMinecartController {
 		Entity entity = event.getEntity();
 		if (!(entity instanceof AbstractMinecart))
 			return;
-		if (!entity.hasData(AllAttachmentTypes.MINECART_CONTROLLER))
-			return;
 		MinecartController data = entity.getData(AllAttachmentTypes.MINECART_CONTROLLER);
-		data.tick();
+		if (data != MinecartController.EMPTY)
+			data.tick();
 	}
 
 	public static void onChunkUnloaded(ChunkEvent.Unload event) {
@@ -202,9 +201,8 @@ public class CapabilityMinecartController {
 		if (!(entity instanceof AbstractMinecart abstractMinecart))
 			return;
 
-		if (entity.hasData(AllAttachmentTypes.MINECART_CONTROLLER)) {
-			entity.getData(AllAttachmentTypes.MINECART_CONTROLLER)
-				.sendData(abstractMinecart);
-		}
+		MinecartController controller = entity.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+		if (controller != MinecartController.EMPTY)
+			controller.sendData(abstractMinecart);
 	}
 }

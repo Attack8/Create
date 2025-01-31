@@ -114,14 +114,11 @@ public class CartAssemblerBlockEntity extends SmartBlockEntity implements IDispl
 	}
 
 	protected void assemble(Level world, BlockPos pos, AbstractMinecart cart) {
-		if (!cart.getPassengers()
-			.isEmpty())
-			return;
-		if (!cart.hasData(AllAttachmentTypes.MINECART_CONTROLLER))
+		if (!cart.getPassengers().isEmpty())
 			return;
 
-		MinecartController optional = cart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
-		if (optional.isCoupledThroughContraption())
+		MinecartController controller = cart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
+		if (controller == MinecartController.EMPTY || controller.isCoupledThroughContraption())
 			return;
 
 		CartMovementMode mode = CartMovementMode.values()[movementMode.value];
