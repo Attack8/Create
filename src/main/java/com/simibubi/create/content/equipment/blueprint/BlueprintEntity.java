@@ -202,7 +202,7 @@ public class BlueprintEntity extends HangingEntity
 	@Override
 	protected void recalculateBoundingBox() {
 		if (this.direction != null && this.verticalOrientation != null) {
-			recalculateBoundingBox();
+			setBoundingBox(calculateBoundingBox(pos, direction));
 		}
 	}
 	@Override
