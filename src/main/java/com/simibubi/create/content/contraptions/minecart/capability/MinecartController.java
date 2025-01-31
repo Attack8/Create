@@ -470,7 +470,7 @@ public class MinecartController implements INBTSerializable<CompoundTag> {
 		}
 
 		private static void warn() {
-			Create.LOGGER.warn("Method called on EMPTY MinecartController");
+			Create.LOGGER.warn("Method called on EMPTY MinecartController", new Exception());
 		}
 
 		@Override

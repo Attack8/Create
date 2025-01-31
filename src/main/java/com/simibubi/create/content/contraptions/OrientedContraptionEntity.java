@@ -497,7 +497,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 
 	@Override
 	public Vec3 getVehicleAttachmentPoint(Entity entity) {
-		return entity instanceof AbstractContraptionEntity ? Vec3.ZERO : new Vec3(0,0.25,0);
+		return entity instanceof AbstractContraptionEntity ? Vec3.ZERO : new Vec3(0, 0.19, 0);
 	}
 
 	@Override

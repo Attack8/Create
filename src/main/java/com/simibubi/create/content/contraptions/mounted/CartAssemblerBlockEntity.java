@@ -118,7 +118,7 @@ public class CartAssemblerBlockEntity extends SmartBlockEntity implements IDispl
 			return;
 
 		MinecartController controller = cart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
-		if (controller == MinecartController.EMPTY || controller.isCoupledThroughContraption())
+		if (controller != MinecartController.EMPTY && controller.isCoupledThroughContraption())
 			return;
 
 		CartMovementMode mode = CartMovementMode.values()[movementMode.value];

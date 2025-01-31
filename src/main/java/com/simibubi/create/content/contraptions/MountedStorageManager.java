@@ -332,7 +332,12 @@ public class MountedStorageManager {
 			SetView<BlockPos> positions = Sets.union(this.getAllItemStorages().keySet(), this.getFluids().storages.keySet());
 			ListTag list = new ListTag();
 			for (BlockPos pos : positions) {
-				list.add(NbtUtils.writeBlockPos(pos));
+				CompoundTag tag = new CompoundTag();
+				tag.putInt("X", pos.getX());
+				tag.putInt("Y", pos.getY());
+				tag.putInt("Z", pos.getZ());
+
+				list.add(tag);
 			}
 			nbt.put("interactable_positions", list);
 		}
