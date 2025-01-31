@@ -87,7 +87,12 @@ public class MountedStorageManager {
 
 	public void initialize() {
 		if (this.isInitialized()) {
-			throw new IllegalStateException("Mounted storage has already been initialized");
+			// originally this threw an exception to try to catch mistakes.
+			// however, in the case where a Contraption is deserialized before its Entity, that would also throw,
+			// since both the deserialization and the onEntityCreated callback initialize the storage.
+			// this case occurs when placing a picked up minecart contraption.
+			// the reverse case is fine since deserialization also resets the manager first.
+			return;
 		}
 
 		this.allItemStorages = ImmutableMap.copyOf(this.itemsBuilder);

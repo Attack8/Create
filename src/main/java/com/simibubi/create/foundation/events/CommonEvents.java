@@ -1,7 +1,5 @@
 package com.simibubi.create.foundation.events;
 
-import java.util.Optional;
-
 import com.simibubi.create.AllMapDecorationTypes;
 import com.simibubi.create.Create;
 import com.simibubi.create.compat.trainmap.TrainMapSync;
@@ -53,9 +51,9 @@ import com.simibubi.create.content.redstone.displayLink.DisplayLinkBlockEntity;
 import com.simibubi.create.content.redstone.link.controller.LinkedControllerServerHandler;
 import com.simibubi.create.content.trains.entity.CarriageEntityHandler;
 import com.simibubi.create.content.trains.station.StationBlockEntity;
+import com.simibubi.create.foundation.map.StationMapDecorationRenderer;
 import com.simibubi.create.foundation.pack.DynamicPack;
 import com.simibubi.create.foundation.pack.DynamicPackSource;
-import com.simibubi.create.foundation.map.StationMapDecorationRenderer;
 import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.recipe.RuntimeDataGenerator;
 import com.simibubi.create.foundation.utility.ServerSpeedProvider;
@@ -63,15 +61,9 @@ import com.simibubi.create.foundation.utility.TickBasedCache;
 import com.simibubi.create.infrastructure.command.AllCommands;
 
 import net.createmod.catnip.data.WorldAttached;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.PackLocationInfo;
-import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.PathPackResources;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -79,9 +71,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.gui.map.RegisterMapDecorationRenderersEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -98,16 +88,12 @@ import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforgespi.language.IModFileInfo;
-import net.neoforged.neoforgespi.locating.IModFile;
 
 @EventBusSubscriber
 public class CommonEvents {
 
 	@SubscribeEvent
-	public static void onServerTick(ServerTickEvent.Post event) {
+	public static void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
 		Create.SCHEMATIC_RECEIVER.tick();
 		Create.LAGGER.tick();
 		ServerSpeedProvider.serverTick();
@@ -136,7 +122,7 @@ public class CommonEvents {
 	}
 
 	@SubscribeEvent
-	public static void onServerWorldTick(LevelTickEvent.Post event) {
+	public static void onServerWorldTick(net.neoforged.neoforge.event.tick.LevelTickEvent.Post event) {
 		Level world = event.getLevel();
 		if (world.isClientSide())
 			return;
@@ -225,11 +211,11 @@ public class CommonEvents {
 	}
 
 	@SubscribeEvent
-	public static void attachData(EntityJoinLevelEvent event) {
+	public static void attachData(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
 		CapabilityMinecartController.attach(event);
 	}
 
-	@SubscribeEvent
+	@net.neoforged.bus.api.SubscribeEvent
 	public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
 		if (!event.getEntity()
 			.isAlive())
@@ -252,23 +238,24 @@ public class CommonEvents {
 	public static class ModBusEvents {
 		@SubscribeEvent
 		public static void addPackFinders(AddPackFindersEvent event) {
-			if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-				IModFileInfo modFileInfo = ModList.get().getModFileById(Create.ID);
-				if (modFileInfo == null) {
-					Create.LOGGER.error("Could not find Create mod file info; built-in resource packs will be missing!");
-					return;
-				}
-				IModFile modFile = modFileInfo.getFile();
-				event.addRepositorySource(consumer -> {
-                    PackLocationInfo locationInfo = new PackLocationInfo(Create.asResource("legacy_copper").toString(), Component.literal("Create Legacy Copper"), PackSource.BUILT_IN, Optional.empty());
-					PathPackResources.PathResourcesSupplier resourcesSupplier = new PathPackResources.PathResourcesSupplier(modFile.findResource("resourcepacks/legacy_copper"));
-					PackSelectionConfig packSelectionConfig = new PackSelectionConfig(false, Pack.Position.TOP, false);
-					Pack pack = Pack.readMetaAndCreate(locationInfo, resourcesSupplier, PackType.CLIENT_RESOURCES, packSelectionConfig);
-					if (pack != null) {
-						consumer.accept(pack);
-					}
-				});
-			}
+			// Uncomment and rename pack to add built in resource packs
+//			if (event.getPackType() == PackType.CLIENT_RESOURCES) {
+//				IModFileInfo modFileInfo = ModList.get().getModFileById(Create.ID);
+//				if (modFileInfo == null) {
+//					Create.LOGGER.error("Could not find Create mod file info; built-in resource packs will be missing!");
+//					return;
+//				}
+//				IModFile modFile = modFileInfo.getFile();
+//				event.addRepositorySource(consumer -> {
+//                    PackLocationInfo locationInfo = new PackLocationInfo(Create.asResource("legacy_copper").toString(), Component.literal("Create Legacy Copper"), PackSource.BUILT_IN, Optional.empty());
+//					PathPackResources.PathResourcesSupplier resourcesSupplier = new PathPackResources.PathResourcesSupplier(modFile.findResource("resourcepacks/legacy_copper"));
+//					PackSelectionConfig packSelectionConfig = new PackSelectionConfig(false, Pack.Position.TOP, false);
+//					Pack pack = Pack.readMetaAndCreate(locationInfo, resourcesSupplier, PackType.CLIENT_RESOURCES, packSelectionConfig);
+//					if (pack != null) {
+//						consumer.accept(pack);
+//					}
+//				});
+//			}
 
 			if (event.getPackType() == PackType.SERVER_DATA) {
 				DynamicPack dynamicPack = new DynamicPack("create:dynamic_data", PackType.SERVER_DATA);
@@ -277,13 +264,13 @@ public class CommonEvents {
 			}
 		}
 
-		@SubscribeEvent
+		@net.neoforged.bus.api.SubscribeEvent
 		public static void onRegisterMapDecorationRenderers(RegisterMapDecorationRenderersEvent event) {
 			event.register(AllMapDecorationTypes.STATION_MAP_DECORATION.value(), new StationMapDecorationRenderer());
 		}
 
-		@SubscribeEvent
-		public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		@net.neoforged.bus.api.SubscribeEvent
+		public static void registerCapabilities(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event) {
 			ChuteBlockEntity.registerCapabilities(event);
 			SmartChuteBlockEntity.registerCapabilities(event);
 			BeltBlockEntity.registerCapabilities(event);
