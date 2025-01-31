@@ -25,6 +25,7 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -82,7 +83,7 @@ public class CapabilityMinecartController {
 					controller.sendData();
 			}
 		}
-		
+
 		queuedRemovals.clear();
 		queued.clear();
 
@@ -100,14 +101,15 @@ public class CapabilityMinecartController {
 			cartsWithCoupling.remove(uuid);
 		}
 	}
-	
+
 	public static void entityTick(EntityTickEvent.Post event) {
 		Entity entity = event.getEntity();
 		if (!(entity instanceof AbstractMinecart))
 			return;
+		if (!entity.hasData(AllAttachmentTypes.MINECART_CONTROLLER))
+			return;
 		MinecartController data = entity.getData(AllAttachmentTypes.MINECART_CONTROLLER);
-		if (data != null)
-			data.tick();
+		data.tick();
 	}
 
 	public static void onChunkUnloaded(ChunkEvent.Unload event) {

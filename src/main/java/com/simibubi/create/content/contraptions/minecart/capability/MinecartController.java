@@ -48,7 +48,6 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
  * coupled trains
  */
 public class MinecartController implements INBTSerializable<CompoundTag> {
-
 	public static final MinecartController EMPTY = new MinecartController.Empty();
 
 	public static final IAttachmentSerializer<CompoundTag, MinecartController> SERIALIZER = Type.SERIALIZER;
@@ -358,10 +357,6 @@ public class MinecartController implements INBTSerializable<CompoundTag> {
 
 	public AbstractMinecart cart() {
 		return weakRef.get();
-	}
-
-	public static MinecartController empty() {
-		return EMPTY;
 	}
 
 	private @Nullable Level getWorld() {

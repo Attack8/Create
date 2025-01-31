@@ -170,7 +170,7 @@ public class CouplingHandler {
 		boolean forward) {
 		UUID coupledCart = controller.getCoupledCart(forward);
 		if (coupledCart == null)
-			return MinecartController.empty();
+			return MinecartController.EMPTY;
 		return CapabilityMinecartController.getIfPresent(world, coupledCart);
 	}
 

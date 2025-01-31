@@ -112,7 +112,7 @@ public class CouplingCommand {
 								throw ONLY_MINECARTS_ALLOWED.create();
 
 							MinecartController cart1Capability = cart1.getData(AllAttachmentTypes.MINECART_CONTROLLER);
-							if (cart1Capability == MinecartController.empty()) {
+							if (cart1Capability == MinecartController.EMPTY) {
 								ctx.getSource()
 									.sendSuccess(() -> {
                                         return Component.literal("Minecart has no Couplings Attached");
@@ -163,7 +163,7 @@ public class CouplingCommand {
 							throw ONLY_MINECARTS_ALLOWED.create();
 
 						MinecartController capability = cart.getData(AllAttachmentTypes.MINECART_CONTROLLER);
-						if (capability == MinecartController.empty()) {
+						if (capability == MinecartController.EMPTY) {
 							ctx.getSource()
 								.sendSuccess(() -> {
                                     return Component.literal("Minecart has no Couplings Attached");
