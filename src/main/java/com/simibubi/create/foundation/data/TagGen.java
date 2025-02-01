@@ -5,7 +5,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import com.simibubi.create.AllTags;
-import com.simibubi.create.Create;
 import com.simibubi.create.foundation.data.recipe.Mods;
 import com.tterrag.registrate.builders.BlockBuilder;
 import com.tterrag.registrate.builders.ItemBuilder;
@@ -61,9 +60,8 @@ public class TagGen {
 	}
 
 	public static class CreateTagsProvider<T> {
-
-		private RegistrateTagsProvider<T> provider;
-		private Function<T, ResourceKey<T>> keyExtractor;
+		private final RegistrateTagsProvider<T> provider;
+		private final Function<T, ResourceKey<T>> keyExtractor;
 
 		public CreateTagsProvider(RegistrateTagsProvider<T> provider, Function<T, Holder.Reference<T>> refExtractor) {
 			this.provider = provider;
@@ -72,21 +70,20 @@ public class TagGen {
 
 		public CreateTagAppender<T> tag(TagKey<T> tag) {
 			TagBuilder tagbuilder = getOrCreateRawBuilder(tag);
-			return new CreateTagAppender<>(tagbuilder, keyExtractor, Create.ID);
+			return new CreateTagAppender<>(tagbuilder, keyExtractor);
 		}
 
 		public TagBuilder getOrCreateRawBuilder(TagKey<T> tag) {
 			return provider.addTag(tag).getInternalBuilder();
 		}
-
 	}
 
 	public static class CreateTagAppender<T> extends TagsProvider.TagAppender<T> {
 
-		private Function<T, ResourceKey<T>> keyExtractor;
+		private final Function<T, ResourceKey<T>> keyExtractor;
 
-		public CreateTagAppender(TagBuilder pBuilder, Function<T, ResourceKey<T>> pKeyExtractor, String modId) {
-			super(pBuilder, modId);
+		public CreateTagAppender(TagBuilder pBuilder, Function<T, ResourceKey<T>> pKeyExtractor) {
+			super(pBuilder);
 			this.keyExtractor = pKeyExtractor;
 		}
 
