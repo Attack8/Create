@@ -1,9 +1,5 @@
 package com.simibubi.create.content.fluids.potion;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
@@ -20,7 +16,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -51,28 +46,12 @@ public class PotionFluid extends VirtualFluid {
 		return fluidStack;
 	}
 
-	public static FluidStack withEffects(int amount, PotionContents potionContents) {
-		FluidStack fluidStack = of(amount, potionContents, BottleType.REGULAR);
-		appendEffects(fluidStack, potionContents.customEffects());
-		return fluidStack;
-	}
-
 	public static FluidStack addPotionToFluidStack(FluidStack fs, PotionContents potionContents) {
 		if (potionContents == PotionContents.EMPTY) {
 			fs.remove(DataComponents.POTION_CONTENTS);
 			return fs;
 		}
 		fs.set(DataComponents.POTION_CONTENTS, potionContents);
-		return fs;
-	}
-
-	public static FluidStack appendEffects(FluidStack fs, Collection<MobEffectInstance> customEffects) {
-		if (customEffects.isEmpty())
-			return fs;
-		PotionContents contents = fs.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
-		List<MobEffectInstance> effects = new ArrayList<>(customEffects);
-		effects.addAll(contents.customEffects());
-		fs.set(DataComponents.POTION_CONTENTS, new PotionContents(contents.potion(), contents.customColor(), effects));
 		return fs;
 	}
 

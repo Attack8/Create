@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import com.simibubi.create.Create;
@@ -16,8 +15,8 @@ import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
 import com.simibubi.create.foundation.mixin.accessor.PotionBrewingAccessor;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.Holder.Reference;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -81,8 +80,8 @@ public class PotionMixingRecipes {
 		for (Item container : allowedSupportedContainers) {
 			BottleType bottleType = PotionFluidHandler.bottleTypeFromItem(container);
 			for (PotionBrewing.Mix<Potion> mix : ((PotionBrewingAccessor) potionBrewing).create$getPotionMixes()) {
-				FluidStack fromFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(mix.from()), Optional.empty(), mix.from().value().getEffects()), bottleType, 1000);
-				FluidStack toFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(mix.to()), Optional.empty(), mix.to().value().getEffects()), bottleType, 1000);
+				FluidStack fromFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(mix.from()), bottleType, 1000);
+				FluidStack toFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(mix.to()), bottleType, 1000);
 
 				mixingRecipes.add(createRecipe("potion_mixing_vanilla_" + recipeIndex++, mix.ingredient(), fromFluid, toFluid));
 			}
@@ -101,11 +100,14 @@ public class PotionMixingRecipes {
 			BottleType toBottleType = PotionFluidHandler.bottleTypeFromItem(to);
 			Ingredient ingredient = mix.ingredient();
 
-			for (Map.Entry<ResourceKey<Potion>, Potion> potionEntry : BuiltInRegistries.POTION.entrySet()) {
-				Potion potion = potionEntry.getValue();
+			List<Reference<Potion>> potions = level.registryAccess()
+				.lookupOrThrow(Registries.POTION)
+				.listElements()
+				.toList();
 
-				FluidStack fromFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(BuiltInRegistries.POTION.wrapAsHolder(potion)), Optional.empty(), potion.getEffects()), fromBottleType, 1000);
-				FluidStack toFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(Optional.of(BuiltInRegistries.POTION.wrapAsHolder(potion)), Optional.empty(), potion.getEffects()), toBottleType, 1000);
+			for (Reference<Potion> potion : potions) {
+				FluidStack fromFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(potion), fromBottleType, 1000);
+				FluidStack toFluid = PotionFluidHandler.getFluidFromPotion(new PotionContents(potion), toBottleType, 1000);
 
 				mixingRecipes.add(createRecipe("potion_mixing_vanilla_" + recipeIndex++, ingredient, fromFluid, toFluid));
 			}
