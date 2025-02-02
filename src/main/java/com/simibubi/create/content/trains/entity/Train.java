@@ -173,7 +173,7 @@ public class Train {
 		this.icon = icon;
 		this.mapColorIndex = mapColorIndex;
 		this.stress = new double[carriageSpacing.size()];
-		this.name = CreateLang.translateDirect("train.unnamed");
+		this.name = name;
 		this.status = new TrainStatus(this);
 		this.doubleEnded = doubleEnded;
 

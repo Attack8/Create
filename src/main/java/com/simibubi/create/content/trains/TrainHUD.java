@@ -145,7 +145,7 @@ public class TrainHUD {
 		if (promptSize > 1) {
 
 			poseStack.pushPose();
-			poseStack.translate(promptSize / -2f + 91, -27, 100);
+			poseStack.translate(promptSize / -2f + 91, -27, 0);
 
 			AllGuiTextures.TRAIN_PROMPT_L.render(guiGraphics, -3, 0);
 			AllGuiTextures.TRAIN_PROMPT_R.render(guiGraphics, promptSize, 0);

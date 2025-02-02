@@ -20,8 +20,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -47,6 +47,20 @@ public abstract class TrainEditPacket implements CustomPacketPayload {
 				factory
 		);
 	}
+	
+	public void handleSided(Player sender) {
+		Level level = sender == null ? null : sender.level();
+		Train train = Create.RAILWAYS.sided(level).trains.get(id);
+		if (train == null)
+			return;
+		if (!name.isBlank()) {
+			train.name = Component.literal(name);
+		}
+		train.icon = TrainIconType.byId(iconType);
+		train.mapColorIndex = mapColor;
+		if (sender != null)
+			CatnipServices.NETWORK.sendToAllClients(new TrainEditReturnPacket(id, name, iconType, mapColor));
+	}
 
 	public static class Serverbound extends TrainEditPacket implements ServerboundPacketPayload {
 		public static final StreamCodec<ByteBuf, Serverbound> STREAM_CODEC = codec(Serverbound::new);
@@ -57,17 +71,7 @@ public abstract class TrainEditPacket implements CustomPacketPayload {
 
 		@Override
 		public void handle(ServerPlayer sender) {
-			Level level = sender == null ? null : sender.level();
-			Train train = Create.RAILWAYS.sided(level).trains.get(id);
-			if (train == null)
-				return;
-			if (!name.isBlank()) {
-                train.name = Component.literal(name);
-            }
-			train.icon = TrainIconType.byId(iconType);
-			train.mapColorIndex = mapColor;
-			if (sender != null)
-				CatnipServices.NETWORK.sendToAllClients(new TrainEditReturnPacket(id, name, iconType, mapColor));
+			handleSided(sender);
 		}
 
 		@Override
@@ -86,6 +90,7 @@ public abstract class TrainEditPacket implements CustomPacketPayload {
 		@Override
 		@OnlyIn(Dist.CLIENT)
 		public void handle(LocalPlayer player) {
+			handleSided(null);
 		}
 
 		@Override

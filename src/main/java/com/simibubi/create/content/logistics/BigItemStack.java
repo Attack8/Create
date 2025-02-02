@@ -55,7 +55,7 @@ public class BigItemStack {
 		if (obj == this)
 			return true;
 		if (obj instanceof BigItemStack other)
-			return Objects.equals(stack, other.stack) && count == other.count;
+			return ItemStack.isSameItemSameComponents(stack, other.stack) && count == other.count;
 		return false;
 	}
 
