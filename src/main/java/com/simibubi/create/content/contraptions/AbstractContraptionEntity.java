@@ -37,12 +37,12 @@ import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.collision.Matrix3d;
 import com.simibubi.create.foundation.mixin.accessor.ServerLevelAccessor;
-import net.createmod.catnip.platform.CatnipServices;
 
 import dev.engine_room.flywheel.api.backend.BackendManager;
 import io.netty.handler.codec.DecoderException;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -93,8 +93,6 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	protected boolean initialized;
 	protected boolean prevPosInvalid;
 	private boolean skipActorStop;
-	// temporary debug thing
-	private boolean receivedSpawnData;
 
 	/*
 	 * staleTicks are a band-aid to prevent a frame or two of missing blocks between
@@ -109,10 +107,6 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		super(entityTypeIn, worldIn);
 		prevPosInvalid = true;
 		collidingEntities = new IdentityHashMap<>();
-	}
-
-	public boolean hasReceivedSpawnData() {
-		return receivedSpawnData;
 	}
 
 	protected void setContraption(Contraption contraption) {
@@ -611,9 +605,9 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		CompoundTag compound = new CompoundTag();
 		writeAdditional(compound, registryFriendlyByteBuf.registryAccess(), true);
 
-		if (ContraptionData.isTooLargeForSync(compound)) {
+		if (!CatnipServices.PLATFORM.getLoader().isNeoForge() && ContraptionData.isTooLargeForSync(compound)) {
 			String info = getContraption().getType().id + " @" + position() + " (" + getStringUUID() + ")";
-			Create.LOGGER.warn("Could not send Contraption Spawn Data (Packet too big): " + info);
+			Create.LOGGER.warn("Could not send Contraption Spawn Data (Packet too big): {}", info);
 			compound = null;
 		}
 
@@ -637,10 +631,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		CompoundTag nbt = readAnySizeNbt(registryFriendlyByteBuf);
 		if (nbt != null) {
 			readAdditional(nbt, true);
-		} else {
-			Create.LOGGER.warn("Null spawn data for AbstractContraptionEntity");
 		}
-		receivedSpawnData = true;
 	}
 
 	@Override
