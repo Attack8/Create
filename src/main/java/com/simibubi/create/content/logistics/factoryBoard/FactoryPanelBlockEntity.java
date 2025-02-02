@@ -24,6 +24,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -71,7 +72,7 @@ public class FactoryPanelBlockEntity extends SmartBlockEntity {
 			return;
 
 		if (activePanels() == 0)
-			level.destroyBlock(worldPosition, false);
+			level.setBlockAndUpdate(worldPosition, Blocks.AIR.defaultBlockState());
 
 		if (AllBlocks.FACTORY_GAUGE.has(getBlockState())) {
 			boolean shouldBeRestocker = AllBlocks.PACKAGER

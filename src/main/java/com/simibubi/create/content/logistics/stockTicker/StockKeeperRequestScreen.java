@@ -562,8 +562,8 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 			ms.popPose();
 		}
 
-		if (itemsToOrder.size() > 8) {
-			graphics.drawString(font, Component.literal("[+" + (itemsToOrder.size() - 8) + "]"), x + windowWidth - 40,
+		if (itemsToOrder.size() > 9) {
+			graphics.drawString(font, Component.literal("[+" + (itemsToOrder.size() - 9) + "]"), x + windowWidth - 40,
 				orderY + 21, 0xF8F8EC);
 		}
 

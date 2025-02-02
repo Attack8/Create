@@ -1208,12 +1208,11 @@ public abstract class Contraption {
 
 			BoundingBox boundingBox = optionalBoundingBox.get();
 			BlockPos newControllerPos = new BlockPos(boundingBox.minX(), boundingBox.minY(), boundingBox.minZ());
-			BlockPos newLocalPos = toLocalPos(newControllerPos);
 			BlockPos otherPos = transform.unapply(newControllerPos);
 
 			multiblockParts.forEach(info -> info.nbt().put("Controller", NbtUtils.writeBlockPos(newControllerPos)));
 
-			if (controllerPos.equals(newLocalPos))
+			if (controllerPos.equals(otherPos))
 				return;
 
 			// swap nbt data to the new controller position

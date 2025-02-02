@@ -3,8 +3,6 @@ package com.simibubi.create.content.kinetics.steamEngine;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 
@@ -27,18 +25,17 @@ public class SteamEngineVisual extends AbstractBlockEntityVisual<SteamEngineBloc
 	protected final TransformedInstance linkage;
 	protected final TransformedInstance connector;
 
-	@Nullable
-	private Float lastAngle = null;
+	private Float lastAngle = Float.NaN;
 
 	public SteamEngineVisual(VisualizationContext context, SteamEngineBlockEntity blockEntity, float partialTick) {
 		super(context, blockEntity, partialTick);
 
 		piston = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.ENGINE_PISTON))
-				.createInstance();
+			.createInstance();
 		linkage = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.ENGINE_LINKAGE))
-				.createInstance();
+			.createInstance();
 		connector = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.ENGINE_CONNECTOR))
-				.createInstance();
+			.createInstance();
 
 		animate();
 	}

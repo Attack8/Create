@@ -2639,7 +2639,7 @@ public class AllBlocks {
 					.add(LootItem.lootTableItem(AllBlocks.CARDBOARD_BLOCK.asItem()))))))
 			.item(CardboardBlockItem::new)
 			.build()
-			.lang("Bound block of Cardboard")
+			.lang("Bound Block of Cardboard")
 			.register();
 
 	public static final BlockEntry<ExperienceBlock> EXPERIENCE_BLOCK =

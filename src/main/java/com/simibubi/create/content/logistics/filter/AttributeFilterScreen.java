@@ -14,7 +14,6 @@ import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.widget.IconButton;
-import com.simibubi.create.foundation.gui.widget.Indicator;
 import com.simibubi.create.foundation.gui.widget.Label;
 import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
 import com.simibubi.create.foundation.utility.CreateLang;
@@ -51,7 +50,6 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 	private Component selectedT = CreateLang.translateDirect(PREFIX + "selected_attributes");
 
 	private IconButton whitelistDis, whitelistCon, blacklist;
-	private Indicator whitelistDisIndicator, whitelistConIndicator, blacklistIndicator;
 	private IconButton add;
 	private IconButton addInverted;
 
@@ -73,34 +71,29 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		int x = leftPos;
 		int y = topPos;
 
-		whitelistDis = new IconButton(x + 47, y + 61, AllIcons.I_WHITELIST_OR);
+		whitelistDis = new IconButton(x + 38, y + 61, AllIcons.I_WHITELIST_OR);
 		whitelistDis.withCallback(() -> {
 			menu.whitelistMode = AttributeFilterWhitelistMode.WHITELIST_DISJ;
 			sendOptionUpdate(Option.WHITELIST);
 		});
 		whitelistDis.setToolTip(allowDisN);
-		whitelistCon = new IconButton(x + 65, y + 61, AllIcons.I_WHITELIST_AND);
+		whitelistCon = new IconButton(x + 56, y + 61, AllIcons.I_WHITELIST_AND);
 		whitelistCon.withCallback(() -> {
 			menu.whitelistMode = AttributeFilterWhitelistMode.WHITELIST_CONJ;
 			sendOptionUpdate(Option.WHITELIST2);
 		});
 		whitelistCon.setToolTip(allowConN);
-		blacklist = new IconButton(x + 83, y + 61, AllIcons.I_WHITELIST_NOT);
+		blacklist = new IconButton(x + 74, y + 61, AllIcons.I_WHITELIST_NOT);
 		blacklist.withCallback(() -> {
 			menu.whitelistMode = AttributeFilterWhitelistMode.BLACKLIST;
 			sendOptionUpdate(Option.BLACKLIST);
 		});
 		blacklist.setToolTip(denyN);
 
-		whitelistDisIndicator = new Indicator(x + 47, y + 55, CommonComponents.EMPTY);
-		whitelistConIndicator = new Indicator(x + 65, y + 55, CommonComponents.EMPTY);
-		blacklistIndicator = new Indicator(x + 83, y + 55, CommonComponents.EMPTY);
+		addRenderableWidgets(blacklist, whitelistCon, whitelistDis);
 
-		addRenderableWidgets(blacklist, whitelistCon, whitelistDis, blacklistIndicator, whitelistConIndicator,
-			whitelistDisIndicator);
-
-		addRenderableWidget(add = new IconButton(x + 182, y + 23, AllIcons.I_ADD));
-		addRenderableWidget(addInverted = new IconButton(x + 200, y + 23, AllIcons.I_ADD_INVERTED_ATTRIBUTE));
+		addRenderableWidget(add = new IconButton(x + 182, y + 26, AllIcons.I_ADD));
+		addRenderableWidget(addInverted = new IconButton(x + 200, y + 26, AllIcons.I_ADD_INVERTED_ATTRIBUTE));
 		add.withCallback(() -> {
 			handleAddedAttibute(false);
 		});
@@ -112,9 +105,9 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 
 		handleIndicators();
 
-		attributeSelectorLabel = new Label(x + 43, y + 28, CommonComponents.EMPTY).colored(0xF3EBDE)
+		attributeSelectorLabel = new Label(x + 43, y + 31, CommonComponents.EMPTY).colored(0xF3EBDE)
 			.withShadow();
-		attributeSelector = new SelectionScrollInput(x + 39, y + 23, 137, 18);
+		attributeSelector = new SelectionScrollInput(x + 39, y + 26, 137, 18);
 		attributeSelector.forOptions(Arrays.asList(CommonComponents.EMPTY));
 		attributeSelector.removeCallback();
 		referenceItemChanged(menu.ghostInventory.getStackInSlot(0));
@@ -189,7 +182,7 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		PoseStack matrixStack = graphics.pose();
 		matrixStack.pushPose();
 		matrixStack.translate(0, 0, 150);
-		graphics.renderItemDecorations(font, stack, leftPos + 22, topPos + 59,
+		graphics.renderItemDecorations(font, stack, leftPos + 16, topPos + 62,
 			String.valueOf(selectedAttributes.size() - 1));
 		matrixStack.popPose();
 
@@ -224,11 +217,6 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 	@Override
 	protected List<MutableComponent> getTooltipDescriptions() {
 		return Arrays.asList(denyDESC.plainCopy(), allowConDESC.plainCopy(), allowDisDESC.plainCopy());
-	}
-
-	@Override
-	protected List<Indicator> getIndicators() {
-		return Arrays.asList(blacklistIndicator, whitelistConIndicator, whitelistDisIndicator);
 	}
 
 	protected boolean handleAddedAttibute(boolean inverted) {
@@ -269,17 +257,6 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		if (button == whitelistDis)
 			return menu.whitelistMode != AttributeFilterWhitelistMode.WHITELIST_DISJ;
 		return true;
-	}
-
-	@Override
-	protected boolean isIndicatorOn(Indicator indicator) {
-		if (indicator == blacklistIndicator)
-			return menu.whitelistMode == AttributeFilterWhitelistMode.BLACKLIST;
-		if (indicator == whitelistConIndicator)
-			return menu.whitelistMode == AttributeFilterWhitelistMode.WHITELIST_CONJ;
-		if (indicator == whitelistDisIndicator)
-			return menu.whitelistMode == AttributeFilterWhitelistMode.WHITELIST_DISJ;
-		return false;
 	}
 
 }
