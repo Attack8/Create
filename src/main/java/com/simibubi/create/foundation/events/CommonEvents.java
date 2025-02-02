@@ -23,10 +23,10 @@ import com.simibubi.create.content.fluids.tank.FluidTankBlockEntity;
 import com.simibubi.create.content.kinetics.belt.BeltBlockEntity;
 import com.simibubi.create.content.kinetics.belt.BeltHelper;
 import com.simibubi.create.content.kinetics.chainConveyor.ServerChainConveyorHandler;
-import com.simibubi.create.content.kinetics.drill.CobbleGenOptimisation;
 import com.simibubi.create.content.kinetics.crafter.MechanicalCrafterBlockEntity;
 import com.simibubi.create.content.kinetics.crusher.CrushingWheelControllerBlockEntity;
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity;
+import com.simibubi.create.content.kinetics.drill.CobbleGenOptimisation;
 import com.simibubi.create.content.kinetics.gauge.SpeedGaugeBlockEntity;
 import com.simibubi.create.content.kinetics.gauge.StressGaugeBlockEntity;
 import com.simibubi.create.content.kinetics.millstone.MillstoneBlockEntity;
@@ -135,9 +135,8 @@ public class CommonEvents {
 		Create.LOGISTICS.tick(world);
 	}
 
-	// FIXME 1.21: should this be pre or post?
 	@SubscribeEvent
-	public static void onEntityTick(EntityTickEvent.Post event) {
+	public static void onEntityTick(EntityTickEvent.Pre event) {
 		CapabilityMinecartController.entityTick(event);
 
 		if (event.getEntity() instanceof LivingEntity livingEntity) {

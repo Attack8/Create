@@ -18,6 +18,7 @@ import com.simibubi.create.content.contraptions.minecart.capability.MinecartCont
 import com.simibubi.create.content.contraptions.mounted.CartAssemblerBlockEntity.CartMovementMode;
 import com.simibubi.create.content.contraptions.mounted.MountedContraption;
 import com.simibubi.create.foundation.item.ItemHelper;
+import com.simibubi.create.foundation.mixin.accessor.MinecartFurnaceAccessor;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.data.Couple;
@@ -48,7 +49,6 @@ import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.phys.Vec3;
-
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -68,7 +68,6 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 
 	protected Vec3 motionBeforeStall;
 	protected boolean forceAngle;
-	private boolean isSerializingFurnaceCart;
 	private boolean attachedExtraInventories;
 	private boolean manuallyPlaced;
 
@@ -85,7 +84,6 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		super(type, world);
 		motionBeforeStall = Vec3.ZERO;
 		attachedExtraInventories = false;
-		isSerializingFurnaceCart = false;
 		nonDamageTicks = 10;
 	}
 
@@ -408,17 +406,13 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	protected void powerFurnaceCartWithFuelFromStorage(Entity riding) {
 		if (!(riding instanceof MinecartFurnace furnaceCart))
 			return;
+		if (!(riding instanceof MinecartFurnaceAccessor furnaceCartAccessor))
+			return;
 
-		// Notify to not trigger serialization side-effects
-		isSerializingFurnaceCart = true;
-		CompoundTag nbt = new CompoundTag();
-		furnaceCart.saveAsPassenger(nbt);
-		isSerializingFurnaceCart = false;
-
-		int fuel = nbt.getInt("Fuel");
+		int fuel = furnaceCartAccessor.create$getFuel();
 		int fuelBefore = fuel;
-		double pushX = nbt.getDouble("PushX");
-		double pushZ = nbt.getDouble("PushZ");
+		double pushX = furnaceCart.xPush;
+		double pushZ = furnaceCart.zPush;
 
 		int i = Mth.floor(furnaceCart.getX());
 		int j = Mth.floor(furnaceCart.getY());
@@ -444,10 +438,9 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		}
 
 		if (fuel != fuelBefore || pushX != 0 || pushZ != 0) {
-			nbt.putInt("Fuel", fuel);
-			nbt.putDouble("PushX", 0);
-			nbt.putDouble("PushZ", 0);
-			furnaceCart.load(nbt);
+			furnaceCart.xPush = pushX;
+			furnaceCart.zPush = pushZ;
+			furnaceCartAccessor.create$setFuel(fuel);
 		}
 	}
 
@@ -478,11 +471,6 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 			return;
 		coupledCarts.map(MinecartController::cart)
 			.forEach(mc::addExtraInventories);
-	}
-
-	@Override
-	public CompoundTag saveWithoutId(CompoundTag nbt) {
-		return isSerializingFurnaceCart ? nbt : super.saveWithoutId(nbt);
 	}
 
 	@Nullable
