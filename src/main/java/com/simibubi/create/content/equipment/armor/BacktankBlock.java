@@ -7,8 +7,8 @@ import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllEnchantments;
 import com.simibubi.create.AllShapes;
-import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.api.schematic.requirement.ISpecialBlockItemRequirement;
+import com.simibubi.create.content.kinetics.base.HorizontalKineticBlock;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement.ItemUseType;
 import com.simibubi.create.foundation.block.IBE;
@@ -48,6 +48,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.neoforge.common.util.FakePlayer;
 
 public class BacktankBlock extends HorizontalKineticBlock implements IBE<BacktankBlockEntity>, SimpleWaterloggedBlock, ISpecialBlockItemRequirement {
@@ -131,16 +132,15 @@ public class BacktankBlock extends HorizontalKineticBlock implements IBE<Backtan
 		if (!(blockEntity instanceof BacktankBlockEntity bbe))
 			return lootDrops;
 
-		DataComponentPatch components = bbe.getComponentPatch();
+		DataComponentPatch components = bbe.getComponentPatch()
+			.forget(c -> c.equals(AllDataComponents.BACKTANK_AIR));
 		if (components.isEmpty())
 			return lootDrops;
 
 		return lootDrops.stream()
-			.map(stack -> {
-				if (!(stack.getItem() instanceof BacktankItem))
-					return stack;
-
-				return new ItemStack(stack.getItemHolder(), stack.getCount(), components);
+			.peek(stack -> {
+				if (stack.getItem() instanceof BacktankItem)
+					stack.applyComponents(components);
 			})
 			.toList();
 	}
