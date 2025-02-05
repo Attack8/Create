@@ -117,7 +117,7 @@ public class PressingRecipeGen extends ProcessingRecipeGen {
 
 	GeneratedRecipe iePlates(String... metals) {
 		for (String metal : metals)
-			create(Mods.IE.recipeId("plate_" + metal), b -> b.require(AllTags.forgeItemTag("ingots/" + metal))
+			create(Mods.IE.recipeId("plate_" + metal), b -> b.require(AllTags.commonItemTag("ingots/" + metal))
 				.output(Mods.IE, "plate_" + metal)
 				.whenModLoaded(Mods.IE.getId()));
 		return null;

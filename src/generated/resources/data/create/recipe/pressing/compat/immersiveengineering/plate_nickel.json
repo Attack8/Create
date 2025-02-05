@@ -1,14 +1,14 @@
 {
-  "type": "create:pressing",
-  "conditions": [
+  "neoforge:conditions": [
     {
-      "type": "forge:mod_loaded",
+      "type": "neoforge:mod_loaded",
       "modid": "immersiveengineering"
     }
   ],
+  "type": "create:pressing",
   "ingredients": [
     {
-      "tag": "forge:ingots/nickel"
+      "tag": "c:ingots/nickel"
     }
   ],
   "results": [
