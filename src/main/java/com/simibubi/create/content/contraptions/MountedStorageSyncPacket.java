@@ -12,12 +12,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 
 public record MountedStorageSyncPacket(int contraptionId, Map<BlockPos, MountedItemStorage> items, Map<BlockPos, MountedFluidStorage> fluids) implements ClientboundPacketPayload {
-	public static StreamCodec<FriendlyByteBuf, MountedStorageSyncPacket> STREAM_CODEC = StreamCodec.composite(
+	public static StreamCodec<RegistryFriendlyByteBuf, MountedStorageSyncPacket> STREAM_CODEC = StreamCodec.composite(
 		ByteBufCodecs.INT, MountedStorageSyncPacket::contraptionId,
 	    ByteBufCodecs.map(HashMap::new, BlockPos.STREAM_CODEC, MountedItemStorage.STREAM_CODEC), MountedStorageSyncPacket::items,
 	    ByteBufCodecs.map(HashMap::new, BlockPos.STREAM_CODEC, MountedFluidStorage.STREAM_CODEC), MountedStorageSyncPacket::fluids,
