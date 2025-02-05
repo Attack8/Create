@@ -457,7 +457,7 @@ public class Train {
 		} else if (speed != 0)
 			status.trackOK();
 
-		updateNavigationTarget(distance);
+		updateNavigationTarget(level, distance);
 	}
 
 	public IEdgePointListener frontSignalListener() {
@@ -544,7 +544,7 @@ public class Train {
 		};
 	}
 
-	private void updateNavigationTarget(double distance) {
+	private void updateNavigationTarget(Level level, double distance) {
 		if (navigation.destination == null)
 			return;
 
@@ -578,7 +578,7 @@ public class Train {
 			return;
 
 		if (!navigatingManually && fullRefresh) {
-			DiscoveredPath preferredPath = runtime.startCurrentInstruction();
+			DiscoveredPath preferredPath = runtime.startCurrentInstruction(level);
 			if (preferredPath != null){
 				navigation.startNavigation(preferredPath);
 			}
@@ -798,8 +798,10 @@ public class Train {
 		if (currentStation != null) {
 			currentStation.cancelReservation(this);
 			BlockPos blockEntityPos = currentStation.getBlockEntityPos();
-			if (level.getBlockEntity(blockEntityPos) instanceof StationBlockEntity sbe)
+			if (level.getBlockEntity(blockEntityPos) instanceof StationBlockEntity sbe) {
 				sbe.lastDisassembledTrainName = name.copy();
+				sbe.lastDisassembledMapColorIndex = mapColorIndex;
+			}
 		}
 
 		Create.RAILWAYS.removeTrain(id);

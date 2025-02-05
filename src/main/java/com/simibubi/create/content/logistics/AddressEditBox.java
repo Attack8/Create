@@ -32,7 +32,7 @@ public class AddressEditBox extends EditBox {
 		destinationSuggestions.setAllowSuggestions(true);
 		destinationSuggestions.updateCommandInfo();
 		mainResponder = t -> {
-			if (t.equals(prevValue))
+			if (!t.equals(prevValue))
 				destinationSuggestions.updateCommandInfo();
 			prevValue = t;
 		};

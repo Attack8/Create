@@ -120,6 +120,7 @@ public class StationBlockEntity extends SmartBlockEntity implements ITransformab
 	boolean flagFlipped;
 
 	public Component lastDisassembledTrainName;
+	public int lastDisassembledMapColorIndex;
 
 	public StationBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
@@ -169,6 +170,7 @@ public class StationBlockEntity extends SmartBlockEntity implements ITransformab
 			trainPresent = tag.getBoolean("ForceFlag");
 		if (tag.contains("PrevTrainName"))
 			lastDisassembledTrainName = Component.Serializer.fromJson(tag.getString("PrevTrainName"), registries);
+		lastDisassembledMapColorIndex = tag.getInt("PrevTrainColor");
 
 		if (!clientPacket)
 			return;
@@ -195,6 +197,7 @@ public class StationBlockEntity extends SmartBlockEntity implements ITransformab
 
 		if (lastDisassembledTrainName != null)
 			tag.putString("PrevTrainName", Component.Serializer.toJson(lastDisassembledTrainName, registries));
+		tag.putInt("PrevTrainColor", lastDisassembledMapColorIndex);
 
 		super.write(tag, registries, clientPacket);
 
@@ -405,7 +408,7 @@ public class StationBlockEntity extends SmartBlockEntity implements ITransformab
 				if (train.navigation.destination != station)
 					continue;
 
-				DiscoveredPath preferredPath = train.runtime.startCurrentInstruction();
+				DiscoveredPath preferredPath = train.runtime.startCurrentInstruction(level);
 				train.navigation.startNavigation(
 					preferredPath != null ? preferredPath : train.navigation.findPathTo(station, Double.MAX_VALUE));
 			}
@@ -850,7 +853,9 @@ public class StationBlockEntity extends SmartBlockEntity implements ITransformab
 
 		if (lastDisassembledTrainName != null) {
 			train.name = lastDisassembledTrainName;
+			train.mapColorIndex = lastDisassembledMapColorIndex;
 			lastDisassembledTrainName = null;
+			lastDisassembledMapColorIndex = 0;
 		}
 
 		for (int i = 0; i < contraptions.size(); i++) {

@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.Block;
 
 public enum AllToolMaterials implements Tier {
 	CARDBOARD(Create.asResource("cardboard")
-		.toString(), 200, 1, 2, 1, () -> Ingredient.of(AllItems.CARDBOARD.asItem()))
+		.toString(), 0, 1, 2, 1, () -> Ingredient.of(AllItems.CARDBOARD.asItem()))
 	;
 
 	public final String name;
@@ -26,7 +26,7 @@ public enum AllToolMaterials implements Tier {
 	private final int enchantValue;
 	private final Supplier<Ingredient> repairMaterial;
 
-	AllToolMaterials(String name, int uses, float speed, float damageBonus, int enchantValue,
+	private AllToolMaterials(String name, int uses, float speed, float damageBonus, int enchantValue,
 		Supplier<Ingredient> repairMaterial) {
 		this.name = name;
 		this.uses = uses;

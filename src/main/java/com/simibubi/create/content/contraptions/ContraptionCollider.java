@@ -139,6 +139,10 @@ public class ContraptionCollider {
 			float yawOffset = rotation.getYawOffset();
 			Vec3 position = getWorldToLocalTranslation(entity, anchorVec, rotationMatrix, yawOffset);
 
+			// Make player 'shorter' to make it less likely to become stuck
+			if (playerType == PlayerType.CLIENT && entityBounds.getYsize() > 1)
+				entityBounds = entityBounds.contract(0, 2 / 16f, 0);
+			
 			motion = motion.subtract(contraptionMotion);
 			motion = rotationMatrix.transform(motion);
 

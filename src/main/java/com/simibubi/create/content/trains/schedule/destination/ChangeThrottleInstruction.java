@@ -19,6 +19,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -89,7 +90,7 @@ public class ChangeThrottleInstruction extends ScheduleInstruction {
 
 	@Override
 	@Nullable
-	public DiscoveredPath start(ScheduleRuntime runtime) {
+	public DiscoveredPath start(ScheduleRuntime runtime, Level level) {
 		runtime.train.throttle = getThrottle();
 		runtime.state = State.PRE_TRANSIT;
 		runtime.currentEntry++;

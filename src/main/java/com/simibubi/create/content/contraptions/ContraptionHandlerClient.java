@@ -90,6 +90,10 @@ public class ContraptionHandlerClient {
 		Collection<WeakReference<AbstractContraptionEntity>> contraptions =
 			ContraptionHandler.loadedContraptions.get(mc.level)
 				.values();
+		
+		double bestDistance = Double.MAX_VALUE;
+		BlockHitResult bestResult = null;
+		AbstractContraptionEntity bestEntity = null;
 
 		for (WeakReference<AbstractContraptionEntity> ref : contraptions) {
 			AbstractContraptionEntity contraptionEntity = ref.get();
@@ -102,20 +106,30 @@ public class ContraptionHandlerClient {
 			BlockHitResult rayTraceResult = rayTraceContraption(origin, target, contraptionEntity);
 			if (rayTraceResult == null)
 				continue;
-
-			InteractionHand hand = event.getHand();
-			Direction face = rayTraceResult.getDirection();
-			BlockPos pos = rayTraceResult.getBlockPos();
-
-			if (contraptionEntity.handlePlayerInteraction(player, pos, face, hand)) {
-				CatnipServices.NETWORK.sendToServer(new ContraptionInteractionPacket(contraptionEntity, hand, pos, face));
-			} else if (handleSpecialInteractions(contraptionEntity, player, pos, face, hand)) {
-			} else
+			
+			double distance = contraptionEntity.toGlobalVector(rayTraceResult.getLocation(), 1).distanceTo(origin);
+			if (distance > bestDistance)
 				continue;
-
-			event.setCanceled(true);
-			event.setSwingHand(false);
+			
+			bestResult = rayTraceResult;
+			bestDistance = distance;
+			bestEntity = contraptionEntity;
 		}
+		
+		if (bestResult == null)
+			return;
+		
+		InteractionHand hand = event.getHand();
+		Direction face = bestResult.getDirection();
+		BlockPos pos = bestResult.getBlockPos();
+		
+		if (bestEntity.handlePlayerInteraction(player, pos, face, hand)) {
+			CatnipServices.NETWORK.sendToServer(new ContraptionInteractionPacket(bestEntity, hand, pos, face));
+		} else
+			handleSpecialInteractions(bestEntity, player, pos, face, hand);
+
+		event.setCanceled(true);
+		event.setSwingHand(false);
 	}
 
 	private static boolean handleSpecialInteractions(AbstractContraptionEntity contraptionEntity, Player player,

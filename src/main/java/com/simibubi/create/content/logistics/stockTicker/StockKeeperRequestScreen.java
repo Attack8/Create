@@ -1010,6 +1010,18 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 
 	@Override
 	public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+		boolean lmb = pButton == GLFW.GLFW_MOUSE_BUTTON_LEFT;
+		boolean rmb = pButton == GLFW.GLFW_MOUSE_BUTTON_RIGHT;
+		
+		// Search
+		if (rmb && searchBox.isMouseOver(pMouseX, pMouseY)) {
+			searchBox.setValue("");
+			refreshSearchNextTick = true;
+			moveToTopNextTick = true;
+			searchBox.setFocused(true);
+			return true;
+		}
+		
 		if (addressBox.isFocused()) {
 			if (addressBox.isHovered())
 				return addressBox.mouseClicked(pMouseX, pMouseY, pButton);
@@ -1020,9 +1032,6 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 				return searchBox.mouseClicked(pMouseX, pMouseY, pButton);
 			searchBox.setFocused(false);
 		}
-
-		boolean lmb = pButton == GLFW.GLFW_MOUSE_BUTTON_LEFT;
-		boolean rmb = pButton == GLFW.GLFW_MOUSE_BUTTON_RIGHT;
 
 		// Scroll bar
 		int barX = itemsX + cols * colWidth - 1;
@@ -1043,15 +1052,6 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 			isLocked = !isLocked;
 			CatnipServices.NETWORK.sendToServer(new StockKeeperLockPacket(blockEntity.getBlockPos(), isLocked));
 			playUiSound(SoundEvents.UI_BUTTON_CLICK.value(), 1, 1);
-			return true;
-		}
-
-		// Search
-		if (rmb && searchBox.isMouseOver(pMouseX, pMouseY)) {
-			searchBox.setValue("");
-			refreshSearchNextTick = true;
-			moveToTopNextTick = true;
-			searchBox.setFocused(true);
 			return true;
 		}
 
@@ -1145,6 +1145,8 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		if (addressBox.mouseScrolled(mouseX, mouseY, scrollX, scrollY))
+			return true;
 		Couple<Integer> hoveredSlot = getHoveredSlot((int) mouseX, (int) mouseY);
 		boolean noHover = hoveredSlot == noneHovered;
 
