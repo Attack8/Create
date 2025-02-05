@@ -132,16 +132,27 @@ public class TrackTargetingBlockItem extends BlockItem {
 		}
 
 		if (bezier) {
-			BezierTrackPointLocation bezierTrackPointLocation = stack.get(AllDataComponents.TRACK_TARGETING_ITEM_BEZIER);
-			blockEntityData.put("Bezier", CatnipCodecUtils.encode(BezierTrackPointLocation.CODEC, bezierTrackPointLocation).orElseThrow());
+			BezierTrackPointLocation bezierTrackPointLocation =
+				stack.get(AllDataComponents.TRACK_TARGETING_ITEM_BEZIER);
+			CompoundTag bezierNbt = new CompoundTag();
+			bezierNbt.putInt("Segment", bezierTrackPointLocation.segment());
+			bezierNbt.put("Key", NbtUtils.writeBlockPos(bezierTrackPointLocation.curveTarget()
+				.subtract(placedPos)));
+			blockEntityData.put("Bezier", bezierNbt);
 		}
 
 		blockEntityData.put("TargetTrack", NbtUtils.writeBlockPos(selectedPos.subtract(placedPos)));
 		blockEntityData.putString("id", BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
 		BlockEntity.addEntityType(blockEntityData, ((IBE<?>) this.getBlock()).getBlockEntityType());
+		
 		stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityData));
+		stack.remove(AllDataComponents.TRACK_TARGETING_ITEM_SELECTED_POS);
+		stack.remove(AllDataComponents.TRACK_TARGETING_ITEM_SELECTED_DIRECTION);
+		stack.remove(AllDataComponents.TRACK_TARGETING_ITEM_BEZIER);
 
 		InteractionResult useOn = super.useOn(pContext);
+		stack.remove(DataComponents.BLOCK_ENTITY_DATA);
+		
 		if (level.isClientSide || useOn == InteractionResult.FAIL)
 			return useOn;
 

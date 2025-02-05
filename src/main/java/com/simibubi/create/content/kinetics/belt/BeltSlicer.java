@@ -302,6 +302,8 @@ public class BeltSlicer {
 							mergedBeltLength - transportedItemStack.prevBeltPosition;
 					}
 				}
+				
+				beltChain = BeltBlock.getBeltChain(world, mergedController.getBlockPos());
 			}
 		}
 

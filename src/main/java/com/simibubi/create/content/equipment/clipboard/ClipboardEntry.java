@@ -115,7 +115,7 @@ public class ClipboardEntry {
 		if (this == o) return true;
 		if (!(o instanceof ClipboardEntry that)) return false;
 
-		return checked == that.checked && text.equals(that.text) && icon.equals(that.icon);
+		return checked == that.checked && text.equals(that.text) && ItemStack.isSameItemSameComponents(icon, that.icon);
 	}
 
 	@Override

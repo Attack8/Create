@@ -144,11 +144,10 @@ public class ControlledContraptionEntity extends AbstractContraptionEntity {
 	@Override
 	public void teleportTo(double p_70634_1_, double p_70634_3_, double p_70634_5_) {}
 
+	// Always noop this. Controlled Contraptions are given their position on the client from the BE
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public void lerpTo(double pX, double pY, double pZ, float pYRot, float pXRot, int pSteps) {
-		super.lerpTo(pX, pY, pZ, pYRot, pXRot, pSteps);
-	}
+	public void lerpTo(double pX, double pY, double pZ, float pYRot, float pXRot, int pSteps) {}
 
 	protected void tickContraption() {
 		angleDelta = angle - prevAngle;
