@@ -8,8 +8,9 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,9 +23,9 @@ public abstract class MountedFluidStorage implements IFluidHandler {
 	);
 
 	@SuppressWarnings("deprecation")
-	public static final StreamCodec<FriendlyByteBuf, MountedFluidStorage> STREAM_CODEC = StreamCodec.of(
-		(b, t) -> b.writeWithCodec(NbtOps.INSTANCE, CODEC, t),
-		b -> b.readWithCodecTrusted(NbtOps.INSTANCE, CODEC)
+	public static final StreamCodec<RegistryFriendlyByteBuf, MountedFluidStorage> STREAM_CODEC = StreamCodec.of(
+		(b, t) -> b.writeWithCodec(RegistryOps.create(NbtOps.INSTANCE, b.registryAccess()), CODEC, t),
+		b -> b.readWithCodecTrusted(RegistryOps.create(NbtOps.INSTANCE, b.registryAccess()), CODEC)
 	);
 
 	public final MountedFluidStorageType<? extends MountedFluidStorage> type;

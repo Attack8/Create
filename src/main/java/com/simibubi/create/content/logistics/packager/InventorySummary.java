@@ -131,7 +131,7 @@ public class InventorySummary {
 	public List<BigItemStack> getStacks() {
 		if (stacksByCount == null) {
 			List<BigItemStack> stacks = new ArrayList<>();
-			items.forEach((i, list) -> list.forEach(stacks::add));
+			items.forEach((i, list) -> stacks.addAll(list));
 			return stacks;
 		}
 		return stacksByCount;
@@ -140,8 +140,8 @@ public class InventorySummary {
 	public List<BigItemStack> getStacksByCount() {
 		if (stacksByCount == null) {
 			stacksByCount = new ArrayList<>();
-			items.forEach((i, list) -> list.forEach(stacksByCount::add));
-			Collections.sort(stacksByCount, BigItemStack.comparator());
+			items.forEach((i, list) -> stacksByCount.addAll(list));
+			stacksByCount.sort(BigItemStack.comparator());
 		}
 		return stacksByCount;
 	}

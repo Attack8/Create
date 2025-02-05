@@ -9,12 +9,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import net.createmod.catnip.codecs.CatnipCodecUtils;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
-import com.mojang.datafixers.util.Pair;
 import com.simibubi.create.Create;
 import com.simibubi.create.api.contraption.storage.MountedStorageTypeRegistry;
 import com.simibubi.create.api.contraption.storage.SyncedMountedStorage;
@@ -38,7 +39,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
@@ -252,18 +252,14 @@ public class MountedStorageManager {
 			NBTHelper.iterateCompoundList(nbt.getList("items", Tag.TAG_COMPOUND), tag -> {
 				BlockPos pos = NBTHelper.readBlockPos(tag, "pos");
 				CompoundTag data = tag.getCompound("storage");
-				MountedItemStorage.CODEC.decode(NbtOps.INSTANCE, data)
-					.result()
-					.map(Pair::getFirst)
+				CatnipCodecUtils.decode(MountedItemStorage.CODEC, registries, data)
 					.ifPresent(storage -> this.addStorage(storage, pos));
 			});
 
 			NBTHelper.iterateCompoundList(nbt.getList("fluids", Tag.TAG_COMPOUND), tag -> {
 				BlockPos pos = NBTHelper.readBlockPos(tag, "pos");
 				CompoundTag data = tag.getCompound("storage");
-				MountedFluidStorage.CODEC.decode(NbtOps.INSTANCE, data)
-					.result()
-					.map(Pair::getFirst)
+				CatnipCodecUtils.decode(MountedFluidStorage.CODEC, registries, data)
 					.ifPresent(storage -> this.addStorage(storage, pos));
 			});
 
@@ -303,7 +299,7 @@ public class MountedStorageManager {
 		ListTag items = new ListTag();
 		this.getAllItemStorages().forEach((pos, storage) -> {
 				if (!clientPacket || storage instanceof SyncedMountedStorage) {
-					MountedItemStorage.CODEC.encodeStart(NbtOps.INSTANCE, storage).result().ifPresent(encoded -> {
+					CatnipCodecUtils.encode(MountedItemStorage.CODEC, registries, storage).ifPresent(encoded -> {
 						CompoundTag tag = new CompoundTag();
 						tag.put("pos", NbtUtils.writeBlockPos(pos));
 						tag.put("storage", encoded);
@@ -319,7 +315,7 @@ public class MountedStorageManager {
 		ListTag fluids = new ListTag();
 		this.getFluids().storages.forEach((pos, storage) -> {
 				if (!clientPacket || storage instanceof SyncedMountedStorage) {
-					MountedFluidStorage.CODEC.encodeStart(NbtOps.INSTANCE, storage).result().ifPresent(encoded -> {
+					CatnipCodecUtils.encode(MountedFluidStorage.CODEC, registries, storage).ifPresent(encoded -> {
 						CompoundTag tag = new CompoundTag();
 						tag.put("pos", NbtUtils.writeBlockPos(pos));
 						tag.put("storage", encoded);

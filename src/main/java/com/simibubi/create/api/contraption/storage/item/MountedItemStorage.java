@@ -5,10 +5,6 @@ import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import net.minecraft.nbt.NbtOps;
-
-import net.minecraft.network.FriendlyByteBuf;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
@@ -19,11 +15,13 @@ import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.foundation.utility.CreateLang;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -44,9 +42,9 @@ public abstract class MountedItemStorage implements IItemHandlerModifiable {
 	);
 
 	@SuppressWarnings("deprecation")
-	public static final StreamCodec<FriendlyByteBuf, MountedItemStorage> STREAM_CODEC = StreamCodec.of(
-		(b, t) -> b.writeWithCodec(NbtOps.INSTANCE, CODEC, t),
-		b -> b.readWithCodecTrusted(NbtOps.INSTANCE, CODEC)
+	public static final StreamCodec<RegistryFriendlyByteBuf, MountedItemStorage> STREAM_CODEC = StreamCodec.of(
+		(b, t) -> b.writeWithCodec(RegistryOps.create(NbtOps.INSTANCE, b.registryAccess()), CODEC, t),
+		b -> b.readWithCodecTrusted(RegistryOps.create(NbtOps.INSTANCE, b.registryAccess()), CODEC)
 	);
 
 	public final MountedItemStorageType<? extends MountedItemStorage> type;
