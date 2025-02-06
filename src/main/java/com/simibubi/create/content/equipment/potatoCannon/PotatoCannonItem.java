@@ -125,7 +125,7 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
 		ItemStack stack = player.getItemInHand(hand);
-		return findAmmoInInventory(world, player, stack).map(itemStack -> {
+		return findAmmoInInventory(world, player, stack).map(ammoIn -> {
 
 				if (ShootableGadgetItemMethods.shouldSwap(player, stack, hand, this::isCannon))
 					return InteractionResultHolder.fail(stack);
@@ -142,6 +142,7 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 						.subtract(player.position()
 							.add(0, player.getEyeHeight(), 0));
 
+				ItemStack itemStack = ammoIn.copy();
 				PotatoCannonProjectileType projectileType = PotatoProjectileTypeManager.getTypeForStack(itemStack)
 					.orElse(BuiltinPotatoProjectileTypes.FALLBACK);
 				Vec3 lookVec = player.getLookAngle();
@@ -178,9 +179,9 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 				}
 
 				if (!player.isCreative()) {
-					itemStack.shrink(1);
-					if (itemStack.isEmpty())
-						player.getInventory().removeItem(itemStack);
+					ammoIn.shrink(1);
+					if (ammoIn.isEmpty())
+						player.getInventory().removeItem(ammoIn);
 				}
 
 				if (!BacktankUtil.canAbsorbDamage(player, maxUses()))

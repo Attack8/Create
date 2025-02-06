@@ -134,7 +134,7 @@ public class BacktankUtil {
 		List<ItemStack> backtanks = getAllWithAir(entity);
 		if (backtanks.isEmpty())
 			return false;
-		int cost = maxAirWithoutEnchants() / usesPerTank;
+		int cost = Math.max(maxAirWithoutEnchants() / usesPerTank, 1);
 		consumeAir(entity, backtanks.getFirst(), cost);
 		return true;
 	}

@@ -15,6 +15,7 @@ import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.Label;
+import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.simibubi.create.foundation.gui.widget.SelectionScrollInput;
 import com.simibubi.create.foundation.utility.CreateLang;
 
@@ -145,9 +146,10 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 		add.active = true;
 
 		addInverted.active = true;
-		attributeSelector.titled(stack.getHoverName()
-			.plainCopy()
-			.append("..."));
+		attributeSelector.titled(CreateLang.text(stack.getHoverName()
+			.getString() + "...")
+			.color(ScrollInput.HEADER_RGB.getRGB())
+			.component());
 		attributesOfItem.clear();
 		for (Map.Entry<ResourceKey<ItemAttributeType>, ItemAttributeType> entrySet : AllRegistries.ITEM_ATTRIBUTE_TYPES.entrySet())
 			attributesOfItem.addAll(entrySet.getValue().getAllAttributes(stack, minecraft.level));
