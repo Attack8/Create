@@ -290,7 +290,7 @@ public class AllItems {
 				p -> new BacktankItem(AllArmorMaterials.COPPER, p, Create.asResource("copper_diving"),
 					COPPER_BACKTANK_PLACEABLE))
 			.model(AssetLookup.customGenericItemModel("_", "item"))
-			.tag(AllItemTags.PRESSURIZED_AIR_SOURCES.tag)
+			.tag(AllItemTags.PRESSURIZED_AIR_SOURCES.tag, AllItemTags.DIVING_ARMOR.tag)
 			.tag(ItemTags.CHEST_ARMOR)
 			.register(),
 
@@ -300,7 +300,7 @@ public class AllItems {
 					NETHERITE_BACKTANK_PLACEABLE))
 			.model(AssetLookup.customGenericItemModel("_", "item"))
 			.properties(p -> p.fireResistant())
-			.tag(AllItemTags.PRESSURIZED_AIR_SOURCES.tag)
+			.tag(AllItemTags.PRESSURIZED_AIR_SOURCES.tag, AllItemTags.DIVING_ARMOR.tag)
 			.tag(ItemTags.CHEST_ARMOR)
 			.register();
 
@@ -311,14 +311,14 @@ public class AllItems {
 			.item("copper_diving_helmet",
 				p -> new DivingHelmetItem(AllArmorMaterials.COPPER, p, Create.asResource("copper_diving")))
 			.properties(p -> p.durability(Type.HELMET.getDurability(7)))
-			.tag(ItemTags.HEAD_ARMOR)
+			.tag(ItemTags.HEAD_ARMOR, AllItemTags.DIVING_ARMOR.tag)
 			.register(),
 
 		NETHERITE_DIVING_HELMET = REGISTRATE
 			.item("netherite_diving_helmet",
 				p -> new DivingHelmetItem(ArmorMaterials.NETHERITE, p, Create.asResource("netherite_diving")))
 			.properties(p -> p.fireResistant().durability(Type.HELMET.getDurability(37)))
-			.tag(ItemTags.HEAD_ARMOR)
+			.tag(ItemTags.HEAD_ARMOR, AllItemTags.DIVING_ARMOR.tag)
 			.register();
 
 	public static final ItemEntry<? extends DivingBootsItem>
@@ -328,14 +328,14 @@ public class AllItems {
 			.item("copper_diving_boots",
 				p -> new DivingBootsItem(AllArmorMaterials.COPPER, p, Create.asResource("copper_diving")))
 			.properties(p -> p.durability(Type.BOOTS.getDurability(7)))
-			.tag(ItemTags.FOOT_ARMOR)
+			.tag(ItemTags.FOOT_ARMOR, AllItemTags.DIVING_ARMOR.tag)
 			.register(),
 
 		NETHERITE_DIVING_BOOTS = REGISTRATE
 			.item("netherite_diving_boots",
 				p -> new DivingBootsItem(ArmorMaterials.NETHERITE, p, Create.asResource("netherite_diving")))
 			.properties(p -> p.fireResistant().durability(Type.BOOTS.getDurability(37)))
-			.tag(ItemTags.FOOT_ARMOR)
+			.tag(ItemTags.FOOT_ARMOR, AllItemTags.DIVING_ARMOR.tag)
 			.register();
 
 	public static final ItemEntry<? extends BaseArmorItem>

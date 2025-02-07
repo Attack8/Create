@@ -1,4 +1,4 @@
-// 1.21.1	2025-02-03T11:20:43.485719	Registrate Provider for create [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.21.1	2025-02-07T11:33:14.361841	Registrate Provider for create [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (enchantments), Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 60bbdf92d2ac9824ea6144955c74043a6005f79d assets/create/blockstates/acacia_window.json
 6a67703c2697d81b7dc83e9d72a66f9c9ff08383 assets/create/blockstates/acacia_window_pane.json
 c3ae87b62e81d8e9476eccd793bb1548d74c66a1 assets/create/blockstates/adjustable_chain_gearshift.json
@@ -4781,6 +4781,7 @@ f43cac8216e2a9347e48cf93a43de95dd810ca20 data/create/tags/item/contraption_contr
 d371dfd35e49a7bef19f59c03e7f4ae20992f03d data/create/tags/item/create_ingots.json
 910d0f5ccbc4c84b224eca1f1588b1695f41447b data/create/tags/item/crushed_raw_materials.json
 0fa526e7e742573b603ad26b09526cf724efa1dc data/create/tags/item/deployable_drink.json
+01652011251c3fb39bba3ad02fc4bb2c1883f865 data/create/tags/item/diving_armor.json
 ebd7b09daf2f64c0c04d821696b0e145683d8693 data/create/tags/item/dyed_table_cloths.json
 d2bb65d893d71d2d9871f81f430c233a93adb4bb data/create/tags/item/invalid_for_track_paving.json
 cebf5fd98eddf5c14befdd47052be678eea79542 data/create/tags/item/packages.json
