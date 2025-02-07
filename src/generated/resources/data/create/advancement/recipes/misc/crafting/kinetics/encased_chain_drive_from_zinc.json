@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "create:andesite_casing"
-            ]
+            "items": "create:andesite_casing"
           }
         ]
       },
@@ -22,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_item",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_item"
     ]
   ],
   "rewards": {
     "recipes": [
       "create:crafting/kinetics/encased_chain_drive_from_zinc"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }
