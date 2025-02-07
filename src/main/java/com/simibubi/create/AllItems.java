@@ -109,7 +109,7 @@ public class AllItems {
 
 	public static final ItemEntry<SequencedAssemblyItem>
 
-	INCOMPLETE_PRECISION_MECHANISM = sequencedIngredient("incomplete_precision_mechanism"),
+		INCOMPLETE_PRECISION_MECHANISM = sequencedIngredient("incomplete_precision_mechanism"),
 		INCOMPLETE_REINFORCED_SHEET = sequencedIngredient("unprocessed_obsidian_sheet"),
 		INCOMPLETE_TRACK = sequencedIngredient("incomplete_track");
 
@@ -219,7 +219,7 @@ public class AllItems {
 		IRON_SHEET = taggedIngredient("iron_sheet", commonItemTag("plates/iron"), PLATES.tag),
 		GOLDEN_SHEET = taggedIngredient("golden_sheet", commonItemTag("plates/gold"), PLATES.tag, ItemTags.PIGLIN_LOVED),
 
-		CRUSHED_IRON = taggedIngredient("crushed_raw_iron", CRUSHED_RAW_MATERIALS.tag),
+	CRUSHED_IRON = taggedIngredient("crushed_raw_iron", CRUSHED_RAW_MATERIALS.tag),
 		CRUSHED_GOLD = taggedIngredient("crushed_raw_gold", CRUSHED_RAW_MATERIALS.tag, ItemTags.PIGLIN_LOVED),
 		CRUSHED_COPPER = taggedIngredient("crushed_raw_copper", CRUSHED_RAW_MATERIALS.tag),
 		CRUSHED_ZINC = taggedIngredient("crushed_raw_zinc", CRUSHED_RAW_MATERIALS.tag);
@@ -284,7 +284,7 @@ public class AllItems {
 
 	public static final ItemEntry<? extends BacktankItem>
 
-	COPPER_BACKTANK =
+		COPPER_BACKTANK =
 		REGISTRATE
 			.item("copper_backtank",
 				p -> new BacktankItem(AllArmorMaterials.COPPER, p, Create.asResource("copper_diving"),
@@ -306,7 +306,7 @@ public class AllItems {
 
 	public static final ItemEntry<? extends DivingHelmetItem>
 
-	COPPER_DIVING_HELMET =
+		COPPER_DIVING_HELMET =
 		REGISTRATE
 			.item("copper_diving_helmet",
 				p -> new DivingHelmetItem(AllArmorMaterials.COPPER, p, Create.asResource("copper_diving")))
@@ -323,7 +323,7 @@ public class AllItems {
 
 	public static final ItemEntry<? extends DivingBootsItem>
 
-	COPPER_DIVING_BOOTS =
+		COPPER_DIVING_BOOTS =
 		REGISTRATE
 			.item("copper_diving_boots",
 				p -> new DivingBootsItem(AllArmorMaterials.COPPER, p, Create.asResource("copper_diving")))
@@ -340,13 +340,13 @@ public class AllItems {
 
 	public static final ItemEntry<? extends BaseArmorItem>
 
-	CARDBOARD_HELMET = REGISTRATE.item("cardboard_helmet", p -> new CardboardArmorItem(ArmorItem.Type.HELMET, p))
-		.properties(p -> p.durability(Type.HELMET.getDurability(4)))
-		.tag(ItemTags.HEAD_ARMOR, ItemTags.TRIMMABLE_ARMOR)
-		.onRegisterAfter(Registries.ITEM, v -> ItemDescription.useKey(v, "item.create.cardboard_armor"))
-		.model(TrimmableArmorModelGenerator::generate)
-		.clientExtension(() -> () -> new CardboardArmorStealthOverlay())
-		.register(),
+		CARDBOARD_HELMET = REGISTRATE.item("cardboard_helmet", p -> new CardboardArmorItem(ArmorItem.Type.HELMET, p))
+			.properties(p -> p.durability(Type.HELMET.getDurability(4)))
+			.tag(ItemTags.HEAD_ARMOR, ItemTags.TRIMMABLE_ARMOR)
+			.onRegisterAfter(Registries.ITEM, v -> ItemDescription.useKey(v, "item.create.cardboard_armor"))
+			.model(TrimmableArmorModelGenerator::generate)
+			.clientExtension(() -> () -> new CardboardArmorStealthOverlay())
+			.register(),
 
 		CARDBOARD_CHESTPLATE =
 			REGISTRATE.item("cardboard_chestplate", p -> new CardboardArmorItem(ArmorItem.Type.CHESTPLATE, p))
@@ -456,11 +456,11 @@ public class AllItems {
 		.lang("List Filter")
 		.register(),
 
-		ATTRIBUTE_FILTER = REGISTRATE.item("attribute_filter", FilterItem::attribute)
-			.register(),
+	ATTRIBUTE_FILTER = REGISTRATE.item("attribute_filter", FilterItem::attribute)
+		.register(),
 
-		PACKAGE_FILTER = REGISTRATE.item("package_filter", FilterItem::address)
-			.register();
+	PACKAGE_FILTER = REGISTRATE.item("package_filter", FilterItem::address)
+		.register();
 
 	public static final ItemEntry<ScheduleItem> SCHEDULE = REGISTRATE.item("schedule", ScheduleItem::new)
 		.lang("Train Schedule")
@@ -521,6 +521,7 @@ public class AllItems {
 
 	// Load this class
 
-	public static void register() {}
+	public static void register() {
+	}
 
 }

@@ -139,7 +139,7 @@ public class ChainConveyorInteractionHandler {
 		if (AllBlocks.PACKAGE_FROGPORT.isIn(mainHandItem)) {
 			PackagePortTargetSelectionHandler.exactPositionOfTarget = selectedBakedPosition;
 			PackagePortTargetSelectionHandler.activePackageTarget =
-				new PackagePortTarget.ChainConveyorFrogportTarget(selectedLift, selectedChainPosition, selectedConnection);
+				new PackagePortTarget.ChainConveyorFrogportTarget(selectedLift, selectedChainPosition, selectedConnection, false);
 			return true;
 		}
 

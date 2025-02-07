@@ -16,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
@@ -27,7 +28,7 @@ public abstract class ScheduleInstruction extends ScheduleDataEntry {
 	public abstract boolean supportsConditions();
 
 	@Nullable
-	public abstract DiscoveredPath start(ScheduleRuntime runtime);
+	public abstract DiscoveredPath start(ScheduleRuntime runtime, Level level);
 
 	public final CompoundTag write(HolderLookup.Provider registries) {
 		CompoundTag tag = new CompoundTag();

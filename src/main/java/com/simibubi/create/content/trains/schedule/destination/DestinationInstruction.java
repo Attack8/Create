@@ -6,8 +6,6 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.annotation.Nullable;
 
-import net.createmod.catnip.data.Glob;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.ImmutableList;
@@ -20,12 +18,14 @@ import com.simibubi.create.content.trains.schedule.ScheduleRuntime;
 import com.simibubi.create.content.trains.station.GlobalStation;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.data.Glob;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -78,7 +78,7 @@ public class DestinationInstruction extends TextScheduleInstruction {
 
 	@Override
 	@Nullable
-	public DiscoveredPath start(ScheduleRuntime runtime) {
+	public DiscoveredPath start(ScheduleRuntime runtime, Level level) {
 		String regex = getFilterForRegex();
 		boolean anyMatch = false;
 		ArrayList<GlobalStation> validStations = new ArrayList<>();

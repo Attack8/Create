@@ -41,7 +41,7 @@ public class DrillActorVisual extends ActorVisual {
 	public void tick() {
 		previousRotation = rotation;
 
-		if (context.contraption.stalled || context.disabled
+		if (context.disabled
 			|| VecHelper.isVecPointingTowards(context.relativeMotion, facing.getOpposite()))
 			return;
 

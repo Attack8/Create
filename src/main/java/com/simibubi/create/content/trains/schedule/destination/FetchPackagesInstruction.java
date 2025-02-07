@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.PatternSyntaxException;
 
-import net.createmod.catnip.data.Glob;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.ImmutableList;
@@ -14,8 +12,6 @@ import com.simibubi.create.Create;
 import com.simibubi.create.content.logistics.box.PackageItem;
 import com.simibubi.create.content.logistics.box.PackageStyles;
 import com.simibubi.create.content.logistics.packagePort.postbox.PostboxBlockEntity;
-import com.simibubi.create.content.trains.entity.Carriage;
-import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.graph.DiscoveredPath;
 import com.simibubi.create.content.trains.graph.EdgePointType;
@@ -25,12 +21,14 @@ import com.simibubi.create.content.trains.station.GlobalStation;
 import com.simibubi.create.content.trains.station.GlobalStation.GlobalPackagePort;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.data.Glob;
 import net.createmod.catnip.data.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -67,6 +65,8 @@ public class FetchPackagesInstruction extends TextScheduleInstruction {
 	}
 
 	public String getFilterForRegex() {
+		if (getFilter().isBlank())
+			return Glob.toRegexPattern("*", "");
 		return Glob.toRegexPattern(getFilter(), "");
 	}
 
@@ -98,7 +98,11 @@ public class FetchPackagesInstruction extends TextScheduleInstruction {
 	}
 
 	@Override
-	public DiscoveredPath start(ScheduleRuntime runtime) {
+	public DiscoveredPath start(ScheduleRuntime runtime, Level level) {
+		MinecraftServer server = level.getServer();
+		if (server == null)
+			return null;
+		
 		String regex = getFilterForRegex();
 		boolean anyMatch = false;
 		ArrayList<GlobalStation> validStations = new ArrayList<>();
@@ -110,25 +114,18 @@ public class FetchPackagesInstruction extends TextScheduleInstruction {
 			return null;
 		}
 
-		Level level = null;
-		for (Carriage carriage : train.carriages) {
-			if (level == null) {
-				CarriageContraptionEntity entity = carriage.anyAvailableEntity();
-				if (entity != null && entity.level() instanceof ServerLevel sl)
-					level = sl;
-			}
-		}
-
 		for (GlobalStation globalStation : train.graph.getPoints(EdgePointType.STATION)) {
+			ServerLevel dimLevel = server.getLevel(globalStation.blockEntityDimension);
+			if (dimLevel == null)
+				continue;
+			
 			for (Entry<BlockPos, GlobalPackagePort> entry : globalStation.connectedPorts.entrySet()) {
 				GlobalPackagePort port = entry.getValue();
 				BlockPos pos = entry.getKey();
 
 				IItemHandlerModifiable postboxInventory = port.offlineBuffer;
-				if (level != null && level.isLoaded(pos)
-					&& level.getBlockEntity(pos) instanceof PostboxBlockEntity ppbe) {
+				if (dimLevel.isLoaded(pos) && dimLevel.getBlockEntity(pos) instanceof PostboxBlockEntity ppbe)
 					postboxInventory = ppbe.inventory;
-				}
 
 				for (int slot = 0; slot < postboxInventory.getSlots(); slot++) {
 					ItemStack stack = postboxInventory.getStackInSlot(slot);

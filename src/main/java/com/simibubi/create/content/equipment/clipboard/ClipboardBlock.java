@@ -123,9 +123,9 @@ public class ClipboardBlock extends FaceAttachedHorizontalDirectionalBlock
 			pPlayer.getInventory()
 				.placeItemBackInInventory(cloneItemStack);
 	}
-
+	
 	@Override
-	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
+	public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
 		if (level.getBlockEntity(pos) instanceof ClipboardBlockEntity cbe)
 			return cbe.dataContainer;
 		return new ItemStack(this);

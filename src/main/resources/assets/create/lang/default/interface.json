@@ -955,7 +955,7 @@
 	"create.train_assembly.no_controls": "Attach at least one forward-facing Train Controls block (Are you missing Super Glue?)",
 	"create.train_assembly.sideways_controls": "Train Controls cannot face sideways",
 	"create.train_assembly.bogey_created": "Bogey created. Click again to cycle type",
-	"create.train_assembly.requires_casing": "Use Railway Casing to create bogeys on tracks",
+	"create.train_assembly.requires_casing": "Use Train Casing to create bogeys on tracks",
 
 	"create.track_target.set": "Targeted track selected",
 	"create.track_target.success": "Successfully bound to targeted track",

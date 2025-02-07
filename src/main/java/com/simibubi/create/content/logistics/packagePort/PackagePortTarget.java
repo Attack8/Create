@@ -73,13 +73,15 @@ public abstract class PackagePortTarget {
 		public static final MapCodec<ChainConveyorFrogportTarget> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
 			BlockPos.CODEC.fieldOf("relative_pos").forGetter(i -> i.relativePos),
 			Codec.FLOAT.fieldOf("chain_pos").forGetter(i -> i.chainPos),
-			BlockPos.CODEC.optionalFieldOf("connection").forGetter(i -> Optional.ofNullable(i.connection))
+			BlockPos.CODEC.optionalFieldOf("connection").forGetter(i -> Optional.ofNullable(i.connection)),
+			Codec.BOOL.fieldOf("flipped").forGetter(i -> i.flipped)
 		).apply(instance, ChainConveyorFrogportTarget::new));
 
 		public static final StreamCodec<ByteBuf, ChainConveyorFrogportTarget> STREAM_CODEC = StreamCodec.composite(
 		    BlockPos.STREAM_CODEC, i -> i.relativePos,
 			ByteBufCodecs.FLOAT, i -> i.chainPos,
 			CatnipStreamCodecBuilders.nullable(BlockPos.STREAM_CODEC), i -> i.connection,
+			ByteBufCodecs.BOOL, i -> i.flipped,
 		    ChainConveyorFrogportTarget::new
 		);
 
@@ -88,14 +90,15 @@ public abstract class PackagePortTarget {
 		public BlockPos connection;
 		public boolean flipped;
 
-		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, Optional<BlockPos> connection) {
-			this(relativePos, chainPos, connection.orElse(null));
+		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, Optional<BlockPos> connection, boolean flipped) {
+			this(relativePos, chainPos, connection.orElse(null), flipped);
 		}
 
-		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, @Nullable BlockPos connection) {
+		public ChainConveyorFrogportTarget(BlockPos relativePos, float chainPos, @Nullable BlockPos connection, boolean flipped) {
 			super(relativePos);
 			this.chainPos = chainPos;
 			this.connection = connection;
+			this.flipped = flipped;
 		}
 
 		@Override

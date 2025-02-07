@@ -32,8 +32,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 @EventBusSubscriber
 public class ValveHandleBlock extends HandCrankBlock {
 
-	private final DyeColor color;
-
+	public final DyeColor color;
+	
 	public static ValveHandleBlock copper(Properties properties) {
 		return new ValveHandleBlock(properties, null);
 	}

@@ -83,6 +83,8 @@ public class PackagerBlock extends WrenchableDirectionalBlock implements IBE<Pac
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 		if (AllBlocks.FACTORY_GAUGE.isIn(stack))
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		if (AllBlocks.STOCK_LINK.isIn(stack) && !state.getValue(LINKED))
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
 		if (onBlockEntityUseItemOn(level, pos, be -> {
 			if (be.heldBox.isEmpty()) {
@@ -101,10 +103,10 @@ public class PackagerBlock extends WrenchableDirectionalBlock implements IBE<Pac
 						player.setItemInHand(hand, ItemStack.EMPTY);
 					return ItemInteractionResult.SUCCESS;
 				}
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return ItemInteractionResult.SUCCESS;
 			}
 			if (be.animationTicks > 0)
-				return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return ItemInteractionResult.SUCCESS;
 			if (!level.isClientSide()) {
 				player.getInventory()
 					.placeItemBackInInventory(be.heldBox.copy());
@@ -116,7 +118,7 @@ public class PackagerBlock extends WrenchableDirectionalBlock implements IBE<Pac
 		}).consumesAction())
 			return ItemInteractionResult.SUCCESS;
 
-		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return ItemInteractionResult.SUCCESS;
 	}
 
 	@Override

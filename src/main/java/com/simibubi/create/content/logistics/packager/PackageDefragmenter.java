@@ -54,8 +54,11 @@ public class PackageDefragmenter {
 
 		for (ItemStack box : collectedPackages.get(orderId)) {
 			address = PackageItem.getAddress(box);
-			if (box.has(AllDataComponents.PACKAGE_ORDER_DATA))
-				orderContext = box.get(AllDataComponents.PACKAGE_ORDER_DATA).orderContext();
+			if (box.has(AllDataComponents.PACKAGE_ORDER_DATA)) {
+				PackageOrder context = box.get(AllDataComponents.PACKAGE_ORDER_DATA).orderContext();
+				if (context != null && !context.isEmpty())
+					orderContext = context;
+			}
 			ItemStackHandler contents = PackageItem.getContents(box);
 			Slots: for (int slot = 0; slot < contents.getSlots(); slot++) {
 				ItemStack stackInSlot = contents.getStackInSlot(slot);

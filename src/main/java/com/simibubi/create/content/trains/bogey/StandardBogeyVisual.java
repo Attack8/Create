@@ -24,8 +24,8 @@ public class StandardBogeyVisual implements BogeyVisual {
 		var shaftInstancer = ctx.instancerProvider()
 			.instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.SHAFT));
 
-		shaft1 = shaftInstancer.createInstance().rotateToFace(Direction.SOUTH);
-		shaft2 = shaftInstancer.createInstance().rotateToFace(Direction.SOUTH);
+		shaft1 = shaftInstancer.createInstance();
+		shaft2 = shaftInstancer.createInstance();
 	}
 
 	@Override
@@ -33,13 +33,15 @@ public class StandardBogeyVisual implements BogeyVisual {
 		shaft1.setTransform(poseStack)
 			.translate(-.5f, .25f, 0)
 			.center()
-			.rotateZDegrees(wheelAngle)
+			.rotateTo(Direction.UP, Direction.SOUTH)
+			.rotateYDegrees(wheelAngle)
 			.uncenter()
 			.setChanged();
 		shaft2.setTransform(poseStack)
 			.translate(-.5f, .25f, -1)
 			.center()
-			.rotateZDegrees(wheelAngle)
+			.rotateTo(Direction.UP, Direction.SOUTH)
+			.rotateYDegrees(wheelAngle)
 			.uncenter()
 			.setChanged();
 	}
@@ -145,8 +147,8 @@ public class StandardBogeyVisual implements BogeyVisual {
 			super(ctx, partialTick, inContraption);
 			var secondaryShaftInstancer = ctx.instancerProvider()
 				.instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.SHAFT));
-			secondaryShaft1 = secondaryShaftInstancer.createInstance().rotateToFace(Direction.EAST);
-			secondaryShaft2 = secondaryShaftInstancer.createInstance().rotateToFace(Direction.EAST);
+			secondaryShaft1 = secondaryShaftInstancer.createInstance();
+			secondaryShaft2 = secondaryShaftInstancer.createInstance();
 			drive = ctx.instancerProvider()
 					.instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.BOGEY_DRIVE))
 					.createInstance();
@@ -167,13 +169,15 @@ public class StandardBogeyVisual implements BogeyVisual {
 			secondaryShaft1.setTransform(poseStack)
 				.translate(-.5f, .25f, .5f)
 				.center()
-				.rotateXDegrees(wheelAngle)
+				.rotateTo(Direction.UP, Direction.EAST)
+				.rotateYDegrees(wheelAngle)
 				.uncenter()
 				.setChanged();
 			secondaryShaft2.setTransform(poseStack)
 				.translate(-.5f, .25f, -1.5f)
 				.center()
-				.rotateXDegrees(wheelAngle)
+				.rotateTo(Direction.UP, Direction.EAST)
+				.rotateYDegrees(wheelAngle)
 				.uncenter()
 				.setChanged();
 			drive.setTransform(poseStack)

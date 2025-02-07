@@ -2,6 +2,7 @@ package com.simibubi.create.foundation.data.recipe;
 
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllRecipeTypes;
+import com.simibubi.create.AllTags;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -92,6 +93,10 @@ public class PressingRecipeGen extends ProcessingRecipeGen {
 				.output(Mods.RU, "silt_dirt_path")
 				.whenModLoaded(Mods.RU.getId())),
 
+		// IE
+		
+		IE_PLATES = iePlates("aluminum", "lead", "silver", "nickel", "uranium", "constantan", "electrum", "steel"),
+		
 		// Vampirism
 
 		VMP_CURSED_PATH = moddedPaths(Mods.VMP, "cursed_earth"),
@@ -107,6 +112,14 @@ public class PressingRecipeGen extends ProcessingRecipeGen {
 		for(String block : blocks) {
 			moddedCompacting(mod, block, block + "_path");
 		}
+		return null;
+	}
+
+	GeneratedRecipe iePlates(String... metals) {
+		for (String metal : metals)
+			create(Mods.IE.recipeId("plate_" + metal), b -> b.require(AllTags.commonItemTag("ingots/" + metal))
+				.output(Mods.IE, "plate_" + metal)
+				.whenModLoaded(Mods.IE.getId()));
 		return null;
 	}
 
