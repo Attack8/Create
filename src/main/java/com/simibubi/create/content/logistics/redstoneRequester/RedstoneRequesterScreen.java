@@ -28,6 +28,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class RedstoneRequesterScreen extends AbstractSimiContainerScreen<RedstoneRequesterMenu> {
@@ -176,6 +177,9 @@ public class RedstoneRequesterScreen extends AbstractSimiContainerScreen<Redston
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		int x = getGuiLeft();
 		int y = getGuiTop();
+
+		if (addressBox.mouseScrolled(mouseX, mouseY, scrollX, scrollY))
+			return true;
 
 		for (int i = 0; i < amounts.size(); i++) {
 			int inputX = x + 27 + i * 20;

@@ -18,10 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 
-import net.createmod.catnip.registry.RegisteredObjectsHelper;
-
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.jetbrains.annotations.Nullable;
@@ -39,12 +35,13 @@ import com.simibubi.create.content.decoration.palettes.AllPaletteBlocks;
 import com.simibubi.create.content.decoration.palettes.AllPaletteStoneTypes;
 import com.simibubi.create.content.equipment.toolbox.ToolboxDyeingRecipe;
 import com.simibubi.create.foundation.mixin.accessor.MappedRegistryAccessor;
+import com.simibubi.create.foundation.recipe.ItemCopyingRecipe;
 import com.simibubi.create.infrastructure.codec.CombiningCodec;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
 
-import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -85,6 +82,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
@@ -231,6 +229,7 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 			.pattern(" L ")),
 
 		TOOLBOX_DYEING = createSpecial(ToolboxDyeingRecipe::new, "crafting", "toolbox_dyeing"),
+			ITEM_COPYING = createSpecial(ItemCopyingRecipe::new, "crafting", "item_copying"),
 
 		MINECART_COUPLING = create(AllItems.MINECART_COUPLING).unlockedBy(I::andesiteAlloy)
 			.viaShaped(b -> b.define('E', I.andesiteAlloy())
@@ -887,6 +886,12 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 				.requires(I.ironNugget())
 				.requires(I.ironNugget())
 				.requires(I.ironNugget())),
+
+		ENCASED_CHAIN_DRIVE_ZINC = create(AllBlocks.ENCASED_CHAIN_DRIVE).withSuffix("_from_zinc").unlockedBy(I::andesiteCasing)
+			.viaShapeless(b -> b.requires(I.andesiteCasing())
+				.requires(I.zincNugget())
+				.requires(I.zincNugget())
+				.requires(I.zincNugget())),
 
 		FLYWHEEL = create(AllBlocks.FLYWHEEL).unlockedByTag(I::brass)
 			.viaShaped(b -> b.define('C', I.brass())

@@ -442,7 +442,7 @@ public class StationBlockEntity extends SmartBlockEntity implements ITransformab
 		if (!train.disassemble(getAssemblyDirection(), trackPosition.above()))
 			return false;
 
-		dropSchedule(sender);
+		dropSchedule(sender, train);
 		return true;
 	}
 
@@ -473,12 +473,10 @@ public class StationBlockEntity extends SmartBlockEntity implements ITransformab
 		return true;
 	}
 
-	public void dropSchedule(@Nullable ServerPlayer sender) {
+	public void dropSchedule(@Nullable ServerPlayer sender, @Nullable Train train) {
 		GlobalStation station = getStation();
 		if (station == null)
 			return;
-
-		Train train = station.getPresentTrain();
 		if (train == null)
 			return;
 

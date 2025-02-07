@@ -128,7 +128,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 					if (ingredient.test(bigItemStack.stack))
 						craftingIngredient = new BigItemStack(bigItemStack.stack, 1);
 			craftingIngredients.add(craftingIngredient);
-			
+
 			if (width < 3 && (i + 1) % width == 0)
 				for (int j = 0; j < 3 - width; j++)
 					craftingIngredients.add(emptyIngredient);
@@ -136,7 +136,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 
 		while (craftingIngredients.size() < 9)
 			craftingIngredients.add(emptyIngredient);
-		
+
 		return craftingIngredients;
 	}
 
@@ -191,7 +191,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 		});
 		newInputButton.setToolTip(CreateLang.translate("gui.factory_panel.connect_input")
 			.component());
-		
+
 		relocateButton = new IconButton(x + 31, y + 67, AllIcons.I_MOVE_GAUGE);
 		relocateButton.withCallback(() -> {
 			FactoryPanelConnectionHandler.startRelocating(behaviour);
@@ -199,7 +199,7 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 		});
 		relocateButton.setToolTip(CreateLang.translate("gui.factory_panel.relocate")
 			.component());
-		
+
 		if (!restocker) {
 			addRenderableWidget(newInputButton);
 			addRenderableWidget(relocateButton);
@@ -590,6 +590,9 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		int x = guiLeft;
 		int y = guiTop;
+
+		if (addressBox.mouseScrolled(mouseX, mouseY, scrollX, scrollY))
+			return true;
 
 		if (craftingActive)
 			return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);

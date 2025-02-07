@@ -11,6 +11,7 @@ import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.schedule.destination.DestinationInstruction;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
+import com.simibubi.create.foundation.recipe.ItemCopyingRecipe.SupportsItemCopying;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.data.Couple;
@@ -37,7 +38,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-public class ScheduleItem extends Item implements MenuProvider {
+public class ScheduleItem extends Item implements MenuProvider, SupportsItemCopying {
 
 	public ScheduleItem(Properties pProperties) {
 		super(pProperties);

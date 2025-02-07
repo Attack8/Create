@@ -158,6 +158,7 @@ public class AllPartialModels {
 		BOGEY_FRAME = block("track/bogey/bogey_frame"), SMALL_BOGEY_WHEELS = block("track/bogey/bogey_wheel"),
 		BOGEY_PIN = block("track/bogey/bogey_drive_wheel_pin"), BOGEY_PISTON = block("track/bogey/bogey_drive_piston"),
 		BOGEY_DRIVE = block("track/bogey/bogey_drive"), LARGE_BOGEY_WHEELS = block("track/bogey/bogey_drive_wheel"),
+		BOGEY_DRIVE_BELT = block("track/bogey/bogey_drive_belt"),
 
 		TRAIN_COUPLING_HEAD = block("track/bogey/coupling_head"),
 		TRAIN_COUPLING_CABLE = block("track/bogey/coupling_cable"),

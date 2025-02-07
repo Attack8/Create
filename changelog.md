@@ -46,6 +46,7 @@ _Now using Flywheel 1.0_
 - All links now use a new ingredient item, the transmitter
 - New advancement chain for high logistics components
 - New ponder scenes and category for high logistics components
+- Tracks and Trains now have special integration with FTBChunks and Journeymap
 - Depots can now be used as storage blocks on contraptions
 - Brass tunnels now try to distribute an item more quickly when it first arrives
 - Brass tunnels now always prefer filtered sides over non-filtered sides
@@ -55,6 +56,7 @@ _Now using Flywheel 1.0_
 - In common cobblegen scenarios, stationary drills now skip breaking blocks and just insert the result items into open
   inventories directly below
 - Held clipboards can now copy entries from other in-world clipboards
+- Filters, Clipboards and Schedules can now be copyied in the crafting table
 - Metal ladders no longer require a wall if another ladder block is above them
 - Bells assembled to elevator contraptions now activate when arriving at a floor
 - Sliding doors placed in front of contraption-mounted sliding doors now open and close automatically
@@ -68,6 +70,13 @@ _Now using Flywheel 1.0_
 - Wood cutting recipes in mechanical saws
 - Added pressing recipes for coarse dirt and rooted dirt which both produce dirt paths (#7186)
 - Updated JEI integration and added potion fluids to the JEI sidebar (#6934)
+- Chain Drives can now be crafted from zinc nuggets
+- Redstone lamps can now be picked up with the wrench
+- New compatibility recipes for Immersive Engineering
+- Added missing deploying recipes for copper oxidisation
+- Framed and tiled glass panes can now be obtained via stonecutting
+- Schematicannon on 'replace blocks with empty' now send block updates at the edges after printing
+- The player hitbox used in contraption collision is now slightly shorter
 
 #### Bug Fixes
 
@@ -98,7 +107,6 @@ _Now using Flywheel 1.0_
 - Fixed mechanical arm interactions with jukeboxes (#5902)
 - Fixed toolboxes not giving a comparator output signal (#6973)
 - Fixed copper slabs and stairs being missing from the respective tags (#3080)
-- Fix incorrect copycat panel culling when framed glass is used and sodium is installed (Fabricators-of-Create#1540)
 - Fixed Fix waterlogged bracketed kinetics dropping the bracket (Fabricators-of-Create#1552)
 - Switched away from using streams in ContraptionCollider fixing a rare crash (#5043)
 - Fixed pumps not placing fluids into flowing fluids of the same type (#5884)
@@ -116,6 +124,10 @@ _Now using Flywheel 1.0_
 - Fixed inability to mill cactus when Quark is installed (#7215)
 - Fixed rare spout crash and offset rendering (#7025)
 - Fixed deploying food resulting in missing particles and not returning the correct items (#7288)
+- Fixed trains not properly pathfinding to stations with an opposing signal just behind the destination
+- Fixed stations voiding schedules when disassembling the train
+- Fixed lighting on signal block indicators
+- Fixed vaults and tanks rotated in place not updating their multiblock correctly
 
 #### API Changes
 

@@ -15,6 +15,7 @@ import com.simibubi.create.AllKeys;
 import com.simibubi.create.content.logistics.box.PackageItem;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.foundation.item.ItemHelper;
+import com.simibubi.create.foundation.recipe.ItemCopyingRecipe.SupportsItemCopying;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.minecraft.ChatFormatting;
@@ -40,7 +41,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public class FilterItem extends Item implements MenuProvider {
+public class FilterItem extends Item implements MenuProvider, SupportsItemCopying {
 
 	private FilterType type;
 

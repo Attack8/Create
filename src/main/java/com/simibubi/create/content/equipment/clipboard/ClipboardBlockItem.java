@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 
 import com.simibubi.create.AllDataComponents;
 
+import com.simibubi.create.foundation.recipe.ItemCopyingRecipe.SupportsItemCopying;
+
 import net.createmod.catnip.gui.ScreenOpener;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
@@ -21,7 +23,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-public class ClipboardBlockItem extends BlockItem {
+public class ClipboardBlockItem extends BlockItem implements SupportsItemCopying {
 
 	public ClipboardBlockItem(Block pBlock, Properties pProperties) {
 		super(pBlock, pProperties);

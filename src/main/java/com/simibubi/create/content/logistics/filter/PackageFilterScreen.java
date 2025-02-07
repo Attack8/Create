@@ -77,6 +77,13 @@ public class PackageFilterScreen extends AbstractFilterScreen<PackageFilterMenu>
 	}
 
 	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+		if (addressBox.mouseScrolled(mouseX, mouseY, scrollX, scrollY))
+			return true;
+		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+	}
+
+	@Override
 	public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
 		if (pKeyCode == GLFW.GLFW_KEY_ENTER)
 			setFocused(null);

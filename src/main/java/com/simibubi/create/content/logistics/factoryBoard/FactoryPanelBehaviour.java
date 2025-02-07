@@ -13,8 +13,6 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.network.chat.Component;
-
 import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
@@ -33,6 +31,8 @@ import com.simibubi.create.content.logistics.packager.InventorySummary;
 import com.simibubi.create.content.logistics.packager.PackagerBlockEntity;
 import com.simibubi.create.content.logistics.packager.PackagingRequest;
 import com.simibubi.create.content.logistics.packagerLink.LogisticallyLinkedBehaviour.RequestType;
+import com.simibubi.create.content.logistics.packagerLink.LogisticallyLinkedBlockItem;
+import com.simibubi.create.content.logistics.packagerLink.LogisticallyLinkedClientHandler;
 import com.simibubi.create.content.logistics.packagerLink.LogisticsManager;
 import com.simibubi.create.content.logistics.packagerLink.RequestPromise;
 import com.simibubi.create.content.logistics.packagerLink.RequestPromiseQueue;
@@ -61,13 +61,17 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
@@ -77,7 +81,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
-public class FactoryPanelBehaviour extends FilteringBehaviour {
+public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuProvider {
 
 	public static final BehaviourType<FactoryPanelBehaviour> TOP_LEFT = new BehaviourType<>();
 	public static final BehaviourType<FactoryPanelBehaviour> TOP_RIGHT = new BehaviourType<>();
@@ -284,6 +288,8 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 				tickStorageMonitor();
 			bulb.updateChaseTarget(redstonePowered || satisfied ? 1 : 0);
 			bulb.tickChaser();
+			if (active)
+				tickOutline();
 			return;
 		}
 
@@ -352,7 +358,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 			&& promisedSatisfied == shouldPromiseSatisfy && waitingForNetwork == shouldWait)
 			return;
 
-		if (!satisfied && shouldSatisfy) {
+		if (!satisfied && shouldSatisfy && demand > 0) {
 			AllSoundEvents.CONFIRM.playOnServer(getWorld(), getPos(), 0.075f, 1f);
 			AllSoundEvents.CONFIRM_2.playOnServer(getWorld(), getPos(), 0.125f, 0.575f);
 		}
@@ -529,6 +535,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 
 	@Override
 	public void onShortInteract(Player player, InteractionHand hand, Direction side, BlockHitResult hitResult) {
+		// Network is protected
 		if (!Create.LOGISTICS.mayInteract(network, player)) {
 			player.displayClientMessage(CreateLang.translate("logistically_linked.protected")
 				.style(ChatFormatting.RED)
@@ -536,6 +543,9 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 			return;
 		}
 
+		boolean isClientSide = player.level().isClientSide;
+
+		// Wrench cycles through arrow bending
 		if (targeting.size() + targetedByLinks.size() > 0 && AllItemTags.WRENCH.matches(player.getItemInHand(hand))) {
 			int sharedMode = -1;
 			boolean notifySelf = false;
@@ -550,7 +560,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 				if (sharedMode == -1)
 					sharedMode = (connection.arrowBendMode + 1) % 4;
 				connection.arrowBendMode = sharedMode;
-				if (!player.level().isClientSide)
+				if (!isClientSide)
 					at.blockEntity.notifyUpdate();
 			}
 
@@ -558,7 +568,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 				if (sharedMode == -1)
 					sharedMode = (connection.arrowBendMode + 1) % 4;
 				connection.arrowBendMode = sharedMode;
-				if (!player.level().isClientSide)
+				if (!isClientSide)
 					notifySelf = true;
 			}
 
@@ -575,16 +585,34 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 			return;
 		}
 
-		if (player.level().isClientSide)
+		// Client might be in the process of connecting a panel
+		if (isClientSide)
 			if (FactoryPanelConnectionHandler.panelClicked(getWorld(), player, this))
 				return;
 
+		ItemStack heldItem = player.getItemInHand(hand);
 		if (getFilter().isEmpty()) {
+			// Open screen for setting an item through JEI
+			if (heldItem.isEmpty()) {
+				if (!isClientSide && player instanceof ServerPlayer sp)
+					sp.openMenu(this, buf -> FactoryPanelPosition.STREAM_CODEC.encode(buf, getPanelPosition()));
+				return;
+			}
+
+			// Use regular filter interaction for setting the item
 			super.onShortInteract(player, hand, side, hitResult);
 			return;
 		}
 
-		if (player.level().isClientSide)
+		// Bind logistics items to this panels' frequency
+		if (heldItem.getItem() instanceof LogisticallyLinkedBlockItem) {
+			if (!isClientSide)
+				LogisticallyLinkedBlockItem.assignFrequency(heldItem, player, network);
+			return;
+		}
+
+		// Open configuration screen
+		if (isClientSide)
 			CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> displayScreen(player));
 	}
 
@@ -995,4 +1023,21 @@ public class FactoryPanelBehaviour extends FilteringBehaviour {
 	public boolean writeToClipboard(@NotNull HolderLookup.Provider registries, CompoundTag tag, Direction side) {
 		return false;
 	}
+
+	private void tickOutline() {
+		CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> LogisticallyLinkedClientHandler.tickPanel(this));
+	}
+
+	@Override
+	public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+		return FactoryPanelSetItemMenu.create(containerId, playerInventory, this);
+	}
+
+	@Override
+	public Component getDisplayName() {
+		return blockEntity.getBlockState()
+			.getBlock()
+			.getName();
+	}
+
 }

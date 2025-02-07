@@ -88,13 +88,7 @@ public class LogisticallyLinkedBlockItem extends BlockItem {
 			if (!link.mayInteractMessage(player))
 				return InteractionResult.SUCCESS;
 
-			CompoundTag tag = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
-			tag.putUUID("Freq", link.freqId);
-
-			player.displayClientMessage(CreateLang.translateDirect("logistically_linked.tuned"), true);
-
-			BlockEntity.addEntityType(tag, ((IBE<?>) this.getBlock()).getBlockEntityType());
-			stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
+			assignFrequency(stack, player, link.freqId);
 			return InteractionResult.SUCCESS;
 		}
 
@@ -105,6 +99,16 @@ public class LogisticallyLinkedBlockItem extends BlockItem {
 		player.displayClientMessage(tuned ? CreateLang.translateDirect("logistically_linked.connected")
 			: CreateLang.translateDirect("logistically_linked.new_network_started"), true);
 		return useOn;
+	}
+
+	public static void assignFrequency(ItemStack stack, Player player, UUID frequency) {
+		CompoundTag tag = stack.getOrDefault(DataComponents.BLOCK_ENTITY_DATA, CustomData.EMPTY).copyTag();
+		tag.putUUID("Freq", frequency);
+
+		player.displayClientMessage(CreateLang.translateDirect("logistically_linked.tuned"), true);
+
+		BlockEntity.addEntityType(tag, ((IBE<?>) ((BlockItem) stack.getItem()).getBlock()).getBlockEntityType());
+		stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(tag));
 	}
 
 }

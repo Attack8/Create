@@ -1044,7 +1044,7 @@
 	"create.display_link.display_on": "Write data to:",
 	"create.display_link.display_on_multiline": "Start writing at:",
 
-	"create.logistically_linked.tuned": "Tuned to this link",
+	"create.logistically_linked.tuned": "Tuned to this network",
 	"create.logistically_linked.new_network_started": "New link network started",
 	"create.logistically_linked.connected": "Connected to existing network successfully",
 	"create.logistically_linked.tooltip": "Frequency configured",
@@ -1094,6 +1094,7 @@
 	"create.gui.factory_panel.address_missing": "Inactive: missing a target address",
 	"create.gui.factory_panel.no_target_amount_set": "Inactive: no target amount set",
 	"create.gui.factory_panel.has_link_connections": "Gauge has connected links",
+	"create.gui.factory_panel.place_item_to_monitor": "Place Item to Monitor",
 
 	"create.gui.redstone_requester.allow_partial": "Allow partial orders",
 	"create.gui.redstone_requester.dont_allow_partial": "Must send all items",

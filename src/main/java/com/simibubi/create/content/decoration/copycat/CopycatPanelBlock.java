@@ -55,7 +55,7 @@ public class CopycatPanelBlock extends WaterloggedCopycatBlock {
 
 	@Override
 	public BlockState prepareMaterial(Level pLevel, BlockPos pPos, BlockState pState, Player pPlayer,
-		InteractionHand pHand, BlockHitResult pHit, BlockState material) {
+									  InteractionHand pHand, BlockHitResult pHit, BlockState material) {
 		if (!CopycatSpecialCases.isTrapdoorMaterial(material))
 			return super.prepareMaterial(pLevel, pPos, pState, pPlayer, pHand, pHit, material);
 
@@ -88,7 +88,7 @@ public class CopycatPanelBlock extends WaterloggedCopycatBlock {
 
 	@Override
 	public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
-		BlockPos fromPos, BlockPos toPos) {
+											 BlockPos fromPos, BlockPos toPos) {
 		Direction facing = state.getValue(FACING);
 		BlockState toState = reader.getBlockState(toPos);
 
@@ -101,12 +101,12 @@ public class CopycatPanelBlock extends WaterloggedCopycatBlock {
 		return facing == toState.getValue(FACING)
 			.getOpposite()
 			&& !(coord != 0 && coord == facing.getAxisDirection()
-				.getStep());
+			.getStep());
 	}
 
 	@Override
 	public boolean canConnectTexturesToward(BlockAndTintGetter reader, BlockPos fromPos, BlockPos toPos,
-		BlockState state) {
+											BlockState state) {
 		Direction facing = state.getValue(FACING);
 		BlockState toState = reader.getBlockState(toPos);
 
@@ -163,18 +163,13 @@ public class CopycatPanelBlock extends WaterloggedCopycatBlock {
 	}
 
 	@Override
-	public boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction) {
-		return state.equals(adjacentState) && direction.getAxis().isHorizontal();
-	}
-
-	@Override
 	public boolean supportsExternalFaceHiding(BlockState state) {
 		return true;
 	}
 
 	@Override
 	public boolean hidesNeighborFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState,
-		Direction dir) {
+									 Direction dir) {
 		if (state.is(this) == neighborState.is(this)) {
 			if (CopycatSpecialCases.isBarsMaterial(getMaterial(level, pos))
 				&& CopycatSpecialCases.isBarsMaterial(getMaterial(level, pos.relative(dir))))
@@ -223,7 +218,7 @@ public class CopycatPanelBlock extends WaterloggedCopycatBlock {
 
 		@Override
 		public PlacementOffset getOffset(Player player, Level world, BlockState state, BlockPos pos,
-			BlockHitResult ray) {
+										 BlockHitResult ray) {
 			List<Direction> directions = IPlacementHelper.orderedByDistanceExceptAxis(pos, ray.getLocation(),
 				state.getValue(FACING)
 					.getAxis(),
