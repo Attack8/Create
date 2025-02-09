@@ -12,6 +12,7 @@ import net.createmod.catnip.math.BlockFace;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -76,19 +77,18 @@ public abstract class FlowSource {
 		}
 
 		public void manageSource(Level world) {
-			// TODO 1.21: is it even necessary to periodically reset the cache?
-			if (fluidHandlerCache != null && world.getGameTime() % 20 != 0)
-				return;
-			BlockEntity blockEntity = world.getBlockEntity(location.getConnectedPos());
-			if (blockEntity != null && world instanceof ServerLevel serverLevel)
-				fluidHandlerCache = ICapabilityProvider.of(BlockCapabilityCache.create(
+			if (fluidHandlerCache == null) {
+				BlockEntity blockEntity = world.getBlockEntity(location.getConnectedPos());
+				if (blockEntity != null && world instanceof ServerLevel serverLevel)
+					fluidHandlerCache = ICapabilityProvider.of(BlockCapabilityCache.create(
 						Capabilities.FluidHandler.BLOCK,
 						serverLevel,
 						blockEntity.getBlockPos(),
 						location.getOppositeFace(),
 						() -> !blockEntity.isRemoved(),
-						() -> {}
-				));
+						() -> fluidHandlerCache = EMPTY
+					));
+			}
 		}
 
 		@Override
