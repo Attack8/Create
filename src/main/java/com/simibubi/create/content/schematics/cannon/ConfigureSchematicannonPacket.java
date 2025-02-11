@@ -2,16 +2,13 @@ package com.simibubi.create.content.schematics.cannon;
 
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.schematics.cannon.SchematicannonBlockEntity.State;
-import net.createmod.catnip.net.base.ServerboundPacketPayload;
 
+import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
-
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
-
-import io.netty.buffer.ByteBuf;
 
 public record ConfigureSchematicannonPacket(Option option, boolean set) implements ServerboundPacketPayload {
 	public static final StreamCodec<ByteBuf, ConfigureSchematicannonPacket> STREAM_CODEC = StreamCodec.composite(

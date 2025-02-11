@@ -1,31 +1,32 @@
 package com.simibubi.create.content.kinetics.deployer;
 
+import java.util.function.Function;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeSerializer;
-import com.simibubi.create.infrastructure.codec.CombiningCodec;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class ItemApplicationRecipe extends ProcessingRecipe<RecipeWrapper> {
-
 	public static <T extends ProcessingRecipe<?>> MapCodec<T> codec(AllRecipeTypes recipeTypes) {
-		return CombiningCodec.ofExtending(
-			ProcessingRecipeSerializer.codec(recipeTypes),
-			Codec.BOOL.optionalFieldOf("keepHeldItem", false),
-			(parent, keepHeldItem) -> {
-				if (parent instanceof ItemApplicationRecipe iar)
-					iar.keepHeldItem = keepHeldItem;
-				return parent;
-			},
-			recipe -> recipe instanceof ItemApplicationRecipe iar && iar.keepHeldItem
-		);
+		return RecordCodecBuilder.mapCodec(i -> i.group(
+			ProcessingRecipeSerializer.<T>codec(recipeTypes).forGetter(Function.identity()),
+			Codec.BOOL.optionalFieldOf("keep_held_item", false)
+				.forGetter(r -> r instanceof ItemApplicationRecipe iar && iar.keepHeldItem)
+		).apply(i, (parent, keepHeldItem) -> {
+			if (parent instanceof ItemApplicationRecipe iar)
+				iar.keepHeldItem = keepHeldItem;
+			return parent;
+		}));
 	}
 
 	private boolean keepHeldItem;
@@ -77,5 +78,4 @@ public class ItemApplicationRecipe extends ProcessingRecipe<RecipeWrapper> {
 		super.writeAdditional(buffer);
 		buffer.writeBoolean(keepHeldItem);
 	}
-
 }

@@ -12,6 +12,7 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -23,7 +24,7 @@ public class CubeParticleData implements ParticleOptions, ICustomParticleData<Cu
 			Codec.FLOAT.fieldOf("g").forGetter(p -> p.g),
 			Codec.FLOAT.fieldOf("b").forGetter(p -> p.b),
 			Codec.FLOAT.fieldOf("scale").forGetter(p -> p.scale),
-			Codec.INT.fieldOf("avgAge").forGetter(p -> p.avgAge),
+				Codec.INT.fieldOf("avg_age").forGetter(p -> p.avgAge),
 			Codec.BOOL.fieldOf("hot").forGetter(p -> p.hot))
 		.apply(i, CubeParticleData::new));
 

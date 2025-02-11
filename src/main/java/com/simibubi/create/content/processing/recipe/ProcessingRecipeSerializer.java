@@ -23,6 +23,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 
 @MethodsReturnNonnullByDefault
@@ -53,8 +54,8 @@ public class ProcessingRecipeSerializer<T extends ProcessingRecipe<?>> implement
 					i.getFluidResults().forEach(o -> list.add(Either.right(o)));
 					return list;
 				}),
-				ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("processingTime", 0).forGetter(T::getProcessingDuration),
-				HeatCondition.CODEC.optionalFieldOf("heatRequirement", HeatCondition.NONE).forGetter(T::getRequiredHeat)
+			ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("processing_time", 0).forGetter(T::getProcessingDuration),
+			HeatCondition.CODEC.optionalFieldOf("heat_requirement", HeatCondition.NONE).forGetter(T::getRequiredHeat)
 		).apply(instance, (ingredients, results, processingTime, heatRequirement) -> {
 			if (!(recipeTypes.serializerSupplier.get() instanceof ProcessingRecipeSerializer processingRecipeSerializer))
 				throw new RuntimeException("Not a processing recipe serializer " + recipeTypes.serializerSupplier.get());

@@ -1,6 +1,6 @@
 {
   "type": "create:mixing",
-  "heatRequirement": "heated",
+  "heat_requirement": "heated",
   "ingredients": [
     {
       "item": "minecraft:sugar"
@@ -11,7 +11,7 @@
     {
       "type": "fluid_tag",
       "amount": 250,
-      "fluidTag": "c:milk"
+      "fluid_tag": "c:milk"
     }
   ],
   "results": [

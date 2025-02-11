@@ -1,19 +1,15 @@
 package com.simibubi.create.content.equipment.zapper.terrainzapper;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.mojang.serialization.Codec;
 import com.simibubi.create.foundation.gui.AllIcons;
 
-import net.createmod.catnip.lang.Lang;
-
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
-
+import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
-
-import io.netty.buffer.ByteBuf;
-
-import org.jetbrains.annotations.NotNull;
 
 public enum PlacementOptions implements StringRepresentable {
 	Merged(AllIcons.I_CENTERED),

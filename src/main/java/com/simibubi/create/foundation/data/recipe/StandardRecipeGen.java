@@ -24,8 +24,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllTags;
@@ -36,7 +36,6 @@ import com.simibubi.create.content.decoration.palettes.AllPaletteStoneTypes;
 import com.simibubi.create.content.equipment.toolbox.ToolboxDyeingRecipe;
 import com.simibubi.create.foundation.mixin.accessor.MappedRegistryAccessor;
 import com.simibubi.create.foundation.recipe.ItemCopyingRecipe;
-import com.simibubi.create.infrastructure.codec.CombiningCodec;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
@@ -1781,12 +1780,10 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 
 			@Override
 			public MapCodec<ModdedCookingRecipeOutputShim> codec() {
-				return CombiningCodec.of(
-						wrappedCodec,
-						ResourceLocation.CODEC.fieldOf("result"),
-						ModdedCookingRecipeOutputShim::new,
-						recipeShim -> Pair.of(recipeShim.wrapped, recipeShim.overrideID)
-				);
+				return RecordCodecBuilder.mapCodec(instance -> instance.group(
+					wrappedCodec.forGetter(i -> i.wrapped),
+					ResourceLocation.CODEC.fieldOf("result").forGetter(i -> i.overrideID)
+				).apply(instance, ModdedCookingRecipeOutputShim::new));
 			}
 
 			@Override

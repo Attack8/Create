@@ -11,7 +11,7 @@
       "tag": "c:ores/lignite"
     }
   ],
-  "processingTime": 300,
+  "processing_time": 300,
   "results": [
     {
       "count": 2,

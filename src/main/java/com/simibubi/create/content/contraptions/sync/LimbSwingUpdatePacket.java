@@ -1,17 +1,17 @@
 package com.simibubi.create.content.contraptions.sync;
 
 import com.simibubi.create.AllPackets;
-import net.createmod.catnip.net.base.ClientboundPacketPayload;
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 

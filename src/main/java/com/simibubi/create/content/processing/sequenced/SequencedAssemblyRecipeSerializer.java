@@ -20,7 +20,7 @@ public class SequencedAssemblyRecipeSerializer implements RecipeSerializer<Seque
 	private final MapCodec<SequencedAssemblyRecipe> CODEC = RecordCodecBuilder.mapCodec(
 			i -> i.group(
 					Ingredient.CODEC.fieldOf("ingredient").forGetter(SequencedAssemblyRecipe::getIngredient),
-					ProcessingOutput.CODEC.fieldOf("transitionalItem").forGetter(r -> r.transitionalItem),
+				ProcessingOutput.CODEC.fieldOf("transitional_item").forGetter(r -> r.transitionalItem),
 					SequencedRecipe.CODEC.listOf().fieldOf("sequence").forGetter(SequencedAssemblyRecipe::getSequence),
 					ProcessingOutput.CODEC.listOf().fieldOf("results").forGetter(r -> r.resultPool),
 					ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("loops").forGetter(r -> Optional.of(r.getLoops()))

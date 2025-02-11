@@ -2,13 +2,14 @@ package com.simibubi.create.content.trains.schedule.destination;
 
 import java.util.function.Supplier;
 
+import javax.annotation.Nullable;
+
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.graph.DiscoveredPath;
 import com.simibubi.create.content.trains.schedule.Schedule;
 import com.simibubi.create.content.trains.schedule.ScheduleDataEntry;
-
 import com.simibubi.create.content.trains.schedule.ScheduleRuntime;
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
+import com.simibubi.create.foundation.codec.CreateStreamCodecs;
 
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.HolderLookup;
@@ -17,8 +18,6 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
 
 public abstract class ScheduleInstruction extends ScheduleDataEntry {
 	public static final StreamCodec<RegistryFriendlyByteBuf, ScheduleInstruction> STREAM_CODEC = CreateStreamCodecs.ofLegacyNbtWithRegistries(

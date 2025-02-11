@@ -14,7 +14,7 @@
       "tag": "c:ores/uranium"
     }
   ],
-  "processingTime": 400,
+  "processing_time": 400,
   "results": [
     {
       "item": "create:crushed_raw_uranium"

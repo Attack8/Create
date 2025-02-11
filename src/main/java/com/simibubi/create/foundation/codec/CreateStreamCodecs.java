@@ -1,4 +1,4 @@
-package com.simibubi.create.infrastructure.codec;
+package com.simibubi.create.foundation.codec;
 
 import java.util.Vector;
 import java.util.function.BiFunction;

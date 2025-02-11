@@ -188,7 +188,7 @@ public abstract sealed class FluidIngredient implements Predicate<FluidStack> {
 
 	public static final class FluidTagIngredient extends FluidIngredient {
 		public static final MapCodec<FluidTagIngredient> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-				TagKey.codec(Registries.FLUID).fieldOf("fluidTag").forGetter(fti -> fti.tag),
+			TagKey.codec(Registries.FLUID).fieldOf("fluid_tag").forGetter(fti -> fti.tag),
 				Codec.INT.fieldOf("amount").forGetter(fti -> fti.amountRequired)
 			).apply(i, FluidTagIngredient::new)
 		);

@@ -6,7 +6,7 @@ import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.schedule.Schedule;
 import com.simibubi.create.content.trains.schedule.ScheduleDataEntry;
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
+import com.simibubi.create.foundation.codec.CreateStreamCodecs;
 
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.HolderLookup;

@@ -2,11 +2,10 @@ package com.simibubi.create.content.equipment.symmetryWand;
 
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.equipment.symmetryWand.mirror.SymmetryMirror;
-import net.createmod.catnip.net.base.ServerboundPacketPayload;
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
+import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

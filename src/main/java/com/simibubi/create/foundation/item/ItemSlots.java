@@ -7,7 +7,7 @@ import java.util.function.IntFunction;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.simibubi.create.foundation.utility.CreateCodecs;
+import com.simibubi.create.foundation.codec.CreateCodecs;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

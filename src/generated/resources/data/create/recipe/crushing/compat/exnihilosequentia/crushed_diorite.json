@@ -16,7 +16,7 @@
       ]
     }
   ],
-  "processingTime": 100,
+  "processing_time": 100,
   "results": [
     {
       "chance": 0.25,

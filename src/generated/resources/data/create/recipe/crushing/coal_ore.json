@@ -5,7 +5,7 @@
       "item": "minecraft:coal_ore"
     }
   ],
-  "processingTime": 150,
+  "processing_time": 150,
   "results": [
     {
       "item": "minecraft:coal"

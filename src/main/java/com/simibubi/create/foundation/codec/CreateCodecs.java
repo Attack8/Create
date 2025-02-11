@@ -1,4 +1,4 @@
-package com.simibubi.create.foundation.utility;
+package com.simibubi.create.foundation.codec;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;

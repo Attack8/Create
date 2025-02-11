@@ -4,7 +4,7 @@
     {
       "type": "fluid_tag",
       "amount": 1000,
-      "fluidTag": "c:honey"
+      "fluid_tag": "c:honey"
     }
   ],
   "results": [

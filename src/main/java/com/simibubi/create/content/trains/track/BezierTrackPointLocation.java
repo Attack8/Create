@@ -1,7 +1,6 @@
 package com.simibubi.create.content.trains.track;
 
 import com.mojang.serialization.Codec;
-
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
@@ -11,8 +10,8 @@ import net.minecraft.network.codec.StreamCodec;
 
 public record BezierTrackPointLocation(BlockPos curveTarget, int segment) {
 	public static final Codec<BezierTrackPointLocation> CODEC = RecordCodecBuilder.create(i -> i.group(
-			BlockPos.CODEC.fieldOf("curveTarget").forGetter(BezierTrackPointLocation::curveTarget),
-			Codec.INT.fieldOf("segment").forGetter(BezierTrackPointLocation::segment)
+		BlockPos.CODEC.fieldOf("curve_target").forGetter(BezierTrackPointLocation::curveTarget),
+		Codec.INT.fieldOf("segment").forGetter(BezierTrackPointLocation::segment)
 	).apply(i, BezierTrackPointLocation::new));
 
 	public static final StreamCodec<ByteBuf, BezierTrackPointLocation> STREAM_CODEC = StreamCodec.composite(

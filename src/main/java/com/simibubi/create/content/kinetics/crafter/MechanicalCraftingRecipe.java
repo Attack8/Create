@@ -4,12 +4,13 @@ import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.foundation.mixin.accessor.ShapedRecipeAccessor;
-import com.simibubi.create.infrastructure.codec.CombiningCodec;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -22,7 +23,6 @@ import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.Level;
 
 public class MechanicalCraftingRecipe extends ShapedRecipe {
-
 	private final boolean acceptMirrored;
 
 	public MechanicalCraftingRecipe(String groupIn, CraftingBookCategory category,
@@ -88,41 +88,26 @@ public class MechanicalCraftingRecipe extends ShapedRecipe {
 		return acceptMirrored;
 	}
 
-	public static class Serializer extends ShapedRecipe.Serializer {
-		public static final MapCodec<MechanicalCraftingRecipe> CODEC = CombiningCodec.ofExtending(
-				RecipeSerializer.SHAPED_RECIPE.codec(),
-				Codec.BOOL.fieldOf("acceptMirrored"),
-				MechanicalCraftingRecipe::fromShaped,
-				MechanicalCraftingRecipe::acceptsMirrored
+	public static class Serializer implements RecipeSerializer<MechanicalCraftingRecipe> {
+		public static final MapCodec<MechanicalCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+			RecipeSerializer.SHAPED_RECIPE.codec().forGetter(t -> t),
+			Codec.BOOL.fieldOf("accept_mirrored").forGetter(MechanicalCraftingRecipe::acceptsMirrored)
+		).apply(instance, MechanicalCraftingRecipe::fromShaped));
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, MechanicalCraftingRecipe> STREAM_CODEC = StreamCodec.composite(
+			ShapedRecipe.Serializer.STREAM_CODEC, i -> i,
+			ByteBufCodecs.BOOL, i -> i.acceptMirrored,
+			MechanicalCraftingRecipe::fromShaped
 		);
 
-		public static final StreamCodec<RegistryFriendlyByteBuf, ShapedRecipe> STREAM_CODEC = StreamCodec.of(
-				Serializer::toNetwork, Serializer::fromNetwork
-		);
-
-		public static @NotNull ShapedRecipe fromNetwork(@NotNull RegistryFriendlyByteBuf buffer) {
-			return fromShaped(ShapedRecipe.Serializer.STREAM_CODEC.decode(buffer), buffer.readBoolean() && buffer.readBoolean());
-		}
-
-		public static void toNetwork(@NotNull RegistryFriendlyByteBuf buffer, @NotNull ShapedRecipe recipe) {
-			ShapedRecipe.Serializer.STREAM_CODEC.encode(buffer, recipe);
-			if (recipe instanceof MechanicalCraftingRecipe) {
-				buffer.writeBoolean(true);
-				buffer.writeBoolean(((MechanicalCraftingRecipe) recipe).acceptsMirrored());
-			} else
-				buffer.writeBoolean(false);
-		}
-
-		@SuppressWarnings({"unchecked", "rawtypes"})
 		@Override
-		public @NotNull MapCodec<ShapedRecipe> codec() {
-			return (MapCodec) CODEC;
+		public @NotNull MapCodec<MechanicalCraftingRecipe> codec() {
+			return CODEC;
 		}
 
 		@Override
-		public @NotNull StreamCodec<RegistryFriendlyByteBuf, ShapedRecipe> streamCodec() {
+		public @NotNull StreamCodec<RegistryFriendlyByteBuf, MechanicalCraftingRecipe> streamCodec() {
 			return STREAM_CODEC;
 		}
 	}
-
 }

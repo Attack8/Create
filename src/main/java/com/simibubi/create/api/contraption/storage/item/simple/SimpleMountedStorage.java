@@ -10,7 +10,7 @@ import com.simibubi.create.AllMountedStorageTypes;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.api.contraption.storage.item.MountedItemStorageType;
 import com.simibubi.create.api.contraption.storage.item.WrapperMountedItemStorage;
-import com.simibubi.create.foundation.utility.CreateCodecs;
+import com.simibubi.create.foundation.codec.CreateCodecs;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

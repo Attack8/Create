@@ -7,15 +7,15 @@ import java.util.UUID;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.CreateClient;
-import net.createmod.catnip.net.base.ClientboundPacketPayload;
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 

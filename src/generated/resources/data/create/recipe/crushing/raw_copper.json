@@ -5,7 +5,7 @@
       "tag": "c:raw_materials/copper"
     }
   ],
-  "processingTime": 400,
+  "processing_time": 400,
   "results": [
     {
       "item": "create:crushed_raw_copper"

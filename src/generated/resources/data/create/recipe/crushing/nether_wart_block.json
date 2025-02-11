@@ -5,7 +5,7 @@
       "item": "minecraft:nether_wart_block"
     }
   ],
-  "processingTime": 150,
+  "processing_time": 150,
   "results": [
     {
       "chance": 0.25,

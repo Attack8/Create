@@ -5,7 +5,7 @@
       "tag": "c:storage_blocks/raw_gold"
     }
   ],
-  "processingTime": 400,
+  "processing_time": 400,
   "results": [
     {
       "count": 9,

@@ -12,8 +12,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -37,7 +38,7 @@ public abstract class SymmetryMirror {
 	public static final String TRIPLE_PLANE = "triple_plane";
 
 	public static final Codec<SymmetryMirror> CODEC = RecordCodecBuilder.create(i -> i.group(
-			Codec.INT.fieldOf("orientationIndex").forGetter(SymmetryMirror::getOrientationIndex),
+		Codec.INT.fieldOf("orientation_index").forGetter(SymmetryMirror::getOrientationIndex),
 			Vec3.CODEC.fieldOf("position").forGetter(SymmetryMirror::getPosition),
 			Codec.STRING.fieldOf("type").forGetter(SymmetryMirror::typeName),
 			Codec.BOOL.fieldOf("enable").forGetter(m -> m.enable)

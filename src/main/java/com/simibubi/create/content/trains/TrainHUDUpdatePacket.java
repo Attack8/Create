@@ -8,10 +8,11 @@ import com.mojang.datafixers.util.Function4;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Train;
+
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
-
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -19,9 +20,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
-
-import io.netty.buffer.ByteBuf;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 

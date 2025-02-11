@@ -3,8 +3,8 @@ package com.simibubi.create.content.kinetics.transmission.sequencer;
 import java.util.Vector;
 
 import com.simibubi.create.AllPackets;
+import com.simibubi.create.foundation.codec.CreateStreamCodecs;
 import com.simibubi.create.foundation.networking.BlockEntityConfigurationPacket;
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;

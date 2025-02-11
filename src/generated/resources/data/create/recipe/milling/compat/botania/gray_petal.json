@@ -11,7 +11,7 @@
       "tag": "botania:petals/gray"
     }
   ],
-  "processingTime": 50,
+  "processing_time": 50,
   "results": [
     {
       "item": "minecraft:gray_dye"

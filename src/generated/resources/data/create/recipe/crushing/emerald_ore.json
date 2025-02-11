@@ -5,7 +5,7 @@
       "item": "minecraft:emerald_ore"
     }
   ],
-  "processingTime": 350,
+  "processing_time": 350,
   "results": [
     {
       "item": "minecraft:emerald"

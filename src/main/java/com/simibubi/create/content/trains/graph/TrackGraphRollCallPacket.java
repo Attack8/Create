@@ -8,19 +8,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
-import io.netty.buffer.ByteBuf;
-
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.GlobalRailwayManager;
+
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.createmod.catnip.platform.CatnipServices;
-import com.simibubi.create.infrastructure.codec.CreateStreamCodecs;
-
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
