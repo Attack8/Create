@@ -4,7 +4,8 @@ import java.util.function.Supplier;
 
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.api.contraption.transformable.ITransformableBlock;
+import com.simibubi.create.api.contraption.transformable.TransformableBlock;
+import com.simibubi.create.api.schematic.requirement.SpecialBlockItemRequirement;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.decoration.encasing.EncasedBlock;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -14,7 +15,6 @@ import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.CogWheelBlock;
 import com.simibubi.create.content.kinetics.simpleRelays.ICogWheel;
 import com.simibubi.create.content.kinetics.simpleRelays.SimpleKineticBlockEntity;
-import com.simibubi.create.api.schematic.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.block.IBE;
 
@@ -45,7 +45,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
 public class EncasedCogwheelBlock extends RotatedPillarKineticBlock
-	implements ICogWheel, IBE<SimpleKineticBlockEntity>, ISpecialBlockItemRequirement, ITransformableBlock, EncasedBlock {
+	implements ICogWheel, IBE<SimpleKineticBlockEntity>, SpecialBlockItemRequirement, TransformableBlock, EncasedBlock {
 
 	public static final BooleanProperty TOP_SHAFT = BooleanProperty.create("top_shaft");
 	public static final BooleanProperty BOTTOM_SHAFT = BooleanProperty.create("bottom_shaft");

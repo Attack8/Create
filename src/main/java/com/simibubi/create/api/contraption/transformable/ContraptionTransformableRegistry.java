@@ -1,12 +1,9 @@
 package com.simibubi.create.api.contraption.transformable;
 
-import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.impl.contraption.transformable.ContraptionTransformableRegistryImpl;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Registry for registering new contraption transformations
@@ -33,17 +30,5 @@ public class ContraptionTransformableRegistry {
 	 */
 	public static void registerForBlockEntity(BlockEntityType<?> blockEntityType, TransformableBlockEntity transformableBlockEntity) {
 		ContraptionTransformableRegistryImpl.registerForBlockEntity(blockEntityType, transformableBlockEntity);
-	}
-
-	// --- Interfaces that provide the context that would be accessible if you implemented the ITransformable* interfaces ---
-
-	@FunctionalInterface
-	public interface TransformableBlock {
-		BlockState transform(Block block, BlockState state, StructureTransform transform);
-	}
-
-	@FunctionalInterface
-	public interface TransformableBlockEntity {
-		void transform(BlockEntity blockEntity, StructureTransform transform);
 	}
 }

@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.simibubi.create.api.contraption.train.TrainConductorHandler;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.api.contraption.train.TrainConductorHandler;
 import com.simibubi.create.content.contraptions.AssemblyException;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.ContraptionType;
@@ -20,11 +19,12 @@ import com.simibubi.create.content.contraptions.actors.trainControls.ControlsBlo
 import com.simibubi.create.content.contraptions.minecart.TrainCargoManager;
 import com.simibubi.create.content.trains.bogey.AbstractBogeyBlock;
 import com.simibubi.create.foundation.utility.CreateLang;
+import com.simibubi.create.impl.contraption.train.TrainConductorHandlerImpl;
 
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -166,8 +166,12 @@ public class CarriageContraption extends Contraption {
 				captureBE ? world.getBlockEntity(pos) : null);
 		}
 
-		if (TrainConductorHandler.CONDUCTOR_HANDLERS.stream().anyMatch(handler -> handler.isValidConductor(blockState)))
-			assembledBlockConductors.add(toLocalPos(pos));
+		for (TrainConductorHandler handler : TrainConductorHandlerImpl.CONDUCTOR_HANDLERS) {
+			if (handler.isValidConductor(blockState)) {
+				assembledBlockConductors.add(toLocalPos(pos));
+				break;
+			}
+		}
 
 		if (AllBlocks.TRAIN_CONTROLS.has(blockState)) {
 			Direction facing = blockState.getValue(ControlsBlock.FACING);

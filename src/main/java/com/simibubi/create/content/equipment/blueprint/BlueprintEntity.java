@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 
 import com.simibubi.create.AllEntityTypes;
 import com.simibubi.create.AllItems;
+import com.simibubi.create.api.schematic.requirement.SpecialEntityItemRequirement;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
-import com.simibubi.create.api.schematic.requirement.ISpecialEntityItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement.ItemUseType;
 import com.simibubi.create.foundation.networking.ISyncPersistentData;
@@ -58,6 +58,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.CommonHooks;
@@ -69,7 +70,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
 public class BlueprintEntity extends HangingEntity
-	implements IEntityWithComplexSpawn, ISpecialEntityItemRequirement, ISyncPersistentData, IInteractionChecker {
+	implements IEntityWithComplexSpawn, SpecialEntityItemRequirement, ISyncPersistentData, IInteractionChecker {
 
 	protected int size;
 	protected Direction verticalOrientation;

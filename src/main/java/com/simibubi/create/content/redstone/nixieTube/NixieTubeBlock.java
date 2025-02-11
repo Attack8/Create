@@ -8,9 +8,9 @@ import java.util.function.BiConsumer;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllShapes;
+import com.simibubi.create.api.schematic.requirement.SpecialBlockItemRequirement;
 import com.simibubi.create.content.equipment.clipboard.ClipboardEntry;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
-import com.simibubi.create.api.schematic.requirement.ISpecialBlockItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement.ItemUseType;
 import com.simibubi.create.foundation.block.IBE;
@@ -48,7 +48,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class NixieTubeBlock extends DoubleFaceAttachedBlock
-	implements IBE<NixieTubeBlockEntity>, IWrenchable, SimpleWaterloggedBlock, ISpecialBlockItemRequirement {
+	implements IBE<NixieTubeBlockEntity>, IWrenchable, SimpleWaterloggedBlock, SpecialBlockItemRequirement {
 
 	protected final DyeColor color;
 

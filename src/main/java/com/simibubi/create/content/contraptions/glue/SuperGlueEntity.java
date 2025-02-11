@@ -12,7 +12,7 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllEntityTypes;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.api.schematic.requirement.ISpecialEntityItemRequirement;
+import com.simibubi.create.api.schematic.requirement.SpecialEntityItemRequirement;
 import com.simibubi.create.content.contraptions.BlockMovementChecks;
 import com.simibubi.create.content.contraptions.bearing.BearingBlock;
 import com.simibubi.create.content.contraptions.chassis.AbstractChassisBlock;
@@ -55,7 +55,7 @@ import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class SuperGlueEntity extends Entity implements IEntityWithComplexSpawn, ISpecialEntityItemRequirement {
+public class SuperGlueEntity extends Entity implements IEntityWithComplexSpawn, SpecialEntityItemRequirement {
 
 	public static AABB span(BlockPos startPos, BlockPos endPos) {
 		return new AABB(Vec3.atLowerCornerOf(startPos), Vec3.atLowerCornerOf(endPos)).expandTowards(1, 1, 1);

@@ -4,6 +4,7 @@ import com.simibubi.create.content.contraptions.StructureTransform;
 
 import net.minecraft.world.level.block.state.BlockState;
 
-public interface ITransformableBlock {
+@FunctionalInterface
+public interface TransformableBlock {
 	BlockState transform(BlockState state, StructureTransform transform);
 }

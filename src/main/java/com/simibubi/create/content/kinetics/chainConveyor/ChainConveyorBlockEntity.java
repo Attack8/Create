@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import com.simibubi.create.AllDataComponents;
-import com.simibubi.create.api.contraption.transformable.ITransformableBlockEntity;
+import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -52,12 +52,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITransformableBlockEntity {
+public class ChainConveyorBlockEntity extends KineticBlockEntity implements TransformableBlockEntity {
 
 	public record ConnectionStats(float tangentAngle, float chainLength, Vec3 start, Vec3 end) {
 	}
@@ -784,7 +785,7 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements ITra
 	}
 
 	@Override
-	public void transform(StructureTransform transform) {
+	public void transform(BlockEntity be, StructureTransform transform) {
 		if (connections == null || connections.isEmpty())
 			return;
 

@@ -20,10 +20,10 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.Create;
 import com.simibubi.create.compat.Mods;
+import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
 import com.simibubi.create.content.contraptions.AssemblyException;
-import com.simibubi.create.api.contraption.transformable.ITransformableBlockEntity;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.decoration.slidingDoor.DoorControlBehaviour;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -56,6 +56,8 @@ import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+
+import dan200.computercraft.api.peripheral.PeripheralCapability;
 import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
@@ -92,12 +94,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 
-public class StationBlockEntity extends SmartBlockEntity implements ITransformableBlockEntity {
+public class StationBlockEntity extends SmartBlockEntity implements TransformableBlockEntity {
 
 	public TrackTargetingBehaviour<GlobalStation> edgePoint;
 	public DoorControlBehaviour doorControls;
@@ -977,8 +980,8 @@ public class StationBlockEntity extends SmartBlockEntity implements ITransformab
 	}
 
 	@Override
-	public void transform(StructureTransform transform) {
-		edgePoint.transform(transform);
+	public void transform(BlockEntity be, StructureTransform transform) {
+		edgePoint.transform(be, transform);
 	}
 
 	// Package port integration

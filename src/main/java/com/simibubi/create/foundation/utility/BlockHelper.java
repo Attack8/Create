@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags.AllBlockTags;
-import com.simibubi.create.api.schematic.nbt.IPartialSafeNBT;
+import com.simibubi.create.api.schematic.nbt.PartialSafeNBT;
 import com.simibubi.create.api.schematic.nbt.SchematicSafeNBTRegistry;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.framedblocks.FramedBlocksInSchematics;
@@ -63,6 +63,7 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.material.FluidState;
+
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.SpecialPlantable;
@@ -299,7 +300,7 @@ public class BlockHelper {
 		} else if (safeNBT != null) {
 			data = new CompoundTag();
 			safeNBT.writeSafe(blockEntity, data, access);
-		} else if (blockEntity instanceof IPartialSafeNBT safeNbtBE) {
+		} else if (blockEntity instanceof PartialSafeNBT safeNbtBE) {
 			data = new CompoundTag();
 			safeNbtBE.writeSafe(data, access);
 		} else if (Mods.FRAMEDBLOCKS.contains(blockState.getBlock())) {

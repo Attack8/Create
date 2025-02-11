@@ -9,14 +9,14 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 
 import com.simibubi.create.api.event.BlockEntityBehaviourEvent;
-import com.simibubi.create.api.schematic.requirement.ISpecialBlockEntityItemRequirement;
+import com.simibubi.create.api.schematic.nbt.PartialSafeNBT;
+import com.simibubi.create.api.schematic.requirement.SpecialBlockEntityItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.advancement.AdvancementBehaviour;
 import com.simibubi.create.foundation.advancement.CreateAdvancement;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.utility.IInteractionChecker;
-import com.simibubi.create.api.schematic.nbt.IPartialSafeNBT;
 
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.createmod.ponder.api.VirtualBlockEntity;
@@ -27,10 +27,11 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.neoforged.neoforge.common.NeoForge;
 
 public abstract class SmartBlockEntity extends CachedRenderBBBlockEntity
-	implements IPartialSafeNBT, IInteractionChecker, ISpecialBlockEntityItemRequirement, VirtualBlockEntity {
+	implements PartialSafeNBT, IInteractionChecker, SpecialBlockEntityItemRequirement, VirtualBlockEntity {
 
 	private final Map<BehaviourType<?>, BlockEntityBehaviour> behaviours = new Reference2ObjectArrayMap<>();
 	private boolean initialized = false;

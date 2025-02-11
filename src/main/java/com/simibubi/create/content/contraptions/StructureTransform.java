@@ -6,9 +6,8 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 import org.jetbrains.annotations.Nullable;
 
-import com.simibubi.create.api.contraption.transformable.ContraptionTransformableRegistry;
-import com.simibubi.create.api.contraption.transformable.ITransformableBlock;
-import com.simibubi.create.api.contraption.transformable.ITransformableBlockEntity;
+import com.simibubi.create.api.contraption.transformable.TransformableBlock;
+import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
 import com.simibubi.create.impl.contraption.transformable.ContraptionTransformableRegistryImpl;
 
 import io.netty.buffer.ByteBuf;
@@ -150,11 +149,11 @@ public class StructureTransform {
 	}
 
 	public void apply(BlockEntity be) {
-		ContraptionTransformableRegistry.TransformableBlockEntity transformableBlockEntity = ContraptionTransformableRegistryImpl.get(be.getType());
+		TransformableBlockEntity transformableBlockEntity = ContraptionTransformableRegistryImpl.get(be.getType());
 		if (transformableBlockEntity != null) {
 			transformableBlockEntity.transform(be, this);
-		} else if (be instanceof ITransformableBlockEntity itbe) {
-			itbe.transform(this);
+		} else if (be instanceof TransformableBlockEntity itbe) {
+			itbe.transform(be, this);
 		}
 	}
 
@@ -165,10 +164,10 @@ public class StructureTransform {
 	 */
 	public BlockState apply(BlockState state) {
 		Block block = state.getBlock();
-		ContraptionTransformableRegistry.TransformableBlock transformableBlock = ContraptionTransformableRegistryImpl.get(block);
+		TransformableBlock transformableBlock = ContraptionTransformableRegistryImpl.get(block);
 		if (transformableBlock != null) {
-			return transformableBlock.transform(block, state, this);
-		} else if (block instanceof ITransformableBlock transformable) {
+			return transformableBlock.transform(state, this);
+		} else if (block instanceof TransformableBlock transformable) {
 			return transformable.transform(state, this);
 		}
 

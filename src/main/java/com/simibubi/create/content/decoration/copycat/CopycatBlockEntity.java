@@ -3,9 +3,9 @@ package com.simibubi.create.content.decoration.copycat;
 import java.util.List;
 
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.api.contraption.transformable.ITransformableBlockEntity;
-import com.simibubi.create.api.schematic.nbt.IPartialSafeNBT;
-import com.simibubi.create.api.schematic.requirement.ISpecialBlockEntityItemRequirement;
+import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
+import com.simibubi.create.api.schematic.nbt.PartialSafeNBT;
+import com.simibubi.create.api.schematic.requirement.SpecialBlockEntityItemRequirement;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.redstone.RoseQuartzLampBlock;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
@@ -22,6 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -29,7 +30,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class CopycatBlockEntity extends SmartBlockEntity
-	implements ISpecialBlockEntityItemRequirement, ITransformableBlockEntity, IPartialSafeNBT {
+	implements SpecialBlockEntityItemRequirement, TransformableBlockEntity, PartialSafeNBT {
 
 	private BlockState material;
 	private ItemStack consumedItem;
@@ -129,7 +130,7 @@ public class CopycatBlockEntity extends SmartBlockEntity
 	}
 
 	@Override
-	public void transform(StructureTransform transform) {
+	public void transform(BlockEntity be, StructureTransform transform) {
 		material = transform.apply(material);
 		notifyUpdate();
 	}

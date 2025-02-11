@@ -10,7 +10,7 @@ import com.mojang.serialization.MapCodec;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
-import com.simibubi.create.api.schematic.requirement.ISpecialBlockItemRequirement;
+import com.simibubi.create.api.schematic.requirement.SpecialBlockItemRequirement;
 import com.simibubi.create.content.contraptions.elevator.ElevatorColumn.ColumnCoords;
 import com.simibubi.create.content.redstone.contact.RedstoneContactBlock;
 import com.simibubi.create.content.redstone.diodes.BrassDiodeBlock;
@@ -52,7 +52,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public class ElevatorContactBlock extends WrenchableDirectionalBlock
-	implements IBE<ElevatorContactBlockEntity>, ISpecialBlockItemRequirement {
+	implements IBE<ElevatorContactBlockEntity>, SpecialBlockItemRequirement {
 
 	public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 	public static final BooleanProperty CALLING = BooleanProperty.create("calling");

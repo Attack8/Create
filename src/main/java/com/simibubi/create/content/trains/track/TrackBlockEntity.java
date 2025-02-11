@@ -10,7 +10,7 @@ import java.util.Set;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags;
-import com.simibubi.create.api.contraption.transformable.ITransformableBlockEntity;
+import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.trains.graph.TrackNodeLocation;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
@@ -44,11 +44,12 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
-public class TrackBlockEntity extends SmartBlockEntity implements ITransformableBlockEntity, IMergeableBE {
+public class TrackBlockEntity extends SmartBlockEntity implements TransformableBlockEntity, IMergeableBE {
 
 	Map<BlockPos, BezierConnection> connections;
 	boolean cancelDrops;
@@ -265,7 +266,7 @@ public class TrackBlockEntity extends SmartBlockEntity implements ITransformable
 	}
 
 	@Override
-	public void transform(StructureTransform transform) {
+	public void transform(BlockEntity be, StructureTransform transform) {
 		Map<BlockPos, BezierConnection> restoredConnections = new HashMap<>();
 		for (Entry<BlockPos, BezierConnection> entry : connections.entrySet())
 			restoredConnections.put(entry.getKey(),

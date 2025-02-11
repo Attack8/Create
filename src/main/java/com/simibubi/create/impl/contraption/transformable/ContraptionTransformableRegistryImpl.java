@@ -2,8 +2,8 @@ package com.simibubi.create.impl.contraption.transformable;
 
 import org.jetbrains.annotations.ApiStatus;
 
-import com.simibubi.create.api.contraption.transformable.ContraptionTransformableRegistry.TransformableBlock;
-import com.simibubi.create.api.contraption.transformable.ContraptionTransformableRegistry.TransformableBlockEntity;
+import com.simibubi.create.api.contraption.transformable.TransformableBlock;
+import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
 import com.simibubi.create.foundation.utility.AttachedRegistry;
 
 import net.minecraft.core.registries.BuiltInRegistries;

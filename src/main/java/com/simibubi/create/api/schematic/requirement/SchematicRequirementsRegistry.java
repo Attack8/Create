@@ -20,95 +20,97 @@ public class SchematicRequirementsRegistry {
 	/**
 	 * Register a new special requirement for a specified block
 	 *
-	 * @param block       The block you want to register a {@link BlockRequirement} for
+	 * @param block       The block you want to register a {@link ContextProvidingBlockRequirement} for
 	 * @param requirement The requirement you would like to add to this block,
-	 *                    the {@link BlockRequirement#getRequiredItems(Block, BlockState, BlockEntity)}
-	 *                    method will be called on the {@link BlockRequirement} you have provided,
+	 *                    the {@link ContextProvidingBlockRequirement#getRequiredItems(BlockState, BlockEntity)}
+	 *                    method will be called on the {@link ContextProvidingBlockRequirement} you have provided,
 	 *                    and you will be able to insert requirements based off the context that is given
 	 */
-	public static void registerForBlock(Block block, BlockRequirement requirement) {
+	public static void registerForBlock(Block block, ContextProvidingBlockRequirement requirement) {
 		SchematicRequirementsRegistryImpl.registerForBlock(block, requirement);
 	}
 
 	/**
 	 * Register a new special requirement for a specified block
 	 *
-	 * @param block       The id of the block you want to register a {@link BlockRequirement} for
+	 * @param block       The id of the block you want to register a {@link ContextProvidingBlockRequirement} for
 	 * @param requirement The requirement you would like to add to this block,
-	 *                    the {@link BlockRequirement#getRequiredItems(Block, BlockState, BlockEntity)}
-	 *                    method will be called on the {@link BlockRequirement} you have provided,
+	 *                    the {@link ContextProvidingBlockRequirement#getRequiredItems(BlockState, BlockEntity)}
+	 *                    method will be called on the {@link ContextProvidingBlockRequirement} you have provided,
 	 *                    and you will be able to insert requirements based off the context that is given
 	 */
-	public static void registerForBlock(ResourceLocation block, BlockRequirement requirement) {
+	public static void registerForBlock(ResourceLocation block, ContextProvidingBlockRequirement requirement) {
 		SchematicRequirementsRegistryImpl.registerForBlock(block, requirement);
 	}
 
 	/**
 	 * Register a new special requirement for a specified block entity type
 	 *
-	 * @param blockEntityType The blockEntityType you want to register a {@link BlockEntityRequirement} for
+	 * @param blockEntityType The blockEntityType you want to register a {@link ContextProvidingBlockEntityRequirement} for
 	 * @param requirement     The requirement you would like to add to this block entity type,
-	 *                        the {@link BlockEntityRequirement#getRequiredItems(BlockEntity, BlockState)}
-	 *                        method will be called on the {@link BlockEntityRequirement} you have provided,
+	 *                        the {@link ContextProvidingBlockEntityRequirement#getRequiredItems(BlockEntity)}
+	 *                        method will be called on the
+	 *                        {@link ContextProvidingBlockEntityRequirement} you have provided,
 	 *                        and you will be able to insert requirements based off the context that is given
 	 */
-	public static void registerForBlockEntity(BlockEntityType<BlockEntity> blockEntityType, BlockEntityRequirement requirement) {
+	public static void registerForBlockEntity(BlockEntityType<BlockEntity> blockEntityType, ContextProvidingBlockEntityRequirement requirement) {
 		SchematicRequirementsRegistryImpl.registerForBlockEntity(blockEntityType, requirement);
 	}
 
 	/**
 	 * Register a new special requirement for a specified block entity type
 	 *
-	 * @param blockEntityType The id of the blockEntityType you want to register a {@link BlockEntityRequirement} for
+	 * @param blockEntityType The id of the blockEntityType you want to register a {@link ContextProvidingBlockEntityRequirement} for
 	 * @param requirement     The requirement you would like to add to this block entity type,
-	 *                        the {@link BlockEntityRequirement#getRequiredItems(BlockEntity, BlockState)}
-	 *                        method will be called on the {@link BlockEntityRequirement} you have provided,
+	 *                        the {@link ContextProvidingBlockEntityRequirement#getRequiredItems(BlockEntity)}
+	 *                        method will be called on the
+	 *                        {@link ContextProvidingBlockEntityRequirement} you have provided,
 	 *                        and you will be able to insert requirements based off the context that is given
 	 */
-	public static void registerForBlockEntity(ResourceLocation blockEntityType, BlockEntityRequirement requirement) {
+	public static void registerForBlockEntity(ResourceLocation blockEntityType, ContextProvidingBlockEntityRequirement requirement) {
 		SchematicRequirementsRegistryImpl.registerForBlockEntity(blockEntityType, requirement);
 	}
 
 	/**
 	 * Register a new special requirement for a specified entity type
 	 *
-	 * @param entityType  The entityType you want to register a {@link EntityRequirement} for
+	 * @param entityType  The entityType you want to register a {@link ContextProvidingEntityRequirement} for
 	 * @param requirement The requirement you would like to add to this entity type,
-	 *                    the {@link EntityRequirement#getRequiredItems(Entity)}
-	 *                    method will be called on the {@link EntityRequirement} you have provided,
+	 *                    the {@link ContextProvidingEntityRequirement#getRequiredItems(Entity)}
+	 *                    method will be called on the {@link ContextProvidingEntityRequirement} you have provided,
 	 *                    and you will be able to insert requirements based off the context that is given
 	 */
-	public static void registerForEntity(EntityType<Entity> entityType, EntityRequirement requirement) {
+	public static void registerForEntity(EntityType<Entity> entityType, ContextProvidingEntityRequirement requirement) {
 		SchematicRequirementsRegistryImpl.registerForEntity(entityType, requirement);
 	}
 
 	/**
 	 * Register a new special requirement for a specified entity type
 	 *
-	 * @param entityType  The id of the entityType you want to register a {@link EntityRequirement} for
+	 * @param entityType  The id of the entityType you want to register a {@link ContextProvidingEntityRequirement} for
 	 * @param requirement The requirement you would like to add to this entity type,
-	 *                    the {@link EntityRequirement#getRequiredItems(Entity)}
-	 *                    method will be called on the {@link EntityRequirement} you have provided,
+	 *                    the {@link ContextProvidingEntityRequirement#getRequiredItems(Entity)}
+	 *                    method will be called on the {@link ContextProvidingEntityRequirement} you have provided,
 	 *                    and you will be able to insert requirements based off the context that is given
 	 */
-	public static void registerForEntity(ResourceLocation entityType, EntityRequirement requirement) {
+	public static void registerForEntity(ResourceLocation entityType, ContextProvidingEntityRequirement requirement) {
 		SchematicRequirementsRegistryImpl.registerForEntity(entityType, requirement);
 	}
 
 	// --- Interfaces that provide the context that would be accessible if you implemented the ISpecial* interfaces ---
 
 	@FunctionalInterface
-	public interface BlockRequirement {
-		ItemRequirement getRequiredItems(Block block, BlockState state, @Nullable BlockEntity blockEntity);
+	public interface ContextProvidingBlockRequirement {
+		ItemRequirement getRequiredItems(BlockState state, @Nullable BlockEntity blockEntity);
 	}
 
 	@FunctionalInterface
-	public interface BlockEntityRequirement {
-		ItemRequirement getRequiredItems(BlockEntity blockEntity, BlockState state);
+	public interface ContextProvidingBlockEntityRequirement {
+		ItemRequirement getRequiredItems(BlockEntity blockEntity);
 	}
 
 	@FunctionalInterface
-	public interface EntityRequirement {
+	public interface ContextProvidingEntityRequirement {
 		ItemRequirement getRequiredItems(Entity entity);
 	}
 }
