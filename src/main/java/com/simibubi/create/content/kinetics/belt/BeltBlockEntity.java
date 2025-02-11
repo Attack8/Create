@@ -177,6 +177,7 @@ public class BeltBlockEntity extends KineticBlockEntity {
 		if (inventory == null)
 			return;
 		itemHandler = new ItemHandlerBeltSegment(inventory, index);
+		invalidateCapabilities();
 	}
 
 	@Override
@@ -553,6 +554,7 @@ public class BeltBlockEntity extends KineticBlockEntity {
 
 	public void invalidateItemHandler() {
 		invalidateCapabilities();
+		itemHandler = null;
 	}
 
 	public boolean shouldRenderNormally() {

@@ -356,6 +356,13 @@ public class BeltSlicer {
 					player.getInventory().placeItemBackInInventory(AllItems.BELT_CONNECTOR.asStack());
 				}
 
+				for (BlockPos blockPos : BeltBlock.getBeltChain(world, controllerBE.getBlockPos())) {
+					BeltBlockEntity belt = BeltHelper.getSegmentBE(world, blockPos);
+					if (belt == null)
+						continue;
+					belt.invalidateItemHandler();
+				}
+				
 				// Transfer items to other controller
 				BlockPos search = controllerBE.getBlockPos();
 				for (int i = 0; i < 10000; i++) {

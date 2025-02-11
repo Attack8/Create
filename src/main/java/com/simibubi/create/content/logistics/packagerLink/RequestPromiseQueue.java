@@ -113,7 +113,7 @@ public class RequestPromiseQueue {
 
 	public static RequestPromiseQueue read(CompoundTag tag, Runnable onChanged) {
 		RequestPromiseQueue queue = new RequestPromiseQueue(onChanged);
-		List<RequestPromise> promises = CatnipCodecUtils.decode(Codec.list(RequestPromise.CODEC), tag.get("List")).orElseThrow();
+		List<RequestPromise> promises = CatnipCodecUtils.decode(Codec.list(RequestPromise.CODEC), tag.get("List")).orElse(List.of());
 		for (RequestPromise promise : promises) {
 			queue.add(promise);
 		}

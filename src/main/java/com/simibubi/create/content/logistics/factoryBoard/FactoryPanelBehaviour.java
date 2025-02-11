@@ -752,11 +752,16 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 
 		CompoundTag panelTag = new CompoundTag();
 		panelTag.put("Filter", getFilter().saveOptional(registries));
+		panelTag.putBoolean("UpTo", upTo);
 		panelTag.putInt("FilterAmount", count);
 		panelTag.putUUID("Freq", network);
 		panelTag.putString("RecipeAddress", recipeAddress);
 		panelTag.putInt("PromiseClearingInterval", -1);
 		panelTag.putInt("RecipeOutput", 1);
+		
+		if (panelBE().restocker)
+			panelTag.put("Promises", restockerPromises.write());
+		
 		nbt.put(CreateLang.asId(slot.name()), panelTag);
 	}
 
