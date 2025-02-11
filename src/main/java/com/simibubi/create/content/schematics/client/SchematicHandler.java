@@ -95,8 +95,6 @@ public class SchematicHandler implements LayeredDraw.Layer {
 		if (activeSchematicItem != null && transformation != null)
 			transformation.tick();
 
-		renderers.forEach(SchematicRenderer::tick);
-
 		LocalPlayer player = mc.player;
 		ItemStack stack = findBlueprintInHand(player);
 		if (stack == null) {
@@ -316,7 +314,7 @@ public class SchematicHandler implements LayeredDraw.Layer {
 			return false;
 
 		if (selectionScreen.focused) {
-			selectionScreen.cycle((int) delta);
+			selectionScreen.cycle((int) Math.signum(delta));
 			return true;
 		}
 		if (AllKeys.ctrlDown())

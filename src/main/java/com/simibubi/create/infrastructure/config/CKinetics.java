@@ -1,6 +1,5 @@
 package com.simibubi.create.infrastructure.config;
 
-import com.simibubi.create.content.contraptions.ContraptionData;
 import com.simibubi.create.content.contraptions.ContraptionMovementSetting;
 
 import net.createmod.catnip.config.ConfigBase;
@@ -32,8 +31,6 @@ public class CKinetics extends ConfigBase {
 
 	public final ConfigGroup contraptions = group(1, "contraptions", "Moving Contraptions");
 	public final ConfigInt maxBlocksMoved = i(2048, 1, "maxBlocksMoved", Comments.maxBlocksMoved);
-	public final ConfigInt maxDataSize =
-		i(ContraptionData.DEFAULT_LIMIT, 0, "maxDataSize", Comments.bytes, Comments.maxDataDisable, Comments.maxDataSize, Comments.maxDataSize2);
 	public final ConfigInt maxChassisRange = i(16, 1, "maxChassisRange", Comments.maxChassisRange);
 	public final ConfigInt maxPistonPoles = i(64, 1, "maxPistonPoles", Comments.maxPistonPoles);
 	public final ConfigInt maxRopeLength = i(384, 1, "maxRopeLength", Comments.maxRopeLength);
@@ -86,9 +83,6 @@ public class CKinetics extends ConfigBase {
 			"multiplier used for calculating exhaustion from speed when a crank is turned.";
 		static String maxBlocksMoved =
 			"Maximum amount of blocks in a structure movable by Pistons, Bearings or other means.";
-		static String maxDataSize = "Maximum amount of data a contraption can have before it can't be synced with players.";
-		static String maxDataSize2 = "Un-synced contraptions will not be visible and will not have collision.";
-		static String maxDataDisable = "[0 to disable this limit]";
 		static String maxChassisRange = "Maximum value of a chassis attachment range.";
 		static String maxPistonPoles = "Maximum amount of extension poles behind a Mechanical Piston.";
 		static String maxRopeLength = "Max length of rope available off a Rope Pulley.";

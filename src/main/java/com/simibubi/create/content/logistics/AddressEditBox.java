@@ -65,6 +65,13 @@ public class AddressEditBox extends EditBox {
 
 	@Override
 	public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+		if (pButton == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+			if (isMouseOver(pMouseX, pMouseY)) {
+				setValue("");
+				return true;
+			}
+		}
+		
 		boolean wasFocused = isFocused();
 		if (super.mouseClicked(pMouseX, pMouseY, pButton)) {
 			if (!wasFocused) {

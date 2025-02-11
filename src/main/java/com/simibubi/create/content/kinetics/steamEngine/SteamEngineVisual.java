@@ -26,6 +26,7 @@ public class SteamEngineVisual extends AbstractBlockEntityVisual<SteamEngineBloc
 	protected final TransformedInstance connector;
 
 	private Float lastAngle = Float.NaN;
+	private Axis lastAxis = null;
 
 	public SteamEngineVisual(VisualizationContext context, SteamEngineBlockEntity blockEntity, float partialTick) {
 		super(context, blockEntity, partialTick);
@@ -47,11 +48,18 @@ public class SteamEngineVisual extends AbstractBlockEntityVisual<SteamEngineBloc
 
 	private void animate() {
 		Float angle = blockEntity.getTargetAngle();
+		Axis axis = Axis.Y;
 
-		if (Objects.equals(angle, lastAngle)) {
+		PoweredShaftBlockEntity shaft = blockEntity.getShaft();
+		if (shaft != null)
+			axis = KineticBlockEntityRenderer.getRotationAxisOf(shaft);
+
+		if (Objects.equals(angle, lastAngle) && lastAxis == axis) {
 			return;
 		}
+		
 		lastAngle = angle;
+		lastAxis = axis;
 
 		if (angle == null) {
 			piston.setVisible(false);
@@ -66,11 +74,6 @@ public class SteamEngineVisual extends AbstractBlockEntityVisual<SteamEngineBloc
 
 		Direction facing = SteamEngineBlock.getFacing(blockState);
 		Axis facingAxis = facing.getAxis();
-		Axis axis = Axis.Y;
-
-		PoweredShaftBlockEntity shaft = blockEntity.getShaft();
-		if (shaft != null)
-			axis = KineticBlockEntityRenderer.getRotationAxisOf(shaft);
 
 		boolean roll90 = facingAxis.isHorizontal() && axis == Axis.Y || facingAxis.isVertical() && axis == Axis.Z;
 		float sine = Mth.sin(angle);

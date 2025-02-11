@@ -18,13 +18,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllMovementBehaviours;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.Create;
 import com.simibubi.create.content.contraptions.actors.psi.PortableStorageInterfaceMovement;
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock;
 import com.simibubi.create.content.contraptions.actors.seat.SeatEntity;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsStopControllingPacket;
 import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
+import com.simibubi.create.content.contraptions.data.ContraptionSyncLimiting;
 import com.simibubi.create.content.contraptions.elevator.ElevatorContraption;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 import com.simibubi.create.content.contraptions.mounted.MountedContraption;
@@ -605,11 +605,8 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		CompoundTag compound = new CompoundTag();
 		writeAdditional(compound, registryFriendlyByteBuf.registryAccess(), true);
 
-		if (!CatnipServices.PLATFORM.getLoader().isNeoForge() && ContraptionData.isTooLargeForSync(compound)) {
-			String info = getContraption().getType().id + " @" + position() + " (" + getStringUUID() + ")";
-			Create.LOGGER.warn("Could not send Contraption Spawn Data (Packet too big): {}", info);
-			compound = null;
-		}
+		if (!CatnipServices.PLATFORM.getLoader().isNeoForge() && ContraptionSyncLimiting.isTooLargeForSync(compound))
+			compound = null; // don't sync contraption data
 
 		registryFriendlyByteBuf.writeNbt(compound);
 	}

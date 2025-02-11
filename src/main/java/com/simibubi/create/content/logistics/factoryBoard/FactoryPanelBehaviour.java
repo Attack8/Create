@@ -388,7 +388,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 			return;
 		}
 
-		timer = REQUEST_INTERVAL;
+		resetTimer();
 
 		if (recipeAddress.isBlank())
 			return;
@@ -707,7 +707,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		PackagerBlockEntity packager = panelBE.getRestockedPackager();
 		if (packager == null)
 			return InventorySummary.EMPTY;
-		return packager.getAvailableItems();
+		return packager.getAvailableItems(true);
 	}
 
 	public int getPromised() {
@@ -720,7 +720,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		if (panelBE().restocker) {
 			if (forceClearPromises) {
 				restockerPromises.forceClear(item);
-				timer = 0;
+				resetTimerSlightly();
 			}
 			forceClearPromises = false;
 			return restockerPromises.getTotalPromisedAndRemoveExpired(item, getPromiseExpiryTimeInTicks());
@@ -729,11 +729,19 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		RequestPromiseQueue promises = Create.LOGISTICS.getQueuedPromises(network);
 		if (forceClearPromises) {
 			promises.forceClear(item);
-			timer = 0;
+			resetTimerSlightly();
 		}
 		forceClearPromises = false;
 
 		return promises == null ? 0 : promises.getTotalPromisedAndRemoveExpired(item, getPromiseExpiryTimeInTicks());
+	}
+	
+	public void resetTimer() {
+		timer = REQUEST_INTERVAL;
+	}
+	
+	public void resetTimerSlightly() {
+		timer = REQUEST_INTERVAL / 2;
 	}
 
 	private int getPromiseExpiryTimeInTicks() {
@@ -874,6 +882,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		blockEntity.setChanged();
 		blockEntity.sendData();
 		playFeedbackSound(this);
+		resetTimerSlightly();
 		if (!getWorld().isClientSide)
 			notifyRedstoneOutputs();
 	}

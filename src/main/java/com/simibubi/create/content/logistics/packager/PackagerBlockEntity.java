@@ -167,6 +167,10 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 	}
 
 	public InventorySummary getAvailableItems() {
+		return getAvailableItems(false);
+	}
+	
+	public InventorySummary getAvailableItems(boolean scanInputSlots) {
 		if (availableItems != null && invVersionTracker.stillWaiting(targetInventory.getInventory()))
 			return availableItems;
 
@@ -186,9 +190,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 
 		for (int slot = 0; slot < targetInv.getSlots(); slot++) {
 			int slotLimit = targetInv.getSlotLimit(slot);
-			@NotNull
-			ItemStack extractItem = targetInv.extractItem(slot, slotLimit, true);
-			availableItems.add(extractItem);
+			availableItems.add(scanInputSlots ? targetInv.getStackInSlot(slot) : targetInv.extractItem(slot, slotLimit, true));
 		}
 
 		invVersionTracker.awaitNewVersion(targetInventory.getInventory());

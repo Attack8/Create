@@ -149,8 +149,14 @@ public class FluidDrainingBehaviour extends FluidManipulationBehaviour {
 			playEffect(world, currentPos, fluid, true);
 			blockEntity.award(AllAdvancements.HOSE_PULLEY);
 
-			if (!blockEntity.isVirtual())
+			if (!blockEntity.isVirtual()) {
 				world.setBlock(currentPos, emptied, 2 | 16);
+
+				BlockState stateAbove = world.getBlockState(currentPos.above());
+				if (stateAbove.getFluidState()
+					.getType() == Fluids.EMPTY && !stateAbove.canSurvive(world, currentPos.above()))
+					world.setBlock(currentPos.above(), Blocks.AIR.defaultBlockState(), 2 | 16);
+			}
 			affectedArea = BBHelper.encapsulate(affectedArea, currentPos);
 
 			queue.dequeue();

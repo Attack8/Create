@@ -45,7 +45,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 
@@ -673,8 +672,6 @@ public class FactoryPanelScreen extends AbstractSimiScreen {
 		availableCraftingRecipe = level.getRecipeManager()
 			.getAllRecipesFor(RecipeType.CRAFTING)
 			.parallelStream()
-			.filter(r -> r.value().getSerializer() == RecipeSerializer.SHAPED_RECIPE
-				|| r.value().getSerializer() == RecipeSerializer.SHAPELESS_RECIPE)
 			.filter(r -> output.getItem() == r.value().getResultItem(level.registryAccess())
 				.getItem())
 			.filter(r -> {

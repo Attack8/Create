@@ -9,6 +9,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.ftb.mods.ftbchunks.client.gui.LargeMapScreen;
 import dev.ftb.mods.ftbchunks.client.gui.RegionMapPanel;
+import dev.ftb.mods.ftblibrary.ui.BaseScreen;
 import dev.ftb.mods.ftblibrary.ui.ScreenWrapper;
 import dev.ftb.mods.ftblibrary.ui.Widget;
 import net.minecraft.client.Minecraft;
@@ -152,7 +153,7 @@ public class FTBChunksTrainMap {
 	private static LargeMapScreen getAsLargeMapScreen(Screen screen) {
 		if (!(screen instanceof ScreenWrapper screenWrapper))
 			return null;
-		Object wrapped = ObfuscationReflectionHelper.getPrivateValue(ScreenWrapper.class, screenWrapper, "wrappedGui");
+		BaseScreen wrapped = screenWrapper.getGui();
 		if (!(wrapped instanceof LargeMapScreen largeMapScreen))
 			return null;
 		return largeMapScreen;

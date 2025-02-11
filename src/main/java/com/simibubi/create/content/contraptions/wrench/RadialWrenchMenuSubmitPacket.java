@@ -29,6 +29,9 @@ public record RadialWrenchMenuSubmitPacket(BlockPos blockPos, BlockState newStat
 	@Override
 	public void handle(ServerPlayer player) {
 		Level level = player.level();
+		
+		if (!level.getBlockState(blockPos).is(newState.getBlock()))
+			return;
 
 		BlockState updatedState = Block.updateFromNeighbourShapes(newState, level, blockPos);
 		KineticBlockEntity.switchToBlockState(level, blockPos, updatedState);

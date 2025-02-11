@@ -128,6 +128,7 @@ _Now using Flywheel 1.0_
 - Fixed stations voiding schedules when disassembling the train
 - Fixed lighting on signal block indicators
 - Fixed vaults and tanks rotated in place not updating their multiblock correctly
+- Hose pulley now deletes lilypads and other surface foliage 
 
 #### API Changes
 
