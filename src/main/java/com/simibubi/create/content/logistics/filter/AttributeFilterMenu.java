@@ -124,7 +124,7 @@ public class AttributeFilterMenu extends AbstractFilterMenu {
 	protected void initAndReadInventory(ItemStack filterItem) {
 		super.initAndReadInventory(filterItem);
 		selectedAttributes = new ArrayList<>();
-		whitelistMode = filterItem.get(AllDataComponents.ATTRIBUTE_FILTER_WHITELIST_MODE);
+		whitelistMode = filterItem.getOrDefault(AllDataComponents.ATTRIBUTE_FILTER_WHITELIST_MODE, AttributeFilterWhitelistMode.WHITELIST_DISJ);
 		List<ItemAttribute.ItemAttributeEntry> attributes = filterItem.getOrDefault(AllDataComponents.ATTRIBUTE_FILTER_MATCHED_ATTRIBUTES, new ArrayList<>());
 		selectedAttributes.addAll(attributes);
 	}

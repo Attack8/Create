@@ -55,7 +55,13 @@ public abstract class AbstractFilterMenu extends GhostItemMenu<ItemStack> {
 
 	@Override
 	protected void saveData(ItemStack contentHolder) {
-		contentHolder.set(AllDataComponents.FILTER_ITEMS, ItemHelper.containerContentsFromHandler(ghostInventory));
+		for (int i = 0; i < ghostInventory.getSlots(); i++) {
+			if (!ghostInventory.getStackInSlot(i).isEmpty()) {
+				contentHolder.set(AllDataComponents.FILTER_ITEMS, ItemHelper.containerContentsFromHandler(ghostInventory));
+				return;
+			}
+		}
+		contentHolder.remove(AllDataComponents.FILTER_ITEMS);
 	}
 
 	@Override

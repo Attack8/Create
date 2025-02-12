@@ -40,6 +40,7 @@ public record ClipboardEditPacket(int hotbarSlot, DataComponentPatch dataCompone
 				if (processedData.isEmpty()) {
 					clearComponents(cbe.dataContainer);
 				} else {
+					cbe.dataContainer.remove(AllDataComponents.CLIPBOARD_PREVIOUSLY_OPENED_PAGE);
 					cbe.dataContainer.applyComponents(processedData);
 				}
 				cbe.onEditedBy(sender);
@@ -54,6 +55,7 @@ public record ClipboardEditPacket(int hotbarSlot, DataComponentPatch dataCompone
 		if (processedData.isEmpty()) {
 			clearComponents(itemStack);
 		} else {
+			itemStack.remove(AllDataComponents.CLIPBOARD_PREVIOUSLY_OPENED_PAGE);
 			itemStack.applyComponents(processedData);
 		}
 	}

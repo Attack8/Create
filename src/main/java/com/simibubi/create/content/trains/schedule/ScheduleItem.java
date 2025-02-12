@@ -18,6 +18,7 @@ import net.createmod.catnip.data.Couple;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -163,6 +164,11 @@ public class ScheduleItem extends Item implements MenuProvider, SupportsItemCopy
 	@Override
 	public Component getDisplayName() {
 		return getDescription();
+	}
+	
+	@Override
+	public DataComponentType<?> getComponentType() {
+		return AllDataComponents.TRAIN_SCHEDULE;
 	}
 
 }

@@ -343,8 +343,11 @@ public class ClipboardScreen extends AbstractSimiScreen {
 		pages.removeIf(List::isEmpty);
 
 		for (int i = 0; i < pages.size(); i++)
-			if (pages.get(i) == currentEntries)
+			if (pages.get(i) == currentEntries) {
 				item.set(AllDataComponents.CLIPBOARD_PREVIOUSLY_OPENED_PAGE, i);
+				if (i == 0)
+					item.remove(AllDataComponents.CLIPBOARD_PREVIOUSLY_OPENED_PAGE);
+			}
 
 		send();
 
@@ -361,6 +364,15 @@ public class ClipboardScreen extends AbstractSimiScreen {
 	private void send() {
 		ClipboardEntry.saveAll(pages, item);
 		ClipboardOverrides.switchTo(ClipboardType.WRITTEN, item);
+		
+		if (pages.isEmpty()) {
+			item.remove(AllDataComponents.CLIPBOARD_PAGES);
+			item.remove(AllDataComponents.CLIPBOARD_PREVIOUSLY_OPENED_PAGE);
+			item.remove(AllDataComponents.CLIPBOARD_READ_ONLY);
+			item.remove(AllDataComponents.CLIPBOARD_TYPE);
+			item.remove(AllDataComponents.CLIPBOARD_COPIED_VALUES);
+		}
+		
 		CatnipServices.NETWORK.sendToServer(new ClipboardEditPacket(targetSlot, item.getComponentsPatch(), targetedBlock));
 	}
 

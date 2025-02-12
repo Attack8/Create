@@ -6,12 +6,14 @@ import com.simibubi.create.AllRecipeTypes;
 
 import net.createmod.catnip.data.IntAttached;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 
 public class ItemCopyingRecipe extends CustomRecipe {
@@ -20,18 +22,20 @@ public class ItemCopyingRecipe extends CustomRecipe {
 
 		public default ItemStack createCopy(ItemStack original, int count) {
 			ItemStack copyWithCount = original.copyWithCount(count);
-			copyWithCount.remove(DataComponents.ENCHANTMENTS);
+			copyWithCount.set(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
 			copyWithCount.remove(DataComponents.STORED_ENCHANTMENTS);
 			return copyWithCount;
 		}
 
 		public default boolean canCopyFromItem(ItemStack item) {
-			return item.isComponentsPatchEmpty();
+			return item.has(getComponentType());
 		}
 
 		public default boolean canCopyToItem(ItemStack item) {
-			return !item.isComponentsPatchEmpty();
+			return !item.has(getComponentType());
 		}
+		
+		public DataComponentType<?> getComponentType();
 
 	}
 

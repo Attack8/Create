@@ -10,6 +10,7 @@ import net.createmod.catnip.gui.ScreenOpener;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -75,6 +76,11 @@ public class ClipboardBlockItem extends BlockItem implements SupportsItemCopying
 
 	public void registerModelOverrides() {
 		CatnipServices.PLATFORM.executeOnClientOnly(() -> () -> ClipboardOverrides.registerModelOverridesClient(this));
+	}
+	
+	@Override
+	public DataComponentType<?> getComponentType() {
+		return AllDataComponents.CLIPBOARD_PAGES;
 	}
 
 }

@@ -88,7 +88,7 @@ public class FilterItem extends Item implements MenuProvider, SupportsItemCopyin
 
 	private List<Component> makeSummary(ItemStack filter) {
 		List<Component> list = new ArrayList<>();
-		if (!filter.isComponentsPatchEmpty())
+		if (filter.isComponentsPatchEmpty())
 			return list;
 
 		if (type == FilterType.REGULAR) {
@@ -233,6 +233,15 @@ public class FilterItem extends Item implements MenuProvider, SupportsItemCopyin
 				return false;
 		}
 		return true;
+	}
+
+	@Override
+	public DataComponentType<?> getComponentType() {
+		return switch (type) {
+		case ATTRIBUTE -> AllDataComponents.ATTRIBUTE_FILTER_MATCHED_ATTRIBUTES;
+		case PACKAGE -> AllDataComponents.PACKAGE_ADDRESS;
+		case REGULAR -> AllDataComponents.FILTER_ITEMS;
+		};
 	}
 
 }

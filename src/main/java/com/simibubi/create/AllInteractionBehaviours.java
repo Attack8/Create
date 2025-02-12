@@ -63,7 +63,7 @@ public class AllInteractionBehaviours {
 
 		DoorMovingInteraction doorBehaviour = new DoorMovingInteraction();
 		registerBehaviourProvider(state -> {
-			if (state.is(BlockTags.WOODEN_DOORS)) {
+			if (state.is(BlockTags.MOB_INTERACTABLE_DOORS)) {
 				return doorBehaviour;
 			}
 			return null;
@@ -71,7 +71,7 @@ public class AllInteractionBehaviours {
 
 		TrapdoorMovingInteraction trapdoorBehaviour = new TrapdoorMovingInteraction();
 		registerBehaviourProvider(state -> {
-			if (state.is(BlockTags.WOODEN_TRAPDOORS)) {
+			if (state.is(BlockTags.TRAPDOORS) && !state.is(Blocks.IRON_TRAPDOOR)) {
 				return trapdoorBehaviour;
 			}
 			return null;
