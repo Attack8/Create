@@ -48,7 +48,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class ContraptionVisual<E extends AbstractContraptionEntity> extends AbstractEntityVisual<E> implements DynamicVisual, TickableVisual, LightUpdatedVisual, ShaderLightVisual {
 	protected static final int LIGHT_PADDING = 1;
@@ -91,13 +90,6 @@ public class ContraptionVisual<E extends AbstractContraptionEntity> extends Abst
 			@Override
 			public BlockState getBlockState(BlockPos pos) {
 				return blocks.lookup().apply(pos);
-			}
-			@Override
-			public ModelData getModelData(BlockPos pos) {
-				BlockEntity blockEntity = getBlockEntity(pos);
-				if (blockEntity == null)
-					return super.getModelData(pos);
-				return blockEntity.getModelData();
 			}
 		};
 

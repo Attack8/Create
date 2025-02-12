@@ -1,6 +1,7 @@
 package com.simibubi.create.content.contraptions.render;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.Contraption;
@@ -22,9 +23,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelDataManager;
 
 public class ContraptionRenderInfo {
 	public static final SuperByteBufferCache.Compartment<Pair<Contraption, RenderType>> CONTRAPTION = new SuperByteBufferCache.Compartment<>();
@@ -86,10 +89,25 @@ public class ContraptionRenderInfo {
 		int minBuildHeight = contraptionWorld.getMinBuildHeight();
 		int height = contraptionWorld.getHeight();
 		VirtualRenderWorld renderWorld = new VirtualRenderWorld(level, minBuildHeight, height, origin) {
+			
 			@Override
 			public boolean supportsVisualization() {
 				return VisualizationManager.supportsVisualization(level);
 			}
+			
+			@Override
+			public ModelData getModelData(BlockPos pos) {
+				BlockEntity blockEntity = getBlockEntity(pos);
+				if (blockEntity == null)
+					return super.getModelData(pos);
+				return blockEntity.getModelData();
+			}
+			
+			@Override
+			public @Nullable ModelDataManager getModelDataManager() {
+				return null;
+			}
+		
 		};
 
 		renderWorld.setBlockEntities(c.presentBlockEntities.values());

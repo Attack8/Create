@@ -2,8 +2,6 @@ package com.simibubi.create.content.decoration.copycat;
 
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -14,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.client.model.data.ModelDataManager;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 public class FilteredBlockAndTintGetter implements BlockAndTintGetter {
 
@@ -64,6 +62,11 @@ public class FilteredBlockAndTintGetter implements BlockAndTintGetter {
 	@Override
 	public int getBlockTint(BlockPos pBlockPos, ColorResolver pColorResolver) {
 		return wrapped.getBlockTint(pBlockPos, pColorResolver);
+	}
+	
+	@Override
+	public ModelData getModelData(BlockPos pPos) {
+		return filter.test(pPos) ? wrapped.getModelData(pPos) : ModelData.EMPTY;
 	}
 
 }

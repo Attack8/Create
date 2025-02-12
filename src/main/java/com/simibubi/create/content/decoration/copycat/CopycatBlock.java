@@ -47,7 +47,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.client.model.data.ModelDataManager;
+import net.neoforged.neoforge.client.model.data.ModelData;
 
 public abstract class CopycatBlock extends Block implements IBE<CopycatBlockEntity>, IWrenchable {
 
@@ -252,10 +252,10 @@ public abstract class CopycatBlock extends Block implements IBE<CopycatBlockEnti
 		if (isIgnoredConnectivitySide(level, state, side, pos, queryPos))
 			return state;
 
-		ModelDataManager modelDataManager = Minecraft.getInstance().level.getModelDataManager();
-		if (modelDataManager == null)
+		ModelData modelData = level.getModelData(pos);
+		if (modelData == ModelData.EMPTY)
 			return getMaterial(level, pos);
-		return CopycatModel.getMaterial(modelDataManager.getAt(pos));
+		return CopycatModel.getMaterial(modelData);
 	}
 
 	public boolean isIgnoredConnectivitySide(BlockAndTintGetter reader, BlockState state, Direction face,
