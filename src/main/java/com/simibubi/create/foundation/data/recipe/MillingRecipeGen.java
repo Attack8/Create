@@ -342,7 +342,7 @@ public class MillingRecipeGen extends ProcessingRecipeGen {
 				List.of(Items.BLUE_DYE, Items.CYAN_DYE, Items.GREEN_DYE), List.of(2,2,1)),
 
 		BWG_BLUE_ROSE_BUSH = bwgFlower("blue_rose_bush", List.of(1f, .05f, .25f),
-				List.of(Items.RED_DYE, Items.GREEN_DYE, Items.RED_DYE), List.of(3, 2, 2)),
+				List.of(Items.BLUE_DYE, Items.GREEN_DYE, Items.BLUE_DYE), List.of(3, 2, 2)),
 
 		BWG_CALIFORNIA_POPPY = bwgFlower("california_poppy", List.of(1f,.05f),
 				List.of(Items.ORANGE_DYE, Items.GREEN_DYE), List.of(2,1)),
