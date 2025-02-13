@@ -104,7 +104,7 @@ public class ShoppingListItem extends Item {
 
 	@Override
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents,
-		TooltipFlag tooltipFlag) {
+								TooltipFlag tooltipFlag) {
 		ShoppingList list = getList(stack);
 
 		if (list != null) {
@@ -116,7 +116,7 @@ public class ShoppingListItem extends Item {
 					boolean cost = items == lists.getSecond();
 
 					if (cost)
-                        tooltipComponents.add(Component.empty());
+						tooltipComponents.add(Component.empty());
 
 					if (entries.size() == 1) {
 						BigItemStack entry = entries.get(0);
@@ -159,12 +159,12 @@ public class ShoppingListItem extends Item {
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
 		if (pUsedHand == InteractionHand.OFF_HAND || pPlayer == null || !pPlayer.isShiftKeyDown())
-			return new InteractionResultHolder<ItemStack>(InteractionResult.PASS, pPlayer.getItemInHand(pUsedHand));
+			return new InteractionResultHolder<>(InteractionResult.PASS, pPlayer.getItemInHand(pUsedHand));
 
 		CreateLang.translate("table_cloth.shopping_list_discarded")
 			.sendStatus(pPlayer);
 		pPlayer.playSound(SoundEvents.BOOK_PAGE_TURN);
-		return new InteractionResultHolder<ItemStack>(InteractionResult.SUCCESS, ItemStack.EMPTY);
+		return new InteractionResultHolder<>(InteractionResult.SUCCESS, ItemStack.EMPTY);
 	}
 
 	@Override

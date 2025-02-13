@@ -19,6 +19,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.client.model.BakedModelWrapper;
 import net.neoforged.neoforge.client.model.data.ModelData;
 
@@ -30,7 +31,7 @@ public class TrackModel extends BakedModelWrapper<BakedModel> {
 
 	@Override
 	public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side,
-		@NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
+											 @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType) {
 		List<BakedQuad> templateQuads = super.getQuads(state, side, rand, extraData, renderType);
 		if (templateQuads.isEmpty())
 			return templateQuads;
@@ -43,11 +44,11 @@ public class TrackModel extends BakedModelWrapper<BakedModel> {
 
 		TrackShape trackShape = state.getValue(TrackBlock.SHAPE);
 		double hAngle = switch (trackShape) {
-		case XO -> 0;
-		case PD -> 45;
-		case ZO -> 90;
-		case ND -> 135;
-		default -> 0;
+			case XO -> 0;
+			case PD -> 45;
+			case ZO -> 90;
+			case ND -> 135;
+			default -> 0;
 		};
 
 		Vec3 verticalOffset = new Vec3(0, -0.25, 0);
@@ -68,8 +69,8 @@ public class TrackModel extends BakedModelWrapper<BakedModel> {
 
 		int size = templateQuads.size();
 		List<BakedQuad> quads = new ArrayList<>();
-		for (int i = 0; i < size; i++) {
-			BakedQuad quad = BakedQuadHelper.clone(templateQuads.get(i));
+		for (BakedQuad templateQuad : templateQuads) {
+			BakedQuad quad = BakedQuadHelper.clone(templateQuad);
 			int[] vertexData = quad.getVertices();
 			for (int j = 0; j < 4; j++)
 				BakedQuadHelper.setXYZ(vertexData, j, transform.apply(BakedQuadHelper.getXYZ(vertexData, j)));

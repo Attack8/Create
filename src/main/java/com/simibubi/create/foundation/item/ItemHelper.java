@@ -7,11 +7,12 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import com.simibubi.create.foundation.mixin.accessor.ItemStackHandlerAccessor;
+
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.simibubi.create.content.logistics.box.PackageEntity;
 import com.simibubi.create.foundation.block.IBE;
-import com.simibubi.create.foundation.mixin.accessor.ItemStackHandlerAccessor;
 
 import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
@@ -86,9 +87,9 @@ public class ItemHelper {
 
 	public static <T extends IBE<? extends BlockEntity>> int calcRedstoneFromBlockEntity(T ibe, Level level, BlockPos pos) {
 		return ibe.getBlockEntityOptional(level, pos)
-				.map(be -> level.getCapability(ItemHandler.BLOCK, pos, null))
-				.map(ItemHelper::calcRedstoneFromInventory)
-				.orElse(0);
+			.map(be -> level.getCapability(ItemHandler.BLOCK, pos, null))
+			.map(ItemHelper::calcRedstoneFromInventory)
+			.orElse(0);
 	}
 
 	public static int calcRedstoneFromInventory(@Nullable IItemHandler inv) {
@@ -120,7 +121,8 @@ public class ItemHelper {
 
 	public static List<Pair<Ingredient, MutableInt>> condenseIngredients(NonNullList<Ingredient> recipeIngredients) {
 		List<Pair<Ingredient, MutableInt>> actualIngredients = new ArrayList<>();
-		Ingredients: for (Ingredient igd : recipeIngredients) {
+		Ingredients:
+		for (Ingredient igd : recipeIngredients) {
 			for (Pair<Ingredient, MutableInt> pair : actualIngredients) {
 				ItemStack[] stacks1 = pair.getFirst()
 					.getItems();
@@ -181,7 +183,7 @@ public class ItemHelper {
 	}
 
 	public static ItemStack extract(IItemHandler inv, Predicate<ItemStack> test, ExtractionCountMode mode, int amount,
-		boolean simulate) {
+									boolean simulate) {
 		ItemStack extracting = ItemStack.EMPTY;
 		boolean amountRequired = mode == ExtractionCountMode.EXACTLY;
 		boolean checkHasEnoughItems = amountRequired;
@@ -189,7 +191,8 @@ public class ItemHelper {
 		boolean potentialOtherMatch = false;
 		int maxExtractionCount = amount;
 
-		Extraction: do {
+		Extraction:
+		do {
 			extracting = ItemStack.EMPTY;
 
 			for (int slot = 0; slot < inv.getSlots(); slot++) {
@@ -246,7 +249,7 @@ public class ItemHelper {
 	}
 
 	public static ItemStack extract(IItemHandler inv, Predicate<ItemStack> test,
-		Function<ItemStack, Integer> amountFunction, boolean simulate) {
+									Function<ItemStack, Integer> amountFunction, boolean simulate) {
 		ItemStack extracting = ItemStack.EMPTY;
 		int maxExtractionCount = 64;
 
@@ -306,8 +309,7 @@ public class ItemHelper {
 	public static ItemStack fromItemEntity(Entity entityIn) {
 		if (!entityIn.isAlive())
 			return ItemStack.EMPTY;
-		if (entityIn instanceof PackageEntity) {
-			PackageEntity packageEntity = (PackageEntity) entityIn;
+		if (entityIn instanceof PackageEntity packageEntity) {
 			return packageEntity.getBox();
 		}
 		return entityIn instanceof ItemEntity ? ((ItemEntity) entityIn).getItem() : ItemStack.EMPTY;

@@ -55,6 +55,7 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -83,9 +84,8 @@ public class BlazeBurnerBlock extends HorizontalDirectionalBlock implements IBE<
 		if (world.isClientSide)
 			return;
 		BlockEntity blockEntity = world.getBlockEntity(pos.above());
-		if (!(blockEntity instanceof BasinBlockEntity))
+		if (!(blockEntity instanceof BasinBlockEntity basin))
 			return;
-		BasinBlockEntity basin = (BasinBlockEntity) blockEntity;
 		basin.notifyChangeOfContents();
 	}
 
@@ -169,14 +169,13 @@ public class BlazeBurnerBlock extends HorizontalDirectionalBlock implements IBE<
 	}
 
 	public static InteractionResultHolder<ItemStack> tryInsert(BlockState state, Level world, BlockPos pos,
-		ItemStack stack, boolean doNotConsume, boolean forceOverflow, boolean simulate) {
+															   ItemStack stack, boolean doNotConsume, boolean forceOverflow, boolean simulate) {
 		if (!state.hasBlockEntity())
 			return InteractionResultHolder.fail(ItemStack.EMPTY);
 
 		BlockEntity be = world.getBlockEntity(pos);
-		if (!(be instanceof BlazeBurnerBlockEntity))
+		if (!(be instanceof BlazeBurnerBlockEntity burnerBE))
 			return InteractionResultHolder.fail(ItemStack.EMPTY);
-		BlazeBurnerBlockEntity burnerBE = (BlazeBurnerBlockEntity) be;
 
 		if (burnerBE.isCreativeFuel(stack)) {
 			if (!simulate)
@@ -217,7 +216,7 @@ public class BlazeBurnerBlock extends HorizontalDirectionalBlock implements IBE<
 
 	@Override
 	public VoxelShape getCollisionShape(BlockState p_220071_1_, BlockGetter p_220071_2_, BlockPos p_220071_3_,
-		CollisionContext p_220071_4_) {
+										CollisionContext p_220071_4_) {
 		if (p_220071_4_ == CollisionContext.empty())
 			return AllShapes.HEATER_BLOCK_SPECIAL_COLLISION_SHAPE;
 		return getShape(p_220071_1_, p_220071_2_, p_220071_3_, p_220071_4_);
@@ -264,9 +263,9 @@ public class BlazeBurnerBlock extends HorizontalDirectionalBlock implements IBE<
 	public static int getLight(BlockState state) {
 		HeatLevel level = state.getValue(HEAT_LEVEL);
 		return switch (level) {
-		case NONE -> 0;
-		case SMOULDERING -> 8;
-		default -> 15;
+			case NONE -> 0;
+			case SMOULDERING -> 8;
+			default -> 15;
 		};
 	}
 
@@ -290,7 +289,8 @@ public class BlazeBurnerBlock extends HorizontalDirectionalBlock implements IBE<
 	public enum HeatLevel implements StringRepresentable {
 		NONE, SMOULDERING, FADING, KINDLED, SEETHING;
 
-		public static final Codec<HeatLevel> CODEC = StringRepresentable.fromEnum(HeatLevel::values);
+		public static final Codec<HeatLevel> CODEC = StringRepresentable.fromEnum(HeatLevel::values)
+		;
 
 		public static HeatLevel byIndex(int index) {
 			return values()[index];

@@ -222,7 +222,7 @@ public class BlueprintEntity extends HangingEntity
 		BlockPos blockpos = this.pos.relative(this.direction.getOpposite());
 		Direction upDirection = direction.getAxis()
 			.isHorizontal() ? Direction.UP
-				: direction == Direction.UP ? verticalOrientation : verticalOrientation.getOpposite();
+			: direction == Direction.UP ? verticalOrientation : verticalOrientation.getOpposite();
 		Direction newDirection = direction.getAxis()
 			.isVertical() ? verticalOrientation.getClockWise() : direction.getCounterClockWise();
 		BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
@@ -290,8 +290,7 @@ public class BlueprintEntity extends HangingEntity
 			return;
 
 		playSound(SoundEvents.PAINTING_BREAK, 1.0F, 1.0F);
-		if (p_110128_1_ instanceof Player) {
-			Player playerentity = (Player) p_110128_1_;
+		if (p_110128_1_ instanceof Player playerentity) {
 			if (playerentity.getAbilities().instabuild)
 				return;
 		}
@@ -364,7 +363,8 @@ public class BlueprintEntity extends HangingEntity
 				Map<Integer, ItemStack> craftingGrid = new HashMap<>();
 				boolean success = true;
 
-				Search: for (int i = 0; i < 9; i++) {
+				Search:
+				for (int i = 0; i < 9; i++) {
 					FilterItemStack requestedItem = FilterItemStack.of(items.getStackInSlot(i));
 					if (requestedItem.isEmpty()) {
 						craftingGrid.put(i, ItemStack.EMPTY);

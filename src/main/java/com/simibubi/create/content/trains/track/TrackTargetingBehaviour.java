@@ -315,18 +315,17 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 
 	@OnlyIn(Dist.CLIENT)
 	public static void render(LevelAccessor level, BlockPos pos, AxisDirection direction,
-		BezierTrackPointLocation bezier, PoseStack ms, MultiBufferSource buffer, int light, int overlay,
-		RenderedTrackOverlayType type, float scale) {
+							  BezierTrackPointLocation bezier, PoseStack ms, MultiBufferSource buffer, int light, int overlay,
+							  RenderedTrackOverlayType type, float scale) {
 		if (level instanceof SchematicLevel && !(level instanceof PonderLevel))
 			return;
 
 		BlockState trackState = level.getBlockState(pos);
 		Block block = trackState.getBlock();
-		if (!(block instanceof ITrackBlock))
+		if (!(block instanceof ITrackBlock track))
 			return;
 
 		ms.pushPose();
-		ITrackBlock track = (ITrackBlock) block;
 		PartialModel partial = track.prepareTrackOverlay(level, pos, trackState, bezier, direction, ms, type);
 		if (partial != null)
 			CachedBuffers.partial(partial, trackState)
@@ -345,7 +344,7 @@ public class TrackTargetingBehaviour<T extends TrackEdgePoint> extends BlockEnti
 			rotatedDirection = transform.applyWithoutOffsetUncentered(prevDirection);
 		if (targetBezier != null)
 			targetBezier = new BezierTrackPointLocation(transform.applyWithoutOffset(targetBezier.curveTarget()
-				.subtract(getPos()))
+					.subtract(getPos()))
 				.offset(getPos()), targetBezier.segment());
 		blockEntity.notifyUpdate();
 	}

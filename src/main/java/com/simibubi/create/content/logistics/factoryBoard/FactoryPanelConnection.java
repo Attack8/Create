@@ -64,7 +64,8 @@ public class FactoryPanelConnection {
 		final float yRot = Mth.RAD_TO_DEG * FactoryPanelBlock.getYRot(state);
 
 		// When mode is not locked, find one that doesnt intersect with other gauges
-		ModeFinder: for (int actualMode = 0; actualMode <= 4; actualMode++) {
+		ModeFinder:
+		for (int actualMode = 0; actualMode <= 4; actualMode++) {
 			path.clear();
 			if (!findSuitable && actualMode != arrowBendMode)
 				continue;
@@ -104,7 +105,7 @@ public class FactoryPanelConnection {
 							continue;
 						if (currentDirection == null || toTravel.relative(d)
 							.distManhattan(BlockPos.ZERO) < toTravel.relative(currentDirection)
-								.distManhattan(BlockPos.ZERO))
+							.distManhattan(BlockPos.ZERO))
 							currentDirection = d;
 					}
 
@@ -129,10 +130,10 @@ public class FactoryPanelConnection {
 						continue ModeFinder;
 				}
 			}
-		
+
 			break;
 		}
-		
+
 		return path;
 	}
 

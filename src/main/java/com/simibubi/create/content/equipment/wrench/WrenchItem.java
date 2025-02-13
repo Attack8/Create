@@ -51,13 +51,12 @@ public class WrenchItem extends Item {
 			.getBlockState(context.getClickedPos());
 		Block block = state.getBlock();
 
-		if (!(block instanceof IWrenchable)) {
+		if (!(block instanceof IWrenchable actor)) {
 			if (player.isShiftKeyDown() && canWrenchPickup(state))
 				return onItemUseOnOther(context);
 			return super.useOn(context);
 		}
 
-		IWrenchable actor = (IWrenchable) block;
 		if (player.isShiftKeyDown())
 			return actor.onSneakWrenched(state, context);
 		return actor.onWrenched(state, context);
@@ -85,7 +84,7 @@ public class WrenchItem extends Item {
 
 	public static void wrenchInstaKillsMinecarts(AttackEntityEvent event) {
 		Entity target = event.getTarget();
-		if (!(target instanceof AbstractMinecart))
+		if (!(target instanceof AbstractMinecart minecart))
 			return;
 		Player player = event.getEntity();
 		ItemStack heldItem = player.getMainHandItem();
@@ -93,7 +92,6 @@ public class WrenchItem extends Item {
 			return;
 		if (player.isCreative())
 			return;
-		AbstractMinecart minecart = (AbstractMinecart) target;
 		minecart.hurt(minecart.damageSources().playerAttack(player), 100);
 	}
 }

@@ -37,14 +37,16 @@ public class StabilizedBearingMovementBehaviour implements MovementBehaviour {
 	public ItemStack canBeDisabledVia(MovementContext context) {
 		return null;
 	}
-@Override
+
+	@Override
 	public boolean disableBlockEntityRendering() {
 		return true;
 	}
+
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void renderInContraption(MovementContext context, VirtualRenderWorld renderWorld,
-		ContraptionMatrices matrices, MultiBufferSource buffer) {
+									ContraptionMatrices matrices, MultiBufferSource buffer) {
 		if (VisualizationManager.supportsVisualization(context.world))
 			return;
 
@@ -79,7 +81,7 @@ public class StabilizedBearingMovementBehaviour implements MovementBehaviour {
 	@Nullable
 	@Override
 	public ActorVisual createVisual(VisualizationContext visualizationContext, VirtualRenderWorld simulationWorld,
-		MovementContext movementContext) {
+									MovementContext movementContext) {
 		return new StabilizedBearingVisual(visualizationContext, simulationWorld, movementContext);
 	}
 
@@ -91,13 +93,11 @@ public class StabilizedBearingMovementBehaviour implements MovementBehaviour {
 		Direction.Axis axis = facing.getAxis();
 		AbstractContraptionEntity entity = context.contraption.entity;
 
-		if (entity instanceof ControlledContraptionEntity) {
-			ControlledContraptionEntity controlledCE = (ControlledContraptionEntity) entity;
+		if (entity instanceof ControlledContraptionEntity controlledCE) {
 			if (context.contraption.canBeStabilized(facing, context.localPos))
 				offset = -controlledCE.getAngle(renderPartialTicks);
 
-		} else if (entity instanceof OrientedContraptionEntity) {
-			OrientedContraptionEntity orientedCE = (OrientedContraptionEntity) entity;
+		} else if (entity instanceof OrientedContraptionEntity orientedCE) {
 			if (axis.isVertical())
 				offset = -orientedCE.getViewYRot(renderPartialTicks);
 			else {

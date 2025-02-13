@@ -40,7 +40,7 @@ public class CouplingPhysics {
 		Couple<Vec3> corrections = Couple.create(null, null);
 		Couple<Float> maxSpeed = carts.map(AbstractMinecart::getMaxCartSpeedOnRail);
 		boolean firstLoop = true;
-		for (boolean current : new boolean[] { true, false, true }) {
+		for (boolean current : new boolean[]{true, false, true}) {
 			AbstractMinecart cart = carts.get(current);
 			AbstractMinecart otherCart = carts.get(!current);
 
@@ -54,8 +54,7 @@ public class CouplingPhysics {
 			BlockPos railPosition = cart.getCurrentRailPosition();
 			BlockState railState = world.getBlockState(railPosition.above());
 
-			if (railState.getBlock() instanceof BaseRailBlock) {
-				BaseRailBlock block = (BaseRailBlock) railState.getBlock();
+			if (railState.getBlock() instanceof BaseRailBlock block) {
 				shape = block.getRailDirection(railState, world, railPosition, cart);
 			}
 
@@ -71,7 +70,7 @@ public class CouplingPhysics {
 			correction = shape != null
 				? followLinkOnRail(link, pos, correctionMagnitude, MinecartSim2020.getRailVec(shape)).subtract(pos)
 				: link.normalize()
-					.scale(correctionMagnitude);
+				.scale(correctionMagnitude);
 
 			float maxResolveSpeed = 1.75f;
 			correction = VecHelper.clamp(correction, Math.min(maxResolveSpeed, maxSpeed.get(current)));
@@ -102,15 +101,14 @@ public class CouplingPhysics {
 		Couple<RailShape> shapes = carts.mapWithContext((minecart, current) -> {
 			Vec3 vec = nextPositions.get(current);
 			int x = Mth.floor(vec.x());
-	        int y = Mth.floor(vec.y());
-	        int z = Mth.floor(vec.z());
-	        BlockPos pos = new BlockPos(x, y - 1, z);
-	        if (minecart.level().getBlockState(pos).is(BlockTags.RAILS)) pos = pos.below();
+			int y = Mth.floor(vec.y());
+			int z = Mth.floor(vec.z());
+			BlockPos pos = new BlockPos(x, y - 1, z);
+			if (minecart.level().getBlockState(pos).is(BlockTags.RAILS)) pos = pos.below();
 			BlockPos railPosition = pos;
 			BlockState railState = world.getBlockState(railPosition.above());
-			if (!(railState.getBlock() instanceof BaseRailBlock))
+			if (!(railState.getBlock() instanceof BaseRailBlock block))
 				return null;
-			BaseRailBlock block = (BaseRailBlock) railState.getBlock();
 			return block.getRailDirection(railState, world, railPosition, minecart);
 		});
 

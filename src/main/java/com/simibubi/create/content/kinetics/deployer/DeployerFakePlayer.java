@@ -30,6 +30,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
@@ -114,8 +115,7 @@ public class DeployerFakePlayer extends FakePlayer {
 	public static void deployerCollectsDropsFromKilledEntities(LivingDropsEvent event) {
 		DamageSource source = event.getSource();
 		Entity trueSource = source.getEntity();
-		if (trueSource != null && trueSource instanceof DeployerFakePlayer) {
-			DeployerFakePlayer fakePlayer = (DeployerFakePlayer) trueSource;
+		if (trueSource != null && trueSource instanceof DeployerFakePlayer fakePlayer) {
 			event.getDrops()
 				.forEach(stack -> fakePlayer.getInventory()
 					.placeItemBackInInventory(stack.getItem()));
@@ -151,7 +151,7 @@ public class DeployerFakePlayer extends FakePlayer {
 
 		CKinetics.DeployerAggroSetting setting = AllConfigs.server().kinetics.ignoreDeployerAttacks.get();
 
-		switch(setting) {
+		switch (setting) {
 			case ALL -> event.setCanceled(true);
 			case CREEPERS -> {
 				if (mob instanceof Creeper)

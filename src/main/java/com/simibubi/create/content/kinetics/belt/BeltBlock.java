@@ -134,7 +134,7 @@ public class BeltBlock extends HorizontalKineticBlock
 
 	@Override
 	public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos,
-		Player player) {
+									   Player player) {
 		return AllItems.BELT_CONNECTOR.asStack();
 	}
 
@@ -390,18 +390,18 @@ public class BeltBlock extends HorizontalKineticBlock
 			return shape;
 
 		return getBlockEntityOptional(worldIn, pos).map(be -> {
-			Entity entity = ((EntityCollisionContext) context).getEntity();
-			if (entity == null)
+				Entity entity = ((EntityCollisionContext) context).getEntity();
+				if (entity == null)
+					return shape;
+
+				BeltBlockEntity controller = be.getControllerBE();
+				if (controller == null)
+					return shape;
+				if (controller.passengers == null || !controller.passengers.containsKey(entity))
+					return BeltShapes.getCollisionShape(state);
 				return shape;
 
-			BeltBlockEntity controller = be.getControllerBE();
-			if (controller == null)
-				return shape;
-			if (controller.passengers == null || !controller.passengers.containsKey(entity))
-				return BeltShapes.getCollisionShape(state);
-			return shape;
-
-		})
+			})
 			.orElse(shape);
 	}
 
@@ -449,8 +449,7 @@ public class BeltBlock extends HorizontalKineticBlock
 			BlockEntity blockEntity = world.getBlockEntity(beltPos);
 			BlockState currentState = world.getBlockState(beltPos);
 
-			if (blockEntity instanceof BeltBlockEntity && AllBlocks.BELT.has(currentState)) {
-				BeltBlockEntity be = (BeltBlockEntity) blockEntity;
+			if (blockEntity instanceof BeltBlockEntity be && AllBlocks.BELT.has(currentState)) {
 				be.setController(currentPos);
 				be.beltLength = beltChain.size();
 				be.index = index;
@@ -492,8 +491,7 @@ public class BeltBlock extends HorizontalKineticBlock
 
 			boolean hasPulley = false;
 			BlockEntity blockEntity = world.getBlockEntity(currentPos);
-			if (blockEntity instanceof BeltBlockEntity) {
-				BeltBlockEntity belt = (BeltBlockEntity) blockEntity;
+			if (blockEntity instanceof BeltBlockEntity belt) {
 				if (belt.isController())
 					belt.getInventory()
 						.ejectAll();
@@ -512,7 +510,7 @@ public class BeltBlock extends HorizontalKineticBlock
 
 	@Override
 	public BlockState updateShape(BlockState state, Direction side, BlockState p_196271_3_, LevelAccessor world,
-		BlockPos pos, BlockPos p_196271_6_) {
+								  BlockPos pos, BlockPos p_196271_6_) {
 		updateWater(world, state, pos);
 		if (side.getAxis()
 			.isHorizontal())
@@ -622,7 +620,7 @@ public class BeltBlock extends HorizontalKineticBlock
 			return rotate;
 		if (state.getValue(HORIZONTAL_FACING)
 			.getAxisDirection() != rotate.getValue(HORIZONTAL_FACING)
-				.getAxisDirection()) {
+			.getAxisDirection()) {
 			if (state.getValue(PART) == BeltPart.START)
 				return rotate.setValue(PART, BeltPart.END);
 			if (state.getValue(PART) == BeltPart.END)

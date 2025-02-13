@@ -30,6 +30,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -127,7 +128,7 @@ public class ConnectedInputHandler {
 	}
 
 	public static void connectControllers(Level world, MechanicalCrafterBlockEntity crafter1,
-		MechanicalCrafterBlockEntity crafter2) {
+										  MechanicalCrafterBlockEntity crafter2) {
 
 		crafter1.input.data.forEach(offset -> {
 			BlockPos connectedPos = crafter1.getBlockPos()
@@ -153,10 +154,9 @@ public class ConnectedInputHandler {
 
 	private static void modifyAndUpdate(Level world, BlockPos pos, Consumer<ConnectedInput> callback) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (!(blockEntity instanceof MechanicalCrafterBlockEntity))
+		if (!(blockEntity instanceof MechanicalCrafterBlockEntity crafter))
 			return;
 
-		MechanicalCrafterBlockEntity crafter = (MechanicalCrafterBlockEntity) blockEntity;
 		callback.accept(crafter.input);
 		crafter.setChanged();
 		crafter.connectivityChanged();

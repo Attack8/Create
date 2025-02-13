@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
@@ -33,7 +34,7 @@ public class ScheduleItemEntityInteraction {
 			return;
 
 		Entity rootVehicle = entity.getRootVehicle();
-		if (!(rootVehicle instanceof CarriageContraptionEntity))
+		if (!(rootVehicle instanceof CarriageContraptionEntity cce))
 			return;
 		if (!(entity instanceof LivingEntity living))
 			return;
@@ -42,7 +43,7 @@ public class ScheduleItemEntityInteraction {
 			return;
 
 		ItemStack itemStack = event.getItemStack();
-		if (itemStack.getItem()instanceof ScheduleItem si) {
+		if (itemStack.getItem() instanceof ScheduleItem si) {
 			InteractionResult result = si.handScheduleTo(itemStack, player, living, event.getHand());
 			if (result.consumesAction()) {
 				player.getCooldowns()
@@ -56,7 +57,6 @@ public class ScheduleItemEntityInteraction {
 		if (event.getHand() == InteractionHand.OFF_HAND)
 			return;
 
-		CarriageContraptionEntity cce = (CarriageContraptionEntity) rootVehicle;
 		Contraption contraption = cce.getContraption();
 		if (!(contraption instanceof CarriageContraption cc))
 			return;

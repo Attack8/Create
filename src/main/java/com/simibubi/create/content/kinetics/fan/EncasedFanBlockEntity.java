@@ -109,9 +109,8 @@ public class EncasedFanBlockEntity extends KineticBlockEntity implements IAirCur
 			.isVertical())
 			return;
 		BlockEntity poweredChute = level.getBlockEntity(worldPosition.relative(direction));
-		if (!(poweredChute instanceof ChuteBlockEntity))
+		if (!(poweredChute instanceof ChuteBlockEntity chuteBE))
 			return;
-		ChuteBlockEntity chuteBE = (ChuteBlockEntity) poweredChute;
 		if (direction == Direction.DOWN)
 			chuteBE.updatePull();
 		else

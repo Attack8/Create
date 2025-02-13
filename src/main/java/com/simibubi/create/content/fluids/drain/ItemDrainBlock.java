@@ -33,6 +33,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 public class ItemDrainBlock extends Block implements IWrenchable, IBE<ItemDrainBlockEntity> {
@@ -43,7 +44,7 @@ public class ItemDrainBlock extends Block implements IWrenchable, IBE<ItemDrainB
 
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-		if (stack.getItem() instanceof BlockItem && stack.getCapability(Capabilities.FluidHandler.ITEM) == null)
+								 if (stack.getItem() instanceof BlockItem && stack.getCapability(Capabilities.FluidHandler.ITEM) == null)
 			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
 		return onBlockEntityUseItemOn(level, pos, be -> {
@@ -69,14 +70,13 @@ public class ItemDrainBlock extends Block implements IWrenchable, IBE<ItemDrainB
 	@Override
 	public void updateEntityAfterFallOn(BlockGetter worldIn, Entity entityIn) {
 		super.updateEntityAfterFallOn(worldIn, entityIn);
-		if (!(entityIn instanceof ItemEntity))
+		if (!(entityIn instanceof ItemEntity itemEntity))
 			return;
 		if (!entityIn.isAlive())
 			return;
 		if (entityIn.level().isClientSide)
 			return;
 
-		ItemEntity itemEntity = (ItemEntity) entityIn;
 		DirectBeltInputBehaviour inputBehaviour =
 			BlockEntityBehaviour.get(worldIn, entityIn.blockPosition(), DirectBeltInputBehaviour.TYPE);
 		if (inputBehaviour == null)
@@ -92,7 +92,7 @@ public class ItemDrainBlock extends Block implements IWrenchable, IBE<ItemDrainB
 	}
 
 	protected ItemInteractionResult tryExchange(Level worldIn, Player player, InteractionHand handIn, ItemStack heldItem,
-		ItemDrainBlockEntity be) {
+											ItemDrainBlockEntity be) {
 		if (FluidHelper.tryEmptyItemIntoBE(worldIn, player, handIn, heldItem, be))
 			return ItemInteractionResult.SUCCESS;
 		if (GenericItemEmptying.canItemBeEmptied(worldIn, heldItem))
@@ -102,7 +102,7 @@ public class ItemDrainBlock extends Block implements IWrenchable, IBE<ItemDrainB
 
 	@Override
 	public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_,
-		CollisionContext p_220053_4_) {
+							   CollisionContext p_220053_4_) {
 		return AllShapes.CASING_13PX.get(Direction.UP);
 	}
 

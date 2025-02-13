@@ -7,12 +7,15 @@
     },
     "C": {
       "tag": "c:ingots/iron"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
     }
   },
   "pattern": [
     " C ",
     "CAC",
-    " C "
+    "RCR"
   ],
   "result": {
     "count": 1,

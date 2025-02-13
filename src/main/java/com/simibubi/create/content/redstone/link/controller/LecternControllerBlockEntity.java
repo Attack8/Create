@@ -35,15 +35,16 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class LecternControllerBlockEntity extends SmartBlockEntity {
 	private ItemContainerContents controllerData = ItemContainerContents.EMPTY;
 	private UUID user;
-	private UUID prevUser;	// used only on client
-	private boolean deactivatedThisTick;	// used only on server
+	private UUID prevUser;    // used only on client
+	private boolean deactivatedThisTick;    // used only on server
 
 	public LecternControllerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
 	}
 
 	@Override
-	public void addBehaviours(List<BlockEntityBehaviour> behaviours) { }
+	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+	}
 
 	@Override
 	protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
@@ -72,7 +73,9 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 		return createLinkedController();
 	}
 
-	public boolean hasUser() { return user != null; }
+	public boolean hasUser() {
+		return user != null;
+	}
 
 	public boolean isUsedBy(Player player) {
 		return hasUser() && user.equals(player.getUUID());
@@ -124,12 +127,11 @@ public class LecternControllerBlockEntity extends SmartBlockEntity {
 				return;
 
 			Entity entity = ((ServerLevel) level).getEntity(user);
-			if (!(entity instanceof Player)) {
+			if (!(entity instanceof Player player)) {
 				stopUsing(null);
 				return;
 			}
 
-			Player player = (Player) entity;
 			if (!playerInRange(player, level, worldPosition) || !playerIsUsingLectern(player))
 				stopUsing(player);
 		}

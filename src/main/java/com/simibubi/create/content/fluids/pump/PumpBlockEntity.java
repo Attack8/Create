@@ -23,10 +23,10 @@ import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
-import net.createmod.catnip.math.BlockFace;
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.math.BlockFace;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -35,6 +35,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
@@ -227,7 +228,7 @@ public class PumpBlockEntity extends KineticBlockEntity {
 	}
 
 	protected boolean searchForEndpointRecursively(Map<BlockPos, Pair<Integer, Map<Direction, Boolean>>> pipeGraph,
-		Set<BlockFace> targets, Map<Integer, Set<BlockFace>> validFaces, BlockFace currentFace, boolean pull) {
+												   Set<BlockFace> targets, Map<Integer, Set<BlockFace>> validFaces, BlockFace currentFace, boolean pull) {
 		BlockPos currentPos = currentFace.getPos();
 		if (!pipeGraph.containsKey(currentPos))
 			return false;
@@ -276,8 +277,7 @@ public class PumpBlockEntity extends KineticBlockEntity {
 
 		// facing a pump
 		if (PumpBlock.isPump(connectedState) && connectedState.getValue(PumpBlock.FACING)
-			.getAxis() == face.getAxis() && blockEntity instanceof PumpBlockEntity) {
-			PumpBlockEntity pumpBE = (PumpBlockEntity) blockEntity;
+			.getAxis() == face.getAxis() && blockEntity instanceof PumpBlockEntity pumpBE) {
 			return pumpBE.isPullingOnSide(pumpBE.isFront(blockFace.getOppositeFace())) != pull;
 		}
 
@@ -362,7 +362,7 @@ public class PumpBlockEntity extends KineticBlockEntity {
 
 		@Override
 		public AttachmentTypes getRenderedRimAttachment(BlockAndTintGetter world, BlockPos pos, BlockState state,
-			Direction direction) {
+														Direction direction) {
 			AttachmentTypes attachment = super.getRenderedRimAttachment(world, pos, state, direction);
 			if (attachment == AttachmentTypes.RIM)
 				return AttachmentTypes.NONE;

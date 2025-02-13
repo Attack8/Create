@@ -134,8 +134,8 @@ public class FlapDisplayBlock extends HorizontalKineticBlock
 
 		double yCoord = hitResult.getLocation()
 			.add(Vec3.atLowerCornerOf(hitResult.getDirection()
-				.getOpposite()
-				.getNormal())
+					.getOpposite()
+					.getNormal())
 				.scale(.125f)).y;
 
 		int lineIndex = flapBE.getLineIndexAt(yCoord);
@@ -172,11 +172,11 @@ public class FlapDisplayBlock extends HorizontalKineticBlock
 			if (AllBlocks.CLIPBOARD.isIn(stack)) {
 				List<ClipboardEntry> entries = ClipboardEntry.getLastViewedEntries(stack);
 				int line = lineIndex;
-				for (int i = 0; i < entries.size(); i++) {
-					for (String string : entries.get(i).text.getString()
+				for (ClipboardEntry entry : entries) {
+					for (String string : entry.text.getString()
 						.split("\n")) {
-                        flapBE.applyTextManually(line++, Component.literal(string));
-                    }
+						flapBE.applyTextManually(line++, Component.literal(string));
+					}
 				}
 				return ItemInteractionResult.SUCCESS;
 			}
@@ -223,7 +223,8 @@ public class FlapDisplayBlock extends HorizontalKineticBlock
 		for (Direction connection : Iterate.directionsInAxis(Axis.Y)) {
 			boolean connect = true;
 
-			Move: for (Direction movement : Iterate.directionsInAxis(axis)) {
+			Move:
+			for (Direction movement : Iterate.directionsInAxis(axis)) {
 				currentPos.set(pos);
 				for (int i = 0; i < 1000; i++) {
 					if (!level.isLoaded(currentPos))
@@ -273,12 +274,12 @@ public class FlapDisplayBlock extends HorizontalKineticBlock
 
 	@Override
 	public BlockState updateShape(BlockState state, Direction pDirection, BlockState pNeighborState,
-		LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
+								  LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
 		return updatedShapeInner(state, pDirection, pNeighborState, pLevel, pCurrentPos);
 	}
 
 	private BlockState updatedShapeInner(BlockState state, Direction pDirection, BlockState pNeighborState,
-		LevelAccessor pLevel, BlockPos pCurrentPos) {
+										 LevelAccessor pLevel, BlockPos pCurrentPos) {
 		if (state.getValue(BlockStateProperties.WATERLOGGED))
 			pLevel.scheduleTick(pCurrentPos, Fluids.WATER, Fluids.WATER.getTickDelay(pLevel));
 		if (!canConnect(state, pNeighborState))
@@ -346,7 +347,7 @@ public class FlapDisplayBlock extends HorizontalKineticBlock
 
 		@Override
 		public PlacementOffset getOffset(Player player, Level world, BlockState state, BlockPos pos,
-			BlockHitResult ray) {
+										 BlockHitResult ray) {
 			List<Direction> directions = IPlacementHelper.orderedByDistanceExceptAxis(pos, ray.getLocation(),
 				state.getValue(FlapDisplayBlock.HORIZONTAL_FACING)
 					.getAxis(),
@@ -355,8 +356,8 @@ public class FlapDisplayBlock extends HorizontalKineticBlock
 
 			return directions.isEmpty() ? PlacementOffset.fail()
 				: PlacementOffset.success(pos.relative(directions.get(0)), s -> AllBlocks.DISPLAY_BOARD.get()
-					.updateColumn(world, pos.relative(directions.get(0)),
-						s.setValue(HORIZONTAL_FACING, state.getValue(FlapDisplayBlock.HORIZONTAL_FACING)), true));
+				.updateColumn(world, pos.relative(directions.get(0)),
+					s.setValue(HORIZONTAL_FACING, state.getValue(FlapDisplayBlock.HORIZONTAL_FACING)), true));
 		}
 	}
 

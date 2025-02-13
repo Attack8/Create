@@ -459,10 +459,9 @@ public class BeltSlicer {
 	public static void tickHoveringInformation() {
 		Minecraft mc = Minecraft.getInstance();
 		HitResult target = mc.hitResult;
-		if (target == null || !(target instanceof BlockHitResult))
+		if (target == null || !(target instanceof BlockHitResult result))
 			return;
 
-		BlockHitResult result = (BlockHitResult) target;
 		ClientLevel world = mc.level;
 		BlockPos pos = result.getBlockPos();
 		BlockState state = world.getBlockState(pos);

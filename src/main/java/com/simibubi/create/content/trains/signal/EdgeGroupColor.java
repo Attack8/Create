@@ -16,9 +16,7 @@ public enum EdgeGroupColor {
 	CYAN(0x6EDAD9),
 	BROWN(0xA17C58),
 
-	WHITE(0xE5E1DC)
-
-	;
+	WHITE(0xE5E1DC);
 
 	public static final StreamCodec<ByteBuf, EdgeGroupColor> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(EdgeGroupColor.class);
 
@@ -46,9 +44,9 @@ public enum EdgeGroupColor {
 
 	public static EdgeGroupColor findNextAvailable(int mask) {
 		EdgeGroupColor[] values = values();
-		for (int i = 0; i < values.length; i++) {
+		for (EdgeGroupColor value : values) {
 			if ((mask & 1) == 0)
-				return values[i];
+				return value;
 			mask = mask >> 1;
 		}
 		return WHITE;

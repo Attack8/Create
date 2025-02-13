@@ -419,9 +419,9 @@ public class KineticBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 				.forGoggles(tooltip);
 			Component hint = CreateLang.translateDirect("gui.contraptions.network_overstressed");
 			List<Component> cutString = TooltipHelper.cutTextComponent(hint, Palette.GRAY_AND_WHITE);
-			for (int i = 0; i < cutString.size(); i++)
+			for (Component component : cutString)
 				CreateLang.builder()
-					.add(cutString.get(i)
+					.add(component
 						.copy())
 					.forGoggles(tooltip);
 			return true;
@@ -435,9 +435,9 @@ public class KineticBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 				CreateLang.translateDirect("gui.contraptions.not_fast_enough", I18n.get(getBlockState().getBlock()
 					.getDescriptionId()));
 			List<Component> cutString = TooltipHelper.cutTextComponent(hint, Palette.GRAY_AND_WHITE);
-			for (int i = 0; i < cutString.size(); i++)
+			for (Component component : cutString)
 				CreateLang.builder()
-					.add(cutString.get(i)
+					.add(component
 						.copy())
 					.forGoggles(tooltip);
 			return true;

@@ -114,7 +114,7 @@ public class ArmBlockEntity extends KineticBlockEntity implements TransformableB
 	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
 		super.addBehaviours(behaviours);
 
-		selectionMode = new ScrollOptionBehaviour<SelectionMode>(SelectionMode.class,
+		selectionMode = new ScrollOptionBehaviour<>(SelectionMode.class,
 			CreateLang.translateDirect("logistics.when_multiple_outputs_available"), this, new SelectionModeValueBox());
 		behaviours.add(selectionMode);
 
@@ -261,7 +261,8 @@ public class ArmBlockEntity extends KineticBlockEntity implements TransformableB
 		if (scanRange > inputs.size())
 			scanRange = inputs.size();
 
-		InteractionPoints: for (int i = startIndex; i < scanRange; i++) {
+		InteractionPoints:
+		for (int i = startIndex; i < scanRange; i++) {
 			ArmInteractionPoint armInteractionPoint = inputs.get(i);
 			if (!armInteractionPoint.isValid())
 				continue;

@@ -12,7 +12,6 @@ import net.createmod.catnip.data.WorldAttached;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -44,12 +43,11 @@ public class ToolboxHandler {
 			return;
 		if (!(world instanceof ServerLevel))
 			return;
-		if (!(entity instanceof ServerPlayer))
+		if (!(entity instanceof ServerPlayer player))
 			return;
 		if (entity.tickCount % validationTimer != 0)
 			return;
 
-		ServerPlayer player = (ServerPlayer) entity;
 		if (!player.getPersistentData()
 			.contains("CreateToolboxData"))
 			return;
@@ -90,8 +88,8 @@ public class ToolboxHandler {
 		if (player.getPersistentData()
 			.contains("CreateToolboxData")
 			&& !player.getPersistentData()
-				.getCompound("CreateToolboxData")
-				.isEmpty()) {
+			.getCompound("CreateToolboxData")
+			.isEmpty()) {
 			syncData(player);
 		}
 	}

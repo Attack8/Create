@@ -66,7 +66,7 @@ public class GoggleOverlayRenderer {
 			return;
 
 		HitResult objectMouseOver = mc.hitResult;
-		if (!(objectMouseOver instanceof BlockHitResult)) {
+		if (!(objectMouseOver instanceof BlockHitResult result)) {
 			lastHovered = null;
 			hoverTicks = 0;
 			return;
@@ -80,7 +80,6 @@ public class GoggleOverlayRenderer {
 				return;
 		}
 
-		BlockHitResult result = (BlockHitResult) objectMouseOver;
 		ClientLevel world = mc.level;
 		BlockPos pos = result.getBlockPos();
 

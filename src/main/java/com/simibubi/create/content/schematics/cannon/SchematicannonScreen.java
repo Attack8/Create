@@ -237,8 +237,7 @@ public class SchematicannonScreen extends AbstractSimiContainerScreen<Schematica
 			return;
 
 		for (AbstractWidget w : placementSettingWidgets)
-			if (w instanceof IconButton) {
-				IconButton button = (IconButton) w;
+			if (w instanceof IconButton button) {
 				if (!button.getToolTip()
 					.isEmpty()) {
 					button.setToolTip(button.getToolTip()

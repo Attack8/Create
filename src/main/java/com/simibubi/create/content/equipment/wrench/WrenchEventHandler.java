@@ -10,6 +10,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -40,12 +41,11 @@ public class WrenchEventHandler {
 			.getBlockState(event.getPos());
 		Block block = state.getBlock();
 
-		if (!(block instanceof IWrenchable))
+		if (!(block instanceof IWrenchable actor))
 			return;
 
 		BlockHitResult hitVec = event.getHitVec();
 		UseOnContext context = new UseOnContext(player, event.getHand(), hitVec);
-		IWrenchable actor = (IWrenchable) block;
 
 		InteractionResult result =
 			player.isShiftKeyDown() ? actor.onSneakWrenched(state, context) : actor.onWrenched(state, context);

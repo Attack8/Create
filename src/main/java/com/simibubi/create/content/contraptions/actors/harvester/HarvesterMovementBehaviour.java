@@ -44,13 +44,13 @@ public class HarvesterMovementBehaviour implements MovementBehaviour {
 	public boolean isActive(MovementContext context) {
 		return MovementBehaviour.super.isActive(context)
 			&& !VecHelper.isVecPointingTowards(context.relativeMotion, context.state.getValue(HarvesterBlock.FACING)
-				.getOpposite());
+			.getOpposite());
 	}
 
 	@Override
 	public Vec3 getActiveAreaOffset(MovementContext context) {
 		return Vec3.atLowerCornerOf(context.state.getValue(HarvesterBlock.FACING)
-			.getNormal())
+				.getNormal())
 			.scale(.45);
 	}
 
@@ -97,8 +97,7 @@ public class HarvesterMovementBehaviour implements MovementBehaviour {
 		boolean harvestPartial = AllConfigs.server().kinetics.harvestPartiallyGrown.get();
 		boolean replant = AllConfigs.server().kinetics.harvesterReplants.get();
 
-		if (state.getBlock() instanceof CropBlock) {
-			CropBlock crop = (CropBlock) state.getBlock();
+		if (state.getBlock() instanceof CropBlock crop) {
 			if (harvestPartial)
 				return state != crop.getStateForAge(0) || !replant;
 			return crop.isMaxAge(state);
@@ -107,9 +106,8 @@ public class HarvesterMovementBehaviour implements MovementBehaviour {
 		if (state.getCollisionShape(world, pos)
 			.isEmpty() || state.getBlock() instanceof CocoaBlock) {
 			for (Property<?> property : state.getProperties()) {
-				if (!(property instanceof IntegerProperty))
+				if (!(property instanceof IntegerProperty ageProperty))
 					continue;
-				IntegerProperty ageProperty = (IntegerProperty) property;
 				if (!property.getName()
 					.equals(BlockStateProperties.AGE_1.getName()))
 					continue;
@@ -168,8 +166,7 @@ public class HarvesterMovementBehaviour implements MovementBehaviour {
 		}
 
 		Block block = state.getBlock();
-		if (block instanceof CropBlock) {
-			CropBlock crop = (CropBlock) block;
+		if (block instanceof CropBlock crop) {
 			return crop.getStateForAge(0);
 		}
 		if (block == Blocks.SWEET_BERRY_BUSH) {
@@ -208,15 +205,15 @@ public class HarvesterMovementBehaviour implements MovementBehaviour {
 
 	@Override
 	public void renderInContraption(MovementContext context, VirtualRenderWorld renderWorld,
-		ContraptionMatrices matrices, MultiBufferSource buffers) {
-        if (!VisualizationManager.supportsVisualization(context.world))
+									ContraptionMatrices matrices, MultiBufferSource buffers) {
+		if (!VisualizationManager.supportsVisualization(context.world))
 			HarvesterRenderer.renderInContraption(context, renderWorld, matrices, buffers);
 	}
 
 	@Nullable
 	@Override
 	public ActorVisual createVisual(VisualizationContext visualizationContext, VirtualRenderWorld simulationWorld,
-		MovementContext movementContext) {
+									MovementContext movementContext) {
 		return new HarvesterActorVisual(visualizationContext, simulationWorld, movementContext);
 	}
 

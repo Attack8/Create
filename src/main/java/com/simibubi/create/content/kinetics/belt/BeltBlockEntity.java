@@ -47,6 +47,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -393,7 +394,7 @@ public class BeltBlockEntity extends KineticBlockEntity {
 	}
 
 	private void applyToAllItems(float maxDistanceFromCenter,
-		Function<TransportedItemStack, TransportedResult> processFunction) {
+								 Function<TransportedItemStack, TransportedResult> processFunction) {
 		BeltBlockEntity controller = getControllerBE();
 		if (controller == null)
 			return;
@@ -476,8 +477,7 @@ public class BeltBlockEntity extends KineticBlockEntity {
 			return inserted;
 
 		BlockEntity teAbove = level.getBlockEntity(worldPosition.above());
-		if (teAbove instanceof BrassTunnelBlockEntity) {
-			BrassTunnelBlockEntity tunnelBE = (BrassTunnelBlockEntity) teAbove;
+		if (teAbove instanceof BrassTunnelBlockEntity tunnelBE) {
 			if (tunnelBE.hasDistributionBehaviour()) {
 				if (!tunnelBE.getStackToDistribute()
 					.isEmpty())
@@ -546,7 +546,7 @@ public class BeltBlockEntity extends KineticBlockEntity {
 
 	@Override
 	public float propagateRotationTo(KineticBlockEntity target, BlockState stateFrom, BlockState stateTo, BlockPos diff,
-		boolean connectedViaAxes, boolean connectedViaCogs) {
+									 boolean connectedViaAxes, boolean connectedViaCogs) {
 		if (target instanceof BeltBlockEntity && !connectedViaAxes)
 			return getController().equals(((BeltBlockEntity) target).getController()) ? 1 : 0;
 		return 0;

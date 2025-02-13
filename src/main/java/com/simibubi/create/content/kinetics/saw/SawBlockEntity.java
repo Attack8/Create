@@ -66,6 +66,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -359,15 +360,14 @@ public class SawBlockEntity extends BlockBreakingKineticBlockEntity {
 		inventory.clear();
 
 		for (int roll = 0; roll < rolls; roll++) {
-			List<ItemStack> results = new LinkedList<ItemStack>();
+			List<ItemStack> results = new LinkedList<>();
 			if (recipe instanceof CuttingRecipe)
 				results = ((CuttingRecipe) recipe).rollResults();
 			else if (recipe instanceof StonecutterRecipe || recipe.getType() == woodcuttingRecipeType.get())
 				results.add(recipe.getResultItem(level.registryAccess())
 					.copy());
 
-			for (int i = 0; i < results.size(); i++) {
-				ItemStack stack = results.get(i);
+			for (ItemStack stack : results) {
 				ItemHelper.addToList(stack, list);
 			}
 		}

@@ -11,6 +11,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
+
 import net.minecraft.network.codec.StreamCodec;
 
 import net.neoforged.api.distmarker.Dist;
@@ -20,13 +21,13 @@ public class CubeParticleData implements ParticleOptions, ICustomParticleData<Cu
 
 	public static final MapCodec<CubeParticleData> CODEC = RecordCodecBuilder.mapCodec(i ->
 		i.group(
-			Codec.FLOAT.fieldOf("r").forGetter(p -> p.r),
-			Codec.FLOAT.fieldOf("g").forGetter(p -> p.g),
-			Codec.FLOAT.fieldOf("b").forGetter(p -> p.b),
-			Codec.FLOAT.fieldOf("scale").forGetter(p -> p.scale),
+				Codec.FLOAT.fieldOf("r").forGetter(p -> p.r),
+				Codec.FLOAT.fieldOf("g").forGetter(p -> p.g),
+				Codec.FLOAT.fieldOf("b").forGetter(p -> p.b),
+				Codec.FLOAT.fieldOf("scale").forGetter(p -> p.scale),
 				Codec.INT.fieldOf("avg_age").forGetter(p -> p.avgAge),
-			Codec.BOOL.fieldOf("hot").forGetter(p -> p.hot))
-		.apply(i, CubeParticleData::new));
+				Codec.BOOL.fieldOf("hot").forGetter(p -> p.hot))
+			.apply(i, CubeParticleData::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, CubeParticleData> STREAM_CODEC = StreamCodec.composite(
 			ByteBufCodecs.FLOAT, p -> p.r,

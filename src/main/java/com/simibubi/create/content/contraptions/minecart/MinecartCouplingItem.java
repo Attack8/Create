@@ -57,7 +57,7 @@ public class MinecartCouplingItem extends Item {
 	}
 
 	protected static boolean onCouplingInteractOnMinecart(PlayerInteractEvent.EntityInteract event,
-		AbstractMinecart minecart, Player player, MinecartController controller) {
+														  AbstractMinecart minecart, Player player, MinecartController controller) {
 		Level world = event.getLevel();
 		if (controller.isFullyCoupled()) {
 			if (!world.isClientSide)
@@ -70,7 +70,7 @@ public class MinecartCouplingItem extends Item {
 	}
 
 	private static boolean onWrenchInteractOnMinecart(EntityInteract event, AbstractMinecart minecart, Player player,
-		MinecartController controller) {
+													  MinecartController controller) {
 		int couplings = (controller.isConnectedToCoupling() ? 1 : 0) + (controller.isLeadingCoupling() ? 1 : 0);
 		if (couplings == 0)
 			return false;

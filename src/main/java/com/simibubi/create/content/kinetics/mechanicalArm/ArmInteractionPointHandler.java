@@ -94,7 +94,7 @@ public class ArmInteractionPointHandler {
 			return;
 
 		int removed = 0;
-		for (Iterator<ArmInteractionPoint> iterator = currentSelection.iterator(); iterator.hasNext();) {
+		for (Iterator<ArmInteractionPoint> iterator = currentSelection.iterator(); iterator.hasNext(); ) {
 			ArmInteractionPoint point = iterator.next();
 			if (point.getPos()
 				.closerThan(pos, ArmBlockEntity.getRange()))
@@ -157,11 +157,10 @@ public class ArmInteractionPointHandler {
 		}
 
 		HitResult objectMouseOver = Minecraft.getInstance().hitResult;
-		if (!(objectMouseOver instanceof BlockHitResult)) {
+		if (!(objectMouseOver instanceof BlockHitResult result)) {
 			return;
 		}
 
-		BlockHitResult result = (BlockHitResult) objectMouseOver;
 		BlockPos pos = result.getBlockPos();
 
 		BlockEntity be = Minecraft.getInstance().level.getBlockEntity(pos);
@@ -185,7 +184,7 @@ public class ArmInteractionPointHandler {
 	}
 
 	private static void drawOutlines(Collection<ArmInteractionPoint> selection) {
-		for (Iterator<ArmInteractionPoint> iterator = selection.iterator(); iterator.hasNext();) {
+		for (Iterator<ArmInteractionPoint> iterator = selection.iterator(); iterator.hasNext(); ) {
 			ArmInteractionPoint point = iterator.next();
 
 			if (!point.isValid()) {
@@ -203,7 +202,7 @@ public class ArmInteractionPointHandler {
 			int color = point.getMode()
 				.getColor();
 			Outliner.getInstance().showAABB(point, shape.bounds()
-				.move(pos))
+					.move(pos))
 				.colored(color)
 				.lineWidth(1 / 16f);
 		}

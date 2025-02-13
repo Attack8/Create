@@ -106,7 +106,7 @@ public class ControlsHandler {
 		// Keepalive Pressed Keys
 		if (packetCooldown == 0) {
 //			if (!pressedKeys.isEmpty()) {
-				CatnipServices.NETWORK.sendToServer(new ControlsInputPacket(pressedKeys, true, entity.getId(), controlsPos, false));
+			CatnipServices.NETWORK.sendToServer(new ControlsInputPacket(pressedKeys, true, entity.getId(), controlsPos, false));
 				packetCooldown = PACKET_RATE;
 //			}
 		}

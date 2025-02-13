@@ -204,7 +204,7 @@ public class ChromaticCompoundItem extends Item {
 	}
 
 	public boolean checkLight(ItemStack stack, ItemEntity entity, Level world, ItemStack itemStack, Vec3 positionVec,
-		BlockPos randomOffset, BlockState state) {
+							  BlockPos randomOffset, BlockState state) {
 		if (state.getLightEmission(world, randomOffset) == 0)
 			return false;
 		if (state.getDestroySpeed(world, randomOffset) == -1)

@@ -142,7 +142,7 @@ public class ContraptionCollider {
 			// Make player 'shorter' to make it less likely to become stuck
 			if (playerType == PlayerType.CLIENT && entityBounds.getYsize() > 1)
 				entityBounds = entityBounds.contract(0, 2 / 16f, 0);
-			
+
 			motion = motion.subtract(contraptionMotion);
 			motion = rotationMatrix.transform(motion);
 
@@ -765,15 +765,12 @@ public class ContraptionCollider {
 
 			MovementBehaviour movementBehaviour = AllMovementBehaviours.getBehaviour(blockInfo.state());
 			if (movementBehaviour != null) {
-				if (movementBehaviour instanceof BlockBreakingMovementBehaviour) {
-					BlockBreakingMovementBehaviour behaviour = (BlockBreakingMovementBehaviour) movementBehaviour;
+				if (movementBehaviour instanceof BlockBreakingMovementBehaviour behaviour) {
 					if (!behaviour.canBreak(world, colliderPos, collidedState) && !emptyCollider)
 						return true;
 					continue;
 				}
-				if (movementBehaviour instanceof HarvesterMovementBehaviour) {
-					HarvesterMovementBehaviour harvesterMovementBehaviour =
-						(HarvesterMovementBehaviour) movementBehaviour;
+				if (movementBehaviour instanceof HarvesterMovementBehaviour harvesterMovementBehaviour) {
 					if (!harvesterMovementBehaviour.isValidCrop(world, colliderPos, collidedState)
 						&& !harvesterMovementBehaviour.isValidOther(world, colliderPos, collidedState)
 						&& !emptyCollider)

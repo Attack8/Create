@@ -72,12 +72,14 @@ public abstract class BlockEntityBehaviour {
 	/**
 	 * Block destroyed or Chunk unloaded. Usually invalidates capabilities
 	 */
-	public void unload() {}
+	public void unload() {
+	}
 
 	/**
 	 * Block destroyed or removed. Requires block to call ITE::onRemove
 	 */
-	public void destroy() {}
+	public void destroy() {
+	}
 
 	public void setLazyTickRate(int slowTickRate) {
 		this.lazyTickRate = slowTickRate;
@@ -109,9 +111,8 @@ public abstract class BlockEntityBehaviour {
 	public static <T extends BlockEntityBehaviour> T get(BlockEntity be, BehaviourType<T> type) {
 		if (be == null)
 			return null;
-		if (!(be instanceof SmartBlockEntity))
+		if (!(be instanceof SmartBlockEntity ste))
 			return null;
-		SmartBlockEntity ste = (SmartBlockEntity) be;
 		return ste.getBehaviour(type);
 	}
 }

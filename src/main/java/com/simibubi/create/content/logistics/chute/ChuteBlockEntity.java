@@ -646,8 +646,7 @@ public class ChuteBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 		if (AllBlocks.ENCASED_FAN.has(blockStateAbove)
 			&& blockStateAbove.getValue(EncasedFanBlock.FACING) == Direction.DOWN) {
 			BlockEntity be = level.getBlockEntity(worldPosition.above());
-			if (be instanceof EncasedFanBlockEntity && !be.isRemoved()) {
-				EncasedFanBlockEntity fan = (EncasedFanBlockEntity) be;
+			if (be instanceof EncasedFanBlockEntity fan && !be.isRemoved()) {
 				return fan.getSpeed();
 			}
 		}
@@ -669,8 +668,7 @@ public class ChuteBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 		if (AllBlocks.ENCASED_FAN.has(blockStateBelow)
 			&& blockStateBelow.getValue(EncasedFanBlock.FACING) == Direction.UP) {
 			BlockEntity be = level.getBlockEntity(worldPosition.below());
-			if (be instanceof EncasedFanBlockEntity && !be.isRemoved()) {
-				EncasedFanBlockEntity fan = (EncasedFanBlockEntity) be;
+			if (be instanceof EncasedFanBlockEntity fan && !be.isRemoved()) {
 				return fan.getSpeed();
 			}
 		}

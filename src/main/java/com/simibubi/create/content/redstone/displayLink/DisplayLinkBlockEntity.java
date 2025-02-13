@@ -214,9 +214,12 @@ public class DisplayLinkBlockEntity extends LinkWithBulbBlockEntity {
 	}
 
 	private static final Vec3 bulbOffset = VecHelper.voxelSpace(11, 7, 5);
+private static final Vec3 bulbOffsetVertical = VecHelper.voxelSpace(5, 7, 11);
 
 	@Override
 	public Vec3 getBulbOffset(BlockState state) {
+		if (state.getOptionalValue(DisplayLinkBlock.FACING).orElse(Direction.UP).getAxis().isVertical())
+			return bulbOffsetVertical;
 		return bulbOffset;
 	}
 

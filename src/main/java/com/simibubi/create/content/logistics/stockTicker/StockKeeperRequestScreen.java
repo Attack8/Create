@@ -81,13 +81,13 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 	implements ScreenWithStencils {
 
 	public static class CategoryEntry {
-		ItemStack filterStack;
 		boolean hidden;
 		String name;
 		int y;
+		int targetBECategory;
 
-		public CategoryEntry(ItemStack filterStack, String name, int y) {
-			this.filterStack = filterStack;
+		public CategoryEntry(int targetBECategory, String name, int y) {
+			this.targetBECategory = targetBECategory;
 			this.name = name;
 			hidden = false;
 			this.y = y;
@@ -288,15 +288,15 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		categories = new ArrayList<>();
 		for (int i = 0; i < blockEntity.categories.size(); i++) {
 			ItemStack stack = blockEntity.categories.get(i);
-			CategoryEntry entry = new CategoryEntry(stack, stack.isEmpty() ? ""
+			CategoryEntry entry = new CategoryEntry(i, stack.isEmpty() ? ""
 				: stack.getHoverName()
-				.getString(),
+					.getString(),
 				0);
 			entry.hidden = hiddenCategories.contains(i);
 			categories.add(entry);
 		}
 
-		CategoryEntry unsorted = new CategoryEntry(null, CreateLang.translate("gui.stock_keeper.unsorted_category")
+		CategoryEntry unsorted = new CategoryEntry(-1, CreateLang.translate("gui.stock_keeper.unsorted_category")
 			.string(), 0);
 		unsorted.hidden = hiddenCategories.contains(-1);
 		categories.add(unsorted);
@@ -954,7 +954,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 		int localY = y - itemsY;
 
 		for (int categoryIndex = 0; categoryIndex < displayedItems.size(); categoryIndex++) {
-			CategoryEntry entry = categories.isEmpty() ? new CategoryEntry(null, "", 0) : categories.get(categoryIndex);
+			CategoryEntry entry = categories.isEmpty() ? new CategoryEntry(0, "", 0) : categories.get(categoryIndex);
 			if (entry.hidden)
 				continue;
 
@@ -1074,7 +1074,10 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 				if (displayedItems.get(categoryIndex)
 					.isEmpty())
 					continue;
-				int indexOf = entry.filterStack == null ? -1 : blockEntity.categories.indexOf(entry.filterStack);
+				int indexOf = entry.targetBECategory;
+				if (indexOf >= blockEntity.categories.size())
+					continue;
+				
 				hiddenCategories.remove(indexOf);
 				if (!entry.hidden)
 					hiddenCategories.add(indexOf);

@@ -71,8 +71,8 @@ public class EncasedCogwheelBlock extends RotatedPillarKineticBlock
 		if (target instanceof BlockHitResult)
 			return ((BlockHitResult) target).getDirection()
 					.getAxis() != getRotationAxis(state)
-					? isLarge ? AllBlocks.LARGE_COGWHEEL.asStack() : AllBlocks.COGWHEEL.asStack()
-					: getCasing().asItem().getDefaultInstance();
+				? isLarge ? AllBlocks.LARGE_COGWHEEL.asStack() : AllBlocks.COGWHEEL.asStack()
+				: getCasing().asItem().getDefaultInstance();
 		return super.getCloneItemStack(state, target, level, pos, player);
 	}
 
@@ -197,18 +197,18 @@ public class EncasedCogwheelBlock extends RotatedPillarKineticBlock
 		boolean clockwise = rotation == Rotation.CLOCKWISE_90;
 
 		if (rotationAxis == Direction.Axis.X) {
-			if (	   axis == Direction.Axis.Z && !clockwise
-					|| axis == Direction.Axis.Y && clockwise) {
+			if (axis == Direction.Axis.Z && !clockwise
+				|| axis == Direction.Axis.Y && clockwise) {
 				return swapShafts(state);
 			}
 		} else if (rotationAxis == Direction.Axis.Y) {
-			if (	   axis == Direction.Axis.X && !clockwise
-					|| axis == Direction.Axis.Z && clockwise) {
+			if (axis == Direction.Axis.X && !clockwise
+				|| axis == Direction.Axis.Z && clockwise) {
 				return swapShafts(state);
 			}
 		} else if (rotationAxis == Direction.Axis.Z) {
-			if (	   axis == Direction.Axis.Y && !clockwise
-					|| axis == Direction.Axis.X && clockwise) {
+			if (axis == Direction.Axis.Y && !clockwise
+				|| axis == Direction.Axis.X && clockwise) {
 				return swapShafts(state);
 			}
 		}
@@ -220,7 +220,7 @@ public class EncasedCogwheelBlock extends RotatedPillarKineticBlock
 	public BlockState mirror(BlockState state, Mirror mirror) {
 		Direction.Axis axis = state.getValue(AXIS);
 		if (axis == Direction.Axis.X && mirror == Mirror.FRONT_BACK
-				|| axis == Direction.Axis.Z && mirror == Mirror.LEFT_RIGHT) {
+			|| axis == Direction.Axis.Z && mirror == Mirror.LEFT_RIGHT) {
 			return swapShafts(state);
 		}
 		return state;
@@ -270,20 +270,19 @@ public class EncasedCogwheelBlock extends RotatedPillarKineticBlock
 
 	@Override
 	public void handleEncasing(BlockState state, Level level, BlockPos pos, ItemStack heldItem, Player player, InteractionHand hand,
-	    BlockHitResult ray) {
+							   BlockHitResult ray) {
 		BlockState encasedState = defaultBlockState()
-				.setValue(AXIS, state.getValue(AXIS));
+			.setValue(AXIS, state.getValue(AXIS));
 
 		for (Direction d : Iterate.directionsInAxis(state.getValue(AXIS))) {
 			BlockState adjacentState = level.getBlockState(pos.relative(d));
-			if (!(adjacentState.getBlock() instanceof IRotate))
+			if (!(adjacentState.getBlock() instanceof IRotate def))
 				continue;
-			IRotate def = (IRotate) adjacentState.getBlock();
 			if (!def.hasShaftTowards(level, pos.relative(d), adjacentState, d.getOpposite()))
 				continue;
 			encasedState =
 				encasedState.cycle(d.getAxisDirection() == AxisDirection.POSITIVE ? EncasedCogwheelBlock.TOP_SHAFT
-						: EncasedCogwheelBlock.BOTTOM_SHAFT);
+					: EncasedCogwheelBlock.BOTTOM_SHAFT);
 		}
 
 		KineticBlockEntity.switchToBlockState(level, pos, encasedState);

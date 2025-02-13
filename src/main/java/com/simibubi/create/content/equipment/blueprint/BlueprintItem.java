@@ -11,6 +11,7 @@ import com.simibubi.create.content.logistics.filter.FilterItem;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.InTagAttribute;
 import com.simibubi.create.foundation.item.ItemHelper;
+import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute.ItemAttributeEntry;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -32,6 +33,7 @@ import net.minecraft.world.item.crafting.Ingredient.Value;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
@@ -47,14 +49,14 @@ public class BlueprintItem extends Item {
 		Player player = ctx.getPlayer();
 		ItemStack stack = ctx.getItemInHand();
 		BlockPos pos = ctx.getClickedPos()
-				.relative(face);
+			.relative(face);
 
 		if (player != null && !player.mayUseItemAt(pos, face, stack))
 			return InteractionResult.FAIL;
 
 		Level world = ctx.getLevel();
 		HangingEntity hangingentity = new BlueprintEntity(world, pos, face, face.getAxis()
-				.isHorizontal() ? Direction.DOWN : ctx.getHorizontalDirection());
+			.isHorizontal() ? Direction.DOWN : ctx.getHorizontalDirection());
 		CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
 
 		if (customData != null)
@@ -81,7 +83,7 @@ public class BlueprintItem extends Item {
 			for (int row = 0; row < shapedRecipe.getHeight(); row++)
 				for (int col = 0; col < shapedRecipe.getWidth(); col++)
 					inv.setStackInSlot(row * 3 + col,
-							convertIngredientToFilter(ingredients.get(row * shapedRecipe.getWidth() + col)));
+						convertIngredientToFilter(ingredients.get(row * shapedRecipe.getWidth() + col)));
 		} else {
 			for (int i = 0; i < ingredients.size(); i++)
 				inv.setStackInSlot(i, convertIngredientToFilter(ingredients.get(i)));
@@ -116,7 +118,7 @@ public class BlueprintItem extends Item {
 		if (itemList instanceof TagValue tagValue) {
 			ItemStack filterItem = AllItems.ATTRIBUTE_FILTER.asStack();
 			filterItem.set(AllDataComponents.ATTRIBUTE_FILTER_WHITELIST_MODE, AttributeFilterWhitelistMode.WHITELIST_DISJ);
-			List<ItemAttribute.ItemAttributeEntry> attributes = new ArrayList<>();
+			List<ItemAttributeEntry> attributes = new ArrayList<>();
 			ItemAttribute at = new InTagAttribute(ItemTags.create(tagValue.tag().location()));
 			attributes.add(new ItemAttribute.ItemAttributeEntry(at, false));
 			filterItem.set(AllDataComponents.ATTRIBUTE_FILTER_MATCHED_ATTRIBUTES, attributes);

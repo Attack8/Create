@@ -17,6 +17,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -27,7 +28,8 @@ import net.neoforged.api.distmarker.OnlyIn;
 @MethodsReturnNonnullByDefault
 public abstract class BasicParticleData<T extends Particle> implements ParticleOptions, ICustomParticleDataWithSprite<BasicParticleData<T>> {
 
-	public BasicParticleData() { }
+	public BasicParticleData() {
+	}
 
 	@Override
 	public StreamCodec<? super RegistryFriendlyByteBuf, BasicParticleData<T>> getStreamCodec() {
@@ -50,6 +52,6 @@ public abstract class BasicParticleData<T extends Particle> implements ParticleO
 	@OnlyIn(Dist.CLIENT)
 	public ParticleEngine.SpriteParticleRegistration<BasicParticleData<T>> getMetaFactory() {
 		return animatedSprite -> (data, worldIn, x, y, z, vx, vy, vz) ->
-				getBasicFactory().makeParticle(worldIn, x, y, z, vx, vy, vz, animatedSprite);
+			getBasicFactory().makeParticle(worldIn, x, y, z, vx, vy, vz, animatedSprite);
 	}
 }

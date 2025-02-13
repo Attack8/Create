@@ -305,7 +305,7 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 	}
 
 	public boolean trackClicked(Player player, InteractionHand hand, ITrackBlock track, BlockState state,
-		BlockPos pos) {
+								BlockPos pos) {
 		refreshAssemblyInfo();
 		BoundingBox bb = assemblyAreas.get(level)
 			.get(worldPosition);
@@ -992,7 +992,7 @@ public class StationBlockEntity extends SmartBlockEntity implements Transformabl
 			return;
 
 		if (ppbe instanceof PostboxBlockEntity pbe)
-			pbe.trackedGlobalStation = new WeakReference<GlobalStation>(station);
+			pbe.trackedGlobalStation = new WeakReference<>(station);
 
 		if (station.connectedPorts.containsKey(ppbe.getBlockPos()))
 			restoreOfflineBuffer(ppbe, station.connectedPorts.get(ppbe.getBlockPos()));

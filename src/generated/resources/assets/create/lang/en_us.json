@@ -1580,6 +1580,7 @@
   "create.package_port.cannot_reach_down": "Cannot connect downward",
   "create.package_port.too_far": "Too far away",
   "create.package_port.valid": "Can Connect ✔",
+  "create.packager.no_portable_storage": "Packagers cannot interface with Portable Storage directly",
   "create.packager_link.clear": "Cleared selection",
   "create.packager_link.set": "Target selected",
   "create.packager_link.success": "Successfully bound to target",

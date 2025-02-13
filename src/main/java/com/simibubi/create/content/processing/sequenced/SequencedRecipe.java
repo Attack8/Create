@@ -13,6 +13,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+
 import net.neoforged.neoforge.common.crafting.CompoundIngredient;
 
 public class SequencedRecipe<T extends ProcessingRecipe<?>> {

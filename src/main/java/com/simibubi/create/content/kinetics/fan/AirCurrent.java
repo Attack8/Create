@@ -74,7 +74,7 @@ public class AirCurrent {
 	}
 
 	protected void tickAffectedEntities(Level world) {
-		for (Iterator<Entity> iterator = caughtEntities.iterator(); iterator.hasNext();) {
+		for (Iterator<Entity> iterator = caughtEntities.iterator(); iterator.hasNext(); ) {
 			Entity entity = iterator.next();
 			if (!entity.isAlive() || !entity.getBoundingBox()
 				.intersects(bounds) || isPlayerCreativeFlying(entity)) {
@@ -129,8 +129,7 @@ public class AirCurrent {
 	}
 
 	public static boolean isPlayerCreativeFlying(Entity entity) {
-		if (entity instanceof Player) {
-			Player player = (Player) entity;
+		if (entity instanceof Player player) {
 			return player.isCreative() && player.getAbilities().flying;
 		}
 		return false;
@@ -143,7 +142,7 @@ public class AirCurrent {
 			FanProcessingType processingType = pair.getRight();
 			if (processingType == AllFanProcessingTypes.NONE)
 				continue;
-			
+
 			handler.handleProcessingOnAllItems(transported -> {
 				if (world.isClientSide) {
 					processingType.spawnProcessingParticles(world, handler.getWorldPositionOf(transported));
@@ -251,18 +250,18 @@ public class AirCurrent {
 			if (shapeDepth == Double.POSITIVE_INFINITY) {
 				continue;
 			}
-			return Math.min((float) (i + shapeDepth + 1/32d), max);
+			return Math.min((float) (i + shapeDepth + 1 / 32d), max);
 		}
 
 		return max;
 	}
 
 	private static final double[][] DEPTH_TEST_COORDINATES = {
-			{ 0.25, 0.25 },
-			{ 0.25, 0.75 },
-			{ 0.5, 0.5 },
-			{ 0.75, 0.25 },
-			{ 0.75, 0.75 }
+		{0.25, 0.25},
+		{0.25, 0.75},
+		{0.5, 0.5},
+		{0.75, 0.25},
+		{0.75, 0.75}
 	};
 
 	// Finds the maximum depth of the shape when traveling in the given direction.

@@ -36,6 +36,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 public class PotatoProjectileEntity extends AbstractHurtingProjectile implements IEntityWithComplexSpawn {
@@ -216,13 +217,11 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 			if (random.nextDouble() <= recoveryChance)
 				recoverItem();
 
-		if (!(target instanceof LivingEntity)) {
+		if (!(target instanceof LivingEntity livingentity)) {
 			playHitSound(level(), position());
 			kill();
 			return;
 		}
-
-		LivingEntity livingentity = (LivingEntity) target;
 
 		if (type.getReloadTicks() < 10)
 			livingentity.invulnerableTime = type.getReloadTicks() + 10;

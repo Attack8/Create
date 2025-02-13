@@ -16,7 +16,6 @@ import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.math.AngleHelper;
 import net.createmod.ponder.api.level.PonderLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -49,6 +48,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.items.ItemStackHandler;
@@ -58,8 +58,6 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 	private Entity originalEntity;
 	public ItemStack box;
 
-	public int extractorAnimationProgress;
-	public Direction extractorSide;
 	public int insertionDelay;
 
 	public Vec3 clientPosition, vec2 = Vec3.ZERO, vec3 = Vec3.ZERO;
@@ -275,7 +273,7 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 		boolean isOtherPackage = entityIn instanceof PackageEntity;
 
 		if (!isOtherPackage && tossedBy.get() != null)
-			tossedBy = new WeakReference<Player>(null); // no nudging
+			tossedBy = new WeakReference<>(null); // no nudging
 
 		if (isOtherPackage) {
 			if (entityIn.getBoundingBox().minY < this.getBoundingBox().maxY)
@@ -451,10 +449,6 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 		setDeltaMovement(additionalData.readFloat(), additionalData.readFloat(), additionalData.readFloat());
 	}
 
-	protected SoundEvent getFallSound(int heightIn) {
-		return SoundEvents.CHISELED_BOOKSHELF_FALL;
-	}
-
 	@Override
 	public float getVoicePitch() {
 		return 1.5f;
@@ -475,4 +469,8 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 		return null;
 	}
 
+	@Override
+	public boolean isAffectedByPotions() {
+		return false;
+	}
 }

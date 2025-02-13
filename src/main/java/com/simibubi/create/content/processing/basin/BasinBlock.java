@@ -42,6 +42,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -62,7 +63,7 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 	protected void createBlockStateDefinition(Builder<Block, BlockState> p_206840_1_) {
 		super.createBlockStateDefinition(p_206840_1_.add(FACING));
 	}
-	
+
 	public static boolean isBasin(LevelReader world, BlockPos pos) {
 		return world.getBlockEntity(pos) instanceof BasinBlockEntity;
 	}
@@ -85,7 +86,7 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 
 	@Override
 	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-		return onBlockEntityUseItemOn(level, pos, be -> {
+								 return onBlockEntityUseItemOn(level, pos, be -> {
 			if (!stack.isEmpty()) {
 				if (FluidHelper.tryEmptyItemIntoBE(level, player, hand, stack, be))
 					return ItemInteractionResult.SUCCESS;
@@ -98,8 +99,8 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 				if (stack.getItem().equals(Items.SPONGE)) {
 					IFluidHandler fluidHandler = level.getCapability(Capabilities.FluidHandler.BLOCK, pos, null);
 					if (fluidHandler != null) {
-						FluidStack drained = fluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE);
-						if (!drained.isEmpty()) {
+					FluidStack drained = fluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE);
+					if (!drained.isEmpty()) {
 							return ItemInteractionResult.SUCCESS;
 						}
 					}
@@ -134,11 +135,10 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 		if (!worldIn.getBlockState(entityIn.blockPosition())
 			.is(this))
 			return;
-		if (!(entityIn instanceof ItemEntity))
+		if (!(entityIn instanceof ItemEntity itemEntity))
 			return;
 		if (!entityIn.isAlive())
 			return;
-		ItemEntity itemEntity = (ItemEntity) entityIn;
 		withBlockEntityDo(worldIn, entityIn.blockPosition(), be -> {
 			ItemStack insertItem = ItemHandlerHelper.insertItem(be.inputInventory, itemEntity.getItem()
 				.copy(), false);
@@ -207,8 +207,7 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 			return false;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(output);
-			if (blockEntity instanceof BeltBlockEntity) {
-				BeltBlockEntity belt = (BeltBlockEntity) blockEntity;
+			if (blockEntity instanceof BeltBlockEntity belt) {
 				return belt.getSpeed() == 0 || belt.getMovementFacing() != direction.getOpposite();
 			}
 		}

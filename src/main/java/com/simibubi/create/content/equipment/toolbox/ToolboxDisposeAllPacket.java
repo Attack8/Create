@@ -10,12 +10,12 @@ import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public record ToolboxDisposeAllPacket(BlockPos toolboxPos) implements ServerboundPacketPayload {

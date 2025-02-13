@@ -1,10 +1,16 @@
 package com.simibubi.create.content.equipment.potatoCannon;
 
+import java.util.UUID;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Pair;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.Create;
 import com.simibubi.create.foundation.mixin.accessor.FallingBlockEntityAccessor;
+
 import net.createmod.catnip.data.WorldAttached;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -35,16 +41,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.common.SpecialPlantable;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
-
-import java.util.UUID;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class BuiltinPotatoProjectileTypes {
 
@@ -55,206 +57,204 @@ public class BuiltinPotatoProjectileTypes {
 
 	public static final PotatoCannonProjectileType
 
-	FALLBACK = create("fallback").damage(0)
+		FALLBACK = create("fallback").damage(0)
 		.register(),
 
-		POTATO = create("potato").damage(5)
-			.reloadTicks(15)
-			.velocity(1.25f)
-			.knockback(1.5f)
-			.renderTumbling()
-			.onBlockHit(plantCrop(Blocks.POTATOES))
-			.registerAndAssign(Items.POTATO),
+	POTATO = create("potato").damage(5)
+		.reloadTicks(15)
+		.velocity(1.25f)
+		.knockback(1.5f)
+		.renderTumbling()
+		.onBlockHit(plantCrop(Blocks.POTATOES))
+		.registerAndAssign(Items.POTATO),
 
-		BAKED_POTATO = create("baked_potato").damage(5)
-			.reloadTicks(15)
-			.velocity(1.25f)
-			.knockback(0.5f)
-			.renderTumbling()
-			.preEntityHit(setFire(3))
-			.registerAndAssign(Items.BAKED_POTATO),
+	BAKED_POTATO = create("baked_potato").damage(5)
+		.reloadTicks(15)
+		.velocity(1.25f)
+		.knockback(0.5f)
+		.renderTumbling()
+		.preEntityHit(setFire(3))
+		.registerAndAssign(Items.BAKED_POTATO),
 
-		CARROT = create("carrot").damage(4)
-			.reloadTicks(12)
-			.velocity(1.45f)
-			.knockback(0.3f)
-			.renderTowardMotion(140, 1)
-			.soundPitch(1.5f)
-			.onBlockHit(plantCrop(Blocks.CARROTS))
-			.registerAndAssign(Items.CARROT),
+	CARROT = create("carrot").damage(4)
+		.reloadTicks(12)
+		.velocity(1.45f)
+		.knockback(0.3f)
+		.renderTowardMotion(140, 1)
+		.soundPitch(1.5f)
+		.onBlockHit(plantCrop(Blocks.CARROTS))
+		.registerAndAssign(Items.CARROT),
 
-		GOLDEN_CARROT = create("golden_carrot").damage(12)
-			.reloadTicks(15)
-			.velocity(1.45f)
-			.knockback(0.5f)
-			.renderTowardMotion(140, 2)
-			.soundPitch(1.5f)
-			.registerAndAssign(Items.GOLDEN_CARROT),
+	GOLDEN_CARROT = create("golden_carrot").damage(12)
+		.reloadTicks(15)
+		.velocity(1.45f)
+		.knockback(0.5f)
+		.renderTowardMotion(140, 2)
+		.soundPitch(1.5f)
+		.registerAndAssign(Items.GOLDEN_CARROT),
 
-		SWEET_BERRIES = create("sweet_berry").damage(3)
-			.reloadTicks(10)
-			.knockback(0.1f)
-			.velocity(1.05f)
-			.renderTumbling()
-			.splitInto(3)
-			.soundPitch(1.25f)
-			.registerAndAssign(Items.SWEET_BERRIES),
+	SWEET_BERRIES = create("sweet_berry").damage(3)
+		.reloadTicks(10)
+		.knockback(0.1f)
+		.velocity(1.05f)
+		.renderTumbling()
+		.splitInto(3)
+		.soundPitch(1.25f)
+		.registerAndAssign(Items.SWEET_BERRIES),
 
-		GLOW_BERRIES = create("glow_berry").damage(2)
-			.reloadTicks(10)
-			.knockback(0.05f)
-			.velocity(1.05f)
-			.renderTumbling()
-			.splitInto(2)
-			.soundPitch(1.2f)
-			.onEntityHit(potion(MobEffects.GLOWING, 1, 200, false))
-			.registerAndAssign(Items.GLOW_BERRIES),
+	GLOW_BERRIES = create("glow_berry").damage(2)
+		.reloadTicks(10)
+		.knockback(0.05f)
+		.velocity(1.05f)
+		.renderTumbling()
+		.splitInto(2)
+		.soundPitch(1.2f)
+		.onEntityHit(potion(MobEffects.GLOWING, 1, 200, false))
+		.registerAndAssign(Items.GLOW_BERRIES),
 
-		CHOCOLATE_BERRIES = create("chocolate_berry").damage(4)
-			.reloadTicks(10)
-			.knockback(0.2f)
-			.velocity(1.05f)
-			.renderTumbling()
-			.splitInto(3)
-			.soundPitch(1.25f)
-			.registerAndAssign(AllItems.CHOCOLATE_BERRIES.get()),
+	CHOCOLATE_BERRIES = create("chocolate_berry").damage(4)
+		.reloadTicks(10)
+		.knockback(0.2f)
+		.velocity(1.05f)
+		.renderTumbling()
+		.splitInto(3)
+		.soundPitch(1.25f)
+		.registerAndAssign(AllItems.CHOCOLATE_BERRIES.get()),
 
-		POISON_POTATO = create("poison_potato").damage(5)
-			.reloadTicks(15)
-			.knockback(0.05f)
-			.velocity(1.25f)
-			.renderTumbling()
-			.onEntityHit(potion(MobEffects.POISON, 1, 160, true))
-			.registerAndAssign(Items.POISONOUS_POTATO),
+	POISON_POTATO = create("poison_potato").damage(5)
+		.reloadTicks(15)
+		.knockback(0.05f)
+		.velocity(1.25f)
+		.renderTumbling()
+		.onEntityHit(potion(MobEffects.POISON, 1, 160, true))
+		.registerAndAssign(Items.POISONOUS_POTATO),
 
-		CHORUS_FRUIT = create("chorus_fruit").damage(3)
-			.reloadTicks(15)
-			.velocity(1.20f)
-			.knockback(0.05f)
-			.renderTumbling()
-			.onEntityHit(chorusTeleport(20))
-			.registerAndAssign(Items.CHORUS_FRUIT),
+	CHORUS_FRUIT = create("chorus_fruit").damage(3)
+		.reloadTicks(15)
+		.velocity(1.20f)
+		.knockback(0.05f)
+		.renderTumbling()
+		.onEntityHit(chorusTeleport(20))
+		.registerAndAssign(Items.CHORUS_FRUIT),
 
-		APPLE = create("apple").damage(5)
-			.reloadTicks(10)
-			.velocity(1.45f)
-			.knockback(0.5f)
-			.renderTumbling()
-			.soundPitch(1.1f)
-			.registerAndAssign(Items.APPLE),
+	APPLE = create("apple").damage(5)
+		.reloadTicks(10)
+		.velocity(1.45f)
+		.knockback(0.5f)
+		.renderTumbling()
+		.soundPitch(1.1f)
+		.registerAndAssign(Items.APPLE),
 
-		HONEYED_APPLE = create("honeyed_apple").damage(6)
-			.reloadTicks(15)
-			.velocity(1.35f)
-			.knockback(0.1f)
-			.renderTumbling()
-			.soundPitch(1.1f)
-			.onEntityHit(potion(MobEffects.MOVEMENT_SLOWDOWN, 2, 160, true))
-			.registerAndAssign(AllItems.HONEYED_APPLE.get()),
+	HONEYED_APPLE = create("honeyed_apple").damage(6)
+		.reloadTicks(15)
+		.velocity(1.35f)
+		.knockback(0.1f)
+		.renderTumbling()
+		.soundPitch(1.1f)
+		.onEntityHit(potion(MobEffects.MOVEMENT_SLOWDOWN, 2, 160, true))
+		.registerAndAssign(AllItems.HONEYED_APPLE.get()),
 
-		GOLDEN_APPLE = create("golden_apple").damage(1)
-			.reloadTicks(100)
-			.velocity(1.45f)
-			.knockback(0.05f)
-			.renderTumbling()
-			.soundPitch(1.1f)
-			.onEntityHit(ray -> {
-				Entity entity = ray.getEntity();
-				Level world = entity.level();
+	GOLDEN_APPLE = create("golden_apple").damage(1)
+		.reloadTicks(100)
+		.velocity(1.45f)
+		.knockback(0.05f)
+		.renderTumbling()
+		.soundPitch(1.1f)
+		.onEntityHit(ray -> {
+			Entity entity = ray.getEntity();
+			Level world = entity.level();
 
-				if (!(entity instanceof ZombieVillager) || !((ZombieVillager) entity).hasEffect(MobEffects.WEAKNESS))
-					return foodEffects(Foods.GOLDEN_APPLE, false).test(ray);
-				if (world.isClientSide)
-					return false;
+			if (!(entity instanceof ZombieVillager) || !((ZombieVillager) entity).hasEffect(MobEffects.WEAKNESS))
+				return foodEffects(Foods.GOLDEN_APPLE, false).test(ray);
+			if (world.isClientSide)
+				return false;
 
-				FakePlayer dummy = ZOMBIE_CONVERTERS.get(world);
-				dummy.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GOLDEN_APPLE, 1));
-				((ZombieVillager) entity).mobInteract(dummy, InteractionHand.MAIN_HAND);
-				return true;
-			})
-			.registerAndAssign(Items.GOLDEN_APPLE),
+			FakePlayer dummy = ZOMBIE_CONVERTERS.get(world);
+			dummy.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.GOLDEN_APPLE, 1));
+			((ZombieVillager) entity).mobInteract(dummy, InteractionHand.MAIN_HAND);
+			return true;
+		})
+		.registerAndAssign(Items.GOLDEN_APPLE),
 
-		ENCHANTED_GOLDEN_APPLE = create("enchanted_golden_apple").damage(1)
-			.reloadTicks(100)
-			.velocity(1.45f)
-			.knockback(0.05f)
-			.renderTumbling()
-			.soundPitch(1.1f)
-			.onEntityHit(foodEffects(Foods.ENCHANTED_GOLDEN_APPLE, false))
-			.registerAndAssign(Items.ENCHANTED_GOLDEN_APPLE),
+	ENCHANTED_GOLDEN_APPLE = create("enchanted_golden_apple").damage(1)
+		.reloadTicks(100)
+		.velocity(1.45f)
+		.knockback(0.05f)
+		.renderTumbling()
+		.soundPitch(1.1f)
+		.onEntityHit(foodEffects(Foods.ENCHANTED_GOLDEN_APPLE, false))
+		.registerAndAssign(Items.ENCHANTED_GOLDEN_APPLE),
 
-		BEETROOT = create("beetroot").damage(2)
-			.reloadTicks(5)
-			.velocity(1.6f)
-			.knockback(0.1f)
-			.renderTowardMotion(140, 2)
-			.soundPitch(1.6f)
-			.registerAndAssign(Items.BEETROOT),
+	BEETROOT = create("beetroot").damage(2)
+		.reloadTicks(5)
+		.velocity(1.6f)
+		.knockback(0.1f)
+		.renderTowardMotion(140, 2)
+		.soundPitch(1.6f)
+		.registerAndAssign(Items.BEETROOT),
 
-		MELON_SLICE = create("melon_slice").damage(3)
-			.reloadTicks(8)
-			.knockback(0.1f)
-			.velocity(1.45f)
-			.renderTumbling()
-			.soundPitch(1.5f)
-			.registerAndAssign(Items.MELON_SLICE),
+	MELON_SLICE = create("melon_slice").damage(3)
+		.reloadTicks(8)
+		.knockback(0.1f)
+		.velocity(1.45f)
+		.renderTumbling()
+		.soundPitch(1.5f)
+		.registerAndAssign(Items.MELON_SLICE),
 
-		GLISTERING_MELON = create("glistering_melon").damage(5)
-			.reloadTicks(8)
-			.knockback(0.1f)
-			.velocity(1.45f)
-			.renderTumbling()
-			.soundPitch(1.5f)
-			.onEntityHit(potion(MobEffects.GLOWING, 1, 100, true))
-			.registerAndAssign(Items.GLISTERING_MELON_SLICE),
+	GLISTERING_MELON = create("glistering_melon").damage(5)
+		.reloadTicks(8)
+		.knockback(0.1f)
+		.velocity(1.45f)
+		.renderTumbling()
+		.soundPitch(1.5f)
+		.onEntityHit(potion(MobEffects.GLOWING, 1, 100, true))
+		.registerAndAssign(Items.GLISTERING_MELON_SLICE),
 
-		MELON_BLOCK = create("melon_block").damage(8)
-			.reloadTicks(20)
-			.knockback(2.0f)
-			.velocity(0.95f)
-			.renderTumbling()
-			.soundPitch(0.9f)
-			.onBlockHit(placeBlockOnGround(Blocks.MELON))
-			.registerAndAssign(Blocks.MELON),
+	MELON_BLOCK = create("melon_block").damage(8)
+		.reloadTicks(20)
+		.knockback(2.0f)
+		.velocity(0.95f)
+		.renderTumbling()
+		.soundPitch(0.9f)
+		.onBlockHit(placeBlockOnGround(Blocks.MELON))
+		.registerAndAssign(Blocks.MELON),
 
-		PUMPKIN_BLOCK = create("pumpkin_block").damage(6)
-			.reloadTicks(15)
-			.knockback(2.0f)
-			.velocity(0.95f)
-			.renderTumbling()
-			.soundPitch(0.9f)
-			.onBlockHit(placeBlockOnGround(Blocks.PUMPKIN))
-			.registerAndAssign(Blocks.PUMPKIN),
+	PUMPKIN_BLOCK = create("pumpkin_block").damage(6)
+		.reloadTicks(15)
+		.knockback(2.0f)
+		.velocity(0.95f)
+		.renderTumbling()
+		.soundPitch(0.9f)
+		.onBlockHit(placeBlockOnGround(Blocks.PUMPKIN))
+		.registerAndAssign(Blocks.PUMPKIN),
 
-		PUMPKIN_PIE = create("pumpkin_pie").damage(7)
-			.reloadTicks(15)
-			.knockback(0.05f)
-			.velocity(1.1f)
-			.renderTumbling()
-			.sticky()
-			.soundPitch(1.1f)
-			.registerAndAssign(Items.PUMPKIN_PIE),
+	PUMPKIN_PIE = create("pumpkin_pie").damage(7)
+		.reloadTicks(15)
+		.knockback(0.05f)
+		.velocity(1.1f)
+		.renderTumbling()
+		.sticky()
+		.soundPitch(1.1f)
+		.registerAndAssign(Items.PUMPKIN_PIE),
 
-		CAKE = create("cake").damage(8)
-			.reloadTicks(15)
-			.knockback(0.1f)
-			.velocity(1.1f)
-			.renderTumbling()
-			.sticky()
-			.soundPitch(1.0f)
-			.registerAndAssign(Items.CAKE),
+	CAKE = create("cake").damage(8)
+		.reloadTicks(15)
+		.knockback(0.1f)
+		.velocity(1.1f)
+		.renderTumbling()
+		.sticky()
+		.soundPitch(1.0f)
+		.registerAndAssign(Items.CAKE),
 
-		BLAZE_CAKE = create("blaze_cake").damage(15)
-			.reloadTicks(20)
-			.knockback(0.3f)
-			.velocity(1.1f)
-			.renderTumbling()
-			.sticky()
-			.preEntityHit(setFire(12))
-			.soundPitch(1.0f)
-			.registerAndAssign(AllItems.BLAZE_CAKE.get())
-
-	;
+	BLAZE_CAKE = create("blaze_cake").damage(15)
+		.reloadTicks(20)
+		.knockback(0.3f)
+		.velocity(1.1f)
+		.renderTumbling()
+		.sticky()
+		.preEntityHit(setFire(12))
+		.soundPitch(1.0f)
+		.registerAndAssign(AllItems.BLAZE_CAKE.get());
 
 	private static PotatoCannonProjectileType.Builder create(String name) {
 		return new PotatoCannonProjectileType.Builder(Create.asResource(name));
@@ -378,9 +378,8 @@ public class BuiltinPotatoProjectileTypes {
 			Level world = entity.getCommandSenderWorld();
 			if (world.isClientSide)
 				return true;
-			if (!(entity instanceof LivingEntity))
+			if (!(entity instanceof LivingEntity livingEntity))
 				return false;
-			LivingEntity livingEntity = (LivingEntity) entity;
 
 			double entityX = livingEntity.getX();
 			double entityY = livingEntity.getY();
@@ -415,6 +414,7 @@ public class BuiltinPotatoProjectileTypes {
 		};
 	}
 
-	public static void register() {}
+	public static void register() {
+	}
 
 }

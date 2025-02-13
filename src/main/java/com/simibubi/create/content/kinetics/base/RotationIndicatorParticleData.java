@@ -13,6 +13,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
+
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -22,7 +23,7 @@ public class RotationIndicatorParticleData
 
 	public static final MapCodec<RotationIndicatorParticleData> CODEC = RecordCodecBuilder.mapCodec(i -> i
 		.group(Codec.INT.fieldOf("color")
-			.forGetter(p -> p.color),
+				.forGetter(p -> p.color),
 			Codec.FLOAT.fieldOf("speed")
 				.forGetter(p -> p.speed),
 			Codec.FLOAT.fieldOf("radius1")

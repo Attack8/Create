@@ -121,8 +121,8 @@ public class SandPaperItem extends Item implements CustomUseEffectsItem {
 
 			if (worldIn.isClientSide) {
 				spawnParticles(entityLiving.getEyePosition(1)
-					.add(entityLiving.getLookAngle()
-						.scale(.5f)),
+						.add(entityLiving.getLookAngle()
+							.scale(.5f)),
 					toPolish, worldIn);
 				return stack;
 			}

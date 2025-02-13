@@ -55,7 +55,7 @@ public class ValueBox extends ChasingAABBOutline {
 		this.label = label;
 		this.pos = pos;
 		this.blockState = state;
-		this.level = new WeakReference<LevelAccessor>(Minecraft.getInstance().level);
+		this.level = new WeakReference<>(Minecraft.getInstance().level);
 	}
 
 	public ValueBox transform(ValueBoxTransform transform) {

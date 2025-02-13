@@ -33,7 +33,7 @@ public class RepackagerBlockEntity extends PackagerBlockEntity {
 			return false;
 
 		IItemHandler targetInv = targetInventory.getInventory();
-		if (targetInv == null)
+		if (targetInv == null || targetInv instanceof PackagerItemHandler)
 			return false;
 
 		boolean targetIsCreativeCrate = targetInv instanceof BottomlessItemHandler;

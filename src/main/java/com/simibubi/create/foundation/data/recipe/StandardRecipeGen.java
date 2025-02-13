@@ -1090,9 +1090,10 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 		PACKAGER = create(AllBlocks.PACKAGER).unlockedBy(I::cardboard)
 			.viaShaped(b -> b.define('C', I.iron())
 				.define('A', AllBlocks.CARDBOARD_BLOCK)
+				.define('R', I.redstone())
 				.pattern(" C ")
 				.pattern("CAC")
-				.pattern(" C ")),
+				.pattern("RCR")),
 
 		PACKAGER_CYCLE = conversionCycle(ImmutableList.of(AllBlocks.PACKAGER, AllBlocks.REPACKAGER)),
 

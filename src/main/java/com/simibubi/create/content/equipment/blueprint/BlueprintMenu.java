@@ -4,6 +4,7 @@ import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllMenuTypes;
 import com.simibubi.create.content.equipment.blueprint.BlueprintEntity.BlueprintSection;
 import com.simibubi.create.foundation.gui.menu.GhostItemMenu;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
@@ -20,6 +21,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -70,12 +72,12 @@ public class BlueprintMenu extends GhostItemMenu<BlueprintSection> {
 		ServerPlayer serverplayerentity = (ServerPlayer) player;
 		CraftingContainer craftingInventory = new BlueprintCraftingInventory(this, ghostInventory);
 		Optional<RecipeHolder<CraftingRecipe>> optional = player.getServer()
-				.getRecipeManager()
-				.getRecipeFor(RecipeType.CRAFTING, craftingInventory.asCraftInput(), player.getCommandSenderWorld());
+			.getRecipeManager()
+			.getRecipeFor(RecipeType.CRAFTING, craftingInventory.asCraftInput(), player.getCommandSenderWorld());
 
 		if (!optional.isPresent()) {
 			if (ghostInventory.getStackInSlot(9)
-					.isEmpty())
+				.isEmpty())
 				return;
 			if (!contentHolder.inferredIcon)
 				return;
@@ -125,9 +127,8 @@ public class BlueprintMenu extends GhostItemMenu<BlueprintSection> {
 		int entityID = extraData.readVarInt();
 		int section = extraData.readVarInt();
 		Entity entityByID = Minecraft.getInstance().level.getEntity(entityID);
-		if (!(entityByID instanceof BlueprintEntity))
+		if (!(entityByID instanceof BlueprintEntity blueprintEntity))
 			return null;
-		BlueprintEntity blueprintEntity = (BlueprintEntity) entityByID;
 		BlueprintSection blueprintSection = blueprintEntity.getSection(section);
 		return blueprintSection;
 	}

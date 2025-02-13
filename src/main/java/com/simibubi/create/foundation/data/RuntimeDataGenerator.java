@@ -96,7 +96,7 @@ public class RuntimeDataGenerator {
 				simpleWoodRecipe(nonStrippedId, itemId);
 				simpleWoodRecipe(itemId, planksId, 6);
 			} else if (BuiltInRegistries.ITEM.containsKey(planksId)) {
-				ResourceLocation tag = Create.asResource("runtime_generated/compat/" + matched.getPath());
+				ResourceLocation tag = Create.asResource("runtime_generated/compat/" + itemId.getNamespace() + "/" + matched.getPath());
 				insertIntoTag(tag, itemId);
 				insertIntoTag(tag, nonStrippedId);
 

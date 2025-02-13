@@ -11,6 +11,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -20,7 +21,8 @@ public class FluidParticleData implements ParticleOptions, ICustomParticleData<F
 	private ParticleType<FluidParticleData> type;
 	private FluidStack fluid;
 
-	public FluidParticleData() {}
+	public FluidParticleData() {
+	}
 
 	@SuppressWarnings("unchecked")
 	public FluidParticleData(ParticleType<?> type, FluidStack fluid) {

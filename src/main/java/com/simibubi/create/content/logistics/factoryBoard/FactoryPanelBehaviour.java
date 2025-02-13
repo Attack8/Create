@@ -152,7 +152,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		if (cached instanceof FactoryPanelBehaviour fbe && !fbe.blockEntity.isRemoved())
 			return fbe;
 		FactoryPanelBehaviour result = at(world, connection.from);
-		connection.cachedSource = new WeakReference<Object>(result);
+		connection.cachedSource = new WeakReference<>(result);
 		return result;
 	}
 
@@ -174,7 +174,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		if (cached instanceof FactoryPanelSupportBehaviour fpsb && !fpsb.blockEntity.isRemoved())
 			return fpsb;
 		FactoryPanelSupportBehaviour result = linkAt(world, connection.from);
-		connection.cachedSource = new WeakReference<Object>(result);
+		connection.cachedSource = new WeakReference<>(result);
 		return result;
 	}
 
@@ -219,7 +219,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 
 		SmartBlockEntity oldBE = blockEntity;
 		FactoryPanelPosition oldPos = getPanelPosition();
-		slot = newPos.slot();
+		moveToSlot(newPos.slot());
 
 		// Add to new BE
 		if (level.getBlockEntity(newPos.pos()) instanceof FactoryPanelBlockEntity fpbe) {
@@ -272,6 +272,12 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 			.component(), true);
 		player.level()
 			.playSound(null, newPos.pos(), SoundEvents.COPPER_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
+	}
+
+	private void moveToSlot(PanelSlot slot) {
+		this.slot = slot;
+		if (this.getSlotPositioning() instanceof FactoryPanelSlotPositioning fpsp)
+			fpsp.slot = slot;
 	}
 
 	@Override
@@ -735,11 +741,11 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 
 		return promises == null ? 0 : promises.getTotalPromisedAndRemoveExpired(item, getPromiseExpiryTimeInTicks());
 	}
-	
+
 	public void resetTimer() {
 		timer = REQUEST_INTERVAL;
 	}
-	
+
 	public void resetTimerSlightly() {
 		timer = REQUEST_INTERVAL / 2;
 	}
@@ -766,10 +772,10 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		panelTag.putString("RecipeAddress", recipeAddress);
 		panelTag.putInt("PromiseClearingInterval", -1);
 		panelTag.putInt("RecipeOutput", 1);
-		
+
 		if (panelBE().restocker)
 			panelTag.put("Promises", restockerPromises.write());
-		
+
 		nbt.put(CreateLang.asId(slot.name()), panelTag);
 	}
 
@@ -893,7 +899,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		return new ValueSettingsBoard(CreateLang.translate("factory_panel.target_amount")
 			.component(), maxAmount, 10,
 			List.of(CreateLang.translate("schedule.condition.threshold.items")
-				.component(),
+					.component(),
 				CreateLang.translate("schedule.condition.threshold.stacks")
 					.component()),
 			new ValueSettingsFormatter(this::formatValue));
@@ -955,7 +961,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 	@Override
 	public MutableComponent getCountLabelForValueBox() {
 		if (filter.isEmpty())
-            return Component.empty();
+			return Component.empty();
 		if (waitingForNetwork) {
 			return Component.literal("?");
 		}
@@ -999,10 +1005,10 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 
 	public static BehaviourType<?> getTypeForSlot(PanelSlot slot) {
 		return switch (slot) {
-		case BOTTOM_LEFT -> BOTTOM_LEFT;
-		case TOP_LEFT -> TOP_LEFT;
-		case TOP_RIGHT -> TOP_RIGHT;
-		case BOTTOM_RIGHT -> BOTTOM_RIGHT;
+			case BOTTOM_LEFT -> BOTTOM_LEFT;
+			case TOP_LEFT -> TOP_LEFT;
+			case TOP_RIGHT -> TOP_RIGHT;
+			case BOTTOM_RIGHT -> BOTTOM_RIGHT;
 		};
 	}
 

@@ -30,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -45,7 +46,7 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 
 	public GlobalStation() {
 		name = "Track Station";
-		nearestTrain = new WeakReference<Train>(null);
+		nearestTrain = new WeakReference<>(null);
 		connectedPorts = new HashMap<>();
 	}
 
@@ -62,7 +63,7 @@ public class GlobalStation extends SingleBlockEntityEdgePoint {
 		super.read(nbt, registries, migration, dimensions);
 		name = nbt.getString("Name");
 		assembling = nbt.getBoolean("Assembling");
-		nearestTrain = new WeakReference<Train>(null);
+		nearestTrain = new WeakReference<>(null);
 
 		connectedPorts.clear();
 		ListTag portList = nbt.getList("Ports", Tag.TAG_COMPOUND);

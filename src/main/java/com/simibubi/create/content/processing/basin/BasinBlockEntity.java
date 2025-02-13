@@ -250,12 +250,11 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 		}
 
 		BlockEntity blockEntity = level.getBlockEntity(worldPosition.above(2));
-		if (!(blockEntity instanceof MechanicalMixerBlockEntity)) {
+		if (!(blockEntity instanceof MechanicalMixerBlockEntity mixer)) {
 			setAreFluidsMoving(false);
 			return;
 		}
 
-		MechanicalMixerBlockEntity mixer = (MechanicalMixerBlockEntity) blockEntity;
 		setAreFluidsMoving(mixer.running && mixer.runningTicks <= 20);
 	}
 

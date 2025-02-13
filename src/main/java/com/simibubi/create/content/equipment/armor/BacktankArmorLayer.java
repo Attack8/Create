@@ -31,7 +31,7 @@ public class BacktankArmorLayer<T extends LivingEntity, M extends EntityModel<T>
 
 	@Override
 	public void render(PoseStack ms, MultiBufferSource buffer, int light, LivingEntity entity, float yaw, float pitch,
-		float pt, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
+					   float pt, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
 		if (entity.getPose() == Pose.SLEEPING)
 			return;
 
@@ -40,13 +40,12 @@ public class BacktankArmorLayer<T extends LivingEntity, M extends EntityModel<T>
 			return;
 
 		M entityModel = getParentModel();
-		if (!(entityModel instanceof HumanoidModel))
+		if (!(entityModel instanceof HumanoidModel<?> model))
 			return;
 
-		HumanoidModel<?> model = (HumanoidModel<?>) entityModel;
 		VertexConsumer vc = buffer.getBuffer(Sheets.cutoutBlockSheet());
 		BlockState renderedState = item.getBlock().defaultBlockState()
-				.setValue(BacktankBlock.HORIZONTAL_FACING, Direction.SOUTH);
+			.setValue(BacktankBlock.HORIZONTAL_FACING, Direction.SOUTH);
 		SuperByteBuffer backtank = CachedBuffers.block(renderedState);
 		SuperByteBuffer cogs = CachedBuffers.partial(BacktankRenderer.getCogsModel(renderedState), renderedState);
 		SuperByteBuffer nob = CachedBuffers.partial(BacktankRenderer.getShaftModel(renderedState), renderedState);
@@ -87,11 +86,10 @@ public class BacktankArmorLayer<T extends LivingEntity, M extends EntityModel<T>
 			registerOn(renderer);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static void registerOn(EntityRenderer<?> entityRenderer) {
-		if (!(entityRenderer instanceof LivingEntityRenderer))
+		if (!(entityRenderer instanceof LivingEntityRenderer<?, ?> livingRenderer))
 			return;
-		LivingEntityRenderer<?, ?> livingRenderer = (LivingEntityRenderer<?, ?>) entityRenderer;
 		if (!(livingRenderer.getModel() instanceof HumanoidModel))
 			return;
 		BacktankArmorLayer<?, ?> layer = new BacktankArmorLayer<>(livingRenderer);

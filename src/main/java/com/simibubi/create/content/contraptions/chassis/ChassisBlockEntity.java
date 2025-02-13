@@ -109,8 +109,7 @@ public class ChassisBlockEntity extends SmartBlockEntity {
 				continue;
 			visited.add(current);
 			BlockEntity blockEntity = level.getBlockEntity(current);
-			if (blockEntity instanceof ChassisBlockEntity) {
-				ChassisBlockEntity chassis = (ChassisBlockEntity) blockEntity;
+			if (blockEntity instanceof ChassisBlockEntity chassis) {
 				collected.add(chassis);
 				visited.add(current);
 				chassis.addAttachedChasses(frontier, visited);
@@ -127,7 +126,7 @@ public class ChassisBlockEntity extends SmartBlockEntity {
 		if (isRadial()) {
 
 			// Collect chain of radial chassis
-			for (int offset : new int[] { -1, 1 }) {
+			for (int offset : new int[]{-1, 1}) {
 				Direction direction = Direction.get(AxisDirection.POSITIVE, axis);
 				BlockPos currentPos = worldPosition.relative(direction, offset);
 				if (!level.isLoaded(currentPos))
@@ -175,7 +174,7 @@ public class ChassisBlockEntity extends SmartBlockEntity {
 		Direction facing = Direction.get(AxisDirection.POSITIVE, axis);
 		int chassisRange = visualize ? currentlySelectedRange : getRange();
 
-		for (int offset : new int[] { 1, -1 }) {
+		for (int offset : new int[]{1, -1}) {
 			if (offset == -1)
 				facing = facing.getOpposite();
 			boolean sticky = state.getValue(block.getGlueableSide(state, facing));
@@ -256,7 +255,7 @@ public class ChassisBlockEntity extends SmartBlockEntity {
 	class ChassisScrollValueBehaviour extends BulkScrollValueBehaviour {
 
 		public ChassisScrollValueBehaviour(Component label, SmartBlockEntity be, ValueBoxTransform slot,
-			Function<SmartBlockEntity, List<? extends SmartBlockEntity>> groupGetter) {
+										   Function<SmartBlockEntity, List<? extends SmartBlockEntity>> groupGetter) {
 			super(label, be, slot, groupGetter);
 		}
 

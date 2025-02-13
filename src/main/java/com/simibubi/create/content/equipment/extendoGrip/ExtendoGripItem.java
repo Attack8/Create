@@ -37,6 +37,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
 
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
@@ -51,7 +52,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.BreakEvent;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 @EventBusSubscriber
 public class ExtendoGripItem extends Item {
@@ -65,11 +65,11 @@ public class ExtendoGripItem extends Item {
 			AttributeModifier.Operation.ADD_VALUE);
 
 	private static final Supplier<Multimap<Holder<Attribute>, AttributeModifier>> rangeModifier = Suppliers.memoize(() ->
-	// Holding an ExtendoGrip
-	ImmutableMultimap.of(Attributes.BLOCK_INTERACTION_RANGE, singleRangeAttributeModifier));
+		// Holding an ExtendoGrip
+		ImmutableMultimap.of(Attributes.BLOCK_INTERACTION_RANGE, singleRangeAttributeModifier));
 	private static final Supplier<Multimap<Holder<Attribute>, AttributeModifier>> doubleRangeModifier = Suppliers.memoize(() ->
-	// Holding two ExtendoGrips o.O
-	ImmutableMultimap.of(Attributes.BLOCK_INTERACTION_RANGE, doubleRangeAttributeModifier));
+		// Holding two ExtendoGrips o.O
+		ImmutableMultimap.of(Attributes.BLOCK_INTERACTION_RANGE, doubleRangeAttributeModifier));
 
 	private static DamageSource lastActiveDamageSource;
 
@@ -82,10 +82,8 @@ public class ExtendoGripItem extends Item {
 
 	@SubscribeEvent
 	public static void holdingExtendoGripIncreasesRange(EntityTickEvent.Pre event) {
-		if (!(event.getEntity() instanceof Player))
+		if (!(event.getEntity() instanceof Player player))
 			return;
-
-		Player player = (Player) event.getEntity();
 
 		CompoundTag persistentData = player.getPersistentData();
 		boolean inOff = AllItems.EXTENDO_GRIP.isIn(player.getOffhandItem());
@@ -246,9 +244,8 @@ public class ExtendoGripItem extends Item {
 		if (lastActiveDamageSource == null)
 			return;
 		Entity entity = lastActiveDamageSource.getDirectEntity();
-		if (!(entity instanceof Player))
+		if (!(entity instanceof Player player))
 			return;
-		Player player = (Player) entity;
 		if (!isHoldingExtendoGrip(player))
 			return;
 		event.setStrength(event.getStrength() + 2);

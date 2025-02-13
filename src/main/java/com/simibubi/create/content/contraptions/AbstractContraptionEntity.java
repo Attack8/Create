@@ -258,7 +258,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 			return true;
 		return contraption.getSeatMapping()
 			.size() < contraption.getSeats()
-				.size();
+			.size();
 	}
 
 	public Component getContraptionName() {
@@ -289,7 +289,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	public boolean handlePlayerInteraction(Player player, BlockPos localPos, Direction side,
-		InteractionHand interactionHand) {
+										   InteractionHand interactionHand) {
 		int indexOfSeat = contraption.getSeats()
 			.indexOf(localPos);
 		if (indexOfSeat == -1 || AllItems.WRENCH.isIn(player.getItemInHand(interactionHand))) {
@@ -483,11 +483,10 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		skipActorStop = false;
 
 		for (Entity entity : getPassengers()) {
-			if (!(entity instanceof OrientedContraptionEntity))
+			if (!(entity instanceof OrientedContraptionEntity orientedCE))
 				continue;
 			if (!contraption.stabilizedSubContraptions.containsKey(entity.getUUID()))
 				continue;
-			OrientedContraptionEntity orientedCE = (OrientedContraptionEntity) entity;
 			if (orientedCE.contraption != null && orientedCE.contraption.stalled) {
 				contraption.stalled = true;
 				break;
@@ -524,7 +523,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	protected boolean shouldActorTrigger(MovementContext context, StructureBlockInfo blockInfo, MovementBehaviour actor,
-		Vec3 actorPosition, BlockPos gridPosition) {
+										 Vec3 actorPosition, BlockPos gridPosition) {
 		Vec3 previousPosition = context.position;
 		if (previousPosition == null)
 			return false;
@@ -730,7 +729,8 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	@Override
-	protected void doWaterSplashEffect() {}
+	protected void doWaterSplashEffect() {
+	}
 
 	public Contraption getContraption() {
 		return contraption;
@@ -797,7 +797,8 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 
 	@Override
 	// Make sure nothing can move contraptions out of the way
-	public void setDeltaMovement(Vec3 motionIn) {}
+	public void setDeltaMovement(Vec3 motionIn) {
+	}
 
 	@Override
 	public PushReaction getPistonPushReaction() {

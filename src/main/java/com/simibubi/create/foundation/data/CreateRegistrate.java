@@ -52,6 +52,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour.Properties;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
@@ -121,26 +122,26 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 
 	@Override
 	public <T extends BlockEntity> CreateBlockEntityBuilder<T, CreateRegistrate> blockEntity(String name,
-		BlockEntityFactory<T> factory) {
+																							 BlockEntityFactory<T> factory) {
 		return blockEntity(self(), name, factory);
 	}
 
 	@Override
 	public <T extends BlockEntity, P> CreateBlockEntityBuilder<T, P> blockEntity(P parent, String name,
-		BlockEntityFactory<T> factory) {
+																				 BlockEntityFactory<T> factory) {
 		return (CreateBlockEntityBuilder<T, P>) entry(name,
 			(callback) -> CreateBlockEntityBuilder.create(this, parent, name, callback, factory));
 	}
 
 	@Override
 	public <T extends Entity> CreateEntityBuilder<T, CreateRegistrate> entity(String name,
-		EntityType.EntityFactory<T> factory, MobCategory classification) {
+																			  EntityType.EntityFactory<T> factory, MobCategory classification) {
 		return this.entity(self(), name, factory, classification);
 	}
 
 	@Override
 	public <T extends Entity, P> CreateEntityBuilder<T, P> entity(P parent, String name,
-		EntityType.EntityFactory<T> factory, MobCategory classification) {
+																  EntityType.EntityFactory<T> factory, MobCategory classification) {
 		return (CreateEntityBuilder<T, P>) this.entry(name, (callback) -> {
 			return CreateEntityBuilder.create(this, parent, name, callback, factory, classification);
 		});
@@ -157,8 +158,8 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 	/* Palettes */
 
 	public <T extends Block> BlockBuilder<T, CreateRegistrate> paletteStoneBlock(String name,
-		NonNullFunction<Properties, T> factory, NonNullSupplier<Block> propertiesFrom, boolean worldGenStone,
-		boolean hasNaturalVariants) {
+																				 NonNullFunction<Properties, T> factory, NonNullSupplier<Block> propertiesFrom, boolean worldGenStone,
+																				 boolean hasNaturalVariants) {
 		BlockBuilder<T, CreateRegistrate> builder = super.block(name, factory).initialProperties(propertiesFrom)
 			.transform(pickaxeOnly())
 			.blockstate(hasNaturalVariants ? BlockStateGen.naturalStoneTypeBlock(name) : (c, p) -> {
@@ -179,35 +180,35 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 	}
 
 	public BlockBuilder<Block, CreateRegistrate> paletteStoneBlock(String name, NonNullSupplier<Block> propertiesFrom,
-		boolean worldGenStone, boolean hasNaturalVariants) {
+																   boolean worldGenStone, boolean hasNaturalVariants) {
 		return paletteStoneBlock(name, Block::new, propertiesFrom, worldGenStone, hasNaturalVariants);
 	}
 
 	/* Fluids */
 
 	public <T extends BaseFlowingFluid> FluidBuilder<T, CreateRegistrate> virtualFluid(String name,
-		FluidBuilder.FluidTypeFactory typeFactory, NonNullFunction<BaseFlowingFluid.Properties, T> sourceFactory,
-		NonNullFunction<BaseFlowingFluid.Properties, T> flowingFactory) {
+																						FluidBuilder.FluidTypeFactory typeFactory, NonNullFunction<BaseFlowingFluid.Properties, T> sourceFactory,
+																						NonNullFunction<BaseFlowingFluid.Properties, T> flowingFactory) {
 		return entry(name,
 			c -> new VirtualFluidBuilder<>(self(), self(), name, c, ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_still"),
 				ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"), typeFactory, sourceFactory, flowingFactory));
 	}
 
 	public <T extends BaseFlowingFluid> FluidBuilder<T, CreateRegistrate> virtualFluid(String name,
-		ResourceLocation still, ResourceLocation flow, FluidBuilder.FluidTypeFactory typeFactory,
-		NonNullFunction<BaseFlowingFluid.Properties, T> sourceFactory, NonNullFunction<BaseFlowingFluid.Properties, T> flowingFactory) {
+																						ResourceLocation still, ResourceLocation flow, FluidBuilder.FluidTypeFactory typeFactory,
+																						NonNullFunction<BaseFlowingFluid.Properties, T> sourceFactory, NonNullFunction<BaseFlowingFluid.Properties, T> flowingFactory) {
 		return entry(name, c -> new VirtualFluidBuilder<>(self(), self(), name, c, still, flow, typeFactory, sourceFactory, flowingFactory));
 	}
 
 	public FluidBuilder<VirtualFluid, CreateRegistrate> virtualFluid(String name) {
 		return entry(name,
-			c -> new VirtualFluidBuilder<VirtualFluid, CreateRegistrate>(self(), self(), name, c,
+			c -> new VirtualFluidBuilder<>(self(), self(), name, c,
 				ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_still"), ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"),
 				CreateRegistrate::defaultFluidType, VirtualFluid::createSource, VirtualFluid::createFlowing));
 	}
 
 	public FluidBuilder<VirtualFluid, CreateRegistrate> virtualFluid(String name, ResourceLocation still,
-		ResourceLocation flow) {
+																	 ResourceLocation flow) {
 		return entry(name, c -> new VirtualFluidBuilder<>(self(), self(), name, c, still, flow,
 			CreateRegistrate::defaultFluidType, VirtualFluid::createSource, VirtualFluid::createFlowing));
 	}
@@ -217,13 +218,13 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 	}
 
 	public FluidBuilder<BaseFlowingFluid.Flowing, CreateRegistrate> standardFluid(String name,
-		FluidBuilder.FluidTypeFactory typeFactory) {
+																				   FluidBuilder.FluidTypeFactory typeFactory) {
 		return fluid(name, ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_still"), ResourceLocation.fromNamespaceAndPath(getModid(), "fluid/" + name + "_flow"),
 			typeFactory);
 	}
 
 	public static FluidType defaultFluidType(FluidType.Properties properties, ResourceLocation stillTexture,
-		ResourceLocation flowingTexture) {
+											 ResourceLocation flowingTexture) {
 		return new FluidType(properties) {
 			@Override
 			public void initializeClient(Consumer<IClientFluidTypeExtensions> consumer) {
@@ -266,20 +267,20 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 
 	@OnlyIn(Dist.CLIENT)
 	private static <T extends Block> void registerCasingConnectivity(T entry,
-		BiConsumer<T, CasingConnectivity> consumer) {
+																	 BiConsumer<T, CasingConnectivity> consumer) {
 		consumer.accept(entry, CreateClient.CASING_CONNECTIVITY);
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	private static void registerBlockModel(Block entry,
-		Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
+										   Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
 		CreateClient.MODEL_SWAPPER.getCustomBlockModels()
 			.register(RegisteredObjectsHelper.getKeyOrThrow(entry), func.get());
 	}
 
 	@OnlyIn(Dist.CLIENT)
 	private static void registerItemModel(Item entry,
-		Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
+										  Supplier<NonNullFunction<BakedModel, ? extends BakedModel>> func) {
 		CreateClient.MODEL_SWAPPER.getCustomItemModels()
 			.register(RegisteredObjectsHelper.getKeyOrThrow(entry), func.get());
 	}

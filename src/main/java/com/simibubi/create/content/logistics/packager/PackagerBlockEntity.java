@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllSoundEvents;
@@ -169,7 +167,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 	public InventorySummary getAvailableItems() {
 		return getAvailableItems(false);
 	}
-	
+
 	public InventorySummary getAvailableItems(boolean scanInputSlots) {
 		if (availableItems != null && invVersionTracker.stillWaiting(targetInventory.getInventory()))
 			return availableItems;

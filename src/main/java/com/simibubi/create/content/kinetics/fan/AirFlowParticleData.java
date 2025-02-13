@@ -11,6 +11,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.api.distmarker.Dist;
@@ -22,10 +23,10 @@ public class AirFlowParticleData implements ParticleOptions, ICustomParticleData
 
 	public static final MapCodec<AirFlowParticleData> CODEC = RecordCodecBuilder.mapCodec(i ->
 		i.group(
-			Codec.INT.fieldOf("x").forGetter(p -> p.posX),
-			Codec.INT.fieldOf("y").forGetter(p -> p.posY),
-			Codec.INT.fieldOf("z").forGetter(p -> p.posZ))
-		.apply(i, AirFlowParticleData::new));
+				Codec.INT.fieldOf("x").forGetter(p -> p.posX),
+				Codec.INT.fieldOf("y").forGetter(p -> p.posY),
+				Codec.INT.fieldOf("z").forGetter(p -> p.posZ))
+			.apply(i, AirFlowParticleData::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, AirFlowParticleData> STREAM_CODEC = StreamCodec.composite(
 			ByteBufCodecs.INT, p -> p.posX,
