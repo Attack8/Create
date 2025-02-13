@@ -17,6 +17,7 @@ public enum Mods {
 	HEX("hexcasting"),
 	ID("integrateddynamics", b -> b.strippedWoodIsSuffix()),
 	BWG("biomeswevegone"),
+	BYG("biomeswevegone"), // TODO: Remove when CuttingRecipeGen is updated
 	SG("silentgear"),
 	TIC("tconstruct"),
 	AP("architects_palette"),

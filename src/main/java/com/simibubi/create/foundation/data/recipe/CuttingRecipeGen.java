@@ -72,13 +72,17 @@ public class CuttingRecipeGen extends ProcessingRecipeGen {
 
 		// Oh The Biomes You'll Go
 		BYG =
-			cuttingCompat(Mods.BWG, "aspen", "baobab", "blue_enchanted", "cika", "cypress", "ebony",
-				"fir", "green_enchanted", "holly", "jacaranda", "ironwood", "mahogany", "maple", "sakura", "white_mangrove",
+			cuttingCompat(Mods.BYG, "aspen", "baobab", "blue_enchanted", "cika", "cypress", "ebony", "ether",
+				"fir", "green_enchanted", "holly", "jacaranda", "lament", "mahogany", "maple", "nightshade",
 				"palm", "pine", "rainbow_eucalyptus", "redwood", "skyris", "willow", "witch_hazel", "zelkova"),
-		BYG_2 = stripAndMakePlanks(Mods.BWG, "florus_stem", "stripped_florus_stem", "florus_planks"),
-		BYG_3 = stripAndMakePlanks(Mods.BWG, "florus_wood", "stripped_florus_wood", "florus_planks"),
-		BYG_4 = stripAndMakePlanks(Mods.BWG, "palo_verde_log", "stripped_palo_verde_log", null),
-		BYG_5 = stripAndMakePlanks(Mods.BWG, "palo_verde_wood", "stripped_palo_verde_wood", null),
+		BYG_2 = stripAndMakePlanks(Mods.BYG, "bulbis_stem", "stripped_bulbis_stem", "bulbis_planks"),
+		BYG_3 = stripAndMakePlanks(Mods.BYG, "bulbis_wood", "stripped_bulbis_wood", "bulbis_planks"),
+		BYG_4 = stripAndMakePlanks(Mods.BYG, null, "imparius_stem", "imparius_planks"),
+		BYG_5 = stripAndMakePlanks(Mods.BYG, null, "imparius_hyphae", "imparius_planks"),
+		BYG_6 = stripAndMakePlanks(Mods.BYG, null, "fungal_imparius_stem", "imparius_planks"),
+		BYG_7 = stripAndMakePlanks(Mods.BYG, null, "fungal_imparius_hyphae", "imparius_planks"),
+		BYG_8 = stripAndMakePlanks(Mods.BYG, "palo_verde_log", "stripped_palo_verde_log", null),
+		BYG_9 = stripAndMakePlanks(Mods.BYG, "palo_verde_wood", "stripped_palo_verde_wood", null),
 
 		// Silent Gear
 		SG = cuttingCompat(Mods.SG, "netherwood"),
