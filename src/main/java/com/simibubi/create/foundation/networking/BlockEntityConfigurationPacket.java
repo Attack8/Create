@@ -3,6 +3,8 @@ package com.simibubi.create.foundation.networking;
 import com.simibubi.create.foundation.blockEntity.SyncedBlockEntity;
 
 import net.createmod.catnip.net.base.ServerboundPacketPayload;
+import com.simibubi.create.foundation.utility.AdventureUtil;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -19,7 +21,7 @@ public abstract class BlockEntityConfigurationPacket<BE extends SyncedBlockEntit
 	@SuppressWarnings("unchecked")
 	@Override
 	public void handle(ServerPlayer player) {
-		if (player == null)
+		if (player == null || player.isSpectator() || AdventureUtil.isAdventure(player))
 			return;
 		Level world = player.level();
 		if (!world.isLoaded(this.pos))

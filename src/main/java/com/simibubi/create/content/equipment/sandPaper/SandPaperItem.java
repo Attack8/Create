@@ -10,6 +10,7 @@ import com.simibubi.create.foundation.item.CustomUseEffectsItem;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 import com.simibubi.create.foundation.mixin.accessor.LivingEntityAccessor;
 
+import net.createmod.catnip.data.TriState;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
@@ -200,9 +201,9 @@ public class SandPaperItem extends Item implements CustomUseEffectsItem {
 	}
 
 	@Override
-	public Boolean shouldTriggerUseEffects(ItemStack stack, LivingEntity entity) {
+	public TriState shouldTriggerUseEffects(ItemStack stack, LivingEntity entity) {
 		// Trigger every tick so that we have more fine grain control over the animation
-		return true;
+		return TriState.TRUE;
 	}
 
 	@Override

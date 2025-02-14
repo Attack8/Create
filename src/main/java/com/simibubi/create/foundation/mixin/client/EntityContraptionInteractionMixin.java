@@ -60,10 +60,10 @@ public abstract class EntityContraptionInteractionMixin {
 	@Unique
 	private Stream<AbstractContraptionEntity> create$getIntersectionContraptionsStream() {
 		return ContraptionHandler.loadedContraptions.get(level)
-				.values()
-				.stream()
-				.map(Reference::get)
-				.filter(cEntity -> cEntity != null && cEntity.collidingEntities.containsKey((Entity) (Object) this));
+			.values()
+			.stream()
+			.map(Reference::get)
+			.filter(cEntity -> cEntity != null && cEntity.collidingEntities.containsKey((Entity) (Object) this));
 	}
 
 	@Unique
@@ -93,7 +93,8 @@ public abstract class EntityContraptionInteractionMixin {
 	}
 
 	// involves block step sounds on contraptions
-	// IFNE line 661 injecting before `!blockstate.isAir(this.world, blockpos)`
+	// injecting before `!blockstate1.isAir(this.world, blockpos)`
+	// `if (this.moveDist > this.nextStep && !blockstate1.isAir())
 	@Inject(method = "move", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;isAir()Z", ordinal = 0))
 	private void create$contraptionStepSounds(MoverType mover, Vec3 movement, CallbackInfo ci) {
 		Vec3 worldPos = position.add(0, -0.2, 0);

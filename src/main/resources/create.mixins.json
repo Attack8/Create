@@ -9,7 +9,6 @@
   "mixins": [
     "ArmorTrimMixin",
     "BlockItemMixin",
-    "ContraptionDriverInteractMixin",
     "CustomItemUseEffectsMixin",
     "EnchantedCountIncreaseFunctionMixin",
     "EntityMixin",
@@ -17,6 +16,7 @@
     "MapItemSavedDataMixin",
     "MobMixin",
     "PlayerMixin",
+    "ProjectileUtilMixin",
     "ShulkerBoxBlockMixin",
     "SmithingMenuMixin",
     "SmithingTrimRecipeMixin",

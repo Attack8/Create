@@ -13,9 +13,7 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
@@ -33,7 +31,7 @@ public interface ItemAttribute {
 
 	@Nullable
 	static ItemAttribute loadStatic(CompoundTag nbt, HolderLookup.Provider registries) {
-		return CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, registries), nbt.get("attribute")).getOrThrow().getFirst();
+		return CatnipCodecUtils.decode(CODEC, registries, nbt.get("attribute")).orElse(null);
 	}
 
 	static List<ItemAttribute> getAllAttributes(ItemStack stack, Level level) {

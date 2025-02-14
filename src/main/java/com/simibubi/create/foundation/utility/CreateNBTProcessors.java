@@ -6,9 +6,12 @@ import com.simibubi.create.AllBlockEntityTypes;
 
 import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.nbt.NBTProcessors;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class CreateNBTProcessors {
@@ -26,6 +29,11 @@ public class CreateNBTProcessors {
 			if (!data.contains("Book", Tag.TAG_COMPOUND))
 				return data;
 			CompoundTag book = data.getCompound("Book");
+
+			// Writable books can't have click events, so they're safe to keep
+			ResourceLocation writableBookResource = BuiltInRegistries.ITEM.getKey(Items.WRITABLE_BOOK);
+			if (writableBookResource != BuiltInRegistries.ITEM.getDefaultKey() && book.getString("id").equals(writableBookResource.toString()))
+				return data;
 
 			if (!book.contains("tag", Tag.TAG_COMPOUND))
 				return data;
