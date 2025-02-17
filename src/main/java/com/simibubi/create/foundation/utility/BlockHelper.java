@@ -63,8 +63,8 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.material.FluidState;
-
 import net.minecraft.world.phys.BlockHitResult;
+
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.SpecialPlantable;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
@@ -322,7 +322,6 @@ public class BlockHelper {
 
 		if (state.getBlock() == Blocks.COMPOSTER)
 			state = Blocks.COMPOSTER.defaultBlockState();
-		// FIXME 1.21: I'm not really sure about this one - there is WAY too little documentation about 'plants'
 		else if (state.getBlock() != Blocks.SEA_PICKLE && state.getBlock() instanceof SpecialPlantable specialPlantable) {
 			alreadyPlaced = true;
 			if (specialPlantable.canPlacePlantAtPosition(stack, world, target, null))

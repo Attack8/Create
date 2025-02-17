@@ -8,7 +8,6 @@ import org.jetbrains.annotations.ApiStatus;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLLoader;
 
-// TODO - Replace with CatnipServices.PLATFORM.executeOnClientOnly()
 @ApiStatus.Internal
 @Deprecated(forRemoval = true, since = "1.21")
 public class DistExecutor {

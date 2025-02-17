@@ -1,5 +1,7 @@
 package com.simibubi.create.content.equipment.armor;
 
+import java.util.List;
+
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 
 import net.minecraft.core.Holder;
@@ -18,12 +20,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-
-import java.util.List;
-import java.util.Map;
 
 @EventBusSubscriber
 public class DivingHelmetItem extends BaseArmorItem {
@@ -64,7 +64,6 @@ public class DivingHelmetItem extends BaseArmorItem {
 		return stack;
 	}
 
-	// FIXME 1.21: should this be pre or post?
 	@SubscribeEvent
 	public static void breatheUnderwater(EntityTickEvent.Pre event) {
 		if (!(event.getEntity() instanceof LivingEntity entity))

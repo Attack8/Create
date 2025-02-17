@@ -28,9 +28,9 @@ import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.engine_room.flywheel.lib.visualization.VisualizationHelper;
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.lang.FontHelper.Palette;
 import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -282,7 +282,7 @@ public class KineticBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 	}
 
 	public float getSpeed() {
-		if (overStressed)
+		if (overStressed || level.tickRateManager().isFrozen())
 			return 0;
 		return getTheoreticalSpeed();
 	}

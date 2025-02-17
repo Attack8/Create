@@ -53,7 +53,6 @@ public class AllItemAttributeTypes {
 		DAMAGED = singleton("damaged", ItemStack::isDamaged),
 		BADLY_DAMAGED = singleton("badly_damaged", s -> s.isDamaged() && (float) s.getDamageValue() / s.getMaxDamage() > 3 / 4f),
 		NOT_STACKABLE = singleton("not_stackable", ((Predicate<ItemStack>) ItemStack::isStackable).negate()),
-		// TODO - Test this
 		EQUIPABLE = singleton("equipable", s -> {
 			Equipable equipable = Equipable.get(s);
 			EquipmentSlot.Type type = equipable != null ? equipable.getEquipmentSlot().getType() : EquipmentSlot.MAINHAND.getType();

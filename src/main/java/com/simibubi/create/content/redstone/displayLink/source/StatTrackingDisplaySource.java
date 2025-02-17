@@ -16,6 +16,7 @@ import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria.RenderType;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -31,7 +32,6 @@ public abstract class StatTrackingDisplaySource extends ScoreboardDisplaySource 
 		String name = "create_auto_" + getObjectiveName();
 		Scoreboard scoreboard = level.getScoreboard();
 		if (scoreboard.getObjective(name) == null)
-			// FIXME 1.21: check over
 			scoreboard.addObjective(name, ObjectiveCriteria.DUMMY, getObjectiveDisplayName(), RenderType.INTEGER, false, null);
 		Objective objective = scoreboard.getObjective(name);
 

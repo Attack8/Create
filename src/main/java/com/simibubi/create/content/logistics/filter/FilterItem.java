@@ -199,6 +199,7 @@ public class FilterItem extends Item implements MenuProvider, SupportsItemCopyin
 		if (!stack.has(AllDataComponents.FILTER_ITEMS))
 			return newInv;
 
+		//noinspection DataFlowIssue - It's fine:tm: we check if it has the component before doing this
 		ItemHelper.fillItemStackHandler(stack.get(AllDataComponents.FILTER_ITEMS), newInv);
 
 		return newInv;
@@ -218,7 +219,6 @@ public class FilterItem extends Item implements MenuProvider, SupportsItemCopyin
 		return ItemHelper.sameItem(filter, stack);
 	}
 
-	// TODO - Checkover
 	public static boolean doPackagesHaveSameData(@NotNull ItemStack a, @NotNull ItemStack b) {
 		if (a.isEmpty())
 			return false;

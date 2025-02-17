@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.player.Player;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityEvent;
@@ -48,7 +49,6 @@ public class CardboardArmorHandler {
 		event.modifyVisibility(0);
 	}
 
-	// FIXME 1.21: should this be pre or post?
 	@SubscribeEvent
 	public static void mobsMayLoseTargetWhenItIsWearingCardboard(EntityTickEvent.Pre event) {
 		if (!(event.getEntity() instanceof LivingEntity entity))

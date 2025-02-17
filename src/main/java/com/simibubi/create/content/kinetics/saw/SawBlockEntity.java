@@ -509,9 +509,6 @@ public class SawBlockEntity extends BlockBreakingKineticBlockEntity {
 		Block block = stateToBreak.getBlock();
 		if (block instanceof BambooStalkBlock)
 			return true;
-		// FIXME 1.21: neoforge needs to do something for this
-		//if (block instanceof StemGrownBlock)
-		//	return true;
 		if (block.equals(Blocks.PUMPKIN) || block.equals(Blocks.MELON))
 			return true;
 		if (block instanceof CactusBlock)

@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.kinetics.base.IRotate;
@@ -752,8 +751,6 @@ public class ChainConveyorBlockEntity extends KineticBlockEntity implements Tran
 
 			if (!simulate) {
 				int remainingItems = count - Math.min(cost - found, count);
-				if (i == inv.selected) // TODO 1.21: Check if the BlockEntityTag component also needs to be removed
-					stackInSlot.remove(AllDataComponents.CLICK_TO_LINK_DATA);
 				ItemStack newItem = stackInSlot.copyWithCount(remainingItems);
 				if (offhand)
 					player.setItemInHand(InteractionHand.OFF_HAND, newItem);

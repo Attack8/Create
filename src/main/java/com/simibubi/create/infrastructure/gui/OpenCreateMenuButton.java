@@ -78,7 +78,6 @@ public class OpenCreateMenuButton extends Button {
 	@EventBusSubscriber(value = Dist.CLIENT)
 	public static class OpenConfigButtonHandler {
 
-		// FIXME 1.21: check if this should be Pre or Post
 		@SubscribeEvent
 		public static void onGuiInit(ScreenEvent.Init.Post event) {
 			Screen screen = event.getScreen();

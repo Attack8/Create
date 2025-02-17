@@ -11,9 +11,9 @@ import com.simibubi.create.AllEntityTypes;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.logistics.chute.ChuteBlock;
 
-import net.createmod.catnip.platform.CatnipServices;
-import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.ponder.api.level.PonderLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -200,15 +200,6 @@ public class PackageEntity extends LivingEntity implements IEntityWithComplexSpa
 			return super.getDefaultDimensions(pose);
 		return EntityDimensions.fixed(PackageItem.getWidth(box), PackageItem.getHeight(box));
 	}
-
-	// TODO - Test if this is still needed
-//	public static PackageEntity spawn(SpawnEntity spawnEntity, Level world) {
-//		PackageEntity packageEntity =
-//			new PackageEntity(world, spawnEntity.getPosX(), spawnEntity.getPosY(), spawnEntity.getPosZ());
-//		packageEntity.setDeltaMovement(spawnEntity.getVelX(), spawnEntity.getVelY(), spawnEntity.getVelZ());
-//		packageEntity.clientPosition = packageEntity.position();
-//		return packageEntity;
-//	}
 
 	public ItemStack getBox() {
 		return box;

@@ -7,9 +7,6 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import net.createmod.catnip.platform.CatnipServices;
-import net.minecraft.network.chat.MutableComponent;
-
 import org.lwjgl.glfw.GLFW;
 
 import com.google.common.collect.ImmutableList;
@@ -30,6 +27,7 @@ import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.gui.UIRenderHelper;
 import net.createmod.catnip.gui.element.GuiGameElement;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -163,7 +161,6 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-		// TODO - Is this really needed? We already get passed partialTick by the render method
 		partialTicks = AnimationTickHolder.getPartialTicksUI();
 
 		if (menu.slotsActive)
@@ -369,7 +366,6 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		boolean mouseClicked = super.mouseClicked(pMouseX, pMouseY, pButton);
 
 		if (editorEditBox != null && editorEditBox.isMouseOver(pMouseX, pMouseY) && wasNotFocused) {
-			// TODO - Checkover the select = false part
 			editorEditBox.moveCursorToEnd(false);
 			editorEditBox.setHighlightPos(0);
 		}

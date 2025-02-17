@@ -6,7 +6,6 @@ import com.simibubi.create.AllDamageTypes;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.foundation.events.custom.EntityLootEnchantmentLevelEvent;
 
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
@@ -56,17 +55,6 @@ public class CrushingWheelBlockEntity extends KineticBlockEntity {
 	public void lazyTick() {
 		super.lazyTick();
 		fixControllers();
-	}
-
-	// This increases the drops when dropCustomDeathLoot is called, and LootingEnchantFunctionMixin increases the drops
-	// defined in the entity loot table
-	@SubscribeEvent
-	public static void crushingIsFortunate(EntityLootEnchantmentLevelEvent event) {
-		DamageSource damageSource = event.getDamageSource();
-		if (damageSource == null || !damageSource.is(AllDamageTypes.CRUSH))
-			return;
-		// TODO 1.21: check if this works now
-		event.setLevel(2);
 	}
 
 	@SubscribeEvent

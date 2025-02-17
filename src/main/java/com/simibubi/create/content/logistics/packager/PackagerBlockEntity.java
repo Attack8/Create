@@ -35,6 +35,7 @@ import com.simibubi.create.foundation.blockEntity.behaviour.inventory.InvManipul
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.VersionedInventoryTrackerBehaviour;
 import com.simibubi.create.foundation.item.ItemHelper;
 
+import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
@@ -53,6 +54,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -613,7 +615,8 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 			return;
 		queuedExitingPackages = NBTHelper.readItemList(compound.getList("QueuedPackages", Tag.TAG_COMPOUND), registries);
 		if (compound.contains("LastSummary"))
-			availableItems = InventorySummary.read(compound.getCompound("LastSummary"), registries);
+			availableItems = CatnipCodecUtils.decode(InventorySummary.CODEC, registries, compound.getCompound("LastSummary"))
+				.orElse(null);
 	}
 
 	@Override
@@ -629,7 +632,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 			return;
 		compound.put("QueuedPackages", NBTHelper.writeItemList(queuedExitingPackages, registries));
 		if (availableItems != null)
-			compound.put("LastSummary", availableItems.write(registries));
+			compound.put("LastSummary", CatnipCodecUtils.encode(InventorySummary.CODEC, availableItems).orElseThrow());
 	}
 
 	@Override

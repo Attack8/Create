@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import net.minecraft.core.HolderLookup;
-
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import com.google.common.collect.Lists;
@@ -17,15 +15,24 @@ import com.mojang.serialization.Codec;
 import com.simibubi.create.content.logistics.BigItemStack;
 import com.simibubi.create.content.logistics.stockTicker.LogisticalStockResponsePacket;
 
-import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 public class InventorySummary {
+	public static Codec<InventorySummary> CODEC = Codec.list(BigItemStack.CODEC)
+		.xmap(i -> {
+				InventorySummary summary = new InventorySummary();
+				summary.addAllBigItemStacks(i);
+				return summary;
+			},
+			i -> {
+				List<BigItemStack> all = new ArrayList<>();
+				i.items.forEach((key, list) -> all.addAll(list));
+				return all;
+			});
 
 	public static final InventorySummary EMPTY = new InventorySummary();
 
@@ -177,21 +184,6 @@ public class InventorySummary {
 
 		if (currentList != null)
 			CatnipServices.NETWORK.sendToClient(player, new LogisticalStockResponsePacket(true, pos, currentList));
-	}
-
-	// TODO - Create codec for this
-	public CompoundTag write(HolderLookup.Provider registries) {
-		List<BigItemStack> all = new ArrayList<>();
-		items.forEach((key, list) -> all.addAll(list));
-		CompoundTag tag = new CompoundTag();
-		tag.put("List", CatnipCodecUtils.encode(Codec.list(BigItemStack.CODEC), registries, all).orElseThrow());
-		return tag;
-	}
-
-	public static InventorySummary read(CompoundTag tag, HolderLookup.Provider registries) {
-		InventorySummary summary = new InventorySummary();
-		summary.addAllBigItemStacks(CatnipCodecUtils.decode(Codec.list(BigItemStack.CODEC), registries, tag.getCompound("List")).orElse(Collections.emptyList()));
-		return summary;
 	}
 
 	public boolean isEmpty() {

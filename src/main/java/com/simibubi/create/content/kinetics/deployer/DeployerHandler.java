@@ -130,7 +130,6 @@ public class DeployerHandler {
 		applyAttributes(player, true);
 	}
 
-	// TODO 1.21: - Test
 	private static void applyAttributes(Player player, boolean remove) {
 		player.getMainHandItem().getAttributeModifiers().forEach(EquipmentSlot.MAINHAND, (attributeHolder, attributeModifier) -> {
 			AttributeInstance instance = player.getAttributes().getInstance(attributeHolder);

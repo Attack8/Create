@@ -5,13 +5,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import net.minecraft.core.Holder;
-
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
-
-import net.minecraft.network.chat.CommonComponents;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.AllEnchantments;
@@ -34,6 +27,10 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
@@ -232,7 +229,6 @@ public class PotatoCannonItem extends ProjectileWeaponItem implements CustomArmP
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		HolderLookup.Provider registries = context.registries();
-		// FIXME 1.21: checkover
 		if (registries != null) {
 			HolderLookup.RegistryLookup<Enchantment> enchantLookup = registries.lookupOrThrow(Registries.ENCHANTMENT);
 			int power = stack.getEnchantmentLevel(enchantLookup.get(Enchantments.POWER).orElseThrow().getDelegate());

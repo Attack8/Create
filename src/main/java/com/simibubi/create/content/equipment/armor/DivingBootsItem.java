@@ -1,7 +1,6 @@
 package com.simibubi.create.content.equipment.armor;
 
 import net.createmod.catnip.nbt.NBTHelper;
-
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
@@ -43,7 +42,6 @@ public class DivingBootsItem extends BaseArmorItem {
 		return stack;
 	}
 
-	// FIXME 1.21: should this be pre or post?
 	@SubscribeEvent
 	public static void accelerateDescentUnderwater(EntityTickEvent.Pre event) {
 		if (!(event.getEntity() instanceof LivingEntity entity))
