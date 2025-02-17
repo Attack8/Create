@@ -8,12 +8,16 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllRegistries;
+import com.simibubi.create.AllRegistries.Keys;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.codecs.CatnipCodecUtils;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
@@ -22,6 +26,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 public interface ItemAttribute {
 	Codec<ItemAttribute> CODEC = AllRegistries.ITEM_ATTRIBUTE_TYPES.byNameCodec().dispatch(ItemAttribute::getType, ItemAttributeType::codec);
+	StreamCodec<RegistryFriendlyByteBuf, ItemAttribute> STREAM_CODEC = ByteBufCodecs.registry(Keys.ITEM_ATTRIBUTE_TYPES).dispatch(ItemAttribute::getType, ItemAttributeType::streamCodec);
 
 	static CompoundTag saveStatic(ItemAttribute attribute, HolderLookup.Provider registries) {
 		CompoundTag nbt = new CompoundTag();
@@ -59,9 +64,15 @@ public interface ItemAttribute {
 	}
 
 	record ItemAttributeEntry(ItemAttribute attribute, boolean inverted) {
-		public static final Codec<ItemAttribute.ItemAttributeEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
-				ItemAttribute.CODEC.fieldOf("attribute").forGetter(ItemAttribute.ItemAttributeEntry::attribute),
-				Codec.BOOL.fieldOf("inverted").forGetter(ItemAttribute.ItemAttributeEntry::inverted)
-		).apply(i, ItemAttribute.ItemAttributeEntry::new));
+		public static final Codec<ItemAttributeEntry> CODEC = RecordCodecBuilder.create(i -> i.group(
+			ItemAttribute.CODEC.fieldOf("attribute").forGetter(ItemAttributeEntry::attribute),
+			Codec.BOOL.fieldOf("inverted").forGetter(ItemAttributeEntry::inverted)
+		).apply(i, ItemAttributeEntry::new));
+
+		public static final StreamCodec<RegistryFriendlyByteBuf, ItemAttributeEntry> STREAM_CODEC = StreamCodec.composite(
+			ItemAttribute.STREAM_CODEC, ItemAttributeEntry::attribute,
+			ByteBufCodecs.BOOL, ItemAttributeEntry::inverted,
+			ItemAttributeEntry::new
+		);
 	}
 }

@@ -3,10 +3,9 @@ package com.simibubi.create.content.trains.graph;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.createmod.catnip.nbt.NBTHelper;
-
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -17,10 +16,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 public class DimensionPalette {
-	public static final StreamCodec<ByteBuf, DimensionPalette> STREAM_CODEC = StreamCodec.composite(
-			CatnipStreamCodecBuilders.list(ResourceKey.streamCodec(Registries.DIMENSION)), packet -> packet.gatheredDims,
-			DimensionPalette::new
-	);
+	public static final StreamCodec<ByteBuf, DimensionPalette> STREAM_CODEC = CatnipStreamCodecBuilders.list(ResourceKey.streamCodec(Registries.DIMENSION))
+		.map(DimensionPalette::new, i -> i.gatheredDims);
 
 	private final List<ResourceKey<Level>> gatheredDims;
 

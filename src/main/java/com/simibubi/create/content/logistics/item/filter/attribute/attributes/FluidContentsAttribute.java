@@ -12,10 +12,15 @@ import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttrib
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
+
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
@@ -23,6 +28,9 @@ public record FluidContentsAttribute(@Nullable Fluid fluid) implements ItemAttri
 	public static final MapCodec<FluidContentsAttribute> CODEC = BuiltInRegistries.FLUID.byNameCodec()
 			.xmap(FluidContentsAttribute::new, FluidContentsAttribute::fluid)
 			.fieldOf("value");
+
+	public static final StreamCodec<RegistryFriendlyByteBuf, FluidContentsAttribute> STREAM_CODEC = CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.FLUID)
+		.map(FluidContentsAttribute::new, FluidContentsAttribute::fluid);
 
 	private static List<Fluid> extractFluids(ItemStack stack) {
 		List<Fluid> fluids = new ArrayList<>();
@@ -81,6 +89,11 @@ public record FluidContentsAttribute(@Nullable Fluid fluid) implements ItemAttri
 		@Override
 		public MapCodec<? extends ItemAttribute> codec() {
 			return CODEC;
+		}
+
+		@Override
+		public StreamCodec<? super RegistryFriendlyByteBuf, ? extends ItemAttribute> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

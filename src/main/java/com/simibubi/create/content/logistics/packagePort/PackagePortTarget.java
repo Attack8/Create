@@ -5,26 +5,23 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import com.simibubi.create.AllRegistries;
-
-import com.simibubi.create.AllRegistries.Keys;
-
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllRegistries;
+import com.simibubi.create.AllRegistries.Keys;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity.ConnectedPort;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity.ConnectionStats;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorPackage;
 import com.simibubi.create.content.trains.station.StationBlockEntity;
 
+import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
@@ -210,10 +207,8 @@ public abstract class PackagePortTarget {
 			BlockPos.CODEC.fieldOf("relative_pos").forGetter(i -> i.relativePos)
 		).apply(instance, TrainStationFrogportTarget::new));
 
-		public static final StreamCodec<ByteBuf, TrainStationFrogportTarget> STREAM_CODEC = StreamCodec.composite(
-		    BlockPos.STREAM_CODEC, i -> i.relativePos,
-		    TrainStationFrogportTarget::new
-		);
+		public static final StreamCodec<ByteBuf, TrainStationFrogportTarget> STREAM_CODEC = BlockPos.STREAM_CODEC
+			.map(TrainStationFrogportTarget::new, i -> i.relativePos);
 
 		public TrainStationFrogportTarget(BlockPos relativePos) {
 			super(relativePos);

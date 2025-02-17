@@ -15,9 +15,12 @@ import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttrib
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 
+import io.netty.buffer.ByteBuf;
 import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.FireworkStarItem;
@@ -29,6 +32,9 @@ public record ColorAttribute(DyeColor color) implements ItemAttribute {
 	public static final MapCodec<ColorAttribute> CODEC = DyeColor.CODEC
 			.xmap(ColorAttribute::new, ColorAttribute::color)
 			.fieldOf("value");
+
+	public static final StreamCodec<ByteBuf, ColorAttribute> STREAM_CODEC = DyeColor.STREAM_CODEC
+		.map(ColorAttribute::new, ColorAttribute::color);
 
 	private static Collection<DyeColor> findMatchingDyeColors(ItemStack stack) {
 		DyeColor color = DyeColor.getColor(stack);
@@ -97,6 +103,11 @@ public record ColorAttribute(DyeColor color) implements ItemAttribute {
 		@Override
 		public MapCodec<? extends ItemAttribute> codec() {
 			return CODEC;
+		}
+
+		@Override
+		public StreamCodec<? super RegistryFriendlyByteBuf, ? extends ItemAttribute> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

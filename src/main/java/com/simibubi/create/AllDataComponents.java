@@ -129,10 +129,9 @@ public class AllDataComponents {
 			builder -> builder.persistent(AttributeFilterWhitelistMode.CODEC).networkSynchronized(AttributeFilterWhitelistMode.STREAM_CODEC)
 	);
 
-	// TODO - Make a stream codec for this
 	public static final DataComponentType<List<ItemAttributeEntry>> ATTRIBUTE_FILTER_MATCHED_ATTRIBUTES = register(
 			"attribute_filter_matched_attributes",
-			builder -> builder.persistent(ItemAttributeEntry.CODEC.listOf())
+		builder -> builder.persistent(ItemAttributeEntry.CODEC.listOf()).networkSynchronized(CatnipStreamCodecBuilders.list(ItemAttributeEntry.STREAM_CODEC))
 	);
 
 	public static final DataComponentType<ClipboardType> CLIPBOARD_TYPE = register(

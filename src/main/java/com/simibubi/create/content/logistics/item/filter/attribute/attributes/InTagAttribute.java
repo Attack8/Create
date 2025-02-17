@@ -3,9 +3,6 @@ package com.simibubi.create.content.logistics.item.filter.attribute.attributes;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.createmod.catnip.nbt.NBTHelper;
-
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.MapCodec;
@@ -13,7 +10,11 @@ import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttrib
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -24,6 +25,9 @@ public record InTagAttribute(TagKey<Item> tag) implements ItemAttribute {
 	public static final MapCodec<InTagAttribute> CODEC = TagKey.codec(Registries.ITEM)
 			.xmap(InTagAttribute::new, InTagAttribute::tag)
 			.fieldOf("value");
+
+	public static final StreamCodec<ByteBuf, InTagAttribute> STREAM_CODEC = CatnipStreamCodecBuilders.tagKey(Registries.ITEM)
+		.map(InTagAttribute::new, InTagAttribute::tag);
 
 	@Override
 	public boolean appliesTo(ItemStack stack, Level level) {
@@ -61,6 +65,11 @@ public record InTagAttribute(TagKey<Item> tag) implements ItemAttribute {
 		@Override
 		public MapCodec<? extends ItemAttribute> codec() {
 			return CODEC;
+		}
+
+		@Override
+		public StreamCodec<? super RegistryFriendlyByteBuf, ? extends ItemAttribute> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

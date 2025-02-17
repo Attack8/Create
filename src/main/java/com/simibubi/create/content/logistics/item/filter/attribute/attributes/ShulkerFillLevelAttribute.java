@@ -15,9 +15,13 @@ import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -29,6 +33,9 @@ public record ShulkerFillLevelAttribute(ShulkerLevels levels) implements ItemAtt
 	public static final MapCodec<ShulkerFillLevelAttribute> CODEC = ShulkerLevels.CODEC
 			.xmap(ShulkerFillLevelAttribute::new, ShulkerFillLevelAttribute::levels)
 			.fieldOf("value");
+
+	public static final StreamCodec<ByteBuf, ShulkerFillLevelAttribute> STREAM_CODEC = ShulkerLevels.STREAM_CODEC
+		.map(ShulkerFillLevelAttribute::new, ShulkerFillLevelAttribute::levels);
 
 	@Override
 	public boolean appliesTo(ItemStack stack, Level level) {
@@ -59,6 +66,7 @@ public record ShulkerFillLevelAttribute(ShulkerLevels levels) implements ItemAtt
 		FULL("full", amount -> amount == Integer.MAX_VALUE);
 
 		public static final Codec<ShulkerLevels> CODEC = StringRepresentable.fromValues(ShulkerLevels::values);
+		public static final StreamCodec<ByteBuf, ShulkerLevels> STREAM_CODEC = CatnipStreamCodecBuilders.ofEnum(ShulkerLevels.class);
 
 		private final Predicate<Integer> requiredSize;
 		private final String key;
@@ -126,6 +134,11 @@ public record ShulkerFillLevelAttribute(ShulkerLevels levels) implements ItemAtt
 		@Override
 		public MapCodec<? extends ItemAttribute> codec() {
 			return CODEC;
+		}
+
+		@Override
+		public StreamCodec<? super RegistryFriendlyByteBuf, ? extends ItemAttribute> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

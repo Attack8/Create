@@ -13,8 +13,13 @@ import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttrib
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.language.IModInfo;
@@ -23,6 +28,9 @@ public record AddedByAttribute(String modId) implements ItemAttribute {
 	public static final MapCodec<AddedByAttribute> CODEC = Codec.STRING
 			.xmap(AddedByAttribute::new, AddedByAttribute::modId)
 			.fieldOf("value");
+
+	public static final StreamCodec<ByteBuf, AddedByAttribute> STREAM_CODEC = ByteBufCodecs.STRING_UTF8
+		.map(AddedByAttribute::new, AddedByAttribute::modId);
 
 	@Override
 	public boolean appliesTo(ItemStack stack, Level world) {
@@ -66,6 +74,11 @@ public record AddedByAttribute(String modId) implements ItemAttribute {
 		@Override
 		public MapCodec<? extends ItemAttribute> codec() {
 			return CODEC;
+		}
+
+		@Override
+		public StreamCodec<? super RegistryFriendlyByteBuf, ? extends ItemAttribute> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }

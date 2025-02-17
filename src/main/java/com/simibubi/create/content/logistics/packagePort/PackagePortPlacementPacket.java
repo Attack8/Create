@@ -52,10 +52,8 @@ public record PackagePortPlacementPacket(PackagePortTarget target, BlockPos pos)
 	}
 
 	public record ClientBoundRequest(BlockPos pos) implements ClientboundPacketPayload {
-		public static final StreamCodec<ByteBuf, ClientBoundRequest> STREAM_CODEC = StreamCodec.composite(
-			BlockPos.STREAM_CODEC, ClientBoundRequest::pos,
-			ClientBoundRequest::new
-		);
+		public static final StreamCodec<ByteBuf, ClientBoundRequest> STREAM_CODEC = BlockPos.STREAM_CODEC
+			.map(ClientBoundRequest::new, ClientBoundRequest::pos);
 
 		@Override
 		public PacketTypeProvider getTypeProvider() {

@@ -12,8 +12,8 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
-
 import net.minecraft.network.codec.StreamCodec;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -24,11 +24,8 @@ public class SteamJetParticleData implements ParticleOptions, ICustomParticleDat
 			.forGetter(p -> p.speed))
 		.apply(i, SteamJetParticleData::new));
 
-	public static final StreamCodec<ByteBuf, SteamJetParticleData> STREAM_CODEC = StreamCodec.composite(
-		ByteBufCodecs.FLOAT,
-		p -> p.speed,
-		SteamJetParticleData::new
-	);
+	public static final StreamCodec<ByteBuf, SteamJetParticleData> STREAM_CODEC = ByteBufCodecs.FLOAT.map(
+		SteamJetParticleData::new, p -> p.speed);
 
 	float speed;
 

@@ -16,10 +16,8 @@ public record PackageOrder(List<BigItemStack> stacks) {
 		Codec.list(BigItemStack.CODEC).fieldOf("entries").forGetter(PackageOrder::stacks)
 	).apply(instance, PackageOrder::new));
 
-	public static final StreamCodec<RegistryFriendlyByteBuf, PackageOrder> STREAM_CODEC = StreamCodec.composite(
-		CatnipStreamCodecBuilders.list(BigItemStack.STREAM_CODEC), PackageOrder::stacks,
-	    PackageOrder::new
-	);
+	public static final StreamCodec<RegistryFriendlyByteBuf, PackageOrder> STREAM_CODEC = CatnipStreamCodecBuilders.list(BigItemStack.STREAM_CODEC)
+		.map(PackageOrder::new, PackageOrder::stacks);
 
 	public static PackageOrder empty() {
 		return new PackageOrder(Collections.emptyList());

@@ -20,6 +20,8 @@ import com.simibubi.create.content.logistics.item.filter.attribute.attributes.In
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ItemNameAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ShulkerFillLevelAttribute;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.BlockItem;
@@ -28,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -83,13 +86,13 @@ public class AllItemAttributeTypes {
 				.isPresent();
 	}
 
-	// TODO - Move away from stream()
 	private static boolean maxEnchanted(ItemStack s) {
-		return s.getTagEnchantments()
-				.entrySet()
-				.stream()
-				.anyMatch(e -> e.getKey().value()
-						.getMaxLevel() <= e.getIntValue());
+		for (Object2IntMap.Entry<Holder<Enchantment>> entry : s.getTagEnchantments().entrySet()) {
+			if (entry.getKey().value().getMaxLevel() <= entry.getIntValue())
+				return true;
+		}
+
+		return false;
 	}
 
 	private static ItemAttributeType singleton(String id, Predicate<ItemStack> predicate) {

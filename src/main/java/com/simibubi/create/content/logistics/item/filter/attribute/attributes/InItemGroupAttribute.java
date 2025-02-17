@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.MapCodec;
 import com.simibubi.create.Create;
@@ -12,7 +13,12 @@ import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttrib
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
@@ -23,9 +29,13 @@ public class InItemGroupAttribute implements ItemAttribute {
 			.xmap(InItemGroupAttribute::new, i -> i.group)
 			.fieldOf("value");
 
+	public static final StreamCodec<RegistryFriendlyByteBuf, InItemGroupAttribute> STREAM_CODEC = CatnipStreamCodecBuilders.nullable(ByteBufCodecs.registry(Registries.CREATIVE_MODE_TAB))
+		.map(InItemGroupAttribute::new, i -> i.group);
+
+	@Nullable
 	private CreativeModeTab group;
 
-	public InItemGroupAttribute(CreativeModeTab group) {
+	public InItemGroupAttribute(@Nullable CreativeModeTab group) {
 		this.group = group;
 	}
 
@@ -108,6 +118,11 @@ public class InItemGroupAttribute implements ItemAttribute {
 		@Override
 		public MapCodec<? extends ItemAttribute> codec() {
 			return CODEC;
+		}
+
+		@Override
+		public StreamCodec<? super RegistryFriendlyByteBuf, ? extends ItemAttribute> streamCodec() {
+			return STREAM_CODEC;
 		}
 	}
 }
