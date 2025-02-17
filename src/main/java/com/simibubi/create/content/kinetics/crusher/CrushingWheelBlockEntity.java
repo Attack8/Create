@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
@@ -43,7 +44,7 @@ public class CrushingWheelBlockEntity extends KineticBlockEntity {
 	public void fixControllers() {
 		for (Direction d : Iterate.directions)
 			((CrushingWheelBlock) getBlockState().getBlock()).updateControllers(getBlockState(), getLevel(), getBlockPos(),
-					d);
+				d);
 	}
 
 	@Override
@@ -57,13 +58,15 @@ public class CrushingWheelBlockEntity extends KineticBlockEntity {
 		fixControllers();
 	}
 
+	// This increases the drops when dropCustomDeathLoot is called, and LootingEnchantFunctionMixin increases the drops
+	// defined in the entity loot table
 	@SubscribeEvent
 	public static void crushingIsFortunate(EntityLootEnchantmentLevelEvent event) {
 		DamageSource damageSource = event.getDamageSource();
 		if (damageSource == null || !damageSource.is(AllDamageTypes.CRUSH))
 			return;
 		// TODO 1.21: check if this works now
-		event.setLevel(2);		//This does not currently increase mob drops. It seems like this only works for damage done by an entity.
+		event.setLevel(2);
 	}
 
 	@SubscribeEvent

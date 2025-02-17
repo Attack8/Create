@@ -13,6 +13,7 @@
     "EnchantedCountIncreaseFunctionMixin",
     "EntityMixin",
     "LavaSwimmingMixin",
+    "LootingEnchantFunctionMixin",
     "MapItemSavedDataMixin",
     "MobMixin",
     "PlayerMixin",
