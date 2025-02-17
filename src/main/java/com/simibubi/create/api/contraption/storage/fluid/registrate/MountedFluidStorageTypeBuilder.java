@@ -15,7 +15,7 @@ public class MountedFluidStorageTypeBuilder<T extends MountedFluidStorageType<?>
 	private final T type;
 
 	public MountedFluidStorageTypeBuilder(AbstractRegistrate<?> owner, P parent, String name, BuilderCallback callback, T type) {
-		super(owner, parent, name, callback, AllRegistries.Keys.MOUNTED_FLUID_STORAGE_TYPES);
+		super(owner, parent, name, callback, AllRegistries.Keys.MOUNTED_FLUID_STORAGE_TYPE);
 		this.type = type;
 	}
 

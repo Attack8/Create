@@ -36,7 +36,7 @@ public interface FanProcessingType {
 		if (id == null) {
 			return AllFanProcessingTypes.NONE;
 		}
-		FanProcessingType type = AllRegistries.FAN_PROCESSING_TYPES.get(id);
+		FanProcessingType type = AllRegistries.FAN_PROCESSING_TYPE.get(id);
 		if (type == null) {
 			return AllFanProcessingTypes.NONE;
 		}

@@ -41,7 +41,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 // TODO - Documentation
 public class AllItemAttributeTypes {
-	private static final DeferredRegister<ItemAttributeType> REGISTER = DeferredRegister.create(AllRegistries.ITEM_ATTRIBUTE_TYPES, Create.ID);
+	private static final DeferredRegister<ItemAttributeType> REGISTER = DeferredRegister.create(AllRegistries.ITEM_ATTRIBUTE_TYPE, Create.ID);
 
 	public static final ItemAttributeType
 		PLACEABLE = singleton("placeable", s -> s.getItem() instanceof BlockItem),
@@ -69,7 +69,7 @@ public class AllItemAttributeTypes {
 		BLASTABLE = singleton("blastable", (s, w) -> testRecipe(s, w, RecipeType.BLASTING)),
 		COMPOSTABLE = singleton("compostable", s -> ComposterBlock.COMPOSTABLES.containsKey(s.getItem())),
 
-		IN_TAG = register("in_tag", new InTagAttribute.Type()),
+	IN_TAG = register("in_tag", new InTagAttribute.Type()),
 		IN_ITEM_GROUP = register("in_item_group", new InItemGroupAttribute.Type()),
 		ADDED_BY = register("added_by", new AddedByAttribute.Type()),
 		HAS_ENCHANT = register("has_enchant", new EnchantAttribute.Type()),

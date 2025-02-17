@@ -83,7 +83,7 @@ public class TransportedItemStack implements Comparable<TransportedItemStack> {
 		nbt.putInt("InDirection", insertedFrom.get3DDataValue());
 
 		if (processedBy != null && processedBy != AllFanProcessingTypes.NONE) {
-			ResourceLocation key = AllRegistries.FAN_PROCESSING_TYPES.getKey(processedBy);
+			ResourceLocation key = AllRegistries.FAN_PROCESSING_TYPE.getKey(processedBy);
 			if (key == null)
 				throw new IllegalArgumentException("Could not get id for FanProcessingType " + processedBy + "!");
 

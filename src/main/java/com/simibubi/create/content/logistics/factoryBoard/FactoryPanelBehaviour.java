@@ -27,6 +27,7 @@ import com.simibubi.create.content.logistics.BigItemStack;
 import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelBlock.PanelSlot;
 import com.simibubi.create.content.logistics.filter.FilterItem;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
+import com.simibubi.create.content.logistics.packagePort.frogport.FrogportBlockEntity;
 import com.simibubi.create.content.logistics.packager.InventorySummary;
 import com.simibubi.create.content.logistics.packager.PackagerBlockEntity;
 import com.simibubi.create.content.logistics.packager.PackagingRequest;
@@ -787,6 +788,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		CompoundTag panelTag = new CompoundTag();
 		super.write(panelTag, registries, clientPacket);
 
+		panelTag.putInt("Timer", timer);
 		panelTag.putInt("LastLevel", lastReportedLevelInStorage);
 		panelTag.putInt("LastPromised", lastReportedPromises);
 		panelTag.putInt("LastUnloadedLinks", lastReportedUnloadedLinks);
@@ -821,6 +823,7 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		filter = FilterItemStack.of(registries, panelTag.getCompound("Filter"));
 		count = panelTag.getInt("FilterAmount");
 		upTo = panelTag.getBoolean("UpTo");
+		timer = panelTag.getInt("Timer");
 		lastReportedLevelInStorage = panelTag.getInt("LastLevel");
 		lastReportedPromises = panelTag.getInt("LastPromised");
 		lastReportedUnloadedLinks = panelTag.getInt("LastUnloadedLinks");
@@ -1058,6 +1061,16 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		return blockEntity.getBlockState()
 			.getBlock()
 			.getName();
+	}
+
+	public String getFrogAddress() {
+		PackagerBlockEntity packager = panelBE().getRestockedPackager();
+		if (packager == null)
+			return null;
+		if (packager.getLevel().getBlockEntity(packager.getBlockPos().above()) instanceof FrogportBlockEntity fpbe)
+			if (fpbe.addressFilter != null && !fpbe.addressFilter.isBlank())
+				return fpbe.addressFilter + "";
+		return null;
 	}
 
 }

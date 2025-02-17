@@ -19,12 +19,12 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Direction.AxisDirection;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -199,6 +199,12 @@ public class WaterWheelBlockEntity extends GeneratingKineticBlockEntity {
 
 		if (clientPacket && prevMaterial != material)
 			redraw();
+	}
+
+	@Override
+	public void writeSafe(CompoundTag tag, Provider registries) {
+		super.writeSafe(tag, registries);
+		tag.put("Material", NbtUtils.writeBlockState(material));
 	}
 
 	@Override

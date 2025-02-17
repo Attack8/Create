@@ -7,14 +7,14 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import org.jetbrains.annotations.UnmodifiableView;
+
 import com.simibubi.create.AllRegistries;
 
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-
-import org.jetbrains.annotations.UnmodifiableView;
 
 public abstract class ArmInteractionPointType {
 	private static List<ArmInteractionPointType> sortedTypes = null;
@@ -30,9 +30,8 @@ public abstract class ArmInteractionPointType {
 		if (sortedTypes == null) {
 			sortedTypes = new ReferenceArrayList<>();
 
-			for (Entry<?, ArmInteractionPointType> type : AllRegistries.ARM_INTERACTION_POINT_TYPES.entrySet())
+			for (Entry<?, ArmInteractionPointType> type : AllRegistries.ARM_INTERACTION_POINT_TYPE.entrySet())
 				sortedTypes.add(type.getValue());
-
 			sortedTypes.sort((t1, t2) -> t2.getPriority() - t1.getPriority());
 
 			sortedTypesView = Collections.unmodifiableList(sortedTypes);

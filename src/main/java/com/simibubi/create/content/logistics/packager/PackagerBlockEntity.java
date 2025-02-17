@@ -267,7 +267,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 		BlockState blockState = getBlockState();
 		if (!blockState.hasProperty(PackagerBlock.LINKED))
 			return;
-		boolean shouldBeLinked = shouldBeLinked();
+		boolean shouldBeLinked = getLinkPos() != null;
 		boolean isLinked = blockState.getValue(PackagerBlock.LINKED);
 		if (shouldBeLinked == isLinked)
 			return;
@@ -279,16 +279,16 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 			.orElse(false);
 	}
 
-	private boolean shouldBeLinked() {
+	private BlockPos getLinkPos() {
 		for (Direction d : Iterate.directions) {
 			BlockState adjacentState = level.getBlockState(worldPosition.relative(d));
 			if (!AllBlocks.STOCK_LINK.has(adjacentState))
 				continue;
 			if (PackagerLinkBlock.getConnectedDirection(adjacentState) != d)
 				continue;
-			return true;
+			return worldPosition.relative(d);
 		}
-		return false;
+		return null;
 	}
 
 	public void flashLink() {
@@ -550,6 +550,11 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 				finalPackageAtLink, orderContext);
 		if (!requestQueue && !signBasedAddress.isBlank())
 			PackageItem.addAddress(createdBox, signBasedAddress);
+
+		BlockPos linkPos = getLinkPos();
+		if (extractedPackageItem.isEmpty() && linkPos != null
+			&& level.getBlockEntity(linkPos) instanceof PackagerLinkBlockEntity plbe)
+			plbe.behaviour.deductFromAccurateSummary(extractedItems);
 
 		if (!heldBox.isEmpty() || animationTicks != 0) {
 			queuedExitingPackages.add(createdBox);

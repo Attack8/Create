@@ -28,7 +28,7 @@ public class MountedStorageTypeRegistry {
 	 * that will register the given MountedItemStorageType to a block when ready.
 	 */
 	public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> mountedItemStorage(RegistryEntry<? extends MountedItemStorageType<?>, ?> type) {
-		return builder -> builder.onRegisterAfter(Keys.MOUNTED_ITEM_STORAGE_TYPES, block -> ITEM_LOOKUP.register(block, type.get()));
+		return builder -> builder.onRegisterAfter(Keys.MOUNTED_ITEM_STORAGE_TYPE, block -> ITEM_LOOKUP.register(block, type.get()));
 	}
 
 	/**
@@ -36,6 +36,6 @@ public class MountedStorageTypeRegistry {
 	 * that will register the given MountedFluidStorageType to a block when ready.
 	 */
 	public static <B extends Block, P> NonNullUnaryOperator<BlockBuilder<B, P>> mountedFluidStorage(RegistryEntry<? extends MountedFluidStorageType<?>, ?> type) {
-		return builder -> builder.onRegisterAfter(Keys.MOUNTED_FLUID_STORAGE_TYPES, block -> FLUID_LOOKUP.register(block, type.get()));
+		return builder -> builder.onRegisterAfter(Keys.MOUNTED_FLUID_STORAGE_TYPE, block -> FLUID_LOOKUP.register(block, type.get()));
 	}
 }

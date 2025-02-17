@@ -151,7 +151,7 @@ public class AttributeFilterScreen extends AbstractFilterScreen<AttributeFilterM
 			.color(ScrollInput.HEADER_RGB.getRGB())
 			.component());
 		attributesOfItem.clear();
-		for (Map.Entry<ResourceKey<ItemAttributeType>, ItemAttributeType> entrySet : AllRegistries.ITEM_ATTRIBUTE_TYPES.entrySet())
+		for (Map.Entry<ResourceKey<ItemAttributeType>, ItemAttributeType> entrySet : AllRegistries.ITEM_ATTRIBUTE_TYPE.entrySet())
 			attributesOfItem.addAll(entrySet.getValue().getAllAttributes(stack, minecraft.level));
 		List<Component> options = attributesOfItem.stream()
 			.map(a -> a.format(false))

@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import com.simibubi.create.AllRegistries;
 import com.simibubi.create.content.contraptions.StructureTransform;
 
-import net.createmod.catnip.nbt.NBTHelper;
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -90,7 +91,8 @@ public class ArmInteractionPoint {
 		return type.canCreatePoint(level, pos, cachedState);
 	}
 
-	public void keepAlive() {}
+	public void keepAlive() {
+	}
 
 	@Nullable
 	protected IItemHandler getHandler() {
@@ -142,7 +144,7 @@ public class ArmInteractionPoint {
 	}
 
 	public final CompoundTag serialize(BlockPos anchor) {
-		ResourceLocation key = AllRegistries.ARM_INTERACTION_POINT_TYPES.getKey(type);
+		ResourceLocation key = AllRegistries.ARM_INTERACTION_POINT_TYPE.getKey(type);
 		if (key == null)
 			throw new IllegalArgumentException("Could not get id for ArmInteractionPointType " + type + "!");
 
@@ -158,7 +160,7 @@ public class ArmInteractionPoint {
 		ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type"));
 		if (id == null)
 			return null;
-		ArmInteractionPointType type = AllRegistries.ARM_INTERACTION_POINT_TYPES.get(id);
+		ArmInteractionPointType type = AllRegistries.ARM_INTERACTION_POINT_TYPE.get(id);
 		if (type == null)
 			return null;
 		BlockPos pos = NBTHelper.readBlockPos(nbt, "Pos").offset(anchor);

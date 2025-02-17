@@ -25,10 +25,14 @@ public class AddressEditBox extends EditBox {
 	private DestinationSuggestions destinationSuggestions;
 	private Consumer<String> mainResponder;
 	private String prevValue = "=)";
-
+	
 	public AddressEditBox(Screen screen, Font pFont, int pX, int pY, int pWidth, int pHeight, boolean anchorToBottom) {
+		this(screen, pFont, pX, pY, pWidth, pHeight, anchorToBottom, null);
+	}
+	
+	public AddressEditBox(Screen screen, Font pFont, int pX, int pY, int pWidth, int pHeight, boolean anchorToBottom, String localAddress) {
         super(pFont, pX, pY, pWidth, pHeight, Component.empty());
-		destinationSuggestions = AddressEditBoxHelper.createSuggestions(screen, this, anchorToBottom);
+		destinationSuggestions = AddressEditBoxHelper.createSuggestions(screen, this, anchorToBottom, localAddress);
 		destinationSuggestions.setAllowSuggestions(true);
 		destinationSuggestions.updateCommandInfo();
 		mainResponder = t -> {

@@ -685,6 +685,9 @@ public abstract class Contraption {
 		if (nbt.contains("Controller"))
 			controllerPos = toLocalPos(NBTHelper.readBlockPos(nbt, "Controller"));
 		nbt.put("Controller", NbtUtils.writeBlockPos(controllerPos));
+		
+		if (updateTags.containsKey(localPos))
+			updateTags.get(localPos).put("Controller", NbtUtils.writeBlockPos(controllerPos));
 
 		if (multiBlockBE.isController() && multiBlockBE.getHeight() <= 1 && multiBlockBE.getWidth() <= 1) {
 			nbt.put("LastKnownPos", NbtUtils.writeBlockPos(BlockPos.ZERO.below(Integer.MAX_VALUE - 1)));

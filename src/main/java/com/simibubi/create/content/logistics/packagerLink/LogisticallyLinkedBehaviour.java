@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import net.neoforged.neoforge.items.ItemStackHandler;
+
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import com.google.common.cache.Cache;
@@ -185,6 +187,18 @@ public class LogisticallyLinkedBehaviour extends BlockEntityBehaviour {
 		if (blockEntity instanceof PackagerLinkBlockEntity plbe)
 			return plbe.fetchSummaryFromPackager(ignoredHandler);
 		return InventorySummary.EMPTY;
+	}
+
+	public void deductFromAccurateSummary(ItemStackHandler packageContents) {
+		InventorySummary summary = LogisticsManager.ACCURATE_SUMMARIES.getIfPresent(freqId);
+		if (summary == null)
+			return;
+		for (int i = 0; i < packageContents.getSlots(); i++) {
+			ItemStack orderedStack = packageContents.getStackInSlot(i);
+			if (orderedStack.isEmpty())
+				continue;
+			summary.add(orderedStack, -Math.min(summary.getCountOf(orderedStack), orderedStack.getCount()));
+		}
 	}
 
 	//

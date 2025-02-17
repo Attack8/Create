@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public abstract class MountedItemStorageType<T extends MountedItemStorage> {
 	public static final Codec<MountedItemStorageType<?>> CODEC = Codec.lazyInitialized(
-		AllRegistries.MOUNTED_ITEM_STORAGE_TYPES::byNameCodec
+		AllRegistries.MOUNTED_ITEM_STORAGE_TYPE::byNameCodec
 	);
 
 	public final MapCodec<? extends T> codec;

@@ -15,7 +15,7 @@ public class MountedItemStorageTypeBuilder<T extends MountedItemStorageType<?>, 
 	private final T type;
 
 	public MountedItemStorageTypeBuilder(AbstractRegistrate<?> owner, P parent, String name, BuilderCallback callback, T type) {
-		super(owner, parent, name, callback, AllRegistries.Keys.MOUNTED_ITEM_STORAGE_TYPES);
+		super(owner, parent, name, callback, AllRegistries.Keys.MOUNTED_ITEM_STORAGE_TYPE);
 		this.type = type;
 	}
 
