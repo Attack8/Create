@@ -3,6 +3,8 @@
     {
       "type": "paletted_permutations",
       "textures": [
+        "create:trims/models/armor/card_bolt",
+        "create:trims/models/armor/card_bolt_leggings",
         "create:trims/models/armor/card_coast",
         "create:trims/models/armor/card_coast_leggings",
         "create:trims/models/armor/card_sentry",
