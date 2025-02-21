@@ -1,32 +1,25 @@
 package com.simibubi.create.compat.tconstruct;
 
-import com.simibubi.create.api.behaviour.BlockSpoutingBehaviour;
-import com.simibubi.create.compat.Mods;
+import com.simibubi.create.api.behaviour.spouting.BlockSpoutingBehaviour;
 import com.simibubi.create.content.fluids.spout.SpoutBlockEntity;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
-import net.createmod.catnip.registry.RegisteredObjectsHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
-public class SpoutCasting extends BlockSpoutingBehaviour {
-
-	private static final boolean TICON_PRESENT = Mods.TCONSTRUCT.isLoaded();
-
-	ResourceLocation TABLE = ResourceLocation.fromNamespaceAndPath("tconstruct", "table");
-	ResourceLocation BASIN = ResourceLocation.fromNamespaceAndPath("tconstruct", "basin");
+public enum SpoutCasting implements BlockSpoutingBehaviour {
+	INSTANCE;
 
 	@Override
-	public int fillBlock(Level level, BlockPos pos, SpoutBlockEntity spout, FluidStack availableFluid,
-		boolean simulate) {
+	public int fillBlock(Level level, BlockPos pos, SpoutBlockEntity spout, FluidStack availableFluid, boolean simulate) {
 		if (!enabled())
 			return 0;
 
@@ -40,9 +33,6 @@ public class SpoutCasting extends BlockSpoutingBehaviour {
 		if (handler.getTanks() != 1)
 			return 0;
 
-		ResourceLocation registryName = RegisteredObjectsHelper.getKeyOrThrow(blockEntity.getType());
-		if (!registryName.equals(TABLE) && !registryName.equals(BASIN))
-			return 0;
 		if (!handler.isFluidValid(0, availableFluid))
 			return 0;
 
@@ -61,9 +51,6 @@ public class SpoutCasting extends BlockSpoutingBehaviour {
 	}
 
 	private boolean enabled() {
-		if (!TICON_PRESENT)
-			return false;
 		return AllConfigs.server().recipes.allowCastingBySpout.get();
 	}
-
 }

@@ -12,7 +12,7 @@ import java.util.function.Function;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllKeys;
-import com.simibubi.create.content.contraptions.BlockMovementChecks;
+import com.simibubi.create.api.contraption.BlockMovementChecks;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.CenteredSideValueBoxTransform;

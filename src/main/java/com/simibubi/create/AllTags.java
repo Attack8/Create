@@ -6,6 +6,9 @@ import static com.simibubi.create.AllTags.NameSpace.MOD;
 import static com.simibubi.create.AllTags.NameSpace.QUARK;
 import static com.simibubi.create.AllTags.NameSpace.TIC;
 
+import com.simibubi.create.api.contraption.ContraptionType;
+import com.simibubi.create.api.registry.CreateRegistries;
+
 import net.createmod.catnip.lang.Lang;
 
 import net.minecraft.core.Registry;
@@ -56,9 +59,7 @@ public class AllTags {
 		TIC("tconstruct"),
 		QUARK("quark"),
 		GS("galosphere"),
-		CURIOS("curios")
-
-		;
+		CURIOS("curios");
 
 		public final String id;
 		public final boolean optionalDefault;
@@ -89,6 +90,7 @@ public class AllTags {
 		GIRDABLE_TRACKS,
 		MOVABLE_EMPTY_COLLIDER,
 		NON_MOVABLE,
+		NON_BREAKABLE,
 		ORE_OVERRIDE_STONE,
 		PASSIVE_BOILER_HEATERS,
 		SAFE_NBT,
@@ -159,7 +161,8 @@ public class AllTags {
 			return state.is(tag);
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
 
 	}
 
@@ -190,17 +193,15 @@ public class AllTags {
 		VALVE_HANDLES,
 
 		PLATES(COMMON),
-		OBSIDIAN_DUST(COMMON,"dusts/obsidian"),
+		OBSIDIAN_DUST(COMMON, "dusts/obsidian"),
 		WRENCH(COMMON, "tools/wrench"),
 
-		ALLURITE(MOD,"stone_types/galosphere/allurite"),
-		AMETHYST(MOD,"stone_types/galosphere/amethyst"),
+		ALLURITE(MOD, "stone_types/galosphere/allurite"),
+		AMETHYST(MOD, "stone_types/galosphere/amethyst"),
 		LUMIERE(MOD, "stone_types/galosphere/lumiere"),
 
 		UA_CORAL(MOD, "upgrade_aquatic/coral"),
-		CURIOS_HEAD(CURIOS, "head")
-
-		;
+		CURIOS_HEAD(CURIOS, "head");
 
 		public final TagKey<Item> tag;
 		public final boolean alwaysDatagen;
@@ -241,7 +242,8 @@ public class AllTags {
 			return stack.is(tag);
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
 
 	}
 
@@ -294,7 +296,8 @@ public class AllTags {
 			return state.is(tag);
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
 
 	}
 
@@ -342,7 +345,8 @@ public class AllTags {
 			return matches(entity.getType());
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
 
 	}
 
@@ -386,7 +390,29 @@ public class AllTags {
 			return BuiltInRegistries.RECIPE_SERIALIZER.getHolder(key).orElseThrow().is(tag);
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
+	}
+
+	public enum AllContraptionTypeTags {
+		OPENS_CONTROLS,
+		REQUIRES_VEHICLE_FOR_RENDER;
+
+		public final TagKey<ContraptionType> tag;
+		public final boolean alwaysDatagen;
+
+		AllContraptionTypeTags() {
+			ResourceLocation tagId = Create.asResource(Lang.asId(this.name()));
+			this.tag = TagKey.create(CreateRegistries.CONTRAPTION_TYPE, tagId);
+			this.alwaysDatagen = true;
+		}
+
+		public boolean matches(ContraptionType type) {
+			return type.is(this.tag);
+		}
+
+		private static void init() {
+		}
 	}
 
 	public static void init() {
@@ -395,5 +421,6 @@ public class AllTags {
 		AllFluidTags.init();
 		AllEntityTags.init();
 		AllRecipeSerializerTags.init();
+		AllContraptionTypeTags.init();
 	}
 }

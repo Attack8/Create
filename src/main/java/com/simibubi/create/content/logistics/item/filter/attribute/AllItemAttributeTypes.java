@@ -6,8 +6,8 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.simibubi.create.AllRecipeTypes;
-import com.simibubi.create.AllRegistries;
 import com.simibubi.create.Create;
+import com.simibubi.create.api.registry.CreateRegistries;
 import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.AddedByAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.BookAuthorAttribute;
@@ -41,7 +41,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 // TODO - Documentation
 public class AllItemAttributeTypes {
-	private static final DeferredRegister<ItemAttributeType> REGISTER = DeferredRegister.create(AllRegistries.ITEM_ATTRIBUTE_TYPE, Create.ID);
+	private static final DeferredRegister<ItemAttributeType> REGISTER = DeferredRegister.create(CreateRegistries.ITEM_ATTRIBUTE_TYPE, Create.ID);
 
 	public static final ItemAttributeType
 		PLACEABLE = singleton("placeable", s -> s.getItem() instanceof BlockItem),

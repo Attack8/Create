@@ -2,7 +2,7 @@ package com.simibubi.create.content.logistics.funnel;
 
 import java.util.List;
 
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
 import com.simibubi.create.foundation.item.ItemHelper;
@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 public class FunnelMovementBehaviour implements MovementBehaviour {

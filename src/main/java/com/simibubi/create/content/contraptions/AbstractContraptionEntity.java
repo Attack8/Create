@@ -16,13 +16,12 @@ import org.jetbrains.annotations.NotNull;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllItems;
-import com.simibubi.create.AllMovementBehaviours;
 import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.actors.psi.PortableStorageInterfaceMovement;
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock;
 import com.simibubi.create.content.contraptions.actors.seat.SeatEntity;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsStopControllingPacket;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.data.ContraptionSyncLimiting;
 import com.simibubi.create.content.contraptions.elevator.ElevatorContraption;
@@ -444,7 +443,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		for (MutablePair<StructureBlockInfo, MovementContext> pair : contraption.getActors()) {
 			MovementContext context = pair.right;
 			StructureBlockInfo blockInfo = pair.left;
-			MovementBehaviour actor = AllMovementBehaviours.getBehaviour(blockInfo.state());
+			MovementBehaviour actor = MovementBehaviour.REGISTRY.get(blockInfo.state());
 
 			if (actor == null)
 				continue;
@@ -507,7 +506,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		for (MutablePair<StructureBlockInfo, MovementContext> pair : contraption.getActors()) {
 			MovementContext context = pair.right;
 			StructureBlockInfo blockInfo = pair.left;
-			MovementBehaviour actor = AllMovementBehaviours.getBehaviour(blockInfo.state());
+			MovementBehaviour actor = MovementBehaviour.REGISTRY.get(blockInfo.state());
 			if (actor instanceof PortableStorageInterfaceMovement && isActorActive(context, actor))
 				if (context.position != null)
 					actor.visitNewPosition(context, BlockPos.containing(context.position));

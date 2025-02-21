@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.simibubi.create.api.registry.CreateRegistries;
+
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import com.simibubi.create.AllRecipeTypes;
-import com.simibubi.create.AllRegistries;
 import com.simibubi.create.AllTags.AllBlockTags;
 import com.simibubi.create.AllTags.AllFluidTags;
 import com.simibubi.create.Create;
@@ -60,9 +61,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 public class AllFanProcessingTypes {
-	private static final DeferredRegister<FanProcessingType> REGISTER = DeferredRegister.create(AllRegistries.Keys.FAN_PROCESSING_TYPE, Create.ID);
+	private static final DeferredRegister<FanProcessingType> REGISTER = DeferredRegister.create(CreateRegistries.FAN_PROCESSING_TYPE, Create.ID);
 
-	public static final NoneType NONE = register("none", new NoneType());
 	public static final BlastingType BLASTING = register("blasting", new BlastingType());
 	public static final HauntingType HAUNTING = register("haunting", new HauntingType());
 	public static final SmokingType SMOKING = register("smoking", new SmokingType());
@@ -72,7 +72,6 @@ public class AllFanProcessingTypes {
 
 	static {
 		Object2ReferenceOpenHashMap<String, FanProcessingType> map = new Object2ReferenceOpenHashMap<>();
-		map.put("NONE", NONE);
 		map.put("BLASTING", BLASTING);
 		map.put("HAUNTING", HAUNTING);
 		map.put("SMOKING", SMOKING);
@@ -96,6 +95,7 @@ public class AllFanProcessingTypes {
 		return LEGACY_NAME_MAP.get(name);
 	}
 
+	@Nullable
 	public static FanProcessingType parseLegacy(String str) {
 		FanProcessingType type = ofLegacyName(str);
 		if (type != null) {

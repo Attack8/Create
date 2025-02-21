@@ -2,8 +2,8 @@ package com.simibubi.create.content.contraptions;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllEntityTypes;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.bearing.BearingContraption;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;

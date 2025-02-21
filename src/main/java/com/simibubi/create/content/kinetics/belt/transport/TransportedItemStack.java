@@ -2,7 +2,7 @@ package com.simibubi.create.content.kinetics.belt.transport;
 
 import java.util.Random;
 
-import com.simibubi.create.AllRegistries;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 import com.simibubi.create.content.kinetics.belt.BeltHelper;
 import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes;
 import com.simibubi.create.content.kinetics.fan.processing.FanProcessingType;
@@ -82,8 +82,8 @@ public class TransportedItemStack implements Comparable<TransportedItemStack> {
 		nbt.putInt("Angle", angle);
 		nbt.putInt("InDirection", insertedFrom.get3DDataValue());
 
-		if (processedBy != null && processedBy != AllFanProcessingTypes.NONE) {
-			ResourceLocation key = AllRegistries.FAN_PROCESSING_TYPE.getKey(processedBy);
+		if (processedBy != null) {
+			ResourceLocation key = CreateBuiltInRegistries.FAN_PROCESSING_TYPE.getKey(processedBy);
 			if (key == null)
 				throw new IllegalArgumentException("Could not get id for FanProcessingType " + processedBy + "!");
 

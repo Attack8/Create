@@ -1,6 +1,8 @@
 package com.simibubi.create.content.redstone.displayLink.target;
 
 import java.util.List;
+
+import com.simibubi.create.api.behaviour.display.DisplayTarget;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
 import com.simibubi.create.foundation.utility.CreateLang;
 

@@ -34,14 +34,14 @@ public class AllMountedStorageTypes {
 
 	// these are for external blocks, register associations here
 	public static final RegistryEntry<MountedItemStorageType<?>, SimpleMountedStorageType.Impl> SIMPLE = REGISTRATE.mountedItemStorage("simple", SimpleMountedStorageType.Impl::new)
-		.registerTo(AllTags.AllBlockTags.SIMPLE_MOUNTED_STORAGE.tag)
+		.associateBlockTag(AllTags.AllBlockTags.SIMPLE_MOUNTED_STORAGE.tag)
 		.register();
 	public static final RegistryEntry<MountedItemStorageType<?>, ChestMountedStorageType> CHEST = REGISTRATE.mountedItemStorage("chest", ChestMountedStorageType::new)
-		.registerTo(AllTags.AllBlockTags.CHEST_MOUNTED_STORAGE.tag)
+		.associateBlockTag(AllTags.AllBlockTags.CHEST_MOUNTED_STORAGE.tag)
 		.register();
 	public static final RegistryEntry<MountedItemStorageType<?>, DispenserMountedStorageType> DISPENSER = REGISTRATE.mountedItemStorage("dispenser", DispenserMountedStorageType::new)
-		.registerTo(Blocks.DISPENSER)
-		.registerTo(Blocks.DROPPER)
+		.associate(Blocks.DISPENSER)
+		.associate(Blocks.DROPPER)
 		.register();
 
 	private static <T extends MountedItemStorageType<?>> RegistryEntry<MountedItemStorageType<?>, T> simpleItem(String name, Supplier<T> supplier) {

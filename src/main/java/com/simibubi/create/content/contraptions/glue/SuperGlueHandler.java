@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.simibubi.create.AllItems;
-import com.simibubi.create.content.contraptions.BlockMovementChecks;
+import com.simibubi.create.api.contraption.BlockMovementChecks;
 
 import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.catnip.data.Iterate;

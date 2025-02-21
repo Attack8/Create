@@ -1,7 +1,7 @@
 package com.simibubi.create.content.processing.burner;
 
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
@@ -9,11 +9,11 @@ import com.simibubi.create.content.trains.entity.CarriageContraption;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
-import net.createmod.catnip.data.Iterate;
-import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.Direction;
@@ -25,6 +25,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 

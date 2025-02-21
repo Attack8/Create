@@ -8,10 +8,10 @@ import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.AllItems;
-import com.simibubi.create.AllMovementBehaviours;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
+import com.simibubi.create.api.contraption.ContraptionMovementSetting;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.ContraptionMovementSetting;
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity;
 import com.simibubi.create.content.contraptions.actors.psi.PortableStorageInterfaceMovement;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
@@ -245,7 +245,7 @@ public class MinecartContraptionItem extends Item {
 		contraption.stop(event.getLevel());
 
 		for (MutablePair<StructureBlockInfo, MovementContext> pair : contraption.getActors())
-			if (AllMovementBehaviours.getBehaviour(pair.left.state()) instanceof PortableStorageInterfaceMovement psim)
+			if (MovementBehaviour.REGISTRY.get(pair.left.state()) instanceof PortableStorageInterfaceMovement psim)
 				psim.reset(pair.right);
 
 		ItemStack generatedStack = create(type, oce);

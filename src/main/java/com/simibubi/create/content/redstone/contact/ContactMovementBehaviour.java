@@ -1,7 +1,7 @@
 package com.simibubi.create.content.redstone.contact;
 
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.elevator.ElevatorContraption;
 

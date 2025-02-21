@@ -1,6 +1,6 @@
 package com.simibubi.create.infrastructure.config;
 
-import com.simibubi.create.content.contraptions.ContraptionMovementSetting;
+import com.simibubi.create.api.contraption.ContraptionMovementSetting;
 
 import net.createmod.catnip.config.ConfigBase;
 

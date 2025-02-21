@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ActorVisual;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;

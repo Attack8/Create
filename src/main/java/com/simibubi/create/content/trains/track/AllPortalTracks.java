@@ -1,12 +1,10 @@
 package com.simibubi.create.content.trains.track;
 
-import java.util.function.UnaryOperator;
-
+import com.simibubi.create.Create;
+import com.simibubi.create.api.contraption.train.PortalTrackProvider;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
-import com.simibubi.create.foundation.utility.AttachedRegistry;
 
-import net.createmod.catnip.data.Pair;
 import net.createmod.catnip.math.BlockFace;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,85 +32,60 @@ import net.minecraft.world.phys.AABB;
  */
 public class AllPortalTracks {
 	/**
-	 * Functional interface representing a provider for portal track connections.
-	 * It takes a pair of {@link ServerLevel} and {@link BlockFace} representing the inbound track
-	 * and returns a similar pair for the outbound track.
-	 */
-	@FunctionalInterface
-	public interface PortalTrackProvider extends UnaryOperator<Pair<ServerLevel, BlockFace>> {}
-
-	/**
-	 * Registry mapping portal blocks to their respective {@link PortalTrackProvider}s.
-	 */
-	private static final AttachedRegistry<Block, PortalTrackProvider> PORTAL_BEHAVIOURS =
-			new AttachedRegistry<>(BuiltInRegistries.BLOCK);
-
-	/**
-	 * Registers a portal track integration for a given block identified by its {@link ResourceLocation}.
+	 * Registers a portal track integration for a given block identified by its {@link ResourceLocation}, if it exists.
+	 * If it does not, a warning will be logged.
 	 *
-	 * @param block    The resource location of the portal block.
+	 * @param id       The resource location of the portal block.
 	 * @param provider The portal track provider for the block.
 	 */
-	public static void registerIntegration(ResourceLocation block, PortalTrackProvider provider) {
-		PORTAL_BEHAVIOURS.register(block, provider);
+	public static void tryRegisterIntegration(ResourceLocation id, PortalTrackProvider provider) {
+		if (BuiltInRegistries.BLOCK.containsKey(id)) {
+			Block block = BuiltInRegistries.BLOCK.get(id);
+			PortalTrackProvider.REGISTRY.register(block, provider);
+		} else {
+			Create.LOGGER.warn("Portal for integration wasn't found: {}. Compat outdated?", id);
+		}
 	}
 
 	/**
-	 * Registers a portal track integration for a given {@link Block}.
+	 * Registers a simple portal track integration for a given block identified by its {@link ResourceLocation}, if it exists.
+	 * If it does not, a warning will be logged.
+	 * <p>
+	 * Note: This only allows registering integrations that go from the Overworld to another dimension and vice versa.
 	 *
-	 * @param block    The portal block.
-	 * @param provider The portal track provider for the block.
+	 * @param portalBlockId The resource location of the portal block.
+	 * @param dimensionId   The resource location of the dimension to travel to
 	 */
-	public static void registerIntegration(Block block, PortalTrackProvider provider) {
-		PORTAL_BEHAVIOURS.register(block, provider);
-	}
-
-	private static void registerSimpleInteraction(Mods mod, String dimensionId, String portalBlockId) {
-		ResourceKey<Level> levelKey = ResourceKey.create(Registries.DIMENSION, mod.rl(dimensionId));
-		registerSimpleInteraction(mod, levelKey, portalBlockId);
-	}
-
-	private static void registerSimpleInteraction(Mods mod, ResourceKey<Level> levelKey, String portalBlockId) {
-		if (mod.isLoaded())
-			registerSimpleInteraction(levelKey, asPortal(mod.rl(portalBlockId)));
-	}
-
-	private static void registerSimpleInteraction(ResourceKey<Level> levelKey, Portal portalBlock) {
-		PortalTrackProvider p = i ->
-			standardPortalProvider(i, Level.OVERWORLD, levelKey, portalBlock);
-		PORTAL_BEHAVIOURS.register((Block) portalBlock, p);
+	private static void tryRegisterSimpleInteraction(ResourceLocation portalBlockId, ResourceLocation dimensionId) {
+		ResourceKey<Level> levelKey = ResourceKey.create(Registries.DIMENSION, dimensionId);
+		tryRegisterSimpleInteraction(portalBlockId, levelKey);
 	}
 
 	/**
-	 * Checks if a given {@link BlockState} represents a supported portal block.
+	 * Registers a simple portal track integration for a given block identified by its {@link ResourceLocation}, if it exists.
+	 * If it does not, a warning will be logged.
+	 * <p>
+	 * Note: This only allows registering integrations that go from the Overworld to another dimension and vice versa.
 	 *
-	 * @param state The block state to check.
-	 * @return {@code true} if the block state represents a supported portal; {@code false} otherwise.
+	 * @param portalBlockId The resource location of the portal block.
+	 * @param levelKey   The resource key of the dimension to travel to
 	 */
-	public static boolean isSupportedPortal(BlockState state) {
-		return PORTAL_BEHAVIOURS.get(state.getBlock()) != null;
+	private static void tryRegisterSimpleInteraction(ResourceLocation portalBlockId, ResourceKey<Level> levelKey) {
+		tryRegisterSimpleInteraction(BuiltInRegistries.BLOCK.get(portalBlockId), levelKey);
 	}
 
 	/**
-	 * Grabs a block from the registry as a {@link Portal} block
-	 */
-	public static Portal asPortal(ResourceLocation block) {
-		return (Portal) BuiltInRegistries.BLOCK.get(block);
-	}
-
-	/**
-	 * Retrieves the corresponding outbound track on the other side of a portal.
+	 * Registers a simple portal track integration for a given block identified by its {@link Block}.
+	 * <p>
+	 * Note: This only allows registering integrations that go from the Overworld to another dimension and vice versa.
 	 *
-	 * @param level        The current {@link ServerLevel}.
-	 * @param inboundTrack The inbound track {@link BlockFace}.
-	 * @return A pair containing the target {@link ServerLevel} and outbound {@link BlockFace},
-	 * or {@code null} if no corresponding portal is found.
+	 * @param portalBlock The portal block.
+	 * @param levelKey    The resource key of the dimension to travel to
 	 */
-	public static Pair<ServerLevel, BlockFace> getOtherSide(ServerLevel level, BlockFace inboundTrack) {
-		BlockPos portalPos = inboundTrack.getConnectedPos();
-		BlockState portalState = level.getBlockState(portalPos);
-		PortalTrackProvider provider = PORTAL_BEHAVIOURS.get(portalState.getBlock());
-		return provider == null ? null : provider.apply(Pair.of(level, inboundTrack));
+	private static void tryRegisterSimpleInteraction(Block portalBlock, ResourceKey<Level> levelKey) {
+		PortalTrackProvider p = (level, face) ->
+			PortalTrackProvider.fromPortal(level, face, Level.OVERWORLD, levelKey, (Portal) portalBlock);
+		PortalTrackProvider.REGISTRY.register(portalBlock, p);
 	}
 
 	// Built-in handlers
@@ -122,28 +95,27 @@ public class AllPortalTracks {
 	 * This includes the Nether, the Aether (if loaded) and the end (if betterend is loaded).
 	 */
 	public static void registerDefaults() {
-		registerSimpleInteraction(Level.NETHER, (Portal) Blocks.NETHER_PORTAL);
-		registerSimpleInteraction(Mods.AETHER, "the_aether", "aether_portal");
-		registerSimpleInteraction(Mods.AETHER_II, "aether_highlands", "aether_portal");
-		registerSimpleInteraction(Mods.BETTEREND, Level.END, "end_portal_block");
+		tryRegisterSimpleInteraction(Blocks.NETHER_PORTAL, Level.NETHER);
+
+		if (Mods.AETHER.isLoaded()) {
+			tryRegisterSimpleInteraction(Mods.AETHER.rl("aether_portal"), Mods.AETHER.rl("the_aether"));
+		}
+
+		if (Mods.AETHER_II.isLoaded()) {
+			tryRegisterSimpleInteraction(Mods.AETHER_II.rl("aether_portal"), Mods.AETHER_II.rl("aether_highlands"));
+		}
+
+		if (Mods.BETTEREND.isLoaded()) {
+			tryRegisterSimpleInteraction(Mods.BETTEREND.rl("end_portal_block"), Level.END);
+		}
 	}
 
-	/**
-	 * Generalized portal provider method that calculates the corresponding outbound track across a portal.
-	 *
-	 * @param inbound            A pair containing the current {@link ServerLevel} and inbound {@link BlockFace}.
-	 * @param firstDimension     The first dimension.
-	 * @param secondDimension    The second dimension.
-	 * @param portal             The portal block
-	 * @return A pair with the target {@link ServerLevel} and outbound {@link BlockFace}, or {@code null} if not applicable.
-	 */
-	public static Pair<ServerLevel, BlockFace> standardPortalProvider(
-		Pair<ServerLevel, BlockFace> inbound,
+	public static PortalTrackProvider.Exit fromPortal(
+		ServerLevel level, BlockFace inboundTrack,
 		ResourceKey<Level> firstDimension,
 		ResourceKey<Level> secondDimension,
 		Portal portal
 	) {
-		ServerLevel level = inbound.getFirst();
 		ResourceKey<Level> resourceKey = level.dimension() == secondDimension ? firstDimension : secondDimension;
 
 		MinecraftServer minecraftServer = level.getServer();
@@ -152,7 +124,6 @@ public class AllPortalTracks {
 		if (otherLevel == null)
 			return null;
 
-		BlockFace inboundTrack = inbound.getSecond();
 		BlockPos portalPos = inboundTrack.getConnectedPos();
 		BlockState portalState = level.getBlockState(portalPos);
 
@@ -175,6 +146,6 @@ public class AllPortalTracks {
 		if (targetDirection.getAxis() == otherPortalState.getValue(BlockStateProperties.HORIZONTAL_AXIS))
 			targetDirection = targetDirection.getClockWise();
 		BlockPos otherPos = otherPortalPos.relative(targetDirection);
-		return Pair.of(otherLevel, new BlockFace(otherPos, targetDirection.getOpposite()));
+		return new PortalTrackProvider.Exit(otherLevel, new BlockFace(otherPos, targetDirection.getOpposite()));
 	}
 }

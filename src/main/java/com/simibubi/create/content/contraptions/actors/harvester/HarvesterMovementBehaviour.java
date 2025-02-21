@@ -6,8 +6,8 @@ import net.neoforged.neoforge.common.SpecialPlantable;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-import com.simibubi.create.AllTags;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
+import com.simibubi.create.AllTags.AllBlockTags;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ActorVisual;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
@@ -172,7 +172,7 @@ public class HarvesterMovementBehaviour implements MovementBehaviour {
 		if (block == Blocks.SWEET_BERRY_BUSH) {
 			return state.setValue(BlockStateProperties.AGE_3, Integer.valueOf(1));
 		}
-		if (state.is(AllTags.AllBlockTags.SUGAR_CANE_VARIANTS.tag) || block instanceof GrowingPlantBlock) {
+		if (AllBlockTags.SUGAR_CANE_VARIANTS.matches(block) || block instanceof GrowingPlantBlock) {
 			if (state.getFluidState()
 				.isEmpty())
 				return Blocks.AIR.defaultBlockState();

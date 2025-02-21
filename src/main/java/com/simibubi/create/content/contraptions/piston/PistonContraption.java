@@ -12,14 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.world.phys.Vec3;
-
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.simibubi.create.AllContraptionTypes;
+import com.simibubi.create.api.contraption.BlockMovementChecks;
+import com.simibubi.create.api.contraption.ContraptionType;
 import com.simibubi.create.content.contraptions.AssemblyException;
-import com.simibubi.create.content.contraptions.BlockMovementChecks;
-import com.simibubi.create.content.contraptions.ContraptionType;
 import com.simibubi.create.content.contraptions.TranslatingContraption;
 import com.simibubi.create.content.contraptions.piston.MechanicalPistonBlock.PistonState;
 import com.simibubi.create.infrastructure.config.AllConfigs;
@@ -27,6 +25,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -38,6 +37,7 @@ import net.minecraft.world.level.block.state.properties.PistonType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class PistonContraption extends TranslatingContraption {
 
@@ -50,10 +50,11 @@ public class PistonContraption extends TranslatingContraption {
 
 	@Override
 	public ContraptionType getType() {
-		return ContraptionType.PISTON;
+		return AllContraptionTypes.PISTON.value();
 	}
 
-	public PistonContraption() {}
+	public PistonContraption() {
+	}
 
 	public PistonContraption(Direction direction, boolean retract) {
 		orientation = direction;
@@ -129,8 +130,8 @@ public class PistonContraption extends TranslatingContraption {
 		extensionLength = extensionsInBack + extensionsInFront;
 		initialExtensionProgress = extensionsInFront;
 		pistonExtensionCollisionBox = new AABB(
-				Vec3.atLowerCornerOf(BlockPos.ZERO.relative(direction, -1)),
-				Vec3.atLowerCornerOf(BlockPos.ZERO.relative(direction, -extensionLength - 1))
+			Vec3.atLowerCornerOf(BlockPos.ZERO.relative(direction, -1)),
+			Vec3.atLowerCornerOf(BlockPos.ZERO.relative(direction, -extensionLength - 1))
 		).expandTowards(1, 1, 1);
 
 		if (extensionLength == 0)

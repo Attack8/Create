@@ -2,6 +2,7 @@ package com.simibubi.create.content.kinetics.base;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.simibubi.create.AllTags.AllBlockTags;
 import com.simibubi.create.foundation.utility.BlockHelper;
 
 import net.createmod.catnip.math.VecHelper;
@@ -132,7 +133,7 @@ public abstract class BlockBreakingKineticBlockEntity extends KineticBlockEntity
 	}
 
 	public static boolean isBreakable(BlockState stateToBreak, float blockHardness) {
-		return !(stateToBreak.liquid() || stateToBreak.getBlock() instanceof AirBlock || blockHardness == -1);
+		return !(stateToBreak.liquid() || stateToBreak.getBlock() instanceof AirBlock || blockHardness == -1 || AllBlockTags.NON_BREAKABLE.matches(stateToBreak));
 	}
 
 	public void onBlockBroken(BlockState stateToBreak) {

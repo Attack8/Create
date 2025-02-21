@@ -1,17 +1,22 @@
 package com.simibubi.create.content.contraptions.actors.contraptionControls;
 
-import com.simibubi.create.AllMovementBehaviours;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.lang3.tuple.MutablePair;
+
 import com.simibubi.create.AllSoundEvents;
+import com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement.ElevatorFloorSelection;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
-import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour;
 import com.simibubi.create.content.contraptions.elevator.ElevatorContraption;
 import com.simibubi.create.content.contraptions.elevator.ElevatorTargetFloorPacket;
-import net.createmod.catnip.platform.CatnipServices;
 
+
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -19,11 +24,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.Vec3;
-
-import org.apache.commons.lang3.tuple.MutablePair;
-
-import java.util.Iterator;
-import java.util.List;
 
 public class ContraptionControlsMovingInteraction extends MovingInteractionBehaviour {
 
@@ -70,7 +70,7 @@ public class ContraptionControlsMovingInteraction extends MovingInteractionBehav
 
 		if (invert) {
 			for (MutablePair<StructureBlockInfo, MovementContext> pair : contraption.getActors()) {
-				MovementBehaviour behaviour = AllMovementBehaviours.getBehaviour(pair.left.state());
+				MovementBehaviour behaviour = MovementBehaviour.REGISTRY.get(pair.left.state());
 				if (behaviour == null)
 					continue;
 				ItemStack behaviourStack = behaviour.canBeDisabledVia(pair.right);

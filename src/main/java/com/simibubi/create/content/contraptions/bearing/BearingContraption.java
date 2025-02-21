@@ -1,19 +1,19 @@
 package com.simibubi.create.content.contraptions.bearing;
 
-import net.minecraft.core.HolderLookup;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllContraptionTypes;
 import com.simibubi.create.AllTags.AllBlockTags;
+import com.simibubi.create.api.contraption.ContraptionType;
 import com.simibubi.create.content.contraptions.AssemblyException;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.ContraptionType;
 import com.simibubi.create.content.decoration.copycat.CopycatBlockEntity;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,7 +50,7 @@ public class BearingContraption extends Contraption {
 
 	@Override
 	public ContraptionType getType() {
-		return ContraptionType.BEARING;
+		return AllContraptionTypes.BEARING.value();
 	}
 
 	@Override

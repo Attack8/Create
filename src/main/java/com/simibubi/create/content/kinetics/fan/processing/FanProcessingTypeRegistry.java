@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 
 import org.jetbrains.annotations.UnmodifiableView;
 
-import com.simibubi.create.AllRegistries;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
@@ -20,8 +20,7 @@ public class FanProcessingTypeRegistry {
 		if (sortedTypes == null) {
 			sortedTypes = new ReferenceArrayList<>();
 
-			for (Entry<?, FanProcessingType> type : AllRegistries.FAN_PROCESSING_TYPE.entrySet())
-				sortedTypes.add(type.getValue());
+			CreateBuiltInRegistries.FAN_PROCESSING_TYPE.forEach(sortedTypes::add);
 			sortedTypes.sort((t1, t2) -> t2.getPriority() - t1.getPriority());
 
 			sortedTypesView = Collections.unmodifiableList(sortedTypes);

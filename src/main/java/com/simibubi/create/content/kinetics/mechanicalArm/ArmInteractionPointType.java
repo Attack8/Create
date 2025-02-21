@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.UnmodifiableView;
 
-import com.simibubi.create.AllRegistries;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.core.BlockPos;
@@ -30,8 +30,7 @@ public abstract class ArmInteractionPointType {
 		if (sortedTypes == null) {
 			sortedTypes = new ReferenceArrayList<>();
 
-			for (Entry<?, ArmInteractionPointType> type : AllRegistries.ARM_INTERACTION_POINT_TYPE.entrySet())
-				sortedTypes.add(type.getValue());
+			CreateBuiltInRegistries.ARM_INTERACTION_POINT_TYPE.forEach(sortedTypes::add);
 			sortedTypes.sort((t1, t2) -> t2.getPriority() - t1.getPriority());
 
 			sortedTypesView = Collections.unmodifiableList(sortedTypes);

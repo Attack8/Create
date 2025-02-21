@@ -1,11 +1,12 @@
 package com.simibubi.create;
 
-import static com.simibubi.create.AllInteractionBehaviours.interactionBehaviour;
-import static com.simibubi.create.AllMovementBehaviours.movementBehaviour;
 import static com.simibubi.create.Create.REGISTRATE;
-import static com.simibubi.create.api.contraption.storage.MountedStorageTypeRegistry.mountedFluidStorage;
-import static com.simibubi.create.api.contraption.storage.MountedStorageTypeRegistry.mountedItemStorage;
-import static com.simibubi.create.content.redstone.displayLink.AllDisplayBehaviours.assignDataBehaviour;
+import static com.simibubi.create.api.behaviour.display.DisplaySource.displaySource;
+import static com.simibubi.create.api.behaviour.display.DisplayTarget.displayTarget;
+import static com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour.interactionBehaviour;
+import static com.simibubi.create.api.behaviour.movement.MovementBehaviour.movementBehaviour;
+import static com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageType.mountedFluidStorage;
+import static com.simibubi.create.api.contraption.storage.item.MountedItemStorageType.mountedItemStorage;
 import static com.simibubi.create.foundation.data.BlockStateGen.axisBlock;
 import static com.simibubi.create.foundation.data.BlockStateGen.simpleCubeAll;
 import static com.simibubi.create.foundation.data.CreateRegistrate.connectedTextures;
@@ -17,6 +18,7 @@ import static com.simibubi.create.foundation.data.TagGen.tagBlockAndItem;
 
 import com.simibubi.create.AllTags.AllBlockTags;
 import com.simibubi.create.AllTags.AllItemTags;
+import com.simibubi.create.api.behaviour.interaction.ConductorBlockInteractionBehavior;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsBlock;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovingInteraction;
@@ -226,26 +228,6 @@ import com.simibubi.create.content.redstone.diodes.ToggleLatchBlock;
 import com.simibubi.create.content.redstone.diodes.ToggleLatchGenerator;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkBlock;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkBlockItem;
-import com.simibubi.create.content.redstone.displayLink.source.AccumulatedItemCountDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.BoilerDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.CurrentFloorDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.EntityNameDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.FactoryGaugeDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.FillLevelDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.FluidAmountDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.FluidListDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.ItemCountDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.ItemListDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.ItemNameDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.ItemThroughputDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.KineticSpeedDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.KineticStressDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.ObservedTrainNameSource;
-import com.simibubi.create.content.redstone.displayLink.source.StationSummaryDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.StopWatchDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.TimeOfDayDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.source.TrainStatusDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.target.DisplayBoardTarget;
 import com.simibubi.create.content.redstone.link.RedstoneLinkBlock;
 import com.simibubi.create.content.redstone.link.RedstoneLinkGenerator;
 import com.simibubi.create.content.redstone.link.controller.LecternControllerBlock;
@@ -290,7 +272,6 @@ import com.simibubi.create.foundation.item.UncontainableBlockItem;
 import com.simibubi.create.foundation.mixin.accessor.BlockLootSubProviderAccessor;
 import com.simibubi.create.foundation.utility.ColorHandlers;
 import com.simibubi.create.foundation.utility.DyeHelper;
-import com.simibubi.create.impl.contraption.train.TrainConductorHandlerImpl;
 import com.tterrag.registrate.providers.RegistrateRecipeProvider;
 import com.tterrag.registrate.util.DataIngredient;
 import com.tterrag.registrate.util.entry.BlockEntry;
@@ -552,7 +533,7 @@ public class AllBlocks {
 		.transform(axeOrPickaxe())
 		.blockstate(new BeltGenerator()::generate)
 		.transform(BlockStressDefaults.setImpact(0))
-		.onRegister(assignDataBehaviour(new ItemNameDisplaySource(), "combine_item_names"))
+		.transform(displaySource(AllDisplaySources.ITEM_NAMES))
 		.onRegister(CreateRegistrate.blockModel(() -> BeltModel::new))
 		.clientExtension(() -> () -> new BeltBlock.RenderProperties())
 		.register();
@@ -674,8 +655,8 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_YELLOW))
 			.transform(axeOrPickaxe())
 			.transform(BuilderTransformers.cuckooClock())
-			.onRegister(assignDataBehaviour(new TimeOfDayDisplaySource(), "time_of_day"))
-			.onRegister(assignDataBehaviour(new StopWatchDisplaySource(), "stop_watch"))
+			.transform(displaySource(AllDisplaySources.TIME_OF_DAY))
+			.transform(displaySource(AllDisplaySources.STOPWATCH))
 			.register();
 
 	public static final BlockEntry<CuckooClockBlock> MYSTERIOUS_CUCKOO_CLOCK =
@@ -771,7 +752,7 @@ public class AllBlocks {
 			.loot((lt, block) -> lt.add(block, BlazeBurnerBlock.buildLootTable()))
 			.blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
 			.onRegister(movementBehaviour(new BlazeBurnerMovementBehaviour()))
-			.onRegister(block -> TrainConductorHandlerImpl.registerBlazeBurner())
+			.onRegister(interactionBehaviour(new ConductorBlockInteractionBehavior.BlazeBurner()))
 			.item(BlazeBurnerBlockItem::withBlaze)
 			.model(AssetLookup.customBlockItemModel("blaze_burner", "block_with_blaze"))
 			.build()
@@ -802,7 +783,7 @@ public class AllBlocks {
 		.properties(p -> p.mapColor(MapColor.COLOR_GRAY))
 		.transform(axeOrPickaxe())
 		.blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
-		.onRegister(assignDataBehaviour(new ItemNameDisplaySource(), "combine_item_names"))
+		.transform(displaySource(AllDisplaySources.ITEM_NAMES))
 		.onRegister(interactionBehaviour(new MountedDepotInteractionBehaviour()))
 		.transform(mountedItemStorage(AllMountedStorageTypes.DEPOT))
 		.item()
@@ -817,7 +798,7 @@ public class AllBlocks {
 			.transform(axeOrPickaxe())
 			.blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p), 180))
 			.transform(BlockStressDefaults.setImpact(2.0))
-			.onRegister(assignDataBehaviour(new ItemNameDisplaySource(), "combine_item_names"))
+			.transform(displaySource(AllDisplaySources.ITEM_NAMES))
 			.item(EjectorItem::new)
 			.transform(customItemModel())
 			.register();
@@ -858,7 +839,7 @@ public class AllBlocks {
 		.transform(axeOrPickaxe())
 		.transform(BlockStressDefaults.setNoImpact())
 		.blockstate(new GaugeGenerator()::generate)
-		.onRegister(assignDataBehaviour(new KineticSpeedDisplaySource(), "kinetic_speed"))
+		.transform(displaySource(AllDisplaySources.KINETIC_SPEED))
 		.item()
 		.transform(ModelGen.customItemModel("gauge", "_", "item"))
 		.register();
@@ -869,7 +850,7 @@ public class AllBlocks {
 		.transform(axeOrPickaxe())
 		.transform(BlockStressDefaults.setNoImpact())
 		.blockstate(new GaugeGenerator()::generate)
-		.onRegister(assignDataBehaviour(new KineticStressDisplaySource(), "kinetic_stress"))
+		.transform(displaySource(AllDisplaySources.KINETIC_STRESS))
 		.item()
 		.transform(ModelGen.customItemModel("gauge", "_", "item"))
 		.register();
@@ -1004,7 +985,7 @@ public class AllBlocks {
 		.transform(pickaxeOnly())
 		.blockstate(new FluidTankGenerator()::generate)
 		.onRegister(CreateRegistrate.blockModel(() -> FluidTankModel::standard))
-		.onRegister(assignDataBehaviour(new BoilerDisplaySource(), "boiler_status"))
+		.transform(displaySource(AllDisplaySources.BOILER))
 		.transform(mountedFluidStorage(AllMountedStorageTypes.FLUID_TANK))
 		.onRegister(movementBehaviour(new FluidTankMovementBehavior()))
 		.addLayer(() -> RenderType::cutoutMipped)
@@ -1433,7 +1414,7 @@ public class AllBlocks {
 					: calling ? AssetLookup.partialBaseModel(c, p, "dim") : AssetLookup.partialBaseModel(c, p);
 			}))
 			.loot((p, b) -> p.dropOther(b, REDSTONE_CONTACT.get()))
-			.onRegister(assignDataBehaviour(new CurrentFloorDisplaySource(), "current_floor"))
+			.transform(displaySource(AllDisplaySources.CURRENT_FLOOR))
 			.item()
 			.transform(customItemModel("_", "block"))
 			.register();
@@ -1668,8 +1649,8 @@ public class AllBlocks {
 			.sound(SoundType.NETHERITE_BLOCK))
 		.transform(pickaxeOnly())
 		.blockstate((c, p) -> p.simpleBlock(c.get(), AssetLookup.partialBaseModel(c, p)))
-		.onRegister(assignDataBehaviour(new StationSummaryDisplaySource(), "station_summary"))
-		.onRegister(assignDataBehaviour(new TrainStatusDisplaySource(), "train_status"))
+		.transform(displaySource(AllDisplaySources.STATION_SUMMARY))
+		.transform(displaySource(AllDisplaySources.TRAIN_STATUS))
 		.lang("Train Station")
 		.item(TrackTargetingBlockItem.ofType(EdgePointType.STATION))
 		.transform(customItemModel())
@@ -1699,7 +1680,7 @@ public class AllBlocks {
 				.sound(SoundType.NETHERITE_BLOCK))
 			.blockstate((c, p) -> BlockStateGen.simpleBlock(c, p, AssetLookup.forPowered(c, p)))
 			.transform(pickaxeOnly())
-			.onRegister(assignDataBehaviour(new ObservedTrainNameSource(), "observed_train_name"))
+			.transform(displaySource(AllDisplaySources.OBSERVED_TRAIN_NAME))
 			.lang("Train Observer")
 			.item(TrackTargetingBlockItem.ofType(EdgePointType.OBSERVER))
 			.transform(customItemModel("_", "block"))
@@ -1793,16 +1774,16 @@ public class AllBlocks {
 		REGISTRATE.block("andesite_tunnel", BeltTunnelBlock::new)
 			.properties(p -> p.mapColor(MapColor.STONE))
 			.transform(BuilderTransformers.beltTunnel("andesite", ResourceLocation.withDefaultNamespace("block/polished_andesite")))
-			.onRegister(assignDataBehaviour(new AccumulatedItemCountDisplaySource(), "accumulate_items"))
-			.onRegister(assignDataBehaviour(new ItemThroughputDisplaySource(), "item_throughput"))
+			.transform(displaySource(AllDisplaySources.ACCUMULATE_ITEMS))
+			.transform(displaySource(AllDisplaySources.ITEM_THROUGHPUT))
 			.register();
 
 	public static final BlockEntry<BrassTunnelBlock> BRASS_TUNNEL =
 		REGISTRATE.block("brass_tunnel", BrassTunnelBlock::new)
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_YELLOW))
 			.transform(BuilderTransformers.beltTunnel("brass", Create.asResource("block/brass_block")))
-			.onRegister(assignDataBehaviour(new AccumulatedItemCountDisplaySource(), "accumulate_items"))
-			.onRegister(assignDataBehaviour(new ItemThroughputDisplaySource(), "item_throughput"))
+			.transform(displaySource(AllDisplaySources.ACCUMULATE_ITEMS))
+			.transform(displaySource(AllDisplaySources.ITEM_THROUGHPUT))
 			.onRegister(connectedTextures(BrassTunnelCTBehaviour::new))
 			.register();
 
@@ -1814,10 +1795,10 @@ public class AllBlocks {
 			.properties(p -> p.isRedstoneConductor(($1, $2, $3) -> false))
 			.transform(axeOrPickaxe())
 			.blockstate(new SmartObserverGenerator()::generate)
-			.onRegister(assignDataBehaviour(new ItemCountDisplaySource(), "count_items"))
-			.onRegister(assignDataBehaviour(new ItemListDisplaySource(), "list_items"))
-			.onRegister(assignDataBehaviour(new FluidAmountDisplaySource(), "count_fluids"))
-			.onRegister(assignDataBehaviour(new FluidListDisplaySource(), "list_fluids"))
+			.transform(displaySource(AllDisplaySources.COUNT_ITEMS))
+			.transform(displaySource(AllDisplaySources.LIST_ITEMS))
+			.transform(displaySource(AllDisplaySources.COUNT_FLUIDS))
+			.transform(displaySource(AllDisplaySources.LIST_FLUIDS))
 			.lang("Smart Observer")
 			.item()
 			.transform(customItemModel("_", "block"))
@@ -1831,7 +1812,7 @@ public class AllBlocks {
 			.properties(p -> p.isRedstoneConductor(($1, $2, $3) -> false))
 			.transform(axeOrPickaxe())
 			.blockstate(new ThresholdSwitchGenerator()::generate)
-			.onRegister(assignDataBehaviour(new FillLevelDisplaySource(), "fill_level"))
+			.transform(displaySource(AllDisplaySources.FILL_LEVEL))
 			.lang("Threshold Switch")
 			.item()
 			.transform(customItemModel("threshold_switch", "block_wall"))
@@ -1981,7 +1962,7 @@ public class AllBlocks {
 			.transform(pickaxeOnly())
 			.blockstate((c, p) -> p.horizontalFaceBlock(c.get(), AssetLookup.partialBaseModel(c, p)))
 			.onRegister(CreateRegistrate.blockModel(() -> FactoryPanelModel::new))
-			.onRegister(assignDataBehaviour(new FactoryGaugeDisplaySource(), "gauge_status"))
+			.transform(displaySource(AllDisplaySources.GAUGE_STATUS))
 			.item(FactoryPanelBlockItem::new)
 			.model(AssetLookup::customItemModel)
 			.build()
@@ -2058,7 +2039,7 @@ public class AllBlocks {
 			.transform(pickaxeOnly())
 			.transform(BlockStressDefaults.setImpact(0))
 			.blockstate((c, p) -> p.horizontalBlock(c.get(), AssetLookup.partialBaseModel(c, p)))
-			.onRegister(assignDataBehaviour(new DisplayBoardTarget()))
+			.transform(displayTarget(AllDisplayTargets.DISPLAY_BOARD))
 			.lang("Display Board")
 			.item()
 			.transform(customItemModel())
@@ -2410,7 +2391,7 @@ public class AllBlocks {
 			.transform(axeOnly())
 			.onRegister(movementBehaviour(movementBehaviour))
 			.onRegister(interactionBehaviour(interactionBehaviour))
-			.onRegister(assignDataBehaviour(new EntityNameDisplaySource(), "entity_name"))
+			.transform(displaySource(AllDisplaySources.ENTITY_NAME))
 			.blockstate((c, p) -> {
 				p.simpleBlock(c.get(), p.models()
 					.withExistingParent(colourName + "_seat", p.modLoc("block/seat"))

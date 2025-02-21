@@ -62,8 +62,8 @@ public class TreeCutter {
 	/**
 	 * Finds a tree at the given pos. Block at the position should be air
 	 *
-	 * @param reader the level that will be searched for a tree
-	 * @param pos position that the saw cut at
+	 * @param reader      the level that will be searched for a tree
+	 * @param pos         position that the saw cut at
 	 * @param brokenState block state what was broken by the saw
 	 */
 	@Nonnull
@@ -288,14 +288,14 @@ public class TreeCutter {
 	}
 
 	private static void forNeighbours(BlockPos pos, Set<BlockPos> visited, SearchDirection direction,
-		Consumer<BlockPos> acceptor) {
+									  Consumer<BlockPos> acceptor) {
 		BlockPos.betweenClosedStream(pos.offset(-1, direction.minY, -1), pos.offset(1, direction.maxY, 1))
 			.filter(((Predicate<BlockPos>) visited::contains).negate())
 			.forEach(acceptor);
 	}
 
 	public static boolean isRoot(BlockState state) {
-		return state.is(AllBlockTags.ROOTS.tag);
+		return AllBlockTags.ROOTS.matches(state);
 	}
 
 	public static boolean isLog(BlockState state) {
@@ -333,7 +333,7 @@ public class TreeCutter {
 
 		@Override
 		public void destroyBlocks(Level world, ItemStack toDamage, @Nullable Player playerEntity,
-			BiConsumer<BlockPos, ItemStack> drop) {
+								  BiConsumer<BlockPos, ItemStack> drop) {
 			attachments.forEach(makeCallbackFor(world, 1 / 32f, toDamage, playerEntity, drop));
 			logs.forEach(makeCallbackFor(world, 1 / 2f, toDamage, playerEntity, drop));
 			leaves.forEach(makeCallbackFor(world, 1 / 8f, toDamage, playerEntity, drop));

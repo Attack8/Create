@@ -4,14 +4,13 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.FACING;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
-import org.jetbrains.annotations.Nullable;
-
+import com.simibubi.create.api.contraption.transformable.MovedBlockTransformerRegistries;
+import com.simibubi.create.api.contraption.transformable.MovedBlockTransformerRegistries.BlockEntityTransformer;
+import com.simibubi.create.api.contraption.transformable.MovedBlockTransformerRegistries.BlockTransformer;
 import com.simibubi.create.api.contraption.transformable.TransformableBlock;
 import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
-import com.simibubi.create.impl.contraption.transformable.ContraptionTransformableRegistryImpl;
 
 import io.netty.buffer.ByteBuf;
-import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
@@ -40,28 +39,25 @@ import net.minecraft.world.phys.Vec3;
 
 public class StructureTransform {
 	public static final StreamCodec<ByteBuf, StructureTransform> STREAM_CODEC = StreamCodec.composite(
-			BlockPos.STREAM_CODEC, transform -> transform.offset,
-			ByteBufCodecs.VAR_INT, transform -> transform.angle,
-			CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.AXIS), transform -> transform.rotationAxis,
-			CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.ROTATION), transform -> transform.rotation,
-			CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.MIRROR), transform -> transform.mirror,
-			StructureTransform::new
+	    BlockPos.STREAM_CODEC, i -> i.offset,
+		ByteBufCodecs.INT, i -> i.angle,
+		CatnipStreamCodecs.AXIS, i -> i.rotationAxis,
+	    CatnipStreamCodecs.ROTATION, i -> i.rotation,
+		CatnipStreamCodecs.MIRROR, i -> i.mirror,
+	    StructureTransform::new
 	);
 
+	// Assuming structures cannot be rotated around multiple axes at once
+	public Axis rotationAxis;
 	public BlockPos offset;
 	public int angle;
-	// Assuming structures cannot be rotated around multiple axes at once
-	@Nullable
-	public Axis rotationAxis;
-	@Nullable
 	public Rotation rotation;
-	@Nullable
 	public Mirror mirror;
 
-	private StructureTransform(BlockPos offset, int angle, @Nullable Axis axis, @Nullable Rotation rotation, @Nullable Mirror mirror) {
+	private StructureTransform(BlockPos offset, int angle, Axis axis, Rotation rotation, Mirror mirror) {
 		this.offset = offset;
 		this.angle = angle;
-		this.rotationAxis = axis;
+		rotationAxis = axis;
 		this.rotation = rotation;
 		this.mirror = mirror;
 	}
@@ -149,9 +145,9 @@ public class StructureTransform {
 	}
 
 	public void apply(BlockEntity be) {
-		TransformableBlockEntity transformableBlockEntity = ContraptionTransformableRegistryImpl.get(be.getType());
-		if (transformableBlockEntity != null) {
-			transformableBlockEntity.transform(be, this);
+		BlockEntityTransformer transformer = MovedBlockTransformerRegistries.BLOCK_ENTITY_TRANSFORMERS.get(be.getType());
+		if (transformer != null) {
+			transformer.transform(be, this);
 		} else if (be instanceof TransformableBlockEntity itbe) {
 			itbe.transform(be, this);
 		}
@@ -164,9 +160,9 @@ public class StructureTransform {
 	 */
 	public BlockState apply(BlockState state) {
 		Block block = state.getBlock();
-		TransformableBlock transformableBlock = ContraptionTransformableRegistryImpl.get(block);
-		if (transformableBlock != null) {
-			return transformableBlock.transform(state, this);
+		BlockTransformer transformer = MovedBlockTransformerRegistries.BLOCK_TRANSFORMERS.get(block);
+		if (transformer != null) {
+			return transformer.transform(state, this);
 		} else if (block instanceof TransformableBlock transformable) {
 			return transformable.transform(state, this);
 		}

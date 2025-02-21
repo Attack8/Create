@@ -10,8 +10,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllRegistries;
-import com.simibubi.create.AllRegistries.Keys;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
+import com.simibubi.create.api.registry.CreateRegistries;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity.ConnectedPort;
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity.ConnectionStats;
@@ -31,8 +31,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class PackagePortTarget {
-	public static final Codec<PackagePortTarget> CODEC = AllRegistries.PACKAGE_PORT_TARGET.byNameCodec().dispatch(PackagePortTarget::getType, PackagePortTargetType::codec);
-	public static final StreamCodec<? super RegistryFriendlyByteBuf, PackagePortTarget> STREAM_CODEC = ByteBufCodecs.registry(Keys.PACKAGE_PORT_TARGET).dispatch(PackagePortTarget::getType, PackagePortTargetType::streamCodec);
+	public static final Codec<PackagePortTarget> CODEC = CreateBuiltInRegistries.PACKAGE_PORT_TARGET_TYPE.byNameCodec().dispatch(PackagePortTarget::getType, PackagePortTargetType::codec);
+	public static final StreamCodec<? super RegistryFriendlyByteBuf, PackagePortTarget> STREAM_CODEC = ByteBufCodecs.registry(CreateRegistries.PACKAGE_PORT_TARGET_TYPE).dispatch(PackagePortTarget::getType, PackagePortTargetType::streamCodec);
 
 	public BlockPos relativePos;
 

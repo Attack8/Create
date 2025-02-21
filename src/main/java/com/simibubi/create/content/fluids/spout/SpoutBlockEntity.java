@@ -9,7 +9,7 @@ import java.util.List;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.api.behaviour.BlockSpoutingBehaviour;
+import com.simibubi.create.api.behaviour.spouting.BlockSpoutingBehaviour;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.fluids.FluidFX;
 import com.simibubi.create.content.kinetics.belt.behaviour.BeltProcessingBehaviour;
@@ -23,7 +23,6 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.fluid.FluidHelper;
-import com.simibubi.create.impl.behaviour.BlockSpoutingBehaviourImpl;
 
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.nbt.NBTHelper;
@@ -205,15 +204,13 @@ public class SpoutBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 
 		FluidStack currentFluidInTank = getCurrentFluidInTank();
 		if (processingTicks == -1 && (isVirtual() || !level.isClientSide()) && !currentFluidInTank.isEmpty()) {
-			BlockSpoutingBehaviourImpl.forEach(behaviour -> {
-				if (customProcess != null)
-					return;
-				if (behaviour.fillBlock(level, worldPosition.below(2), this, currentFluidInTank.copy(), true) > 0) {
-					processingTicks = FILLING_TIME;
-					customProcess = behaviour;
-					notifyUpdate();
-				}
-			});
+			BlockPos filling = this.worldPosition.below(2);
+			BlockSpoutingBehaviour behavior = BlockSpoutingBehaviour.get(this.level, filling);
+			if (behavior != null && behavior.fillBlock(this.level, filling, this, currentFluidInTank.copy(), true) > 0) {
+				processingTicks = FILLING_TIME;
+				customProcess = behavior;
+				notifyUpdate();
+			}
 		}
 
 		if (processingTicks >= 0) {

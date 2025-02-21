@@ -2,7 +2,7 @@ package com.simibubi.create.content.kinetics.mechanicalArm;
 
 import javax.annotation.Nullable;
 
-import com.simibubi.create.AllRegistries;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 import com.simibubi.create.content.contraptions.StructureTransform;
 
 import net.createmod.catnip.math.VecHelper;
@@ -144,7 +144,7 @@ public class ArmInteractionPoint {
 	}
 
 	public final CompoundTag serialize(BlockPos anchor) {
-		ResourceLocation key = AllRegistries.ARM_INTERACTION_POINT_TYPE.getKey(type);
+		ResourceLocation key = CreateBuiltInRegistries.ARM_INTERACTION_POINT_TYPE.getKey(type);
 		if (key == null)
 			throw new IllegalArgumentException("Could not get id for ArmInteractionPointType " + type + "!");
 
@@ -160,7 +160,7 @@ public class ArmInteractionPoint {
 		ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type"));
 		if (id == null)
 			return null;
-		ArmInteractionPointType type = AllRegistries.ARM_INTERACTION_POINT_TYPE.get(id);
+		ArmInteractionPointType type = CreateBuiltInRegistries.ARM_INTERACTION_POINT_TYPE.get(id);
 		if (type == null)
 			return null;
 		BlockPos pos = NBTHelper.readBlockPos(nbt, "Pos").offset(anchor);

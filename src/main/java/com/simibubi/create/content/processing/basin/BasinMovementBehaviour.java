@@ -3,7 +3,7 @@ package com.simibubi.create.content.processing.basin;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 
 import net.minecraft.core.Direction;
@@ -11,6 +11,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
+
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class BasinMovementBehaviour implements MovementBehaviour {

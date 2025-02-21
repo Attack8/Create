@@ -4,9 +4,10 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.content.redstone.displayLink.source.DisplaySource;
+import com.simibubi.create.api.behaviour.display.DisplaySource;
+import com.simibubi.create.api.behaviour.display.DisplayTarget;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 import com.simibubi.create.content.redstone.displayLink.source.SingleLineDisplaySource;
-import com.simibubi.create.content.redstone.displayLink.target.DisplayTarget;
 import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStats;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.gui.AllIcons;
@@ -37,6 +38,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -118,8 +120,8 @@ public class DisplayLinkScreen extends AbstractSimiScreen {
 		asItem = targetBlock.getCloneItemStack(level, blockEntity.getTargetPosition(), targetState);
 		ItemStack targetIcon = asItem == null || asItem.isEmpty() ? FALLBACK : asItem;
 
-		sources = AllDisplayBehaviours.sourcesOf(level, blockEntity.getSourcePosition());
-		target = AllDisplayBehaviours.targetOf(level, blockEntity.getTargetPosition());
+		sources = DisplaySource.getAll(level, blockEntity.getSourcePosition());
+		target = DisplayTarget.get(level, blockEntity.getTargetPosition());
 
 		removeWidget(targetLineSelector);
 		removeWidget(targetLineLabel);
@@ -240,8 +242,11 @@ public class DisplayLinkScreen extends AbstractSimiScreen {
 		CompoundTag sourceData = new CompoundTag();
 
 		if (!sources.isEmpty()) {
-			sourceData.putString("Id",
-				sources.get(sourceTypeSelector == null ? 0 : sourceTypeSelector.getState()).id.toString());
+			DisplaySource source = sources.get(sourceTypeSelector == null ? 0 : sourceTypeSelector.getState());
+			ResourceLocation id = CreateBuiltInRegistries.DISPLAY_SOURCE.getKey(source);
+			if (id != null) {
+				sourceData.putString("Id", id.toString());
+			}
 			configWidgets.forEach(s -> s.saveValues(sourceData));
 		}
 

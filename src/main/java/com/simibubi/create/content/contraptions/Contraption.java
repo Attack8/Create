@@ -29,8 +29,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllInteractionBehaviours;
-import com.simibubi.create.AllMovementBehaviours;
+import com.simibubi.create.AllTags.AllContraptionTypeTags;
+import com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
+import com.simibubi.create.api.contraption.BlockMovementChecks;
+import com.simibubi.create.api.contraption.ContraptionType;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement;
 import com.simibubi.create.content.contraptions.actors.harvester.HarvesterMovementBehaviour;
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock;
@@ -40,9 +43,7 @@ import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlock;
 import com.simibubi.create.content.contraptions.bearing.StabilizedContraption;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlock;
 import com.simibubi.create.content.contraptions.bearing.WindmillBearingBlockEntity;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
-import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour;
 import com.simibubi.create.content.contraptions.chassis.AbstractChassisBlock;
 import com.simibubi.create.content.contraptions.chassis.ChassisBlockEntity;
 import com.simibubi.create.content.contraptions.chassis.StickerBlock;
@@ -92,6 +93,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.game.DebugPackets;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
@@ -617,7 +619,7 @@ public abstract class Contraption {
 			blockstate = blockstate.setValue(RedstoneContactBlock.POWERED, true);
 		if (AllBlocks.POWERED_SHAFT.has(blockstate))
 			blockstate = BlockHelper.copyProperties(blockstate, AllBlocks.SHAFT.getDefaultState());
-		if (blockstate.getBlock() instanceof ControlsBlock && getType() == ContraptionType.CARRIAGE)
+		if (blockstate.getBlock() instanceof ControlsBlock && AllContraptionTypeTags.OPENS_CONTROLS.matches(this.getType()))
 			blockstate = blockstate.setValue(ControlsBlock.OPEN, true);
 		if (blockstate.hasProperty(SlidingDoorBlock.VISIBLE))
 			blockstate = blockstate.setValue(SlidingDoorBlock.VISIBLE, false);
@@ -662,10 +664,10 @@ public abstract class Contraption {
 
 		captureMultiblock(localPos, structureBlockInfo, be);
 
-		if (AllMovementBehaviours.getBehaviour(state) != null)
+		if (MovementBehaviour.REGISTRY.get(state) != null)
 			actors.add(MutablePair.of(structureBlockInfo, null));
 
-		MovingInteractionBehaviour interactionBehaviour = AllInteractionBehaviours.getBehaviour(state);
+		MovingInteractionBehaviour interactionBehaviour = MovingInteractionBehaviour.REGISTRY.get(state);
 		if (interactionBehaviour != null)
 			interactors.put(localPos, interactionBehaviour);
 
@@ -685,7 +687,7 @@ public abstract class Contraption {
 		if (nbt.contains("Controller"))
 			controllerPos = toLocalPos(NBTHelper.readBlockPos(nbt, "Controller"));
 		nbt.put("Controller", NbtUtils.writeBlockPos(controllerPos));
-		
+
 		if (updateTags.containsKey(localPos))
 			updateTags.get(localPos).put("Controller", NbtUtils.writeBlockPos(controllerPos));
 
@@ -791,7 +793,7 @@ public abstract class Contraption {
 			StructureBlockInfo structureBlockInfo = getBlocks().get(pos);
 			if (structureBlockInfo == null)
 				return;
-			MovingInteractionBehaviour behaviour = AllInteractionBehaviours.getBehaviour(structureBlockInfo.state());
+			MovingInteractionBehaviour behaviour = MovingInteractionBehaviour.REGISTRY.get(structureBlockInfo.state());
 			if (behaviour != null)
 				interactors.put(pos, behaviour);
 		});
@@ -806,7 +808,8 @@ public abstract class Contraption {
 
 	public CompoundTag writeNBT(HolderLookup.Provider registries, boolean spawnPacket) {
 		CompoundTag nbt = new CompoundTag();
-		nbt.putString("Type", getType().id);
+		ResourceLocation typeId = this.getType().holder.key().location();
+		nbt.putString("Type", typeId.toString());
 
 		CompoundTag blocksNBT = writeBlocksCompound(spawnPacket);
 
@@ -829,7 +832,7 @@ public abstract class Contraption {
 
 		ListTag actorsNBT = new ListTag();
 		for (MutablePair<StructureBlockInfo, MovementContext> actor : getActors()) {
-			MovementBehaviour behaviour = AllMovementBehaviours.getBehaviour(actor.left.state());
+			MovementBehaviour behaviour = MovementBehaviour.REGISTRY.get(actor.left.state());
 			if (behaviour == null)
 				continue;
 			CompoundTag compound = new CompoundTag();
@@ -995,7 +998,7 @@ public abstract class Contraption {
 			presentBlockEntities.put(info.pos(), be);
 			modelData.put(info.pos(), be.getModelData());
 
-			MovementBehaviour movementBehaviour = AllMovementBehaviours.getBehaviour(info.state());
+			MovementBehaviour movementBehaviour = MovementBehaviour.REGISTRY.get(info.state());
 			if (movementBehaviour == null || !movementBehaviour.disableBlockEntityRendering()) {
 				renderedBlockEntities.add(be);
 			}
@@ -1321,7 +1324,7 @@ public abstract class Contraption {
 
 		for (MutablePair<StructureBlockInfo, MovementContext> pair : actors) {
 			MovementContext context = new MovementContext(world, pair.left, this);
-			MovementBehaviour behaviour = AllMovementBehaviours.getBehaviour(pair.left.state());
+			MovementBehaviour behaviour = MovementBehaviour.REGISTRY.get(pair.left.state());
 			if (behaviour != null)
 				behaviour.startMoving(context);
 			pair.setRight(context);
@@ -1351,7 +1354,7 @@ public abstract class Contraption {
 
 	public void setActorsActive(ItemStack referenceStack, boolean enable) {
 		for (MutablePair<StructureBlockInfo, MovementContext> pair : actors) {
-			MovementBehaviour behaviour = AllMovementBehaviours.getBehaviour(pair.left.state());
+			MovementBehaviour behaviour = MovementBehaviour.REGISTRY.get(pair.left.state());
 			if (behaviour == null)
 				continue;
 			ItemStack behaviourStack = behaviour.canBeDisabledVia(pair.right);
@@ -1381,7 +1384,7 @@ public abstract class Contraption {
 
 	public void forEachActor(Level world, BiConsumer<MovementBehaviour, MovementContext> callBack) {
 		for (MutablePair<StructureBlockInfo, MovementContext> pair : actors) {
-			MovementBehaviour behaviour = AllMovementBehaviours.getBehaviour(pair.getLeft().state());
+			MovementBehaviour behaviour = MovementBehaviour.REGISTRY.get(pair.getLeft().state());
 			if (behaviour == null)
 				continue;
 			callBack.accept(behaviour, pair.getRight());
@@ -1560,7 +1563,7 @@ public abstract class Contraption {
 
 	public boolean containsBlockBreakers() {
 		for (MutablePair<StructureBlockInfo, MovementContext> pair : actors) {
-			MovementBehaviour behaviour = AllMovementBehaviours.getBehaviour(pair.getLeft().state());
+			MovementBehaviour behaviour = MovementBehaviour.REGISTRY.get(pair.getLeft().state());
 			if (behaviour instanceof BlockBreakingMovementBehaviour || behaviour instanceof HarvesterMovementBehaviour)
 				return true;
 		}

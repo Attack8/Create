@@ -7,8 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.simibubi.create.AllRegistries;
-import com.simibubi.create.AllRegistries.Keys;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
+import com.simibubi.create.api.registry.CreateRegistries;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.codecs.CatnipCodecUtils;
@@ -25,8 +25,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 public interface ItemAttribute {
-	Codec<ItemAttribute> CODEC = AllRegistries.ITEM_ATTRIBUTE_TYPE.byNameCodec().dispatch(ItemAttribute::getType, ItemAttributeType::codec);
-	StreamCodec<RegistryFriendlyByteBuf, ItemAttribute> STREAM_CODEC = ByteBufCodecs.registry(Keys.ITEM_ATTRIBUTE_TYPE).dispatch(ItemAttribute::getType, ItemAttributeType::streamCodec);
+	Codec<ItemAttribute> CODEC = CreateBuiltInRegistries.ITEM_ATTRIBUTE_TYPE.byNameCodec().dispatch(ItemAttribute::getType, ItemAttributeType::codec);
+	StreamCodec<RegistryFriendlyByteBuf, ItemAttribute> STREAM_CODEC = ByteBufCodecs.registry(CreateRegistries.ITEM_ATTRIBUTE_TYPE).dispatch(ItemAttribute::getType, ItemAttributeType::streamCodec);
 
 	static CompoundTag saveStatic(ItemAttribute attribute, HolderLookup.Provider registries) {
 		CompoundTag nbt = new CompoundTag();
@@ -41,7 +41,7 @@ public interface ItemAttribute {
 
 	static List<ItemAttribute> getAllAttributes(ItemStack stack, Level level) {
 		List<ItemAttribute> attributes = new ArrayList<>();
-		for (ItemAttributeType type : AllRegistries.ITEM_ATTRIBUTE_TYPE) {
+		for (ItemAttributeType type : CreateBuiltInRegistries.ITEM_ATTRIBUTE_TYPE) {
 			attributes.addAll(type.getAllAttributes(stack, level));
 		}
 		return attributes;

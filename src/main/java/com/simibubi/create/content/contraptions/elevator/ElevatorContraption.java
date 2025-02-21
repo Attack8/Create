@@ -7,19 +7,20 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllContraptionTypes;
+import com.simibubi.create.api.contraption.ContraptionType;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.AssemblyException;
-import com.simibubi.create.content.contraptions.ContraptionType;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement.ElevatorFloorSelection;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.elevator.ElevatorColumn.ColumnCoords;
 import com.simibubi.create.content.contraptions.pulley.PulleyContraption;
 import com.simibubi.create.content.redstone.contact.RedstoneContactBlock;
-import net.createmod.catnip.platform.CatnipServices;
 import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.IntAttached;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -170,7 +171,7 @@ public class ElevatorContraption extends PulleyContraption {
 
 	@Override
 	public ContraptionType getType() {
-		return ContraptionType.ELEVATOR;
+		return AllContraptionTypes.ELEVATOR.value();
 	}
 
 	public void setClientYTarget(int clientYTarget) {

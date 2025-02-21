@@ -7,9 +7,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.api.contraption.BlockMovementChecks;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.AssemblyException;
-import com.simibubi.create.content.contraptions.BlockMovementChecks;
 import com.simibubi.create.content.contraptions.ContraptionCollider;
 import com.simibubi.create.content.contraptions.ControlledContraptionEntity;
 import com.simibubi.create.content.contraptions.piston.LinearActuatorBlockEntity;

@@ -4,8 +4,8 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.foundation.item.ItemHelper;
 

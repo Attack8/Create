@@ -140,6 +140,7 @@ _Now using Flywheel 1.0_
 - Added `#create:sugar_cane_variants` to allow the mechanical saw to work with custom sugarcane variants (#7263)
 - New API for custom storage block behaviour on contraptions.
   For simple cases, create provides the `#create:simple_mounted_storage` and `#create:chest_mounted_storage` block tags.
+- Added `#create:non_breakable` to mark blocks that cannot be broken by block-breaking kinetics
 - Removed LangMerger and related classes
 - Implemented an api to allow mods to register schematic requirements, partial safe nbt and contraption transforms
   without implementing interfaces (#4702)

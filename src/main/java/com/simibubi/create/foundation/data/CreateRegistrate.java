@@ -15,10 +15,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.CreateClient;
+import com.simibubi.create.api.behaviour.display.DisplaySource;
+import com.simibubi.create.api.behaviour.display.DisplayTarget;
 import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageType;
-import com.simibubi.create.api.contraption.storage.fluid.registrate.MountedFluidStorageTypeBuilder;
 import com.simibubi.create.api.contraption.storage.item.MountedItemStorageType;
-import com.simibubi.create.api.contraption.storage.item.registrate.MountedItemStorageTypeBuilder;
+import com.simibubi.create.api.registry.CreateRegistries;
+import com.simibubi.create.api.registry.registrate.SimpleBuilder;
 import com.simibubi.create.content.decoration.encasing.CasingConnectivity;
 import com.simibubi.create.content.fluids.VirtualFluid;
 import com.simibubi.create.foundation.block.connected.CTModel;
@@ -109,10 +111,13 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 	@Override
 	protected <R, T extends R> RegistryEntry<R, T> accept(String name, ResourceKey<? extends Registry<R>> type, Builder<R, T, ?, ?> builder, NonNullSupplier<? extends T> creator, NonNullFunction<DeferredHolder<R, T>, ? extends RegistryEntry<R, T>> entryFactory) {
 		RegistryEntry<R, T> entry = super.accept(name, type, builder, creator, entryFactory);
-		if (type.equals(Registries.ITEM)) {
-			if (currentTooltipModifierFactory != null) {
-				TooltipModifier.REGISTRY.registerDeferred(entry.getId(), currentTooltipModifierFactory);
-			}
+		if (type.equals(Registries.ITEM) && currentTooltipModifierFactory != null) {
+			// grab the factory here for the lambda, it can change between now and registration
+			Function<Item, TooltipModifier> factory = currentTooltipModifierFactory;
+			this.addRegisterCallback(name, Registries.ITEM, item -> {
+				TooltipModifier modifier = factory.apply(item);
+				TooltipModifier.REGISTRY.register(item, modifier);
+			});
 		}
 		if (currentTab != null) {
 			TAB_LOOKUP.put(entry, currentTab);
@@ -147,12 +152,30 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 		});
 	}
 
-	public <T extends MountedItemStorageType<?>> MountedItemStorageTypeBuilder<T, CreateRegistrate> mountedItemStorage(String name, Supplier<T> supplier) {
-		return this.entry(name, callback -> new MountedItemStorageTypeBuilder<>(this, this, name, callback, supplier.get()));
+	// custom types
+
+	public <T extends MountedItemStorageType<?>> SimpleBuilder<MountedItemStorageType<?>, T, CreateRegistrate> mountedItemStorage(String name, Supplier<T> supplier) {
+		return this.entry(name, callback -> new SimpleBuilder<>(
+			this, this, name, callback, CreateRegistries.MOUNTED_ITEM_STORAGE_TYPE, supplier.get()
+		).byBlock(MountedItemStorageType.REGISTRY));
 	}
 
-	public <T extends MountedFluidStorageType<?>> MountedFluidStorageTypeBuilder<T, CreateRegistrate> mountedFluidStorage(String name, Supplier<T> supplier) {
-		return this.entry(name, callback -> new MountedFluidStorageTypeBuilder<>(this, this, name, callback, supplier.get()));
+	public <T extends MountedFluidStorageType<?>> SimpleBuilder<MountedFluidStorageType<?>, T, CreateRegistrate> mountedFluidStorage(String name, Supplier<T> supplier) {
+		return this.entry(name, callback -> new SimpleBuilder<>(
+			this, this, name, callback, CreateRegistries.MOUNTED_FLUID_STORAGE_TYPE, supplier.get()
+		).byBlock(MountedFluidStorageType.REGISTRY));
+	}
+
+	public <T extends DisplaySource> SimpleBuilder<DisplaySource, T, CreateRegistrate> displaySource(String name, Supplier<T> supplier) {
+		return this.entry(name, callback -> new SimpleBuilder<>(
+			this, this, name, callback, CreateRegistries.DISPLAY_SOURCE, supplier.get()
+		).byBlock(DisplaySource.BY_BLOCK).byBlockEntity(DisplaySource.BY_BLOCK_ENTITY));
+	}
+
+	public <T extends DisplayTarget> SimpleBuilder<DisplayTarget, T, CreateRegistrate> displayTarget(String name, Supplier<T> supplier) {
+		return this.entry(name, callback -> new SimpleBuilder<>(
+			this, this, name, callback, CreateRegistries.DISPLAY_TARGET, supplier.get()
+		).byBlock(DisplayTarget.BY_BLOCK).byBlockEntity(DisplayTarget.BY_BLOCK_ENTITY));
 	}
 
 	/* Palettes */

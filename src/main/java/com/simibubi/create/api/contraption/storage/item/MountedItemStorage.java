@@ -8,10 +8,10 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.api.contraption.storage.item.menu.MountedStorageMenus;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.foundation.utility.CreateLang;
 

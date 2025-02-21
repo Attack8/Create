@@ -4,17 +4,17 @@ import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
-import net.minecraft.core.HolderLookup;
-
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.simibubi.create.AllContraptionTypes;
+import com.simibubi.create.api.contraption.ContraptionType;
 import com.simibubi.create.content.contraptions.AssemblyException;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.ContraptionType;
 
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 
@@ -27,7 +27,7 @@ public class ClockworkContraption extends Contraption {
 
 	@Override
 	public ContraptionType getType() {
-		return ContraptionType.CLOCKWORK;
+		return AllContraptionTypes.CLOCKWORK.value();
 	}
 
 	private void ignoreBlocks(Set<BlockPos> blocks, BlockPos anchor) {

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllDataComponents;
 import com.simibubi.create.Create;
-import com.simibubi.create.content.contraptions.BlockMovementChecks;
+import com.simibubi.create.api.contraption.BlockMovementChecks;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.schematics.cannon.MaterialChecklist;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;

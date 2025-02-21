@@ -1,8 +1,8 @@
 package com.simibubi.create.foundation.data;
 
-import static com.simibubi.create.AllInteractionBehaviours.interactionBehaviour;
-import static com.simibubi.create.AllMovementBehaviours.movementBehaviour;
 import static com.simibubi.create.Create.REGISTRATE;
+import static com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour.interactionBehaviour;
+import static com.simibubi.create.api.behaviour.movement.MovementBehaviour.movementBehaviour;
 import static com.simibubi.create.foundation.data.BlockStateGen.axisBlock;
 import static com.simibubi.create.foundation.data.CreateRegistrate.casingConnectivity;
 import static com.simibubi.create.foundation.data.CreateRegistrate.connectedTextures;
@@ -89,6 +89,7 @@ import net.minecraft.world.level.storage.loot.functions.CopyComponentsFunction;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.Tags;

@@ -8,12 +8,12 @@ import java.util.List;
 import net.createmod.catnip.platform.CatnipServices;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour;
 import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour.TransportedResult;
-import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes;
 import com.simibubi.create.content.kinetics.fan.processing.FanProcessing;
 import com.simibubi.create.content.kinetics.fan.processing.FanProcessingType;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
@@ -108,7 +108,7 @@ public class AirCurrent {
 
 			FanProcessingType processingType = getTypeAt((float) entityDistance);
 
-			if (processingType == AllFanProcessingTypes.NONE)
+			if (processingType == null)
 				continue;
 
 			if (entity instanceof ItemEntity itemEntity) {
@@ -140,7 +140,7 @@ public class AirCurrent {
 			TransportedItemStackHandlerBehaviour handler = pair.getKey();
 			Level world = handler.getWorld();
 			FanProcessingType processingType = pair.getRight();
-			if (processingType == AllFanProcessingTypes.NONE)
+			if (processingType == null)
 				continue;
 
 			handler.handleProcessingOnAllItems(transported -> {
@@ -178,7 +178,7 @@ public class AirCurrent {
 		// Determine segments with transported fluids/gases
 		segments.clear();
 		AirCurrentSegment currentSegment = null;
-		FanProcessingType type = AllFanProcessingTypes.NONE;
+		FanProcessingType type = null;
 
 		int limit = getLimit();
 		int searchStart = pushing ? 1 : limit;
@@ -189,7 +189,7 @@ public class AirCurrent {
 		for (int i = searchStart; i * searchStep <= searchEnd * searchStep; i += searchStep) {
 			BlockPos currentPos = start.relative(direction, i);
 			FanProcessingType newType = FanProcessingType.getAt(world, currentPos);
-			if (newType != AllFanProcessingTypes.NONE) {
+			if (newType != null) {
 				type = newType;
 			}
 			if (currentSegment == null) {
@@ -322,7 +322,7 @@ public class AirCurrent {
 					BlockEntityBehaviour.get(world, pos, TransportedItemStackHandlerBehaviour.TYPE);
 				if (behaviour != null) {
 					FanProcessingType type = FanProcessingType.getAt(world, pos);
-					if (type == AllFanProcessingTypes.NONE)
+					if (type == null)
 						type = segmentType;
 					affectedItemHandlers.add(Pair.of(behaviour, type));
 				}
@@ -339,6 +339,7 @@ public class AirCurrent {
 			.getEntities(null, bounds);
 	}
 
+	@Nullable
 	public FanProcessingType getTypeAt(float offset) {
 		if (offset >= 0 && offset <= maxDistance) {
 			if (pushing) {
@@ -355,10 +356,11 @@ public class AirCurrent {
 				}
 			}
 		}
-		return AllFanProcessingTypes.NONE;
+		return null;
 	}
 
 	private static class AirCurrentSegment {
+		@Nullable
 		private FanProcessingType type;
 		private int startOffset;
 		private int endOffset;

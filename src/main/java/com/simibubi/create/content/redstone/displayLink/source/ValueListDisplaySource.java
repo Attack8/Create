@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.mutable.MutableInt;
 
+import com.simibubi.create.api.behaviour.display.DisplaySource;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
 import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStats;
 import com.simibubi.create.content.trains.display.FlapDisplayBlockEntity;
@@ -20,8 +20,10 @@ import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.IntAttached;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
