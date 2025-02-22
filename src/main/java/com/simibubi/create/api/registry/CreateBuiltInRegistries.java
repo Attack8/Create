@@ -51,7 +51,7 @@ public class CreateBuiltInRegistries {
 
 	private static <T> Registry<T> withCallback(ResourceKey<Registry<T>> key, Consumer<T> callback) {
 		Registry<T> registry = new RegistryBuilder<>(key)
-			.onAdd((r, i, k, v) -> callback.accept(v))
+			.onBake(r -> r.forEach(callback))
 			.sync(true)
 			.create();
 		return register(registry);
