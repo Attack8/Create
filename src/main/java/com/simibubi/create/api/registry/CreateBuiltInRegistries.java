@@ -1,5 +1,6 @@
 package com.simibubi.create.api.registry;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,12 +17,12 @@ import com.simibubi.create.content.logistics.packagePort.PackagePortTargetType;
 
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
-import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.ResourceKey;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
+import net.neoforged.neoforge.registries.BaseMappedRegistry;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 
 /**
@@ -51,7 +52,15 @@ public class CreateBuiltInRegistries {
 		return register(new MappedRegistry<>(key, Lifecycle.stable(), true));
 	}
 
-	private static <T> Registry<T> register(WritableRegistry<T> registry) {
+	private static <T> Registry<T> register(MappedRegistry<T> registry) {
+		// TODO - Remove after https://github.com/neoforged/NeoForge/pull/1966 is merged and backported
+		try {
+			Field field = BaseMappedRegistry.class.getDeclaredField("sync");
+			field.setAccessible(true);
+			field.set(registry, true);
+		} catch (Exception ignored) {
+		}
+
 		REGISTRIES.add(registry);
 		return registry;
 	}
@@ -60,5 +69,6 @@ public class CreateBuiltInRegistries {
 	public static void onNewRegistryEvent(NewRegistryEvent event) {
 		for (Registry<?> registry : REGISTRIES)
 			event.register(registry);
+		REGISTRIES.clear();
 	}
 }

@@ -282,7 +282,7 @@ public class KineticBlockEntity extends SmartBlockEntity implements IHaveGoggleI
 	}
 
 	public float getSpeed() {
-		if (overStressed || level.tickRateManager().isFrozen())
+		if (overStressed || (level != null && level.tickRateManager().isFrozen()))
 			return 0;
 		return getTheoreticalSpeed();
 	}

@@ -11,6 +11,7 @@ import com.simibubi.create.api.contraption.transformable.TransformableBlock;
 import com.simibubi.create.api.contraption.transformable.TransformableBlockEntity;
 
 import io.netty.buffer.ByteBuf;
+import net.createmod.catnip.codecs.stream.CatnipStreamCodecBuilders;
 import net.createmod.catnip.codecs.stream.CatnipStreamCodecs;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
@@ -41,9 +42,9 @@ public class StructureTransform {
 	public static final StreamCodec<ByteBuf, StructureTransform> STREAM_CODEC = StreamCodec.composite(
 	    BlockPos.STREAM_CODEC, i -> i.offset,
 		ByteBufCodecs.INT, i -> i.angle,
-		CatnipStreamCodecs.AXIS, i -> i.rotationAxis,
-	    CatnipStreamCodecs.ROTATION, i -> i.rotation,
-		CatnipStreamCodecs.MIRROR, i -> i.mirror,
+		CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.AXIS), i -> i.rotationAxis,
+		CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.ROTATION), i -> i.rotation,
+		CatnipStreamCodecBuilders.nullable(CatnipStreamCodecs.MIRROR), i -> i.mirror,
 	    StructureTransform::new
 	);
 
