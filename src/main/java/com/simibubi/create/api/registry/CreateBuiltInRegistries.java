@@ -2,7 +2,8 @@ package com.simibubi.create.api.registry;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
+
+import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.simibubi.create.api.behaviour.display.DisplaySource;
 import com.simibubi.create.api.behaviour.display.DisplayTarget;
@@ -30,16 +31,18 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
  */
 @EventBusSubscriber(bus = Bus.MOD)
 public class CreateBuiltInRegistries {
-	public static final Set<Registry<?>> REGISTRIES = new HashSet<>();
+	private static final Set<Registry<?>> REGISTRIES = new HashSet<>();
+	// specifying Registry<?> here makes generics upset later
+	private static final Set<ResourceKey<?>> HAS_INTRUSIVE_HOLDERS = new HashSet<>();
 
 	public static final Registry<ArmInteractionPointType> ARM_INTERACTION_POINT_TYPE = simple(CreateRegistries.ARM_INTERACTION_POINT_TYPE);
 	public static final Registry<FanProcessingType> FAN_PROCESSING_TYPE = simple(CreateRegistries.FAN_PROCESSING_TYPE);
 	public static final Registry<ItemAttributeType> ITEM_ATTRIBUTE_TYPE = simple(CreateRegistries.ITEM_ATTRIBUTE_TYPE);
 	public static final Registry<DisplaySource> DISPLAY_SOURCE = simple(CreateRegistries.DISPLAY_SOURCE);
 	public static final Registry<DisplayTarget> DISPLAY_TARGET = simple(CreateRegistries.DISPLAY_TARGET);
-	public static final Registry<MountedItemStorageType<?>> MOUNTED_ITEM_STORAGE_TYPE = withCallback(CreateRegistries.MOUNTED_ITEM_STORAGE_TYPE, MountedItemStorageType::bind);
+	public static final Registry<MountedItemStorageType<?>> MOUNTED_ITEM_STORAGE_TYPE = withIntrusiveHolders(CreateRegistries.MOUNTED_ITEM_STORAGE_TYPE);
 	public static final Registry<MountedFluidStorageType<?>> MOUNTED_FLUID_STORAGE_TYPE = simple(CreateRegistries.MOUNTED_FLUID_STORAGE_TYPE);
-	public static final Registry<ContraptionType> CONTRAPTION_TYPE = withCallback(CreateRegistries.CONTRAPTION_TYPE, ContraptionType::bind);
+	public static final Registry<ContraptionType> CONTRAPTION_TYPE = withIntrusiveHolders(CreateRegistries.CONTRAPTION_TYPE);
 	public static final Registry<PackagePortTargetType> PACKAGE_PORT_TARGET_TYPE = simple(CreateRegistries.PACKAGE_PORT_TARGET_TYPE);
 
 	private static <T> Registry<T> simple(ResourceKey<Registry<T>> key) {
@@ -49,17 +52,19 @@ public class CreateBuiltInRegistries {
 		return register(registry);
 	}
 
-	private static <T> Registry<T> withCallback(ResourceKey<Registry<T>> key, Consumer<T> callback) {
-		Registry<T> registry = new RegistryBuilder<>(key)
-			.onBake(r -> r.forEach(callback))
-			.sync(true)
-			.create();
-		return register(registry);
+	private static <T> Registry<T> withIntrusiveHolders(ResourceKey<Registry<T>> key) {
+		HAS_INTRUSIVE_HOLDERS.add(key);
+		return simple(key);
 	}
 
 	private static <T> Registry<T> register(Registry<T> registry) {
 		REGISTRIES.add(registry);
 		return registry;
+	}
+
+	@Internal
+	public static boolean hasIntrusiveHolders(ResourceKey<?> key) {
+		return HAS_INTRUSIVE_HOLDERS.contains(key);
 	}
 
 	@SubscribeEvent

@@ -47,7 +47,8 @@
     "compat.journeymap.MapRendererAccessor",
     "datafixer.BlockPosFormatAndRenamesFixMixin",
     "datafixer.ItemStackComponentizationFixMixin",
-    "datafixer.V1460Mixin"
+    "datafixer.V1460Mixin",
+    "forge.RegistryBuilderMixin"
   ],
   "client": [
     "accessor.AgeableListModelAccessor",

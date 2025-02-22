@@ -4,8 +4,6 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.ApiStatus.Internal;
-
 import com.simibubi.create.AllContraptionTypes;
 import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 import com.simibubi.create.content.contraptions.Contraption;
@@ -16,16 +14,10 @@ import net.minecraft.tags.TagKey;
 
 public final class ContraptionType {
 	public final Supplier<? extends Contraption> factory;
-	@Internal
-	public Holder.Reference<ContraptionType> holder;
+	public final Holder.Reference<ContraptionType> holder = CreateBuiltInRegistries.CONTRAPTION_TYPE.createIntrusiveHolder(this);
 
 	public ContraptionType(Supplier<? extends Contraption> factory) {
 		this.factory = factory;
-	}
-
-	@Internal
-	public void bind() {
-		this.holder = (Holder.Reference<ContraptionType>) CreateBuiltInRegistries.CONTRAPTION_TYPE.wrapAsHolder(this);
 	}
 
 	public boolean is(TagKey<ContraptionType> tag) {

@@ -1,6 +1,5 @@
 package com.simibubi.create.api.contraption.storage.item;
 
-import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
@@ -31,16 +30,10 @@ public abstract class MountedItemStorageType<T extends MountedItemStorage> {
 	});
 
 	public final MapCodec<? extends T> codec;
-	@Internal
-	public Holder<MountedItemStorageType<?>> holder;
+	public final Holder<MountedItemStorageType<?>> holder = CreateBuiltInRegistries.MOUNTED_ITEM_STORAGE_TYPE.createIntrusiveHolder(this);
 
 	protected MountedItemStorageType(MapCodec<? extends T> codec) {
 		this.codec = codec;
-	}
-
-	@Internal
-	public void bind() {
-		this.holder = CreateBuiltInRegistries.MOUNTED_ITEM_STORAGE_TYPE.wrapAsHolder(this);
 	}
 
 	public final boolean is(TagKey<MountedItemStorageType<?>> tag) {
