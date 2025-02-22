@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.AllBlocks;
@@ -1749,7 +1750,6 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 		}
 
 		private record Serializer(MapCodec<Recipe<?>> wrappedCodec) implements RecipeSerializer<ModdedCookingRecipeOutputShim> {
-
 			private static Serializer create(Recipe<?> wrapped) {
 				RecipeSerializer<?> wrappedSerializer = wrapped.getSerializer();
 				@SuppressWarnings("unchecked")
@@ -1783,14 +1783,22 @@ public class StandardRecipeGen extends CreateRecipeProvider {
 			public MapCodec<ModdedCookingRecipeOutputShim> codec() {
 				return RecordCodecBuilder.mapCodec(instance -> instance.group(
 					wrappedCodec.forGetter(i -> i.wrapped),
-					ResourceLocation.CODEC.fieldOf("result").forGetter(i -> i.overrideID)
-				).apply(instance, ModdedCookingRecipeOutputShim::new));
+					FakeItemStack.CODEC.fieldOf("result").forGetter(i -> new FakeItemStack(i.overrideID))
+				).apply(instance, (wrappedRecipe, fakeItemStack) -> {
+					throw new AssertionError("Only for datagen output");
+				}));
 			}
 
 			@Override
 			public StreamCodec<RegistryFriendlyByteBuf, ModdedCookingRecipeOutputShim> streamCodec() {
 				throw new AssertionError("Only for datagen output");
 			}
+		}
+
+		private record FakeItemStack(ResourceLocation id) {
+			public static Codec<FakeItemStack> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+				ResourceLocation.CODEC.fieldOf("id").forGetter(FakeItemStack::id)
+			).apply(instance, FakeItemStack::new));
 		}
 	}
 

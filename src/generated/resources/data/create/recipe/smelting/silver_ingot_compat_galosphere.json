@@ -12,5 +12,7 @@
   "ingredient": {
     "item": "create:crushed_raw_silver"
   },
-  "result": "galosphere:silver_ingot"
+  "result": {
+    "id": "galosphere:silver_ingot"
+  }
 }
