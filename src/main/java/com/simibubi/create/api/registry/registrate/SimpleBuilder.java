@@ -2,6 +2,7 @@ package com.simibubi.create.api.registry.registrate;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -22,21 +23,21 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.Fluid;
 
 public class SimpleBuilder<R, T extends R, P> extends AbstractBuilder<R, T, P, SimpleBuilder<R, T, P>> {
-	private final T value;
+	private final Supplier<T> value;
 
 	private SimpleRegistryAccess<Block, R> byBlock;
 	private SimpleRegistryAccess<BlockEntityType<?>, R> byBlockEntity;
 	private SimpleRegistryAccess<EntityType<?>, R> byEntity;
 	private SimpleRegistryAccess<Fluid, R> byFluid;
 
-	public SimpleBuilder(AbstractRegistrate<?> owner, P parent, String name, BuilderCallback callback, ResourceKey<Registry<R>> registryKey, T value) {
+	public SimpleBuilder(AbstractRegistrate<?> owner, P parent, String name, BuilderCallback callback, ResourceKey<Registry<R>> registryKey, Supplier<T> value) {
 		super(owner, parent, name, callback, registryKey);
 		this.value = value;
 	}
 
 	@Override
 	protected T createEntry() {
-		return this.value;
+		return this.value.get();
 	}
 
 	// for setup
@@ -91,49 +92,49 @@ public class SimpleBuilder<R, T extends R, P> extends AbstractBuilder<R, T, P, S
 
 	public SimpleBuilder<R, T, P> associate(Block block) {
 		assertPresent(this.byBlock, "Block");
-		this.byBlock.adder.accept(block, this.value);
+		this.onRegister(value -> this.byBlock.adder.accept(block, value));
 		return this;
 	}
 
 	public SimpleBuilder<R, T, P> associateBlockTag(TagKey<Block> tag) {
 		assertPresent(this.byBlock, "Block");
-		this.byBlock.tagAdder.accept(tag, this.value);
+		this.onRegister(value -> this.byBlock.tagAdder.accept(tag, value));
 		return this;
 	}
 
 	public SimpleBuilder<R, T, P> associate(BlockEntityType<?> type) {
 		assertPresent(this.byBlockEntity, "BlockEntityType");
-		this.byBlockEntity.adder.accept(type, this.value);
+		this.onRegister(value -> this.byBlockEntity.adder.accept(type, value));
 		return this;
 	}
 
 	public SimpleBuilder<R, T, P> associateBeTag(TagKey<BlockEntityType<?>> tag) {
 		assertPresent(this.byBlockEntity, "BlockEntityType");
-		this.byBlockEntity.tagAdder.accept(tag, this.value);
+		this.onRegister(value -> this.byBlockEntity.tagAdder.accept(tag, value));
 		return this;
 	}
 
 	public SimpleBuilder<R, T, P> associate(EntityType<?> type) {
 		assertPresent(this.byEntity, "EntityType");
-		this.byEntity.adder.accept(type, this.value);
+		this.onRegister(value -> this.byEntity.adder.accept(type, value));
 		return this;
 	}
 
 	public SimpleBuilder<R, T, P> associateEntityTag(TagKey<EntityType<?>> tag) {
 		assertPresent(this.byEntity, "EntityType");
-		this.byEntity.tagAdder.accept(tag, this.value);
+		this.onRegister(value -> this.byEntity.tagAdder.accept(tag, value));
 		return this;
 	}
 
 	public SimpleBuilder<R, T, P> associate(Fluid fluid) {
 		assertPresent(this.byFluid, "Fluid");
-		this.byFluid.adder.accept(fluid, this.value);
+		this.onRegister(value -> this.byFluid.adder.accept(fluid, value));
 		return this;
 	}
 
 	public SimpleBuilder<R, T, P> associateFluidTag(TagKey<Fluid> tag) {
 		assertPresent(this.byFluid, "Fluid");
-		this.byFluid.tagAdder.accept(tag, this.value);
+		this.onRegister(value -> this.byFluid.tagAdder.accept(tag, value));
 		return this;
 	}
 

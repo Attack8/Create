@@ -46,11 +46,6 @@ public class ItemVaultMountedStorage extends WrapperMountedItemStorage<ItemStack
 		return false;
 	}
 
-	@Override
-	public boolean providesFuel() {
-		return false;
-	}
-
 	public static ItemVaultMountedStorage fromVault(ItemVaultBlockEntity vault) {
 		// Vault inventories have a world-affecting onContentsChanged, copy to a safe one
 		return new ItemVaultMountedStorage(copyToItemStackHandler(vault.getInventoryOfBlock()));

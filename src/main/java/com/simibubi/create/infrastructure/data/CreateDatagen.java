@@ -47,6 +47,7 @@ public class CreateDatagen {
 
 		generator.addProvider(event.includeServer(), new CreateRecipeSerializerTagsProvider(output, lookupProvider, existingFileHelper));
 		generator.addProvider(event.includeServer(), new CreateContraptionTypeTagsProvider(output, lookupProvider, existingFileHelper));
+		generator.addProvider(event.includeServer(), new CreateMountedItemStorageTypeTagsProvider(output, lookupProvider, existingFileHelper));
 		generator.addProvider(event.includeServer(), new DamageTypeTagGen(output, lookupProvider, existingFileHelper));
 		generator.addProvider(event.includeServer(), new AllAdvancements(output, lookupProvider));
 		generator.addProvider(event.includeServer(), new StandardRecipeGen(output, lookupProvider));

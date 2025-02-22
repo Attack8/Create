@@ -156,25 +156,25 @@ public class CreateRegistrate extends AbstractRegistrate<CreateRegistrate> {
 
 	public <T extends MountedItemStorageType<?>> SimpleBuilder<MountedItemStorageType<?>, T, CreateRegistrate> mountedItemStorage(String name, Supplier<T> supplier) {
 		return this.entry(name, callback -> new SimpleBuilder<>(
-			this, this, name, callback, CreateRegistries.MOUNTED_ITEM_STORAGE_TYPE, supplier.get()
+			this, this, name, callback, CreateRegistries.MOUNTED_ITEM_STORAGE_TYPE, supplier
 		).byBlock(MountedItemStorageType.REGISTRY));
 	}
 
 	public <T extends MountedFluidStorageType<?>> SimpleBuilder<MountedFluidStorageType<?>, T, CreateRegistrate> mountedFluidStorage(String name, Supplier<T> supplier) {
 		return this.entry(name, callback -> new SimpleBuilder<>(
-			this, this, name, callback, CreateRegistries.MOUNTED_FLUID_STORAGE_TYPE, supplier.get()
+			this, this, name, callback, CreateRegistries.MOUNTED_FLUID_STORAGE_TYPE, supplier
 		).byBlock(MountedFluidStorageType.REGISTRY));
 	}
 
 	public <T extends DisplaySource> SimpleBuilder<DisplaySource, T, CreateRegistrate> displaySource(String name, Supplier<T> supplier) {
 		return this.entry(name, callback -> new SimpleBuilder<>(
-			this, this, name, callback, CreateRegistries.DISPLAY_SOURCE, supplier.get()
+			this, this, name, callback, CreateRegistries.DISPLAY_SOURCE, supplier
 		).byBlock(DisplaySource.BY_BLOCK).byBlockEntity(DisplaySource.BY_BLOCK_ENTITY));
 	}
 
 	public <T extends DisplayTarget> SimpleBuilder<DisplayTarget, T, CreateRegistrate> displayTarget(String name, Supplier<T> supplier) {
 		return this.entry(name, callback -> new SimpleBuilder<>(
-			this, this, name, callback, CreateRegistries.DISPLAY_TARGET, supplier.get()
+			this, this, name, callback, CreateRegistries.DISPLAY_TARGET, supplier
 		).byBlock(DisplayTarget.BY_BLOCK).byBlockEntity(DisplayTarget.BY_BLOCK_ENTITY));
 	}
 

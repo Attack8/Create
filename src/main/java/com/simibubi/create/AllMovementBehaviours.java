@@ -13,8 +13,6 @@ public class AllMovementBehaviours {
 		MovementBehaviour.REGISTRY.register(Blocks.BELL, new BellMovementBehaviour());
 		MovementBehaviour.REGISTRY.register(Blocks.CAMPFIRE, new CampfireMovementBehaviour());
 		MovementBehaviour.REGISTRY.register(Blocks.SOUL_CAMPFIRE, new CampfireMovementBehaviour());
-
-		DispenserMovementBehaviour.gatherMovedDispenseItemBehaviours();
 		MovementBehaviour.REGISTRY.register(Blocks.DISPENSER, new DispenserMovementBehaviour());
 		MovementBehaviour.REGISTRY.register(Blocks.DROPPER, new DropperMovementBehaviour());
 	}

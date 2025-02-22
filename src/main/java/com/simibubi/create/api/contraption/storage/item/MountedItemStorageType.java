@@ -14,6 +14,8 @@ import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
 
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -28,9 +30,15 @@ public abstract class MountedItemStorageType<T extends MountedItemStorage> {
 	});
 
 	public final MapCodec<? extends T> codec;
+	public final Holder<MountedItemStorageType<?>> holder;
 
 	protected MountedItemStorageType(MapCodec<? extends T> codec) {
 		this.codec = codec;
+		this.holder = CreateBuiltInRegistries.MOUNTED_ITEM_STORAGE_TYPE.createIntrusiveHolder(this);
+	}
+
+	public final boolean is(TagKey<MountedItemStorageType<?>> tag) {
+		return this.holder.is(tag);
 	}
 
 	@Nullable

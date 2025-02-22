@@ -98,7 +98,6 @@ neoForge {
         data {
             data()
 
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
             programArguments.addAll('--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath())
         }
 
@@ -125,7 +124,8 @@ repositories {
     maven { url = "https://maven.saps.dev/releases" } // FTB Mods
     maven { url = "https://maven.architectury.dev" } // Arch API
     maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven" } // NeoForge config api port, needed by ponder
-    maven { url = "https://jm.gserv.me/repository/maven-public" // JourneyMap
+    maven {
+        url = "https://jm.gserv.me/repository/maven-public" // JourneyMap
         content {
             includeGroup "info.journeymap"
             includeGroup "mysticdrew"
@@ -167,7 +167,8 @@ dependencies {
     if (cc_tweaked_enable.toBoolean()) {
         compileOnly("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-core-api:${cc_tweaked_version}")
         compileOnly("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-forge-api:${cc_tweaked_version}")
-        runtimeOnly("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-forge:${cc_tweaked_version}")
+        // TODO - Uncomment when cc tweaked supports the api refactors
+        //runtimeOnly("cc.tweaked:cc-tweaked-${cc_tweaked_minecraft_version}-forge:${cc_tweaked_version}")
     }
 
     runtimeOnly("dev.architectury:architectury-neoforge:13.0.8")
@@ -221,7 +222,7 @@ jar {
 
     manifest.attributes([
         "MixinConfigs": "create.mixins.json",
-        "Git-Hash": gitHash
+        "Git-Hash"    : gitHash
     ])
 }
 
@@ -294,7 +295,7 @@ String calculateGitHash() {
             commandLine("git", "rev-parse", "HEAD")
         }
         return output.standardOutput.asText.get().trim()
-    } catch(Throwable ignored) {
+    } catch (Throwable ignored) {
         return "unknown"
     }
 }
@@ -308,7 +309,7 @@ boolean hasUnstaged() {
         if (!result.isEmpty())
             println("Found stageable results:\n ${result}\n")
         return !result.isEmpty()
-    }  catch(Throwable ignored) {
+    } catch (Throwable ignored) {
         return false
     }
 }

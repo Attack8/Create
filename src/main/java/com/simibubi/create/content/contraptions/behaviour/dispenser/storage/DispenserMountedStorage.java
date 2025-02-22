@@ -32,11 +32,6 @@ public class DispenserMountedStorage extends SimpleMountedStorage {
 	}
 
 	@Override
-	public boolean isInternal() {
-		return true;
-	}
-
-	@Override
 	@Nullable
 	protected MenuProvider createMenuProvider(Component name, IItemHandlerModifiable handler,
 											  Predicate<Player> stillValid, Consumer<Player> onClose) {

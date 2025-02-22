@@ -5,6 +5,8 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
+import com.simibubi.create.api.contraption.dispenser.DefaultMountedDispenseBehavior;
+import com.simibubi.create.api.contraption.dispenser.MountedDispenseBehavior;
 import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.foundation.item.ItemHelper;
@@ -38,13 +40,13 @@ public class DropperMovementBehaviour implements MovementBehaviour {
 
 		// copy because dispense behaviors will modify it directly
 		ItemStack stack = storage.getStackInSlot(slot).copy();
-		IMovedDispenseItemBehaviour behavior = getDispenseBehavior(context, pos, stack);
+		MountedDispenseBehavior behavior = getDispenseBehavior(context, pos, stack);
 		ItemStack remainder = behavior.dispense(stack, context, pos);
 		storage.setStackInSlot(slot, remainder);
 	}
 
-	protected IMovedDispenseItemBehaviour getDispenseBehavior(MovementContext context, BlockPos pos, ItemStack stack) {
-		return MovedDefaultDispenseItemBehaviour.INSTANCE;
+	protected MountedDispenseBehavior getDispenseBehavior(MovementContext context, BlockPos pos, ItemStack stack) {
+		return DefaultMountedDispenseBehavior.INSTANCE;
 	}
 
 	/**
@@ -59,8 +61,8 @@ public class DropperMovementBehaviour implements MovementBehaviour {
 
 			if (stack.getCount() == 1 && stack.getMaxStackSize() != 1) {
 				stack = tryTopOff(stack, contraptionInventory);
-				if (stack == null) {
-					continue;
+				if (stack != null) {
+					storage.setStackInSlot(i, stack);
 				}
 			}
 

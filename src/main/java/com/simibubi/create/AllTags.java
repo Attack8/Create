@@ -7,6 +7,8 @@ import static com.simibubi.create.AllTags.NameSpace.QUARK;
 import static com.simibubi.create.AllTags.NameSpace.TIC;
 
 import com.simibubi.create.api.contraption.ContraptionType;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorageType;
 import com.simibubi.create.api.registry.CreateRegistries;
 
 import net.createmod.catnip.lang.Lang;
@@ -191,6 +193,7 @@ public class AllTags {
 		TRACKS,
 		UPRIGHT_ON_BELT,
 		VALVE_HANDLES,
+		DISPENSE_BEHAVIOR_WRAP_BLACKLIST,
 
 		PLATES(COMMON),
 		OBSIDIAN_DUST(COMMON, "dusts/obsidian"),
@@ -415,6 +418,31 @@ public class AllTags {
 		}
 	}
 
+	public enum AllMountedItemStorageTypeTags {
+		INTERNAL,
+		FUEL_BLACKLIST;
+
+		public final TagKey<MountedItemStorageType<?>> tag;
+		public final boolean alwaysDatagen;
+
+		AllMountedItemStorageTypeTags() {
+			ResourceLocation tagId = Create.asResource(Lang.asId(this.name()));
+			this.tag = TagKey.create(CreateRegistries.MOUNTED_ITEM_STORAGE_TYPE, tagId);
+			this.alwaysDatagen = true;
+		}
+
+		public boolean matches(MountedItemStorage storage) {
+			return this.matches(storage.type);
+		}
+
+		public boolean matches(MountedItemStorageType<?> type) {
+			return type.is(this.tag);
+		}
+
+		private static void init() {
+		}
+	}
+
 	public static void init() {
 		AllBlockTags.init();
 		AllItemTags.init();
@@ -422,5 +450,6 @@ public class AllTags {
 		AllEntityTags.init();
 		AllRecipeSerializerTags.init();
 		AllContraptionTypeTags.init();
+		AllMountedItemStorageTypeTags.init();
 	}
 }
