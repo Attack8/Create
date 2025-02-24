@@ -1,13 +1,9 @@
 package com.simibubi.create.content.processing.burner;
 
-import org.joml.Quaternionf;
-import org.joml.Quaternionfc;
-
 import dev.engine_room.flywheel.api.instance.InstanceHandle;
 import dev.engine_room.flywheel.api.instance.InstanceType;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import net.createmod.catnip.render.SpriteShiftEntry;
-import net.minecraft.core.Vec3i;
 
 public class ScrollTransformedInstance extends TransformedInstance {
 	public float speedU;
@@ -29,6 +25,7 @@ public class ScrollTransformedInstance extends TransformedInstance {
 	public ScrollTransformedInstance setSpriteShift(SpriteShiftEntry spriteShift) {
 		return setSpriteShift(spriteShift, 0.5f, 0.5f);
 	}
+
 	public ScrollTransformedInstance setSpriteShift(SpriteShiftEntry spriteShift, float factorU, float factorV) {
 		float spriteWidth = spriteShift.getTarget()
 			.getU1()

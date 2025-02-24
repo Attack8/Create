@@ -26,7 +26,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -162,12 +162,12 @@ public class ClientSchematicLoader {
 
 		try {
 			Files.list(Paths.get("schematics/"))
-					.filter(f -> !Files.isDirectory(f) && f.getFileName().toString().endsWith(".nbt")).forEach(path -> {
-						if (Files.isDirectory(path))
-							return;
+				.filter(f -> !Files.isDirectory(f) && f.getFileName().toString().endsWith(".nbt")).forEach(path -> {
+					if (Files.isDirectory(path))
+						return;
 
-                        availableSchematics.add(Component.literal(path.getFileName().toString()));
-					});
+					availableSchematics.add(Component.literal(path.getFileName().toString()));
+				});
 		} catch (NoSuchFileException e) {
 			// No Schematics created yet
 		} catch (IOException e) {

@@ -16,10 +16,9 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.render.CachedBuffers;
 import net.createmod.catnip.render.SuperByteBuffer;
-import net.createmod.catnip.math.VecHelper;
-import net.createmod.ponder.render.VirtualRenderHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -102,7 +101,7 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 
 		return (inUse > 0 && totalUseTicks > 0
 			? Mth.lerp(Math.min(totalUseTicks, totalUseTicks - inUse + partialTicks) / (float) totalUseTicks,
-				startAngle, targetAngle)
+			startAngle, targetAngle)
 			: targetAngle) * Mth.DEG_TO_RAD * (backwards ? -1 : 1) * step;
 	}
 
@@ -139,7 +138,8 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 	}
 
 	@Override
-	protected void copySequenceContextFrom(KineticBlockEntity sourceBE) {}
+	protected void copySequenceContextFrom(KineticBlockEntity sourceBE) {
+	}
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
@@ -163,8 +163,8 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 
 		@Override
 		public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-            ImmutableList<Component> rows = ImmutableList.of(Component.literal("\u27f3")
-				.withStyle(ChatFormatting.BOLD),
+			ImmutableList<Component> rows = ImmutableList.of(Component.literal("\u27f3")
+					.withStyle(ChatFormatting.BOLD),
 				Component.literal("\u27f2")
 					.withStyle(ChatFormatting.BOLD));
 			return new ValueSettingsBoard(label, 180, 45, rows, new ValueSettingsFormatter(this::formatValue));

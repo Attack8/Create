@@ -2,6 +2,7 @@ package com.simibubi.create.content.equipment.potatoCannon;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.simibubi.create.AllItems;
 import com.simibubi.create.Create;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModel;
@@ -27,7 +28,7 @@ public class PotatoCannonItemRenderer extends CustomRenderedItemModelRenderer {
 
 	@Override
 	protected void render(ItemStack stack, CustomRenderedItemModel model, PartialItemModelRenderer renderer,
-		ItemDisplayContext transformType, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
+						  ItemDisplayContext transformType, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
 		Minecraft mc = Minecraft.getInstance();
 		ItemRenderer itemRenderer = mc.getItemRenderer();
 		renderer.render(model.getOriginalModel(), light);
@@ -54,18 +55,18 @@ public class PotatoCannonItemRenderer extends CustomRenderedItemModelRenderer {
 		ms.popPose();
 
 		if (transformType == ItemDisplayContext.GUI) {
-			PotatoCannonItem.getAmmoforPreview(stack)
-				.ifPresent(ammo -> {
-					PoseStack localMs = new PoseStack();
-					localMs.translate(-1 / 4f, -1 / 4f, 1);
-					localMs.scale(.5f, .5f, .5f);
-					TransformStack.of(localMs)
-						.rotateYDegrees(-34);
-					itemRenderer.renderStatic(ammo, ItemDisplayContext.GUI, light, OverlayTexture.NO_OVERLAY, localMs,
-						buffer, mc.level, 0);
-				});
+			PotatoCannonItem.getAmmoforPreview(stack).ifPresent(ammo -> {
+				if (AllItems.POTATO_CANNON.is(ammo)) return;
+				
+				PoseStack localMs = new PoseStack();
+				localMs.translate(-1 / 4f, -1 / 4f, 1);
+				localMs.scale(.5f, .5f, .5f);
+				TransformStack.of(localMs)
+					.rotateYDegrees(-34);
+				itemRenderer.renderStatic(ammo, ItemDisplayContext.GUI, light, OverlayTexture.NO_OVERLAY, localMs,
+					buffer, mc.level, 0);
+			});
 		}
-
 	}
 
 }

@@ -149,3 +149,6 @@ _Now using Flywheel 1.0_
 - Synced AllPortalTracks with Create Fabric
 - Implemented DyeHelper api (#7265)
 - Implemented api to add custom block train conductors (#7030)
+- Convert Potato Cannon project types into a dynamic registry
+    - Everything can be done with datapacks now, and there is no need to write a mod unless you need to add new
+      Render Modes, Entity Hit Actions or Block Hit Actions

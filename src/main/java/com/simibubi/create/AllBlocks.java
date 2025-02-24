@@ -19,6 +19,7 @@ import static com.simibubi.create.foundation.data.TagGen.tagBlockAndItem;
 import com.simibubi.create.AllTags.AllBlockTags;
 import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.api.behaviour.interaction.ConductorBlockInteractionBehavior;
+import com.simibubi.create.api.stress.BlockStressValues;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsBlock;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovingInteraction;
@@ -110,7 +111,6 @@ import com.simibubi.create.content.fluids.tank.FluidTankGenerator;
 import com.simibubi.create.content.fluids.tank.FluidTankItem;
 import com.simibubi.create.content.fluids.tank.FluidTankModel;
 import com.simibubi.create.content.fluids.tank.FluidTankMovementBehavior;
-import com.simibubi.create.content.kinetics.BlockStressDefaults;
 import com.simibubi.create.content.kinetics.belt.BeltBlock;
 import com.simibubi.create.content.kinetics.belt.BeltGenerator;
 import com.simibubi.create.content.kinetics.belt.BeltModel;
@@ -272,6 +272,7 @@ import com.simibubi.create.foundation.item.UncontainableBlockItem;
 import com.simibubi.create.foundation.mixin.accessor.BlockLootSubProviderAccessor;
 import com.simibubi.create.foundation.utility.ColorHandlers;
 import com.simibubi.create.foundation.utility.DyeHelper;
+import com.simibubi.create.infrastructure.config.CStress;
 import com.tterrag.registrate.providers.RegistrateRecipeProvider;
 import com.tterrag.registrate.util.DataIngredient;
 import com.tterrag.registrate.util.entry.BlockEntry;
@@ -367,7 +368,7 @@ public class AllBlocks {
 	public static final BlockEntry<ShaftBlock> SHAFT = REGISTRATE.block("shaft", ShaftBlock::new)
 		.initialProperties(SharedProperties::stone)
 		.properties(p -> p.mapColor(MapColor.METAL).forceSolidOff())
-		.transform(BlockStressDefaults.setNoImpact())
+		.transform(CStress.setNoImpact())
 		.transform(pickaxeOnly())
 		.blockstate(BlockStateGen.axisBlockProvider(false))
 		.onRegister(CreateRegistrate.blockModel(() -> BracketedKineticBlockModel::new))
@@ -378,7 +379,7 @@ public class AllBlocks {
 		.initialProperties(SharedProperties::stone)
 		.properties(p -> p.sound(SoundType.WOOD)
 			.mapColor(MapColor.DIRT))
-		.transform(BlockStressDefaults.setNoImpact())
+		.transform(CStress.setNoImpact())
 		.transform(axeOrPickaxe())
 		.blockstate(BlockStateGen.axisBlockProvider(false))
 		.onRegister(CreateRegistrate.blockModel(() -> BracketedKineticBlockModel::new))
@@ -392,7 +393,7 @@ public class AllBlocks {
 			.properties(p -> p.sound(SoundType.WOOD)
 				.mapColor(MapColor.DIRT))
 			.transform(axeOrPickaxe())
-			.transform(BlockStressDefaults.setNoImpact())
+			.transform(CStress.setNoImpact())
 			.blockstate(BlockStateGen.axisBlockProvider(false))
 			.onRegister(CreateRegistrate.blockModel(() -> BracketedKineticBlockModel::new))
 			.item(CogwheelBlockItem::new)
@@ -458,7 +459,7 @@ public class AllBlocks {
 		.initialProperties(SharedProperties::stone)
 		.properties(p -> p.noOcclusion()
 			.mapColor(MapColor.PODZOL))
-		.transform(BlockStressDefaults.setNoImpact())
+		.transform(CStress.setNoImpact())
 		.transform(axeOrPickaxe())
 		.onRegister(CreateRegistrate.connectedTextures(() -> new EncasedCTBehaviour(AllSpriteShifts.ANDESITE_CASING)))
 		.onRegister(CreateRegistrate.casingConnectivity((block, cc) -> cc.make(block, AllSpriteShifts.ANDESITE_CASING,
@@ -473,7 +474,7 @@ public class AllBlocks {
 		.properties(p -> p.noOcclusion()
 			.mapColor(MapColor.PODZOL))
 		.addLayer(() -> RenderType::cutoutMipped)
-		.transform(BlockStressDefaults.setNoImpact())
+		.transform(CStress.setNoImpact())
 		.transform(axeOrPickaxe())
 		.blockstate((c, p) -> BlockStateGen.axisBlock(c, p, AssetLookup.forPowered(c, p)))
 		.item()
@@ -485,7 +486,7 @@ public class AllBlocks {
 		.properties(p -> p.noOcclusion()
 			.mapColor(MapColor.PODZOL))
 		.addLayer(() -> RenderType::cutoutMipped)
-		.transform(BlockStressDefaults.setNoImpact())
+		.transform(CStress.setNoImpact())
 		.transform(axeOrPickaxe())
 		.blockstate((c, p) -> BlockStateGen.axisBlock(c, p, AssetLookup.forPowered(c, p)))
 		.item()
@@ -497,7 +498,7 @@ public class AllBlocks {
 			.initialProperties(SharedProperties::stone)
 			.properties(p -> p.noOcclusion()
 				.mapColor(MapColor.PODZOL))
-			.transform(BlockStressDefaults.setNoImpact())
+			.transform(CStress.setNoImpact())
 			.transform(axeOrPickaxe())
 			.blockstate((c, p) -> new ChainDriveGenerator((state, suffix) -> p.models()
 				.getExistingFile(p.modLoc("block/" + c.getName() + "/" + suffix))).generate(c, p))
@@ -510,7 +511,7 @@ public class AllBlocks {
 			.initialProperties(SharedProperties::stone)
 			.properties(p -> p.noOcclusion()
 				.mapColor(MapColor.NETHER))
-			.transform(BlockStressDefaults.setNoImpact())
+			.transform(CStress.setNoImpact())
 			.transform(axeOrPickaxe())
 			.blockstate((c, p) -> new ChainDriveGenerator((state, suffix) -> {
 				String powered = state.getValue(ChainGearshiftBlock.POWERED) ? "_powered" : "";
@@ -532,7 +533,7 @@ public class AllBlocks {
 		.addLayer(() -> RenderType::cutoutMipped)
 		.transform(axeOrPickaxe())
 		.blockstate(new BeltGenerator()::generate)
-		.transform(BlockStressDefaults.setImpact(0))
+		.transform(CStress.setNoImpact())
 		.transform(displaySource(AllDisplaySources.ITEM_NAMES))
 		.onRegister(CreateRegistrate.blockModel(() -> BeltModel::new))
 		.clientExtension(() -> () -> new BeltBlock.RenderProperties())
@@ -544,7 +545,8 @@ public class AllBlocks {
 			.properties(p -> p.noOcclusion()
 				.mapColor(MapColor.PODZOL))
 			.transform(axeOrPickaxe())
-			.transform(BlockStressDefaults.setImpact(1))
+			.transform(CStress.setImpact(1))
+			.transform(CStress.setImpact(1))
 			.blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
 			.item()
 			.transform(customItemModel())
@@ -558,8 +560,8 @@ public class AllBlocks {
 			.tag(AllBlockTags.SAFE_NBT.tag)
 			.transform(pickaxeOnly())
 			.blockstate(new CreativeMotorGenerator()::generate)
-			.transform(BlockStressDefaults.setCapacity(16384.0))
-			.transform(BlockStressDefaults.setGeneratorSpeed(() -> Couple.create(0, 256)))
+			.transform(CStress.setCapacity(16384.0))
+			.onRegister(BlockStressValues.setGeneratorSpeed(256, true))
 			.item()
 			.properties(p -> p.rarity(Rarity.EPIC))
 			.transform(customItemModel())
@@ -573,8 +575,8 @@ public class AllBlocks {
 		.blockstate(
 			(c, p) -> BlockStateGen.directionalBlockIgnoresWaterlogged(c, p, s -> AssetLookup.partialBaseModel(c, p)))
 		.addLayer(() -> RenderType::cutoutMipped)
-		.transform(BlockStressDefaults.setCapacity(32.0))
-		.transform(BlockStressDefaults.setGeneratorSpeed(WaterWheelBlock::getSpeedRange))
+		.transform(CStress.setCapacity(32))
+		.onRegister(BlockStressValues.setGeneratorSpeed(8))
 		.item()
 		.transform(customItemModel())
 		.register();
@@ -588,8 +590,8 @@ public class AllBlocks {
 			.blockstate((c, p) -> axisBlock(c, p,
 				s -> s.getValue(LargeWaterWheelBlock.EXTENSION) ? AssetLookup.partialBaseModel(c, p, "extension")
 					: AssetLookup.partialBaseModel(c, p)))
-			.transform(BlockStressDefaults.setCapacity(128.0))
-			.transform(BlockStressDefaults.setGeneratorSpeed(LargeWaterWheelBlock::getSpeedRange))
+			.transform(CStress.setCapacity(128.0))
+			.onRegister(BlockStressValues.setGeneratorSpeed(4))
 			.item(LargeWaterWheelBlockItem::new)
 			.transform(customItemModel())
 			.register();
@@ -612,7 +614,7 @@ public class AllBlocks {
 		.blockstate(BlockStateGen.directionalBlockProvider(true))
 		.addLayer(() -> RenderType::cutoutMipped)
 		.transform(axeOrPickaxe())
-		.transform(BlockStressDefaults.setImpact(2.0))
+		.transform(CStress.setImpact(2.0))
 		.item()
 		.transform(customItemModel())
 		.register();
@@ -633,7 +635,7 @@ public class AllBlocks {
 		.properties(p -> p.mapColor(MapColor.PODZOL))
 		.transform(axeOrPickaxe())
 		.blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.standardModel(c, p)))
-		.transform(BlockStressDefaults.setImpact(4.0))
+		.transform(CStress.setImpact(4.0))
 		.simpleItem()
 		.register();
 
@@ -642,8 +644,8 @@ public class AllBlocks {
 		.properties(p -> p.mapColor(MapColor.PODZOL))
 		.transform(axeOrPickaxe())
 		.blockstate(BlockStateGen.directionalBlockProvider(true))
-		.transform(BlockStressDefaults.setCapacity(8.0))
-		.transform(BlockStressDefaults.setGeneratorSpeed(HandCrankBlock::getSpeedRange))
+		.transform(CStress.setCapacity(8.0))
+		.onRegister(BlockStressValues.setGeneratorSpeed(32))
 		.tag(AllBlockTags.BRITTLE.tag)
 		.onRegister(ItemUseOverrides::addBlock)
 		.item()
@@ -673,7 +675,7 @@ public class AllBlocks {
 		.properties(p -> p.mapColor(MapColor.METAL))
 		.transform(pickaxeOnly())
 		.blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
-		.transform(BlockStressDefaults.setImpact(4.0))
+		.transform(CStress.setImpact(4.0))
 		.item()
 		.transform(customItemModel())
 		.register();
@@ -686,7 +688,7 @@ public class AllBlocks {
 			.transform(pickaxeOnly())
 			.blockstate((c, p) -> BlockStateGen.axisBlock(c, p, s -> AssetLookup.partialBaseModel(c, p)))
 			.addLayer(() -> RenderType::cutoutMipped)
-			.transform(BlockStressDefaults.setImpact(8.0))
+			.transform(CStress.setImpact(8.0))
 			.item()
 			.transform(customItemModel())
 			.register();
@@ -710,7 +712,7 @@ public class AllBlocks {
 				.mapColor(MapColor.PODZOL))
 			.transform(axeOrPickaxe())
 			.blockstate(BlockStateGen.horizontalBlockProvider(true))
-			.transform(BlockStressDefaults.setImpact(8.0))
+			.transform(CStress.setImpact(8.0))
 			.item(AssemblyOperatorBlockItem::new)
 			.transform(customItemModel())
 			.register();
@@ -723,7 +725,7 @@ public class AllBlocks {
 			.transform(axeOrPickaxe())
 			.blockstate((c, p) -> p.simpleBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p)))
 			.addLayer(() -> RenderType::cutoutMipped)
-			.transform(BlockStressDefaults.setImpact(4.0))
+			.transform(CStress.setImpact(4.0))
 			.item(AssemblyOperatorBlockItem::new)
 			.transform(customItemModel())
 			.register();
@@ -797,7 +799,7 @@ public class AllBlocks {
 				.mapColor(MapColor.COLOR_GRAY))
 			.transform(axeOrPickaxe())
 			.blockstate((c, p) -> p.horizontalBlock(c.getEntry(), AssetLookup.partialBaseModel(c, p), 180))
-			.transform(BlockStressDefaults.setImpact(2.0))
+			.transform(CStress.setImpact(2.0))
 			.transform(displaySource(AllDisplaySources.ITEM_NAMES))
 			.item(EjectorItem::new)
 			.transform(customItemModel())
@@ -837,7 +839,7 @@ public class AllBlocks {
 		.initialProperties(SharedProperties::wooden)
 		.properties(p -> p.mapColor(MapColor.PODZOL))
 		.transform(axeOrPickaxe())
-		.transform(BlockStressDefaults.setNoImpact())
+		.transform(CStress.setNoImpact())
 		.blockstate(new GaugeGenerator()::generate)
 		.transform(displaySource(AllDisplaySources.KINETIC_SPEED))
 		.item()
@@ -848,7 +850,7 @@ public class AllBlocks {
 		.initialProperties(SharedProperties::wooden)
 		.properties(p -> p.mapColor(MapColor.PODZOL))
 		.transform(axeOrPickaxe())
-		.transform(BlockStressDefaults.setNoImpact())
+		.transform(CStress.setNoImpact())
 		.blockstate(new GaugeGenerator()::generate)
 		.transform(displaySource(AllDisplaySources.KINETIC_STRESS))
 		.item()
@@ -929,7 +931,7 @@ public class AllBlocks {
 		.transform(pickaxeOnly())
 		.blockstate(BlockStateGen.directionalBlockProviderIgnoresWaterlogged(true))
 		.onRegister(CreateRegistrate.blockModel(() -> PipeAttachmentModel::withoutAO))
-		.transform(BlockStressDefaults.setImpact(4.0))
+		.transform(CStress.setImpact(4.0))
 		.item()
 		.transform(customItemModel())
 		.register();
@@ -961,7 +963,7 @@ public class AllBlocks {
 		REGISTRATE.block("copper_valve_handle", ValveHandleBlock::copper)
 			.transform(pickaxeOnly())
 			.transform(BuilderTransformers.valveHandle(null))
-			.transform(BlockStressDefaults.setCapacity(8.0))
+			.transform(CStress.setCapacity(8.0))
 			.register();
 
 	public static final DyedBlockList<ValveHandleBlock> DYED_VALVE_HANDLES = new DyedBlockList<>(colour -> {
@@ -1022,7 +1024,7 @@ public class AllBlocks {
 		.addLayer(() -> RenderType::cutoutMipped)
 		.transform(pickaxeOnly())
 		.blockstate(BlockStateGen.horizontalBlockProvider(true))
-		.transform(BlockStressDefaults.setImpact(4.0))
+		.transform(CStress.setImpact(4.0))
 		.item()
 		.transform(customItemModel())
 		.register();
@@ -1061,8 +1063,8 @@ public class AllBlocks {
 			.initialProperties(SharedProperties::copperMetal)
 			.transform(pickaxeOnly())
 			.blockstate((c, p) -> p.horizontalFaceBlock(c.get(), AssetLookup.partialBaseModel(c, p)))
-			.transform(BlockStressDefaults.setCapacity(1024.0))
-			.transform(BlockStressDefaults.setGeneratorSpeed(SteamEngineBlock::getSpeedRange))
+			.transform(CStress.setCapacity(1024.0))
+			.onRegister(BlockStressValues.setGeneratorSpeed(64, true))
 			.item()
 			.transform(customItemModel())
 			.register();
@@ -1168,7 +1170,7 @@ public class AllBlocks {
 						existing.getLocation())
 					.texture("2", p.modLoc("block/" + c.getName() + powered + flipped));
 			}))
-			.transform(BlockStressDefaults.setNoImpact())
+			.transform(CStress.setNoImpact())
 			.item()
 			.transform(customItemModel("_", "block_single"))
 			.register();
@@ -1178,8 +1180,8 @@ public class AllBlocks {
 			.transform(axeOrPickaxe())
 			.properties(p -> p.mapColor(MapColor.PODZOL))
 			.transform(BuilderTransformers.bearing("windmill", "gearbox"))
-			.transform(BlockStressDefaults.setCapacity(512.0))
-			.transform(BlockStressDefaults.setGeneratorSpeed(WindmillBearingBlock::getSpeedRange))
+			.transform(CStress.setCapacity(512.0))
+			.onRegister(BlockStressValues.setGeneratorSpeed(16, true))
 			.tag(AllBlockTags.SAFE_NBT.tag)
 			.register();
 
@@ -1188,7 +1190,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.PODZOL))
 			.transform(axeOrPickaxe())
 			.transform(BuilderTransformers.bearing("mechanical", "gearbox"))
-			.transform(BlockStressDefaults.setImpact(4.0))
+			.transform(CStress.setImpact(4.0))
 			.tag(AllBlockTags.SAFE_NBT.tag)
 			.onRegister(movementBehaviour(new StabilizedBearingMovementBehaviour()))
 			.register();
@@ -1198,7 +1200,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_BROWN))
 			.transform(axeOrPickaxe())
 			.transform(BuilderTransformers.bearing("clockwork", "brass_gearbox"))
-			.transform(BlockStressDefaults.setImpact(4.0))
+			.transform(CStress.setImpact(4.0))
 			.tag(AllBlockTags.SAFE_NBT.tag)
 			.register();
 
@@ -1210,7 +1212,7 @@ public class AllBlocks {
 		.transform(axeOrPickaxe())
 		.tag(AllBlockTags.SAFE_NBT.tag)
 		.blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
-		.transform(BlockStressDefaults.setImpact(4.0))
+		.transform(CStress.setImpact(4.0))
 		.item()
 		.transform(customItemModel())
 		.register();
@@ -1239,7 +1241,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_BROWN))
 			.transform(axeOrPickaxe())
 			.blockstate(BlockStateGen.horizontalBlockProvider(true))
-			.transform(BlockStressDefaults.setImpact(4.0))
+			.transform(CStress.setImpact(4.0))
 			.item()
 			.transform(customItemModel())
 			.register();
@@ -1343,7 +1345,7 @@ public class AllBlocks {
 		.properties(p -> p.mapColor(MapColor.PODZOL))
 		.transform(axeOrPickaxe())
 		.blockstate(BlockStateGen.directionalBlockProvider(true))
-		.transform(BlockStressDefaults.setImpact(4.0))
+		.transform(CStress.setImpact(4.0))
 		.onRegister(movementBehaviour(new DrillMovementBehaviour()))
 		.item()
 		.tag(AllItemTags.CONTRAPTION_CONTROLLED.tag)
@@ -1356,7 +1358,7 @@ public class AllBlocks {
 		.properties(p -> p.mapColor(MapColor.PODZOL))
 		.transform(axeOrPickaxe())
 		.blockstate(new SawGenerator()::generate)
-		.transform(BlockStressDefaults.setImpact(4.0))
+		.transform(CStress.setImpact(4.0))
 		.onRegister(movementBehaviour(new SawMovementBehaviour()))
 		.addLayer(() -> RenderType::cutoutMipped)
 		.item()
@@ -1369,7 +1371,7 @@ public class AllBlocks {
 		.properties(p -> p.mapColor(MapColor.PODZOL))
 		.transform(axeOrPickaxe())
 		.blockstate(BlockStateGen.directionalAxisBlockProvider())
-		.transform(BlockStressDefaults.setImpact(4.0))
+		.transform(CStress.setImpact(4.0))
 		.onRegister(movementBehaviour(new DeployerMovementBehaviour()))
 		.onRegister(interactionBehaviour(new DeployerMovingInteraction()))
 		.item(AssemblyOperatorBlockItem::new)
@@ -1544,7 +1546,7 @@ public class AllBlocks {
 				.mapColor(MapColor.TERRACOTTA_YELLOW))
 			.transform(axeOrPickaxe())
 			.blockstate(BlockStateGen.horizontalBlockProvider(true))
-			.transform(BlockStressDefaults.setImpact(2.0))
+			.transform(CStress.setImpact(2.0))
 			.onRegister(CreateRegistrate.connectedTextures(CrafterCTBehaviour::new))
 			.addLayer(() -> RenderType::cutoutMipped)
 			.item()
@@ -1558,7 +1560,7 @@ public class AllBlocks {
 			.transform(axeOrPickaxe())
 			.tag(AllBlockTags.SAFE_NBT.tag)
 			.properties(BlockBehaviour.Properties::noOcclusion)
-			.transform(BlockStressDefaults.setNoImpact())
+			.transform(CStress.setNoImpact())
 			.blockstate(new SequencedGearshiftGenerator()::generate)
 			.item()
 			.transform(customItemModel())
@@ -1569,7 +1571,7 @@ public class AllBlocks {
 		.properties(p -> p.noOcclusion()
 			.mapColor(MapColor.TERRACOTTA_YELLOW))
 		.transform(axeOrPickaxe())
-		.transform(BlockStressDefaults.setNoImpact())
+		.transform(CStress.setNoImpact())
 		.blockstate(BlockStateGen.axisBlockProvider(true))
 		.item()
 		.transform(customItemModel())
@@ -1581,7 +1583,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.TERRACOTTA_YELLOW))
 			.transform(axeOrPickaxe())
 			.tag(AllBlockTags.SAFE_NBT.tag)
-			.transform(BlockStressDefaults.setNoImpact())
+			.transform(CStress.setNoImpact())
 			.blockstate(BlockStateGen.horizontalAxisBlockProvider(true))
 			.item()
 			.transform(customItemModel())
@@ -1598,7 +1600,7 @@ public class AllBlocks {
 				.modelFile(AssetLookup.partialBaseModel(c, p))
 				.rotationX(s.getValue(ArmBlock.CEILING) ? 180 : 0)
 				.build()))
-		.transform(BlockStressDefaults.setImpact(2.0))
+		.transform(CStress.setImpact(2.0))
 		.item(ArmItem::new)
 		.transform(customItemModel())
 		.register();
@@ -2037,7 +2039,7 @@ public class AllBlocks {
 			.properties(p -> p.mapColor(MapColor.COLOR_GRAY))
 			.addLayer(() -> RenderType::cutoutMipped)
 			.transform(pickaxeOnly())
-			.transform(BlockStressDefaults.setImpact(0))
+			.transform(CStress.setNoImpact())
 			.blockstate((c, p) -> p.horizontalBlock(c.get(), AssetLookup.partialBaseModel(c, p)))
 			.transform(displayTarget(AllDisplayTargets.DISPLAY_BOARD))
 			.lang("Display Board")

@@ -244,6 +244,7 @@ public class ExtendoGripItem extends Item {
 		if (lastActiveDamageSource == null)
 			return;
 		Entity entity = lastActiveDamageSource.getDirectEntity();
+		lastActiveDamageSource = null;
 		if (!(entity instanceof Player player))
 			return;
 		if (!isHoldingExtendoGrip(player))

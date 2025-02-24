@@ -2,14 +2,6 @@ package com.simibubi.create;
 
 import java.util.Random;
 
-import com.simibubi.create.content.equipment.armor.AllArmorMaterials;
-import com.simibubi.create.content.logistics.packagePort.AllPackagePortTargetTypes;
-import com.simibubi.create.foundation.recipe.AllIngredients;
-
-import net.minecraft.core.registries.BuiltInRegistries;
-
-import net.neoforged.neoforge.registries.RegisterEvent;
-
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
@@ -20,12 +12,16 @@ import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
 import com.simibubi.create.compat.curios.Curios;
 import com.simibubi.create.content.decoration.palettes.AllPaletteBlocks;
-import com.simibubi.create.content.equipment.potatoCannon.BuiltinPotatoProjectileTypes;
+import com.simibubi.create.content.equipment.armor.AllArmorMaterials;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileBlockHitActions;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileEntityHitActions;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileRenderModes;
 import com.simibubi.create.content.fluids.tank.BoilerHeaters;
 import com.simibubi.create.content.kinetics.TorquePropagator;
 import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes;
 import com.simibubi.create.content.kinetics.mechanicalArm.AllArmInteractionPointTypes;
 import com.simibubi.create.content.logistics.item.filter.attribute.AllItemAttributeTypes;
+import com.simibubi.create.content.logistics.packagePort.AllPackagePortTargetTypes;
 import com.simibubi.create.content.logistics.packagerLink.GlobalLogisticsManager;
 import com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler;
 import com.simibubi.create.content.schematics.ServerSchematicLoader;
@@ -38,6 +34,7 @@ import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
+import com.simibubi.create.foundation.recipe.AllIngredients;
 import com.simibubi.create.foundation.utility.CreateNBTProcessors;
 import com.simibubi.create.infrastructure.command.ServerLagger;
 import com.simibubi.create.infrastructure.config.AllConfigs;
@@ -47,12 +44,12 @@ import com.simibubi.create.infrastructure.worldgen.AllPlacementModifiers;
 
 import net.createmod.catnip.lang.FontHelper;
 import net.createmod.catnip.lang.LangBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.Level;
-
 
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -61,6 +58,7 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(Create.ID)
 public class Create {
@@ -73,7 +71,9 @@ public class Create {
 		.disableHtmlEscaping()
 		.create();
 
-	/** Use the {@link Random} of a local {@link Level} or {@link Entity} or create one */
+	/**
+	 * Use the {@link Random} of a local {@link Level} or {@link Entity} or create one
+	 */
 	@Deprecated
 	public static final Random RANDOM = new Random();
 
@@ -87,7 +87,7 @@ public class Create {
 	static {
 		REGISTRATE.setTooltipModifierFactory(item ->
 			new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE)
-			.andThen(TooltipModifier.mapNull(KineticStats.create(item)))
+				.andThen(TooltipModifier.mapNull(KineticStats.create(item)))
 		);
 	}
 
@@ -136,6 +136,7 @@ public class Create {
 
 		AllConfigs.register(modLoadingContext, modContainer);
 
+		// TODO - Make these use Registry.register and move them into the RegisterEvent
 		AllArmInteractionPointTypes.register(modEventBus);
 		AllFanProcessingTypes.register(modEventBus);
 		AllItemAttributeTypes.register(modEventBus);
@@ -152,7 +153,7 @@ public class Create {
 		NeoForgeMod.enableMilkFluid();
 
 		modEventBus.addListener(Create::init);
-		modEventBus.addListener(Create::registerAdvancements);
+		modEventBus.addListener(Create::onRegister);
 		modEventBus.addListener(AllEntityTypes::registerEntityAttributes);
 		modEventBus.addListener(EventPriority.LOWEST, CreateDatagen::gatherData);
 		modEventBus.addListener(AllSoundEvents::register);
@@ -169,7 +170,6 @@ public class Create {
 			// TODO: custom registration should all happen in one place
 			// Most registration happens in the constructor.
 			// These registrations use Create's registered objects directly so they must run after registration has finished.
-			BuiltinPotatoProjectileTypes.register();
 			BoilerHeaters.registerDefaults();
 			AllPortalTracks.registerDefaults();
 			BlockSpoutingBehaviour.registerDefaults();
@@ -182,7 +182,11 @@ public class Create {
 		});
 	}
 
-	public static void registerAdvancements(final RegisterEvent event) {
+	public static void onRegister(final RegisterEvent event) {
+		AllPotatoProjectileRenderModes.init();
+		AllPotatoProjectileEntityHitActions.init();
+		AllPotatoProjectileBlockHitActions.init();
+
 		if (event.getRegistry() == BuiltInRegistries.TRIGGER_TYPES) {
 			AllAdvancements.register();
 			AllTriggers.register();

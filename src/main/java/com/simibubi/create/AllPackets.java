@@ -35,7 +35,6 @@ import com.simibubi.create.content.equipment.blueprint.BlueprintAssignCompleteRe
 import com.simibubi.create.content.equipment.clipboard.ClipboardEditPacket;
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripInteractionPacket;
 import com.simibubi.create.content.equipment.potatoCannon.PotatoCannonPacket;
-import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileTypeManager;
 import com.simibubi.create.content.equipment.symmetryWand.ConfigureSymmetryWandPacket;
 import com.simibubi.create.content.equipment.symmetryWand.SymmetryEffectPacket;
 import com.simibubi.create.content.equipment.tool.KnockbackPacket;
@@ -208,7 +207,6 @@ public enum AllPackets implements BasePacketPayload.PacketTypeProvider {
 	POTATO_CANNON(PotatoCannonPacket.class, PotatoCannonPacket.STREAM_CODEC),
 	SOUL_PULSE(SoulPulseEffectPacket.class, SoulPulseEffectPacket.STREAM_CODEC),
 	PERSISTENT_DATA(ISyncPersistentData.PersistentDataPacket.class, ISyncPersistentData.PersistentDataPacket.STREAM_CODEC),
-	SYNC_POTATO_PROJECTILE_TYPES(PotatoProjectileTypeManager.SyncPacket.class, PotatoProjectileTypeManager.SyncPacket.STREAM_CODEC),
 	SYNC_RAIL_GRAPH(TrackGraphSyncPacket.class, TrackGraphSyncPacket.STREAM_CODEC),
 	SYNC_EDGE_GROUP(SignalEdgeGroupPacket.class, SignalEdgeGroupPacket.STREAM_CODEC),
 	ADD_TRAIN(AddTrainPacket.class, AddTrainPacket.STREAM_CODEC),

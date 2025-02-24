@@ -1,7 +1,5 @@
 package com.simibubi.create;
 
-import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileTypeManager;
-
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
@@ -45,9 +43,7 @@ public class AllEnchantments {
 						EnchantmentEffectComponents.AMMO_USE,
 						new SetValue(LevelBasedValue.perLevel(0.0F, 33.3333333333F)),
 						MatchTool.toolMatches(
-								ItemPredicate.Builder.item().of(
-										PotatoProjectileTypeManager.getItems().toArray(Item[]::new)
-								)
+								ItemPredicate.Builder.item().of() // TODO - Fix potato recovery
 						)
 				)
 		);

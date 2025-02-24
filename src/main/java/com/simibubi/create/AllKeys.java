@@ -1,6 +1,6 @@
 package com.simibubi.create;
 
-import net.neoforged.fml.common.EventBusSubscriber;
+import java.util.function.BiConsumer;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -9,11 +9,11 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-
-import java.util.function.BiConsumer;
 
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public enum AllKeys {

@@ -9,7 +9,6 @@ import com.simibubi.create.content.contraptions.actors.psi.PortableItemInterface
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsServerHandler;
 import com.simibubi.create.content.contraptions.minecart.CouplingPhysics;
 import com.simibubi.create.content.contraptions.minecart.capability.CapabilityMinecartController;
-import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileTypeManager;
 import com.simibubi.create.content.equipment.toolbox.ToolboxBlockEntity;
 import com.simibubi.create.content.equipment.toolbox.ToolboxHandler;
 import com.simibubi.create.content.equipment.wrench.WrenchItem;
@@ -76,7 +75,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.gui.map.RegisterMapDecorationRenderersEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -173,18 +171,7 @@ public class CommonEvents {
 	@SubscribeEvent
 	public static void addReloadListeners(AddReloadListenerEvent event) {
 		event.addListener(RecipeFinder.LISTENER);
-		event.addListener(PotatoProjectileTypeManager.ReloadListener.INSTANCE);
 		event.addListener(BeltHelper.LISTENER);
-	}
-
-	@SubscribeEvent
-	public static void onDatapackSync(OnDatapackSyncEvent event) {
-		ServerPlayer player = event.getPlayer();
-		if (player != null) {
-			PotatoProjectileTypeManager.syncTo(player);
-		} else {
-			PotatoProjectileTypeManager.syncToAll();
-		}
 	}
 
 	@SubscribeEvent

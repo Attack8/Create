@@ -5,7 +5,6 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
 
-import net.createmod.catnip.data.Couple;
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -163,10 +162,6 @@ public class LargeWaterWheelBlock extends RotatedPillarKineticBlock implements I
 	@Override
 	public float getParticleInitialRadius() {
 		return 2.25f;
-	}
-
-	public static Couple<Integer> getSpeedRange() {
-		return Couple.create(4, 4);
 	}
 
 	@Override

@@ -36,6 +36,7 @@
     "accessor.LivingEntityAccessor",
     "accessor.MappedRegistryAccessor",
     "accessor.MinecartFurnaceAccessor",
+    "accessor.MobEffectInstanceAccessor",
     "accessor.NbtAccounterAccessor",
     "accessor.PotionBrewingAccessor",
     "accessor.ProjectileDispenseBehaviorAccessor",
