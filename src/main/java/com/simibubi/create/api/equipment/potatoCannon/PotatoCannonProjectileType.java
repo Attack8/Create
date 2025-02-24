@@ -87,6 +87,12 @@ public record PotatoCannonProjectileType(HolderSet<Item> items, int reloadTicks,
 		return onBlockHit.map(i -> i.execute(level, stack, ray)).orElse(false);
 	}
 
+	// Copy the stack so it's not mutated and lost
+	@Override
+	public ItemStack dropStack() {
+		return dropStack.copy();
+	}
+
 	public static class Builder {
 		private ResourceLocation id;
 

@@ -232,7 +232,7 @@ public interface PotatoProjectileEntityHitAction {
 					livingEntity.addEffect(effect.createEffectInstance());
 			}
 
-			return true;
+			return false;
 		}
 
 		@Override

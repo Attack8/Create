@@ -224,9 +224,9 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 		if (!projectileType.onEntityHit(stack, ray) && onServer)
 			if (random.nextDouble() <= recoveryChance) {
 				recoverItem();
-			} else {
-				spawnAtLocation(projectileType.dropStack());
 			}
+
+		spawnAtLocation(projectileType.dropStack());
 
 		if (!(target instanceof LivingEntity livingentity)) {
 			playHitSound(level(), position());
@@ -290,6 +290,9 @@ public class PotatoProjectileEntity extends AbstractHurtingProjectile implements
 		if (!getProjectileType().onBlockHit(level(), stack, ray) && !level().isClientSide)
 			if (random.nextDouble() <= recoveryChance)
 				recoverItem();
+
+		spawnAtLocation(getProjectileType().dropStack());
+
 		super.onHitBlock(ray);
 		kill();
 	}
