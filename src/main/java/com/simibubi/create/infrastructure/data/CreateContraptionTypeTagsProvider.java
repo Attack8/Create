@@ -21,15 +21,12 @@ public class CreateContraptionTypeTagsProvider extends TagsProvider<ContraptionT
 		super(output, CreateRegistries.CONTRAPTION_TYPE, lookupProvider, Create.ID, existingFileHelper);
 	}
 
-	@SuppressWarnings("DataFlowIssue")
 	@Override
 	protected void addTags(Provider pProvider) {
-		tag(AllContraptionTypeTags.OPENS_CONTROLS.tag).add(
-			AllContraptionTypes.CARRIAGE.getKey()
-		);
-		tag(AllContraptionTypeTags.REQUIRES_VEHICLE_FOR_RENDER.tag).add(
-			AllContraptionTypes.MOUNTED.getKey()
-		);
+		tag(AllContraptionTypeTags.OPENS_CONTROLS.tag)
+			.add(AllContraptionTypes.CARRIAGE.key());
+		tag(AllContraptionTypeTags.REQUIRES_VEHICLE_FOR_RENDER.tag)
+			.add(AllContraptionTypes.MOUNTED.key());
 
 		// VALIDATE
 
