@@ -1072,6 +1072,7 @@
   "create.display_source.nixie_tube": "Copy Nixie Tubes",
   "create.display_source.observed_train_name": "Detected Train Name",
   "create.display_source.player_deaths": "Player Deaths",
+  "create.display_source.read_package_address": "Read Package Address",
   "create.display_source.redstone_power": "Redstone Power",
   "create.display_source.redstone_power.display": "Display Format",
   "create.display_source.redstone_power.number": "Number",

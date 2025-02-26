@@ -28,6 +28,7 @@ import com.simibubi.create.content.redstone.displayLink.source.KineticSpeedDispl
 import com.simibubi.create.content.redstone.displayLink.source.KineticStressDisplaySource;
 import com.simibubi.create.content.redstone.displayLink.source.NixieTubeDisplaySource;
 import com.simibubi.create.content.redstone.displayLink.source.ObservedTrainNameSource;
+import com.simibubi.create.content.redstone.displayLink.source.PackageAddressDisplaySource;
 import com.simibubi.create.content.redstone.displayLink.source.RedstonePowerDisplaySource;
 import com.simibubi.create.content.redstone.displayLink.source.ScoreboardDisplaySource;
 import com.simibubi.create.content.redstone.displayLink.source.StationSummaryDisplaySource;
@@ -83,6 +84,7 @@ public class AllDisplaySources {
 	public static final RegistryEntry<DisplaySource, ItemListDisplaySource> LIST_ITEMS = simple("list_items", ItemListDisplaySource::new);
 	public static final RegistryEntry<DisplaySource, FluidAmountDisplaySource> COUNT_FLUIDS = simple("count_fluids", FluidAmountDisplaySource::new);
 	public static final RegistryEntry<DisplaySource, FluidListDisplaySource> LIST_FLUIDS = simple("list_fluids", FluidListDisplaySource::new);
+	public static final RegistryEntry<DisplaySource, PackageAddressDisplaySource> READ_PACKAGE_ADDRESS = simple("read_package_address", PackageAddressDisplaySource::new);
 
 	public static final RegistryEntry<DisplaySource, ComputerDisplaySource> COMPUTER = REGISTRATE.displaySource("computer", ComputerDisplaySource::new)
 		.onRegisterAfter(Registries.BLOCK_ENTITY_TYPE, source -> {

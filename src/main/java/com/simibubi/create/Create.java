@@ -2,6 +2,8 @@ package com.simibubi.create;
 
 import java.util.Random;
 
+import com.simibubi.create.foundation.recipe.AllIngredients;
+
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
@@ -28,14 +30,13 @@ import com.simibubi.create.content.schematics.ServerSchematicLoader;
 import com.simibubi.create.content.trains.GlobalRailwayManager;
 import com.simibubi.create.content.trains.bogey.BogeySizes;
 import com.simibubi.create.content.trains.track.AllPortalTracks;
+import com.simibubi.create.foundation.CreateNBTProcessors;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.advancement.AllTriggers;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.KineticStats;
 import com.simibubi.create.foundation.item.TooltipModifier;
-import com.simibubi.create.foundation.recipe.AllIngredients;
-import com.simibubi.create.foundation.utility.CreateNBTProcessors;
 import com.simibubi.create.infrastructure.command.ServerLagger;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.data.CreateDatagen;
@@ -137,10 +138,6 @@ public class Create {
 		AllConfigs.register(modLoadingContext, modContainer);
 
 		// TODO - Make these use Registry.register and move them into the RegisterEvent
-		AllArmInteractionPointTypes.register(modEventBus);
-		AllFanProcessingTypes.register(modEventBus);
-		AllItemAttributeTypes.register(modEventBus);
-		AllContraptionTypes.register(modEventBus);
 		AllPackagePortTargetTypes.register(modEventBus);
 
 		// FIXME: some of these registrations are not thread-safe
@@ -183,6 +180,10 @@ public class Create {
 	}
 
 	public static void onRegister(final RegisterEvent event) {
+		AllArmInteractionPointTypes.init();
+		AllFanProcessingTypes.init();
+		AllItemAttributeTypes.init();
+		AllContraptionTypes.init();
 		AllPotatoProjectileRenderModes.init();
 		AllPotatoProjectileEntityHitActions.init();
 		AllPotatoProjectileBlockHitActions.init();

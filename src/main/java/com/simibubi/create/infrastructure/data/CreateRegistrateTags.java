@@ -130,6 +130,9 @@ public class CreateRegistrateTags {
 		prov.tag(AllBlockTags.SUGAR_CANE_VARIANTS.tag)
 			.add(Blocks.SUGAR_CANE);
 
+		prov.tag(AllBlockTags.NON_HARVESTABLE.tag)
+				.add(Blocks.FIRE);
+
 		prov.tag(AllBlockTags.CORALS.tag)
 			.add(Blocks.DEAD_TUBE_CORAL, Blocks.DEAD_BRAIN_CORAL, Blocks.DEAD_BUBBLE_CORAL, Blocks.DEAD_FIRE_CORAL,
 				Blocks.DEAD_HORN_CORAL, Blocks.TUBE_CORAL, Blocks.BRAIN_CORAL, Blocks.BUBBLE_CORAL,

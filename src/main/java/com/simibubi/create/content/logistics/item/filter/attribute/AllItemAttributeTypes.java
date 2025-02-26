@@ -3,11 +3,9 @@ package com.simibubi.create.content.logistics.item.filter.attribute;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import org.jetbrains.annotations.ApiStatus.Internal;
-
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.Create;
-import com.simibubi.create.api.registry.CreateRegistries;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.AddedByAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.BookAuthorAttribute;
@@ -20,6 +18,7 @@ import com.simibubi.create.content.logistics.item.filter.attribute.attributes.In
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ItemNameAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ShulkerFillLevelAttribute;
 
+import net.minecraft.core.Registry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -37,12 +36,9 @@ import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 // TODO - Documentation
 public class AllItemAttributeTypes {
-	private static final DeferredRegister<ItemAttributeType> REGISTER = DeferredRegister.create(CreateRegistries.ITEM_ATTRIBUTE_TYPE, Create.ID);
-
 	public static final ItemAttributeType
 		PLACEABLE = singleton("placeable", s -> s.getItem() instanceof BlockItem),
 		CONSUMABLE = singleton("consumable", s -> s.has(DataComponents.FOOD)),
@@ -103,12 +99,8 @@ public class AllItemAttributeTypes {
 	}
 
 	private static ItemAttributeType register(String id, ItemAttributeType type) {
-		REGISTER.register(id, () -> type);
-		return type;
+		return Registry.register(CreateBuiltInRegistries.ITEM_ATTRIBUTE_TYPE, Create.asResource(id), type);
 	}
 
-	@Internal
-	public static void register(IEventBus modEventBus) {
-		REGISTER.register(modEventBus);
-	}
+	public static void init() {}
 }

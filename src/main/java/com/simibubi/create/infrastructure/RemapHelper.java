@@ -1,4 +1,4 @@
-package com.simibubi.create.foundation.utility;
+package com.simibubi.create.infrastructure;
 
 import static com.simibubi.create.AllBlocks.ADJUSTABLE_CHAIN_GEARSHIFT;
 import static com.simibubi.create.AllBlocks.ANDESITE_ENCASED_SHAFT;

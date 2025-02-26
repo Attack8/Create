@@ -130,6 +130,7 @@ public class AllPartialModels {
 		CHAIN_CONVEYOR_SHAFT = block("chain_conveyor/shaft"),
 
 		FROGPORT_BODY = block("package_frogport/body"), FROGPORT_HEAD = block("package_frogport/head"),
+		FROGPORT_HEAD_GOGGLES = block("package_frogport/head_goggles"),
 		FROGPORT_TONGUE = block("package_frogport/tongue"),
 		POSTBOX_FLAG = block("package_postbox/flag"),
 

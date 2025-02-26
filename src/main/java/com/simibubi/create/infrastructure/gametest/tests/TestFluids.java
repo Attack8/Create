@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
+
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.content.fluids.hosePulley.HosePulleyFluidHandler;
 import com.simibubi.create.content.fluids.pipes.valve.FluidValveBlock;
@@ -16,20 +18,26 @@ import com.simibubi.create.infrastructure.gametest.GameTestGroup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FarmBlock;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.RedstoneLampBlock;
 import net.minecraft.world.level.material.Fluids;
+
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -299,6 +307,61 @@ public class TestFluids {
 				helper.assertTankEmpty(tank); // wait for it to empty
 				helper.assertBlockProperty(lamp, RedstoneLampBlock.LIT, false); // should be off now
 			}
+		});
+	}
+
+	@GameTest(template = "open_pipes")
+	public static void openPipes(CreateGameTestHelper helper) {
+		BlockPos effects = new BlockPos(2, 4, 2);
+		BlockPos removers = new BlockPos(3, 5, 2);
+
+		BlockPos firstSeat = new BlockPos(4, 2, 1);
+		BlockPos secondSeat = firstSeat.south(2);
+
+		Zombie firstZombie = helper.spawn(EntityType.ZOMBIE, firstSeat);
+		Zombie secondZombie = helper.spawn(EntityType.ZOMBIE, secondSeat);
+
+		helper.pullLever(effects);
+
+		MutableBoolean stage1 = new MutableBoolean(true);
+
+		helper.succeedWhen(() -> {
+			if (stage1.booleanValue()) {
+				helper.assertTrue(firstZombie.isOnFire(), "not ignited");
+				helper.assertFalse(secondZombie.getActiveEffects().isEmpty(), "no effects");
+				// success, stage 2 time
+				stage1.setFalse();
+				helper.pullLever(effects);
+				helper.pullLever(removers);
+				helper.fail("switching stages");
+			} else {
+				helper.assertFalse(firstZombie.isOnFire(), "not extinguished");
+				helper.assertTrue(secondZombie.getActiveEffects().isEmpty(), "has effects");
+				// all done
+			}
+		});
+	}
+
+	@GameTest(template = "spouting", timeoutTicks = CreateGameTestHelper.TEN_SECONDS)
+	public static void spouting(CreateGameTestHelper helper) {
+		BlockPos farmland = new BlockPos(3, 2, 3);
+		BlockPos depot = new BlockPos(5, 2, 1);
+		helper.pullLever(2, 3, 2);
+		ItemStack waterBottle = PotionContents.createItemStack(Items.POTION, Potions.WATER);
+
+		helper.succeedWhen(() -> {
+			// lava
+			helper.assertBlockPresent(Blocks.LAVA_CAULDRON, 3, 2, 1);
+			// water
+			helper.assertBlockProperty(farmland, FarmBlock.MOISTURE, 7);
+			helper.assertBlockPresent(Blocks.MUD, farmland.east(1));
+			helper.assertBlockPresent(Blocks.MUD, farmland.east(2));
+			helper.assertBlockPresent(Blocks.MUD, farmland.east(3));
+			helper.assertBlockPresent(Blocks.WATER_CAULDRON, farmland.east(4));
+
+			helper.assertContainerContains(depot, Items.WATER_BUCKET);
+			helper.assertContainerContains(depot.east(1), waterBottle);
+			helper.assertContainerContains(depot.east(2), Items.GRASS_BLOCK);
 		});
 	}
 }

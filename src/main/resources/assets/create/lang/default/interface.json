@@ -1139,6 +1139,7 @@
 	"create.display_source.list_items": "List matching Items",
 	"create.display_source.fluid_amount": "Amount of matching Fluids",
 	"create.display_source.list_fluids": "List matching Fluids",
+	"create.display_source.read_package_address": "Read Package Address",
 	"create.display_source.nixie_tube": "Copy Nixie Tubes",
 	"create.display_source.fill_level": "Container Fill Level",
 	"create.display_source.fill_level.display": "Display Format",

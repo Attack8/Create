@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.simibubi.create.AllItems;
 import com.simibubi.create.Create;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.ContraptionHandler;
@@ -28,6 +29,7 @@ import com.simibubi.create.content.equipment.clipboard.ClipboardValueSettingsHan
 import com.simibubi.create.content.equipment.extendoGrip.ExtendoGripRenderHandler;
 import com.simibubi.create.content.equipment.goggles.GoggleOverlayRenderer;
 import com.simibubi.create.content.equipment.hats.CreateHatArmorLayer;
+import com.simibubi.create.content.equipment.potatoCannon.PotatoCannonItemRenderer;
 import com.simibubi.create.content.equipment.toolbox.ToolboxHandlerClient;
 import com.simibubi.create.content.equipment.zapper.ZapperItem;
 import com.simibubi.create.content.equipment.zapper.terrainzapper.WorldshaperRenderHandler;
@@ -103,6 +105,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage;
 import net.neoforged.neoforge.client.event.ViewportEvent;
@@ -384,6 +387,11 @@ public class ClientEvents {
 			event.registerAbove(VanillaGuiLayers.HOTBAR, Create.asResource("linked_controller"), LinkedControllerClientHandler.OVERLAY);
 			event.registerAbove(VanillaGuiLayers.HOTBAR, Create.asResource("schematic"), CreateClient.SCHEMATIC_HANDLER);
 			event.registerAbove(VanillaGuiLayers.HOTBAR, Create.asResource("toolbox"), ToolboxHandlerClient.OVERLAY);
+		}
+
+		@SubscribeEvent
+		public static void registerItemDecorations(RegisterItemDecorationsEvent event) {
+			event.register(AllItems.POTATO_CANNON, PotatoCannonItemRenderer.DECORATOR);
 		}
 
 		@SubscribeEvent

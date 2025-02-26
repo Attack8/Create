@@ -22,6 +22,10 @@ import java.util.function.Function;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.core.HolderLookup;
+
+import net.minecraft.core.Vec3i;
+
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -73,7 +77,6 @@ import com.simibubi.create.content.trains.bogey.AbstractBogeyBlock;
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.utility.BlockHelper;
-import com.simibubi.create.foundation.utility.ICoordinate;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.createmod.catnip.data.Iterate;
@@ -86,7 +89,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.HolderGetter;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -1403,7 +1405,7 @@ public abstract class Contraption {
 	public void expandBoundsAroundAxis(Axis axis) {
 		Set<BlockPos> blocks = getBlocks().keySet();
 
-		int radius = (int) (Math.ceil(Math.sqrt(getRadius(blocks, axis))));
+		int radius = (int) (Math.ceil(getRadius(blocks, axis)));
 
 		int maxX = radius + 2;
 		int maxY = radius + 2;
@@ -1412,13 +1414,13 @@ public abstract class Contraption {
 		int minY = -radius - 1;
 		int minZ = -radius - 1;
 
-		if (axis == Direction.Axis.X) {
+		if (axis == Axis.X) {
 			maxX = (int) bounds.maxX;
 			minX = (int) bounds.minX;
-		} else if (axis == Direction.Axis.Y) {
+		} else if (axis == Axis.Y) {
 			maxY = (int) bounds.maxY;
 			minY = (int) bounds.minY;
-		} else if (axis == Direction.Axis.Z) {
+		} else if (axis == Axis.Z) {
 			maxZ = (int) bounds.maxZ;
 			minZ = (int) bounds.minZ;
 		}
@@ -1503,32 +1505,38 @@ public abstract class Contraption {
 			});
 	}
 
-	public static float getRadius(Set<BlockPos> blocks, Direction.Axis axis) {
+	public static double getRadius(Iterable<? extends Vec3i> blocks, Axis axis) {
+		Axis axisA;
+		Axis axisB;
+
 		switch (axis) {
-			case X:
-				return getMaxDistSqr(blocks, BlockPos::getY, BlockPos::getZ);
-			case Y:
-				return getMaxDistSqr(blocks, BlockPos::getX, BlockPos::getZ);
-			case Z:
-				return getMaxDistSqr(blocks, BlockPos::getX, BlockPos::getY);
+			case X -> {
+				axisA = Axis.Y;
+				axisB = Axis.Z;
+			}
+			case Y -> {
+				axisA = Axis.X;
+				axisB = Axis.Z;
+			}
+			case Z -> {
+				axisA = Axis.X;
+				axisB = Axis.Y;
+			}
+			default -> throw new IllegalStateException("Unexpected value: " + axis);
 		}
 
-		throw new IllegalStateException("Impossible axis");
-	}
+		int maxDistSq = 0;
+		for (Vec3i vec : blocks) {
+			int a = vec.get(axisA);
+			int b = vec.get(axisB);
 
-	public static float getMaxDistSqr(Set<BlockPos> blocks, ICoordinate one, ICoordinate other) {
-		float maxDistSq = -1;
-		for (BlockPos pos : blocks) {
-			float a = one.get(pos);
-			float b = other.get(pos);
-
-			float distSq = a * a + b * b;
+			int distSq = a * a + b * b;
 
 			if (distSq > maxDistSq)
 				maxDistSq = distSq;
 		}
 
-		return maxDistSq;
+		return Math.sqrt(maxDistSq);
 	}
 
 	public MountedStorageManager getStorage() {

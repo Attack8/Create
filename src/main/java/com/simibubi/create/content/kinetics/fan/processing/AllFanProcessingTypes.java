@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.simibubi.create.api.registry.CreateRegistries;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import net.createmod.catnip.math.VecHelper;
 import net.createmod.catnip.theme.Color;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -58,11 +59,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredRegister;
 public class AllFanProcessingTypes {
-	private static final DeferredRegister<FanProcessingType> REGISTER = DeferredRegister.create(CreateRegistries.FAN_PROCESSING_TYPE, Create.ID);
-
 	public static final BlastingType BLASTING = register("blasting", new BlastingType());
 	public static final HauntingType HAUNTING = register("haunting", new HauntingType());
 	public static final SmokingType SMOKING = register("smoking", new SmokingType());
@@ -81,13 +78,11 @@ public class AllFanProcessingTypes {
 	}
 
 	private static <T extends FanProcessingType> T register(String name, T type) {
-		REGISTER.register(name, () -> type);
-		return type;
+		return Registry.register(CreateBuiltInRegistries.FAN_PROCESSING_TYPE, Create.asResource(name), type);
 	}
 
 	@Internal
-	public static void register(IEventBus eventBus) {
-		REGISTER.register(eventBus);
+	public static void init() {
 	}
 
 	@Nullable

@@ -130,6 +130,7 @@ _Now using Flywheel 1.0_
 - Fixed vaults and tanks rotated in place not updating their multiblock correctly
 - Hose pulley now deletes lilypads and other surface foliage
 - Fixed crushing wheels not applying looting to killed entities
+- Updated contraption chunkban protections, corrected limits and made them much harder to hit
 
 #### API Changes
 
@@ -138,6 +139,7 @@ _Now using Flywheel 1.0_
 - Added `#create:chain_rideable` to mark items as valid for riding a chain with
 - Added `#create:invalid_for_track_paving` for items
 - Added `#create:sugar_cane_variants` to allow the mechanical saw to work with custom sugarcane variants (#7263)
+- Added `#create:not_harvestable` to disallow blocks that the mechanical harvester would otherwise try to harvest
 - New API for custom storage block behaviour on contraptions.
   For simple cases, create provides the `#create:simple_mounted_storage` and `#create:chest_mounted_storage` block tags.
 - Added `#create:non_breakable` to mark blocks that cannot be broken by block-breaking kinetics
@@ -149,6 +151,22 @@ _Now using Flywheel 1.0_
 - Synced AllPortalTracks with Create Fabric
 - Implemented DyeHelper api (#7265)
 - Implemented api to add custom block train conductors (#7030)
-- Convert Potato Cannon project types into a dynamic registry
+- Convert Potato Cannon projectile types into a dynamic registry
     - Everything can be done with datapacks now, and there is no need to write a mod unless you need to add new
       Render Modes, Entity Hit Actions or Block Hit Actions
+- Reworked the AttachedRegistry class into SimpleRegistry and added Provider functionality
+- Exposed all custom registries as API
+- Exposed a handful of previously internal classes to the API, and gave them some cleanup
+    - BlockSpoutingBehaviour
+    - MovementBehaviour
+    - MovingInteractionBehaviour
+    - DisplaySource
+    - DisplayTarget
+    - ContraptionMovementSetting
+    - BoilerHeater
+    - PortalTrackProvider
+    - BlockMovementChecks
+    - ContraptionType
+    - MountedDispenseBehavior
+    - BlockStressValues
+    - OpenPipeEffectHandler

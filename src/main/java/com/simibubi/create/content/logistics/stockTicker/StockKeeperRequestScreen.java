@@ -261,7 +261,7 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 
 		extraAreas.add(new Rect2i(0, y + windowHeight - 15 - leftHeight, x, height));
 		if (encodeRequester)
-			extraAreas.add(new Rect2i(x + windowWidth, y + windowHeight - 15 - rightHeight, rightHeight, rightHeight));
+			extraAreas.add(new Rect2i(x + windowWidth, y + windowHeight - 15 - rightHeight, rightHeight + 10, rightHeight));
 
 		if (initial) {
 			playUiSound(SoundEvents.WOOD_HIT, 0.5f, 1.5f);
@@ -1078,9 +1078,16 @@ public class StockKeeperRequestScreen extends AbstractSimiContainerScreen<StockK
 				if (indexOf >= blockEntity.categories.size())
 					continue;
 				
-				hiddenCategories.remove(indexOf);
-				if (!entry.hidden)
+				if (!entry.hidden) {
 					hiddenCategories.add(indexOf);
+					playUiSound(SoundEvents.ITEM_FRAME_ROTATE_ITEM, 0.75f, 1.5f);
+				}
+				
+				else {
+					hiddenCategories.remove(indexOf);
+					playUiSound(SoundEvents.ITEM_FRAME_ROTATE_ITEM, 0.75f, 0.675f);
+				}
+				
 				refreshSearchNextTick = true;
 				moveToTopNextTick = false;
 				return true;

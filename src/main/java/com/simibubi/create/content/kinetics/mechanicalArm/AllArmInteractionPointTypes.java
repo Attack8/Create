@@ -9,7 +9,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.Create;
-import com.simibubi.create.api.registry.CreateRegistries;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.belt.BeltBlock;
 import com.simibubi.create.content.kinetics.belt.BeltBlockEntity;
@@ -37,6 +37,7 @@ import com.simibubi.create.foundation.item.SmartInventory;
 import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Containers;
@@ -59,15 +60,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class AllArmInteractionPointTypes {
-	private static final DeferredRegister<ArmInteractionPointType> REGISTER = DeferredRegister.create(CreateRegistries.ARM_INTERACTION_POINT_TYPE, Create.ID);
-
 	static {
 		register("basin", new BasinType());
 		register("belt", new BeltType());
@@ -89,12 +86,11 @@ public class AllArmInteractionPointTypes {
 	}
 
 	private static <T extends ArmInteractionPointType> void register(String name, T type) {
-		REGISTER.register(name, () -> type);
+		Registry.register(CreateBuiltInRegistries.ARM_INTERACTION_POINT_TYPE, Create.asResource(name), type);
 	}
 
 	@Internal
-	public static void register(IEventBus eventBus) {
-		REGISTER.register(eventBus);
+	public static void init() {
 	}
 
 	//

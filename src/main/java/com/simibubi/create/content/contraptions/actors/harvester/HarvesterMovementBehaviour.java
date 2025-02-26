@@ -57,11 +57,14 @@ public class HarvesterMovementBehaviour implements MovementBehaviour {
 	@Override
 	public void visitNewPosition(MovementContext context, BlockPos pos) {
 		Level world = context.world;
-		BlockState stateVisited = world.getBlockState(pos);
-		boolean notCropButCuttable = false;
-
 		if (world.isClientSide)
 			return;
+
+		BlockState stateVisited = world.getBlockState(pos);
+		if (stateVisited.isAir() || AllBlockTags.NON_HARVESTABLE.matches(stateVisited))
+			return;
+
+		boolean notCropButCuttable = false;
 
 		if (!isValidCrop(world, pos, stateVisited)) {
 			if (isValidOther(world, pos, stateVisited))

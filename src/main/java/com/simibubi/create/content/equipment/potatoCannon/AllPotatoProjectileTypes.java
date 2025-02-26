@@ -3,15 +3,15 @@ package com.simibubi.create.content.equipment.potatoCannon;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.Create;
 import com.simibubi.create.api.equipment.potatoCannon.PotatoCannonProjectileType;
-import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileBlockHitAction.PlaceBlockOnGround;
-import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileBlockHitAction.PlantCrop;
-import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileEntityHitAction.ChorusTeleport;
-import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileEntityHitAction.CureZombieVillager;
-import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileEntityHitAction.FoodEffects;
-import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileEntityHitAction.PotionEffect;
-import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileEntityHitAction.SetOnFire;
-import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileEntityHitAction.SuspiciousStew;
 import com.simibubi.create.api.registry.CreateRegistries;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileBlockHitActions.PlaceBlockOnGround;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileBlockHitActions.PlantCrop;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileEntityHitActions.ChorusTeleport;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileEntityHitActions.CureZombieVillager;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileEntityHitActions.FoodEffects;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileEntityHitActions.PotionEffect;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileEntityHitActions.SetOnFire;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileEntityHitActions.SuspiciousStew;
 
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;
@@ -21,32 +21,34 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 public class AllPotatoProjectileTypes {
-	public static ResourceKey<PotatoCannonProjectileType> FALLBACK = ResourceKey.create(CreateRegistries.POTATO_PROJECTILE_TYPE, Create.asResource("fallback"));
+	public static final ResourceKey<PotatoCannonProjectileType> FALLBACK = ResourceKey.create(CreateRegistries.POTATO_PROJECTILE_TYPE, Create.asResource("fallback"));
 
 	public static void bootstrap(BootstrapContext<PotatoCannonProjectileType> ctx) {
-		create("fallback")
+		register(ctx, "fallback", new PotatoCannonProjectileType.Builder()
 			.damage(0)
-			.register(ctx);
+			.build());
 
-		create("potato")
+		register(ctx, "potato", new PotatoCannonProjectileType.Builder()
 			.damage(5)
 			.reloadTicks(15)
 			.velocity(1.25f)
 			.knockback(1.5f)
 			.renderTumbling()
 			.onBlockHit(new PlantCrop(Blocks.POTATOES))
-			.registerAndAssign(ctx, Items.POTATO);
+			.addItems(Items.POTATO)
+			.build());
 
-		create("baked_potato")
+		register(ctx, "baked_potato", new PotatoCannonProjectileType.Builder()
 			.damage(5)
 			.reloadTicks(15)
 			.velocity(1.25f)
 			.knockback(0.5f)
 			.renderTumbling()
 			.preEntityHit(SetOnFire.seconds(3))
-			.registerAndAssign(ctx, Items.BAKED_POTATO);
+			.addItems(Items.BAKED_POTATO)
+			.build());
 
-		create("carrot")
+		register(ctx, "carrot", new PotatoCannonProjectileType.Builder()
 			.damage(4)
 			.reloadTicks(12)
 			.velocity(1.45f)
@@ -54,18 +56,20 @@ public class AllPotatoProjectileTypes {
 			.renderTowardMotion(140, 1)
 			.soundPitch(1.5f)
 			.onBlockHit(new PlantCrop(Blocks.CARROTS))
-			.registerAndAssign(ctx, Items.CARROT);
+			.addItems(Items.CARROT)
+			.build());
 
-		create("golden_carrot")
+		register(ctx, "golden_carrot", new PotatoCannonProjectileType.Builder()
 			.damage(12)
 			.reloadTicks(15)
 			.velocity(1.45f)
 			.knockback(0.5f)
 			.renderTowardMotion(140, 2)
 			.soundPitch(1.5f)
-			.registerAndAssign(ctx, Items.GOLDEN_CARROT);
+			.addItems(Items.GOLDEN_CARROT)
+			.build());
 
-		create("sweet_berry")
+		register(ctx, "sweet_berry", new PotatoCannonProjectileType.Builder()
 			.damage(3)
 			.reloadTicks(10)
 			.knockback(0.1f)
@@ -73,9 +77,10 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.splitInto(3)
 			.soundPitch(1.25f)
-			.registerAndAssign(ctx, Items.SWEET_BERRIES);
+			.addItems(Items.SWEET_BERRIES)
+			.build());
 
-		create("glow_berry")
+		register(ctx, "glow_berry", new PotatoCannonProjectileType.Builder()
 			.damage(2)
 			.reloadTicks(10)
 			.knockback(0.05f)
@@ -84,9 +89,10 @@ public class AllPotatoProjectileTypes {
 			.splitInto(2)
 			.soundPitch(1.2f)
 			.onEntityHit(new PotionEffect(MobEffects.GLOWING, 1, 200, false))
-			.registerAndAssign(ctx, Items.GLOW_BERRIES);
+			.addItems(Items.GLOW_BERRIES)
+			.build());
 
-		create("chocolate_berry")
+		register(ctx, "chocolate_berry", new PotatoCannonProjectileType.Builder()
 			.damage(4)
 			.reloadTicks(10)
 			.knockback(0.2f)
@@ -94,36 +100,40 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.splitInto(3)
 			.soundPitch(1.25f)
-			.registerAndAssign(ctx, AllItems.CHOCOLATE_BERRIES.get());
+			.addItems(AllItems.CHOCOLATE_BERRIES.get())
+			.build());
 
-		create("poison_potato")
+		register(ctx, "poison_potato", new PotatoCannonProjectileType.Builder()
 			.damage(5)
 			.reloadTicks(15)
 			.knockback(0.05f)
 			.velocity(1.25f)
 			.renderTumbling()
 			.onEntityHit(new PotionEffect(MobEffects.POISON, 1, 160, true))
-			.registerAndAssign(ctx, Items.POISONOUS_POTATO);
+			.addItems(Items.POISONOUS_POTATO)
+			.build());
 
-		create("chorus_fruit")
+		register(ctx, "chorus_fruit", new PotatoCannonProjectileType.Builder()
 			.damage(3)
 			.reloadTicks(15)
 			.velocity(1.20f)
 			.knockback(0.05f)
 			.renderTumbling()
 			.onEntityHit(new ChorusTeleport(20))
-			.registerAndAssign(ctx, Items.CHORUS_FRUIT);
+			.addItems(Items.CHORUS_FRUIT)
+			.build());
 
-		create("apple")
+		register(ctx, "apple", new PotatoCannonProjectileType.Builder()
 			.damage(5)
 			.reloadTicks(10)
 			.velocity(1.45f)
 			.knockback(0.5f)
 			.renderTumbling()
 			.soundPitch(1.1f)
-			.registerAndAssign(ctx, Items.APPLE);
+			.addItems(Items.APPLE)
+			.build());
 
-		create("honeyed_apple")
+		register(ctx, "honeyed_apple", new PotatoCannonProjectileType.Builder()
 			.damage(6)
 			.reloadTicks(15)
 			.velocity(1.35f)
@@ -131,9 +141,10 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.soundPitch(1.1f)
 			.onEntityHit(new PotionEffect(MobEffects.MOVEMENT_SLOWDOWN, 2, 160, true))
-			.registerAndAssign(ctx, AllItems.HONEYED_APPLE.get());
+			.addItems(AllItems.HONEYED_APPLE.get())
+			.build());
 
-		create("golden_apple")
+		register(ctx, "golden_apple", new PotatoCannonProjectileType.Builder()
 			.damage(1)
 			.reloadTicks(100)
 			.velocity(1.45f)
@@ -141,9 +152,10 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.soundPitch(1.1f)
 			.onEntityHit(CureZombieVillager.INSTANCE)
-			.registerAndAssign(ctx, Items.GOLDEN_APPLE);
+			.addItems(Items.GOLDEN_APPLE)
+			.build());
 
-		create("enchanted_golden_apple")
+		register(ctx, "enchanted_golden_apple", new PotatoCannonProjectileType.Builder()
 			.damage(1)
 			.reloadTicks(100)
 			.velocity(1.45f)
@@ -151,27 +163,30 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.soundPitch(1.1f)
 			.onEntityHit(new FoodEffects(Foods.ENCHANTED_GOLDEN_APPLE, false))
-			.registerAndAssign(ctx, Items.ENCHANTED_GOLDEN_APPLE);
+			.addItems(Items.ENCHANTED_GOLDEN_APPLE)
+			.build());
 
-		create("beetroot")
+		register(ctx, "beetroot", new PotatoCannonProjectileType.Builder()
 			.damage(2)
 			.reloadTicks(5)
 			.velocity(1.6f)
 			.knockback(0.1f)
 			.renderTowardMotion(140, 2)
 			.soundPitch(1.6f)
-			.registerAndAssign(ctx, Items.BEETROOT);
+			.addItems(Items.BEETROOT)
+			.build());
 
-		create("melon_slice")
+		register(ctx, "melon_slice", new PotatoCannonProjectileType.Builder()
 			.damage(3)
 			.reloadTicks(8)
 			.knockback(0.1f)
 			.velocity(1.45f)
 			.renderTumbling()
 			.soundPitch(1.5f)
-			.registerAndAssign(ctx, Items.MELON_SLICE);
+			.addItems(Items.MELON_SLICE)
+			.build());
 
-		create("glistering_melon")
+		register(ctx, "glistering_melon", new PotatoCannonProjectileType.Builder()
 			.damage(5)
 			.reloadTicks(8)
 			.knockback(0.1f)
@@ -179,9 +194,10 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.soundPitch(1.5f)
 			.onEntityHit(new PotionEffect(MobEffects.GLOWING, 1, 100, true))
-			.registerAndAssign(ctx, Items.GLISTERING_MELON_SLICE);
+			.addItems(Items.GLISTERING_MELON_SLICE)
+			.build());
 
-		create("melon_block")
+		register(ctx, "melon_block", new PotatoCannonProjectileType.Builder()
 			.damage(8)
 			.reloadTicks(20)
 			.knockback(2.0f)
@@ -189,9 +205,10 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.soundPitch(0.9f)
 			.onBlockHit(new PlaceBlockOnGround(Blocks.MELON))
-			.registerAndAssign(ctx, Blocks.MELON);
+			.addItems(Blocks.MELON)
+			.build());
 
-		create("pumpkin_block")
+		register(ctx, "pumpkin_block", new PotatoCannonProjectileType.Builder()
 			.damage(6)
 			.reloadTicks(15)
 			.knockback(2.0f)
@@ -199,9 +216,10 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.soundPitch(0.9f)
 			.onBlockHit(new PlaceBlockOnGround(Blocks.PUMPKIN))
-			.registerAndAssign(ctx, Blocks.PUMPKIN);
+			.addItems(Blocks.PUMPKIN)
+			.build());
 
-		create("pumpkin_pie")
+		register(ctx, "pumpkin_pie", new PotatoCannonProjectileType.Builder()
 			.damage(7)
 			.reloadTicks(15)
 			.knockback(0.05f)
@@ -209,18 +227,20 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.sticky()
 			.soundPitch(1.1f)
-			.registerAndAssign(ctx, Items.PUMPKIN_PIE);
+			.addItems(Items.PUMPKIN_PIE)
+			.build());
 
-		create("cake")
+		register(ctx, "cake", new PotatoCannonProjectileType.Builder()
 			.damage(8)
 			.reloadTicks(15)
 			.knockback(0.1f)
 			.velocity(1.1f)
 			.renderTumbling()
 			.sticky()
-			.registerAndAssign(ctx, Items.CAKE);
+			.addItems(Items.CAKE)
+			.build());
 
-		create("blaze_cake")
+		register(ctx, "blaze_cake", new PotatoCannonProjectileType.Builder()
 			.damage(15)
 			.reloadTicks(20)
 			.knockback(0.3f)
@@ -228,18 +248,20 @@ public class AllPotatoProjectileTypes {
 			.renderTumbling()
 			.sticky()
 			.preEntityHit(SetOnFire.seconds(12))
-			.registerAndAssign(ctx, AllItems.BLAZE_CAKE.get());
+			.addItems(AllItems.BLAZE_CAKE.get())
+			.build());
 
-		create("fish")
+		register(ctx, "fish", new PotatoCannonProjectileType.Builder()
 			.damage(4)
 			.knockback(0.6f)
 			.velocity(1.3f)
 			.renderTowardMotion(140, 1)
 			.sticky()
 			.soundPitch(1.3f)
-			.registerAndAssign(ctx, Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.TROPICAL_FISH);
+			.addItems(Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.TROPICAL_FISH)
+			.build());
 
-		create("pufferfish")
+		register(ctx, "pufferfish", new PotatoCannonProjectileType.Builder()
 			.damage(4)
 			.knockback(0.4f)
 			.velocity(1.1f)
@@ -247,9 +269,10 @@ public class AllPotatoProjectileTypes {
 			.sticky()
 			.onEntityHit(new FoodEffects(Foods.PUFFERFISH, false))
 			.soundPitch(1.1f)
-			.registerAndAssign(ctx, Items.PUFFERFISH);
+			.addItems(Items.PUFFERFISH)
+			.build());
 
-		create("suspicious_stew")
+		register(ctx, "suspicious_stew", new PotatoCannonProjectileType.Builder()
 			.damage(3)
 			.reloadTicks(40)
 			.knockback(0.2f)
@@ -257,10 +280,11 @@ public class AllPotatoProjectileTypes {
 			.renderTowardMotion(140, 1)
 			.dropStack(Items.BOWL.getDefaultInstance())
 			.onEntityHit(SuspiciousStew.INSTANCE)
-			.registerAndAssign(ctx, Items.SUSPICIOUS_STEW);
+			.addItems(Items.SUSPICIOUS_STEW)
+			.build());
 	}
 
-	private static PotatoCannonProjectileType.Builder create(String name) {
-		return new PotatoCannonProjectileType.Builder(Create.asResource(name));
+	private static void register(BootstrapContext<PotatoCannonProjectileType> ctx, String name, PotatoCannonProjectileType type) {
+		ctx.register(ResourceKey.create(CreateRegistries.POTATO_PROJECTILE_TYPE, Create.asResource(name)), type);
 	}
 }

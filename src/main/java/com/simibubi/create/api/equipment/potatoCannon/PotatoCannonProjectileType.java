@@ -4,26 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileEntityHitAction.Type;
-import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileRenderMode.Billboard;
 import com.simibubi.create.api.registry.CreateRegistries;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileRenderModes.Billboard;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileRenderModes.TowardMotion;
+import com.simibubi.create.content.equipment.potatoCannon.AllPotatoProjectileRenderModes.Tumble;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstrapContext;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -53,26 +50,12 @@ public record PotatoCannonProjectileType(HolderSet<Item> items, int reloadTicks,
 		PotatoProjectileBlockHitAction.CODEC.optionalFieldOf("on_entity_hit").forGetter(p -> p.onBlockHit)
 	).apply(i, PotatoCannonProjectileType::new));
 
-	@Nullable
-	public static PotatoCannonProjectileType getTypeForItem(Level level, Item item) {
+	public static Optional<Reference<PotatoCannonProjectileType>> getTypeForItem(RegistryAccess registryAccess, Item item) {
 		// Cache this if it causes performance issues, but it probably won't
-		List<PotatoCannonProjectileType> types = level.registryAccess()
-			.lookupOrThrow(CreateRegistries.POTATO_PROJECTILE_TYPE)
+		return registryAccess.lookupOrThrow(CreateRegistries.POTATO_PROJECTILE_TYPE)
 			.listElements()
-			.map(Reference::value)
-			.toList();
-
-		for (PotatoCannonProjectileType type : types)
-			if (type.items.contains(item.builtInRegistryHolder()))
-				return type;
-
-		return null;
-	}
-
-	public static Optional<PotatoCannonProjectileType> getTypeForStack(Level level, ItemStack item) {
-		if (item.isEmpty())
-			return Optional.empty();
-		return Optional.ofNullable(getTypeForItem(level, item.getItem()));
+			.filter(ref -> ref.value().items.contains(item.builtInRegistryHolder()))
+			.findFirst();
 	}
 
 	public boolean preEntityHit(ItemStack stack, EntityHitResult ray) {
@@ -94,8 +77,6 @@ public record PotatoCannonProjectileType(HolderSet<Item> items, int reloadTicks,
 	}
 
 	public static class Builder {
-		private ResourceLocation id;
-
 		private final List<Holder<Item>> items = new ArrayList<>();
 		private int reloadTicks = 10;
 		private int damage = 1;
@@ -111,10 +92,6 @@ public record PotatoCannonProjectileType(HolderSet<Item> items, int reloadTicks,
 		private PotatoProjectileEntityHitAction preEntityHit = null;
 		private PotatoProjectileEntityHitAction onEntityHit = null;
 		private PotatoProjectileBlockHitAction onBlockHit = null;
-
-		public Builder(ResourceLocation id) {
-			this.id = id;
-		}
 
 		public Builder reloadTicks(int reload) {
 			this.reloadTicks = reload;
@@ -172,17 +149,17 @@ public record PotatoCannonProjectileType(HolderSet<Item> items, int reloadTicks,
 		}
 
 		public Builder renderBillboard() {
-			renderMode(PotatoProjectileRenderMode.Billboard.INSTANCE);
+			renderMode(Billboard.INSTANCE);
 			return this;
 		}
 
 		public Builder renderTumbling() {
-			renderMode(PotatoProjectileRenderMode.Tumble.INSTANCE);
+			renderMode(Tumble.INSTANCE);
 			return this;
 		}
 
 		public Builder renderTowardMotion(int spriteAngle, float spin) {
-			renderMode(new PotatoProjectileRenderMode.TowardMotion(spriteAngle, spin));
+			renderMode(new TowardMotion(spriteAngle, spin));
 			return this;
 		}
 
@@ -207,8 +184,8 @@ public record PotatoCannonProjectileType(HolderSet<Item> items, int reloadTicks,
 			return this;
 		}
 
-		public void register(BootstrapContext<PotatoCannonProjectileType> ctx) {
-			PotatoCannonProjectileType type = new PotatoCannonProjectileType(
+		public PotatoCannonProjectileType build() {
+			return new PotatoCannonProjectileType(
 				HolderSet.direct(items),
 				reloadTicks,
 				damage,
@@ -225,12 +202,6 @@ public record PotatoCannonProjectileType(HolderSet<Item> items, int reloadTicks,
 				Optional.ofNullable(onEntityHit),
 				Optional.ofNullable(onBlockHit)
 			);
-			ctx.register(ResourceKey.create(CreateRegistries.POTATO_PROJECTILE_TYPE, id), type);
-		}
-
-		public void registerAndAssign(BootstrapContext<PotatoCannonProjectileType> ctx, ItemLike... items) {
-			addItems(items);
-			register(ctx);
 		}
 	}
 }

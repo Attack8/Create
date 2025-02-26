@@ -408,6 +408,7 @@ public class AllItems {
 
 	public static final ItemEntry<PotatoCannonItem> POTATO_CANNON =
 		REGISTRATE.item("potato_cannon", PotatoCannonItem::new)
+			.properties(p -> p.durability(100))
 			.model(AssetLookup.itemModelWithPartials())
 			.tag(Tags.Items.ENCHANTABLES)
 			.register();

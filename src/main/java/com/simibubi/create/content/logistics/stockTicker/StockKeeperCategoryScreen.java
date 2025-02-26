@@ -7,9 +7,6 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.platform.CatnipServices;
-
 import org.lwjgl.glfw.GLFW;
 
 import com.google.common.collect.ImmutableList;
@@ -25,10 +22,12 @@ import com.simibubi.create.foundation.gui.widget.IconButton;
 import com.simibubi.create.foundation.gui.widget.ScrollInput;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.gui.UIRenderHelper;
 import net.createmod.catnip.gui.element.GuiGameElement;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -127,13 +126,20 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 
 		ItemStack stackInSlot = menu.proxyInventory.getStackInSlot(0)
 			.copy();
-		if (!stackInSlot.isEmpty())
-			stackInSlot.set(DataComponents.CUSTOM_NAME, Component.literal(editorEditBox.getValue()));
+		boolean empty = stackInSlot.isEmpty();
 
-		if (editingIndex == -1)
-			schedule.add(stackInSlot);
-		else
-			schedule.set(editingIndex, stackInSlot);
+		if (empty && editingIndex != -1)
+			schedule.remove(editingIndex);
+
+		if (!empty) {
+			String value = editorEditBox.getValue();
+			stackInSlot.set(DataComponents.CUSTOM_NAME, value.isBlank() ? null : Component.literal(value));
+
+			if (editingIndex == -1)
+				schedule.add(stackInSlot);
+			else
+				schedule.set(editingIndex, stackInSlot);
+		}
 
 		CatnipServices.NETWORK.sendToServer(new GhostItemSubmitPacket(ItemStack.EMPTY, 0));
 
