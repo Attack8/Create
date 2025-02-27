@@ -18,9 +18,9 @@ import com.simibubi.create.content.logistics.item.filter.attribute.attributes.In
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ItemNameAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.attributes.ShulkerFillLevelAttribute;
 
-import net.minecraft.core.Registry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.BlockItem;
@@ -33,8 +33,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-
-import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
 // TODO - Documentation
@@ -75,7 +73,7 @@ public class AllItemAttributeTypes {
 		BOOK_AUTHOR = register("book_author", new BookAuthorAttribute.Type()),
 		BOOK_COPY = register("book_copy", new BookCopyAttribute.Type());
 
-		private static <T extends Recipe<SingleRecipeInput>> boolean testRecipe(ItemStack s, Level w, RecipeType<T> type) {
+	private static <T extends Recipe<SingleRecipeInput>> boolean testRecipe(ItemStack s, Level w, RecipeType<T> type) {
 		return w.getRecipeManager()
 				.getRecipeFor(type, new SingleRecipeInput(s.copy()), w)
 				.isPresent();
@@ -102,5 +100,7 @@ public class AllItemAttributeTypes {
 		return Registry.register(CreateBuiltInRegistries.ITEM_ATTRIBUTE_TYPE, Create.asResource(id), type);
 	}
 
-	public static void init() {}
+	public static void init() {
+	}
+	
 }
