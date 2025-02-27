@@ -632,7 +632,7 @@ public class PackagerBlockEntity extends SmartBlockEntity {
 			return;
 		compound.put("QueuedPackages", NBTHelper.writeItemList(queuedExitingPackages, registries));
 		if (availableItems != null)
-			compound.put("LastSummary", CatnipCodecUtils.encode(InventorySummary.CODEC, availableItems).orElseThrow());
+			compound.put("LastSummary", CatnipCodecUtils.encode(InventorySummary.CODEC, registries, availableItems).orElseThrow());
 	}
 
 	@Override
