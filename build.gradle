@@ -263,6 +263,18 @@ publishing {
         }
     }
     repositories {
+        if (project.hasProperty("mavenUsername") && project.hasProperty("mavenPassword") && project.hasProperty("mavenURL")) {
+            project.logger.lifecycle("Adding maven from secrets")
+
+            maven {
+                credentials {
+                    username = project.property("mavenUsername") as String
+                    password = project.property("mavenPassword") as String
+                }
+                url = URI.create(project.property("mavenURL") as String)
+            }
+        }
+
         if (project.hasProperty('mavendir')) {
             maven { url = mavendir }
         }
