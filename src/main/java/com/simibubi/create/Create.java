@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.logging.LogUtils;
-import com.simibubi.create.api.behaviour.spouting.BlockSpoutingBehaviour;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
 import com.simibubi.create.compat.curios.Curios;
@@ -169,7 +168,7 @@ public class Create {
 			// These registrations use Create's registered objects directly so they must run after registration has finished.
 			BoilerHeaters.registerDefaults();
 			AllPortalTracks.registerDefaults();
-			BlockSpoutingBehaviour.registerDefaults();
+			AllBlockSpoutingBehaviours.registerDefaults();
 			AllMovementBehaviours.registerDefaults();
 			AllInteractionBehaviours.registerDefaults();
 			AllContraptionMovementSettings.registerDefaults();

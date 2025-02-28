@@ -147,8 +147,7 @@ public class ValueBox extends ChasingAABBOutline {
 			ItemRenderer itemRenderer = Minecraft.getInstance()
 				.getItemRenderer();
 			BakedModel modelWithOverrides = itemRenderer.getModel(stack, null, null, 0);
-			boolean blockItem = modelWithOverrides.isGui3d() && modelWithOverrides.getRenderPasses(stack, false)
-				.size() <= 1;
+			boolean blockItem = modelWithOverrides.isGui3d();
 
 			float scale = 1.5f;
 			ms.translate(-font.width(count), 0, 0);
