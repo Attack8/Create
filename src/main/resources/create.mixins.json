@@ -9,6 +9,7 @@
   "mixins": [
     "ArmorTrimMixin",
     "BlockItemMixin",
+    "BuiltInRegistriesMixin",
     "CustomItemUseEffectsMixin",
     "EnchantedCountIncreaseFunctionMixin",
     "EntityMixin",
@@ -24,8 +25,6 @@
     "WaterWheelFluidSpreadMixin",
     "accessor.AbstractRegistrateAccessor",
     "accessor.BlockBehaviourAccessor",
-    "accessor.BlockLootSubProviderAccessor",
-    "accessor.BuiltInRegistriesAccessor",
     "accessor.DispenserBlockAccessor",
     "accessor.FallingBlockEntityAccessor",
     "accessor.FlowingFluidAccessor",
@@ -48,8 +47,7 @@
     "compat.journeymap.MapRendererAccessor",
     "datafixer.BlockPosFormatAndRenamesFixMixin",
     "datafixer.ItemStackComponentizationFixMixin",
-    "datafixer.V1460Mixin",
-    "forge.RegistryBuilderMixin"
+    "datafixer.V1460Mixin"
   ],
   "client": [
     "accessor.AgeableListModelAccessor",

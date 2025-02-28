@@ -269,7 +269,6 @@ import com.simibubi.create.foundation.data.ModelGen;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.UncontainableBlockItem;
-import com.simibubi.create.foundation.mixin.accessor.BlockLootSubProviderAccessor;
 import com.simibubi.create.foundation.utility.DyeHelper;
 import com.simibubi.create.infrastructure.config.CStress;
 import com.tterrag.registrate.providers.RegistrateRecipeProvider;
@@ -2488,7 +2487,7 @@ public class AllBlocks {
 			.sound(SoundType.STONE))
 		.transform(pickaxeOnly())
 		.loot((lt, b) ->  {
-			HolderLookup.RegistryLookup<Enchantment> enchantmentRegistryLookup = ((BlockLootSubProviderAccessor) lt).create$getRegistries().lookupOrThrow(Registries.ENCHANTMENT);
+			HolderLookup.RegistryLookup<Enchantment> enchantmentRegistryLookup = lt.getRegistries().lookupOrThrow(Registries.ENCHANTMENT);
 
 			lt.add(b,
 				lt.createSilkTouchDispatchTable(b,
@@ -2509,8 +2508,7 @@ public class AllBlocks {
 			.sound(SoundType.DEEPSLATE))
 		.transform(pickaxeOnly())
 		.loot((lt, b) -> {
-			HolderLookup.RegistryLookup<Enchantment> enchantmentRegistryLookup = ((BlockLootSubProviderAccessor) lt).create$getRegistries().lookupOrThrow(Registries.ENCHANTMENT);
-
+			HolderLookup.RegistryLookup<Enchantment> enchantmentRegistryLookup = lt.getRegistries().lookupOrThrow(Registries.ENCHANTMENT);
 
 			lt.add(b,
 					lt.createSilkTouchDispatchTable(b,

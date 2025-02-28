@@ -1,11 +1,7 @@
 package com.simibubi.create.api.registry;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.jetbrains.annotations.ApiStatus.Internal;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.simibubi.create.api.behaviour.display.DisplaySource;
 import com.simibubi.create.api.behaviour.display.DisplayTarget;
@@ -20,13 +16,12 @@ import com.simibubi.create.content.kinetics.mechanicalArm.ArmInteractionPointTyp
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 import com.simibubi.create.content.logistics.packagePort.PackagePortTargetType;
 
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.core.Registry;
+import net.minecraft.core.WritableRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
-import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
 /**
@@ -34,12 +29,7 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
  *
  * @see CreateRegistries
  */
-@EventBusSubscriber(bus = Bus.MOD)
 public class CreateBuiltInRegistries {
-	private static final Set<Registry<?>> REGISTRIES = new HashSet<>();
-	// specifying Registry<?> here makes generics upset later
-	private static final Set<ResourceKey<?>> HAS_INTRUSIVE_HOLDERS = new HashSet<>();
-
 	public static final Registry<ArmInteractionPointType> ARM_INTERACTION_POINT_TYPE = simple(CreateRegistries.ARM_INTERACTION_POINT_TYPE);
 	public static final Registry<FanProcessingType> FAN_PROCESSING_TYPE = simple(CreateRegistries.FAN_PROCESSING_TYPE);
 	public static final Registry<ItemAttributeType> ITEM_ATTRIBUTE_TYPE = simple(CreateRegistries.ITEM_ATTRIBUTE_TYPE);
@@ -54,31 +44,30 @@ public class CreateBuiltInRegistries {
 	public static final Registry<MapCodec<? extends PotatoProjectileBlockHitAction>> POTATO_PROJECTILE_BLOCK_HIT_ACTION = simple(CreateRegistries.POTATO_PROJECTILE_BLOCK_HIT_ACTION);
 
 	private static <T> Registry<T> simple(ResourceKey<Registry<T>> key) {
-		Registry<T> registry = new RegistryBuilder<>(key)
-			.sync(true)
-			.create();
-		return register(registry);
+		return register(key, false);
 	}
 
 	private static <T> Registry<T> withIntrusiveHolders(ResourceKey<Registry<T>> key) {
-		HAS_INTRUSIVE_HOLDERS.add(key);
-		return simple(key);
+		return register(key, true);
 	}
 
-	private static <T> Registry<T> register(Registry<T> registry) {
-		REGISTRIES.add(registry);
+	@SuppressWarnings({"deprecation", "unchecked", "rawtypes"})
+	private static <T> Registry<T> register(ResourceKey<Registry<T>> key, boolean hasIntrusiveHolders) {
+		RegistryBuilder<T> builder = new RegistryBuilder<>(key)
+			.sync(true);
+
+		if (hasIntrusiveHolders)
+			builder.withIntrusiveHolders();
+
+		Registry<T> registry = builder.create();
+		((WritableRegistry) BuiltInRegistries.REGISTRY)
+			.register(key, registry, RegistrationInfo.BUILT_IN);
 		return registry;
 	}
 
 	@Internal
-	public static boolean hasIntrusiveHolders(ResourceKey<?> key) {
-		return HAS_INTRUSIVE_HOLDERS.contains(key);
-	}
-
-	@SubscribeEvent
-	public static void onNewRegistryEvent(NewRegistryEvent event) {
-		for (Registry<?> registry : REGISTRIES)
-			event.register(registry);
-		REGISTRIES.clear();
+	public static void init() {
+		// make sure the class is loaded.
+		// this method is called at the tail of BuiltInRegistries, injected by BuiltInRegistriesMixin.
 	}
 }
