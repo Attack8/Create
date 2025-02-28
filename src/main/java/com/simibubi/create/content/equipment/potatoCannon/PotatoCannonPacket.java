@@ -19,7 +19,7 @@ public class PotatoCannonPacket extends ShootGadgetPacket {
 	public static final StreamCodec<RegistryFriendlyByteBuf, PotatoCannonPacket> STREAM_CODEC = StreamCodec.composite(
 		CatnipStreamCodecs.VEC3, packet -> packet.location,
 		CatnipStreamCodecs.VEC3, packet -> packet.motion,
-		ItemStack.STREAM_CODEC, packet -> packet.item,
+		ItemStack.OPTIONAL_STREAM_CODEC, packet -> packet.item,
 		CatnipStreamCodecs.HAND, packet -> packet.hand,
 		ByteBufCodecs.FLOAT, packet -> packet.pitch,
 		ByteBufCodecs.BOOL, packet -> packet.self,
