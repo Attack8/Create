@@ -288,11 +288,12 @@ publishMods {
     displayName = "$mod_name $minecraft_version $mod_version"
     modLoaders.add("neoforge")
 
-    curseforge {
-        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        projectId = "328085"
-        minecraftVersions.add(minecraft_version)
-    }
+    // TODO - Uncomment post update 6
+//    curseforge {
+//        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+//        projectId = "328085"
+//        minecraftVersions.add(minecraft_version)
+//    }
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
