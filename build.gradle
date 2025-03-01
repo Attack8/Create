@@ -260,6 +260,7 @@ neoForge.ideSyncTask(generateModMetadata)
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
+            artifactId base.archivesName.get()
             from components.java
         }
     }
