@@ -138,7 +138,7 @@ dependencies {
 
     jarJar("dev.engine-room.flywheel:flywheel-neoforge-${flywheel_minecraft_version}:${flywheel_version}") {
         version {
-            strictly "[1.0,2.0)"
+            strictly "[1.0.0-9,2.0)"
         }
     }
 
@@ -285,14 +285,15 @@ publishMods {
     file = jar.archiveFile
     changelog = ChangelogText.getChangelogText(project).toString()
     type = STABLE
-    displayName = "$mod_name $minecraft_version $mod_version"
+    displayName = "$mod_name $mod_version for mc$minecraft_version"
     modLoaders.add("neoforge")
 
-    curseforge {
-        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        projectId = "328085"
-        minecraftVersions.add(minecraft_version)
-    }
+    // TODO - Uncomment post update 6
+//    curseforge {
+//        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+//        projectId = "328085"
+//        minecraftVersions.add(minecraft_version)
+//    }
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
