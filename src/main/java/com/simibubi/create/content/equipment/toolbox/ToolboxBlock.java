@@ -38,7 +38,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -120,7 +120,7 @@ public class ToolboxBlock extends HorizontalDirectionalBlock implements SimpleWa
 
 	@Override
 	public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor world,
-		BlockPos pos, BlockPos neighbourPos) {
+								  BlockPos pos, BlockPos neighbourPos) {
 		if (state.getValue(WATERLOGGED))
 			world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
 		return state;
@@ -133,7 +133,7 @@ public class ToolboxBlock extends HorizontalDirectionalBlock implements SimpleWa
 
 	@Override
 	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-		BlockHitResult ray) {
+								 BlockHitResult ray) {
 
 		if (player == null || player.isCrouching())
 			return InteractionResult.PASS;
@@ -164,7 +164,7 @@ public class ToolboxBlock extends HorizontalDirectionalBlock implements SimpleWa
 		FluidState ifluidstate = context.getLevel()
 			.getFluidState(context.getClickedPos());
 		return super.getStateForPlacement(context).setValue(FACING, context.getHorizontalDirection()
-			.getOpposite())
+				.getOpposite())
 			.setValue(WATERLOGGED, Boolean.valueOf(ifluidstate.getType() == Fluids.WATER));
 	}
 

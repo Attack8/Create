@@ -6,9 +6,9 @@ void flw_instanceVertex(in FlwInstance instance) {
 
     flw_vertexNormal = rotateByQuaternion(flw_vertexNormal, instance.rotation);
 
-    vec2 scroll = fract(instance.speed * flw_renderTicks) * instance.scale;
+    vec2 scroll = fract(instance.speed * flw_renderTicks + instance.offset) * instance.scale;
 
     flw_vertexTexCoord = flw_vertexTexCoord + instance.diff + scroll;
-    flw_vertexLight = vec2(instance.light) / 256.;
     flw_vertexOverlay = instance.overlay;
+    flw_vertexLight = max(vec2(instance.light) / 256., flw_vertexLight);
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.minecraft.core.BlockPos;
@@ -45,8 +45,8 @@ public abstract class SymmetryMirror {
 	}
 
 	public static List<Component> getMirrors() {
-		return ImmutableList.of(Lang.translateDirect("symmetry.mirror.plane"), Lang.translateDirect("symmetry.mirror.doublePlane"),
-			Lang.translateDirect("symmetry.mirror.triplePlane"));
+		return ImmutableList.of(CreateLang.translateDirect("symmetry.mirror.plane"), CreateLang.translateDirect("symmetry.mirror.doublePlane"),
+			CreateLang.translateDirect("symmetry.mirror.triplePlane"));
 	}
 
 	public StringRepresentable getOrientation() {

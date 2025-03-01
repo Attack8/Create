@@ -15,16 +15,15 @@ import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllItems;
-import com.simibubi.create.AllMovementBehaviours;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.Create;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.actors.psi.PortableStorageInterfaceMovement;
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock;
 import com.simibubi.create.content.contraptions.actors.seat.SeatEntity;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsStopControllingPacket;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
+import com.simibubi.create.content.contraptions.data.ContraptionSyncLimiting;
 import com.simibubi.create.content.contraptions.elevator.ElevatorContraption;
 import com.simibubi.create.content.contraptions.glue.SuperGlueEntity;
 import com.simibubi.create.content.contraptions.mounted.MountedContraption;
@@ -37,9 +36,10 @@ import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.collision.Matrix3d;
 import com.simibubi.create.foundation.mixin.accessor.ServerLevelAccessor;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
 
+import dev.engine_room.flywheel.api.backend.BackendManager;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -72,6 +72,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
@@ -242,8 +243,8 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 
 		Vec3 transformedVector = toGlobalVector(Vec3.atLowerCornerOf(seat)
 			.add(.5, passenger.getMyRidingOffset() + ySize - .15f, .5), partialTicks)
-				.add(VecHelper.getCenterOf(BlockPos.ZERO))
-				.subtract(0.5, ySize, 0.5);
+			.add(VecHelper.getCenterOf(BlockPos.ZERO))
+			.subtract(0.5, ySize, 0.5);
 		return transformedVector;
 	}
 
@@ -253,7 +254,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 			return true;
 		return contraption.getSeatMapping()
 			.size() < contraption.getSeats()
-				.size();
+			.size();
 	}
 
 	public Component getContraptionName() {
@@ -285,7 +286,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	public boolean handlePlayerInteraction(Player player, BlockPos localPos, Direction side,
-		InteractionHand interactionHand) {
+										   InteractionHand interactionHand) {
 		int indexOfSeat = contraption.getSeats()
 			.indexOf(localPos);
 		if (indexOfSeat == -1 || AllItems.WRENCH.isIn(player.getItemInHand(interactionHand))) {
@@ -380,7 +381,8 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 
 		if (level().isClientSide())
 			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-				if (!contraption.deferInvalidate)
+				// The visual will handle this with flywheel on.
+				if (!contraption.deferInvalidate || BackendManager.isBackendOn())
 					return;
 				contraption.deferInvalidate = false;
 				ContraptionRenderInfo.invalidate(contraption);
@@ -445,7 +447,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		for (MutablePair<StructureBlockInfo, MovementContext> pair : contraption.getActors()) {
 			MovementContext context = pair.right;
 			StructureBlockInfo blockInfo = pair.left;
-			MovementBehaviour actor = AllMovementBehaviours.getBehaviour(blockInfo.state());
+			MovementBehaviour actor = MovementBehaviour.REGISTRY.get(blockInfo.state());
 
 			if (actor == null)
 				continue;
@@ -484,11 +486,10 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		skipActorStop = false;
 
 		for (Entity entity : getPassengers()) {
-			if (!(entity instanceof OrientedContraptionEntity))
+			if (!(entity instanceof OrientedContraptionEntity orientedCE))
 				continue;
 			if (!contraption.stabilizedSubContraptions.containsKey(entity.getUUID()))
 				continue;
-			OrientedContraptionEntity orientedCE = (OrientedContraptionEntity) entity;
 			if (orientedCE.contraption != null && orientedCE.contraption.stalled) {
 				contraption.stalled = true;
 				break;
@@ -509,7 +510,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		for (MutablePair<StructureBlockInfo, MovementContext> pair : contraption.getActors()) {
 			MovementContext context = pair.right;
 			StructureBlockInfo blockInfo = pair.left;
-			MovementBehaviour actor = AllMovementBehaviours.getBehaviour(blockInfo.state());
+			MovementBehaviour actor = MovementBehaviour.REGISTRY.get(blockInfo.state());
 			if (actor instanceof PortableStorageInterfaceMovement && isActorActive(context, actor))
 				if (context.position != null)
 					actor.visitNewPosition(context, BlockPos.containing(context.position));
@@ -526,7 +527,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	protected boolean shouldActorTrigger(MovementContext context, StructureBlockInfo blockInfo, MovementBehaviour actor,
-		Vec3 actorPosition, BlockPos gridPosition) {
+										 Vec3 actorPosition, BlockPos gridPosition) {
 		Vec3 previousPosition = context.position;
 		if (previousPosition == null)
 			return false;
@@ -612,11 +613,8 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		CompoundTag compound = new CompoundTag();
 		writeAdditional(compound, true);
 
-		if (ContraptionData.isTooLargeForSync(compound)) {
-			String info = getContraption().getType().id + " @" + position() + " (" + getStringUUID() + ")";
-			Create.LOGGER.warn("Could not send Contraption Spawn Data (Packet too big): " + info);
-			compound = null;
-		}
+		if (ContraptionSyncLimiting.isTooLargeForSync(compound))
+			compound = null; // don't sync contraption data
 
 		buffer.writeNbt(compound);
 	}
@@ -731,7 +729,8 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 	}
 
 	@Override
-	protected void doWaterSplashEffect() {}
+	protected void doWaterSplashEffect() {
+	}
 
 	public Contraption getContraption() {
 		return contraption;
@@ -798,7 +797,8 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 
 	@Override
 	// Make sure nothing can move contraptions out of the way
-	public void setDeltaMovement(Vec3 motionIn) {}
+	public void setDeltaMovement(Vec3 motionIn) {
+	}
 
 	@Override
 	public PushReaction getPistonPushReaction() {
@@ -878,7 +878,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		public float yRotation = 0;
 		public float zRotation = 0;
 		public float secondYRotation = 0;
-		
+
 		Matrix3d matrix;
 
 		public Matrix3d asMatrix() {
@@ -925,6 +925,12 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		// Contraptions no longer catch fire
 	}
 
+	// Contraptions shouldn't activate pressure plates and tripwires
+	@Override
+	public boolean isIgnoringBlockTriggers() {
+		return true;
+	}
+
 	public boolean isReadyForRender() {
 		return initialized;
 	}
@@ -933,4 +939,7 @@ public abstract class AbstractContraptionEntity extends Entity implements IEntit
 		return isAlive() || level().isClientSide() ? staleTicks > 0 : false;
 	}
 
+	public boolean isPrevPosInvalid() {
+		return prevPosInvalid;
+	}
 }

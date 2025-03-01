@@ -25,10 +25,10 @@ import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollOp
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.mixin.accessor.GameTestHelperAccessor;
-import com.simibubi.create.foundation.utility.RegisteredObjects;
 
 import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -169,9 +169,9 @@ public class CreateGameTestHelper extends GameTestHelper {
 		BlockEntity be = getBlockEntity(pos);
 		BlockEntityType<?> actualType = be == null ? null : be.getType();
 		if (actualType != type) {
-			String actualId = actualType == null ? "null" : RegisteredObjects.getKeyOrThrow(actualType).toString();
+			String actualId = actualType == null ? "null" : CatnipServices.REGISTRIES.getKeyOrThrow(actualType).toString();
 			String error = "Expected block entity at pos [%s] with type [%s], got [%s]".formatted(
-					pos, RegisteredObjects.getKeyOrThrow(type), actualId
+					pos, CatnipServices.REGISTRIES.getKeyOrThrow(type), actualId
 			);
 			fail(error);
 		}
@@ -184,7 +184,7 @@ public class CreateGameTestHelper extends GameTestHelper {
 	public <T extends BlockEntity & IMultiBlockEntityContainer> T getControllerBlockEntity(BlockEntityType<T> type, BlockPos anySegment) {
 		T be = getBlockEntity(type, anySegment).getControllerBE();
 		if (be == null)
-			fail("Could not get block entity controller with type [%s] from pos [%s]".formatted(RegisteredObjects.getKeyOrThrow(type), anySegment));
+			fail("Could not get block entity controller with type [%s] from pos [%s]".formatted(CatnipServices.REGISTRIES.getKeyOrThrow(type), anySegment));
 		return be;
 	}
 

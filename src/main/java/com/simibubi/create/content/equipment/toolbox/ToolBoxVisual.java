@@ -3,7 +3,6 @@ package com.simibubi.create.content.equipment.toolbox;
 import java.util.function.Consumer;
 
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.foundation.utility.Iterate;
 
 import dev.engine_room.flywheel.api.instance.Instance;
 import dev.engine_room.flywheel.api.instance.Instancer;
@@ -14,6 +13,7 @@ import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.Direction;
 
 public class ToolBoxVisual extends AbstractBlockEntityVisual<ToolboxBlockEntity> implements SimpleDynamicVisual {
@@ -21,6 +21,9 @@ public class ToolBoxVisual extends AbstractBlockEntityVisual<ToolboxBlockEntity>
 	private final Direction facing;
 	private final TransformedInstance lid;
 	private final TransformedInstance[] drawers;
+
+	private float lastLidAngle = Float.NaN;
+	private float lastDrawerOffset = Float.NaN;
 
 	public ToolBoxVisual(VisualizationContext context, ToolboxBlockEntity blockEntity, float partialTick) {
 		super(context, blockEntity, partialTick);
@@ -33,6 +36,8 @@ public class ToolBoxVisual extends AbstractBlockEntityVisual<ToolboxBlockEntity>
 		drawers = new TransformedInstance[]{drawerModel.createInstance(), drawerModel.createInstance()};
 		lid = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.TOOLBOX_LIDS.get(blockEntity.getColor())))
 				.createInstance();
+
+		animate(partialTick);
 	}
 
 	@Override
@@ -46,30 +51,39 @@ public class ToolBoxVisual extends AbstractBlockEntityVisual<ToolboxBlockEntity>
 
 	@Override
 	public void beginFrame(DynamicVisual.Context ctx) {
-		float partialTicks = ctx.partialTick();
+		animate(ctx.partialTick());
+	}
 
+	private void animate(float partialTicks) {
 		float lidAngle = blockEntity.lid.getValue(partialTicks);
 		float drawerOffset = blockEntity.drawers.getValue(partialTicks);
 
-		lid.setIdentityTransform()
-				.translate(getVisualPosition())
-				.center()
-				.rotateYDegrees(-facing.toYRot())
-				.uncenter()
-				.translate(0, 6 / 16f, 12 / 16f)
-				.rotateXDegrees(135 * lidAngle)
-				.translateBack(0, 6 / 16f, 12 / 16f)
-				.setChanged();
-
-		for (int offset : Iterate.zeroAndOne) {
-			drawers[offset].setIdentityTransform()
+		if (lidAngle != lastLidAngle) {
+			lid.setIdentityTransform()
 					.translate(getVisualPosition())
 					.center()
 					.rotateYDegrees(-facing.toYRot())
 					.uncenter()
-					.translate(0, offset * 1 / 8f, -drawerOffset * .175f * (2 - offset))
+					.translate(0, 6 / 16f, 12 / 16f)
+					.rotateXDegrees(135 * lidAngle)
+					.translateBack(0, 6 / 16f, 12 / 16f)
 					.setChanged();
 		}
+
+		if (drawerOffset != lastDrawerOffset) {
+			for (int offset : Iterate.zeroAndOne) {
+				drawers[offset].setIdentityTransform()
+						.translate(getVisualPosition())
+						.center()
+						.rotateYDegrees(-facing.toYRot())
+						.uncenter()
+						.translate(0, offset * 1 / 8f, -drawerOffset * .175f * (2 - offset))
+						.setChanged();
+			}
+		}
+
+		lastLidAngle = lidAngle;
+		lastDrawerOffset = drawerOffset;
 	}
 
 	@Override

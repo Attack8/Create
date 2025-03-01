@@ -12,7 +12,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllBogeyStyles;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.trains.bogey.BogeySizes.BogeySize;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -42,7 +42,7 @@ public class BogeyStyle {
 	public BogeyStyle(ResourceLocation id, ResourceLocation cycleGroup, Component displayName,
 		Supplier<SoundEvent> soundEvent, ParticleOptions contactParticle, ParticleOptions smokeParticle,
 		CompoundTag defaultData, Map<BogeySizes.BogeySize, Supplier<? extends AbstractBogeyBlock<?>>> sizes,
-		Map<BogeySizes.BogeySize, Supplier<? extends SizeRenderer>> sizeRenderers) {
+		Map<BogeySizes.BogeySize, Supplier<Supplier<? extends SizeRenderer>>> sizeRenderers) {
 
 		this.id = id;
 		this.cycleGroup = cycleGroup;
@@ -55,7 +55,8 @@ public class BogeyStyle {
 
 		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
 			this.sizeRenderers = new HashMap<>();
-			sizeRenderers.forEach((k, v) -> this.sizeRenderers.put(k, v.get()));
+			sizeRenderers.forEach((k, v) -> this.sizeRenderers.put(k, v.get()
+				.get()));
 		});
 	}
 
@@ -112,13 +113,14 @@ public class BogeyStyle {
 		protected final ResourceLocation cycleGroup;
 		protected final Map<BogeySizes.BogeySize, Supplier<? extends AbstractBogeyBlock<?>>> sizes = new HashMap<>();
 
-		protected Component displayName = Lang.translateDirect("bogey.style.invalid");
+		protected Component displayName = CreateLang.translateDirect("bogey.style.invalid");
 		protected Supplier<SoundEvent> soundEvent = AllSoundEvents.TRAIN2::getMainEvent;
 		protected ParticleOptions contactParticle = ParticleTypes.CRIT;
 		protected ParticleOptions smokeParticle = ParticleTypes.POOF;
 		protected CompoundTag defaultData = new CompoundTag();
 
-		protected final Map<BogeySizes.BogeySize, Supplier<? extends SizeRenderer>> sizeRenderers = new HashMap<>();
+		protected final Map<BogeySizes.BogeySize, Supplier<Supplier<? extends SizeRenderer>>> sizeRenderers =
+			new HashMap<>();
 
 		public Builder(ResourceLocation id, ResourceLocation cycleGroup) {
 			this.id = id;
@@ -151,7 +153,7 @@ public class BogeyStyle {
 		}
 
 		public Builder size(BogeySizes.BogeySize size, Supplier<? extends AbstractBogeyBlock<?>> block,
-			Supplier<? extends SizeRenderer> renderer) {
+			 Supplier<Supplier<? extends SizeRenderer>> renderer) {
 			this.sizes.put(size, block);
 			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
 				this.sizeRenderers.put(size, renderer);

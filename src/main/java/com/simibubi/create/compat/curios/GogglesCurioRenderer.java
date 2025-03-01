@@ -3,7 +3,6 @@ package com.simibubi.create.compat.curios;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.simibubi.create.Create;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
@@ -46,6 +45,7 @@ public class GogglesCurioRenderer implements ICurioRenderer {
 		// Translate and rotate with our head
 		matrixStack.pushPose();
 		matrixStack.translate(model.head.x / 16.0, model.head.y / 16.0, model.head.z / 16.0);
+		matrixStack.mulPose(Axis.ZP.rotation(model.head.zRot));
 		matrixStack.mulPose(Axis.YP.rotation(model.head.yRot));
 		matrixStack.mulPose(Axis.XP.rotation(model.head.xRot));
 

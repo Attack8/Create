@@ -8,14 +8,15 @@ import com.simibubi.create.content.kinetics.base.GeneratingKineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.VecHelper;
+import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -35,7 +36,7 @@ public class CreativeMotorBlockEntity extends GeneratingKineticBlockEntity {
 	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
 		super.addBehaviours(behaviours);
 		int max = MAX_SPEED;
-		generatedSpeed = new KineticScrollValueBehaviour(Lang.translateDirect("kinetics.creative_motor.rotation_speed"),
+		generatedSpeed = new KineticScrollValueBehaviour(CreateLang.translateDirect("kinetics.creative_motor.rotation_speed"),
 			this, new MotorValueBox());
 		generatedSpeed.between(-max, max);
 		generatedSpeed.value = DEFAULT_SPEED;
@@ -65,15 +66,15 @@ public class CreativeMotorBlockEntity extends GeneratingKineticBlockEntity {
 		}
 
 		@Override
-		public Vec3 getLocalOffset(BlockState state) {
+		public Vec3 getLocalOffset(LevelAccessor level, BlockPos pos, BlockState state) {
 			Direction facing = state.getValue(CreativeMotorBlock.FACING);
-			return super.getLocalOffset(state).add(Vec3.atLowerCornerOf(facing.getNormal())
+			return super.getLocalOffset(level, pos, state).add(Vec3.atLowerCornerOf(facing.getNormal())
 				.scale(-1 / 16f));
 		}
 
 		@Override
-		public void rotate(BlockState state, PoseStack ms) {
-			super.rotate(state, ms);
+		public void rotate(LevelAccessor level, BlockPos pos, BlockState state, PoseStack ms) {
+			super.rotate(level, pos, state, ms);
 			Direction facing = state.getValue(CreativeMotorBlock.FACING);
 			if (facing.getAxis() == Axis.Y)
 				return;

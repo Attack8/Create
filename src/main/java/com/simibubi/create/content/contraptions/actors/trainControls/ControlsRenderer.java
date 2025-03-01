@@ -4,13 +4,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -25,7 +25,7 @@ public class ControlsRenderer {
 		BlockState state = context.state;
 		Direction facing = state.getValue(ControlsBlock.FACING);
 
-		SuperByteBuffer cover = CachedBufferer.partial(AllPartialModels.TRAIN_CONTROLS_COVER, state);
+		SuperByteBuffer cover = CachedBuffers.partial(AllPartialModels.TRAIN_CONTROLS_COVER, state);
 		float hAngle = 180 + AngleHelper.horizontalAngle(facing);
 		PoseStack ms = matrices.getModel();
 		cover.transform(ms)
@@ -40,17 +40,17 @@ public class ControlsRenderer {
 
 		for (boolean first : Iterate.trueAndFalse) {
 			float vAngle = Mth.clamp(first ? firstLever * 70 - 25 : secondLever * 15, -45, 45);
-			SuperByteBuffer lever = CachedBufferer.partial(AllPartialModels.TRAIN_CONTROLS_LEVER, state);
+			SuperByteBuffer lever = CachedBuffers.partial(AllPartialModels.TRAIN_CONTROLS_LEVER, state);
 			ms.pushPose();
 			TransformStack.of(ms)
 				.center()
 				.rotateYDegrees(hAngle)
-				.translate(0, 0, 4 / 16f)
+				.translate(0, 4 / 16f, 4 / 16f)
 				.rotateXDegrees(vAngle - 45)
 				.translate(0, yOffset, 0)
 				.rotateXDegrees(45)
 				.uncenter()
-				.translate(0, -2 / 16f, -3 / 16f)
+				.translate(0, -6 / 16f, -3 / 16f)
 				.translate(first ? 0 : 6 / 16f, 0, 0);
 			lever.transform(ms)
 				.light(LevelRenderer.getLightColor(renderWorld, context.localPos))

@@ -45,7 +45,7 @@
       "required": false
     },
     {
-      "id": "biomeswevegone:stripped_enchanted_log",
+      "id": "biomeswevegone:stripped_blue_enchanted_log",
       "required": false
     },
     {
@@ -58,10 +58,6 @@
     },
     {
       "id": "biomeswevegone:stripped_ebony_log",
-      "required": false
-    },
-    {
-      "id": "biomeswevegone:stripped_ether_log",
       "required": false
     },
     {
@@ -81,7 +77,7 @@
       "required": false
     },
     {
-      "id": "biomeswevegone:stripped_lament_log",
+      "id": "biomeswevegone:stripped_ironwood_log",
       "required": false
     },
     {
@@ -89,23 +85,19 @@
       "required": false
     },
     {
-      "id": "biomeswevegone:stripped_mangrove_log",
-      "required": false
-    },
-    {
       "id": "biomeswevegone:stripped_maple_log",
       "required": false
     },
     {
-      "id": "biomeswevegone:stripped_nightshade_log",
+      "id": "biomeswevegone:stripped_sakura_log",
+      "required": false
+    },
+    {
+      "id": "biomeswevegone:stripped_white_mangrove_log",
       "required": false
     },
     {
       "id": "biomeswevegone:stripped_palm_log",
-      "required": false
-    },
-    {
-      "id": "biomeswevegone:stripped_palo_verde_log",
       "required": false
     },
     {
@@ -417,7 +409,11 @@
       "required": false
     },
     {
-      "id": "biomeswevegone:stripped_bulbis_stem",
+      "id": "biomeswevegone:stripped_florus_stem",
+      "required": false
+    },
+    {
+      "id": "biomeswevegone:stripped_palo_verde_log",
       "required": false
     },
     {

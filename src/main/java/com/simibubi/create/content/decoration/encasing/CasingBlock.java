@@ -1,7 +1,6 @@
 package com.simibubi.create.content.decoration.encasing;
 
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
-
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;

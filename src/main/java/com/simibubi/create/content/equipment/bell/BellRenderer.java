@@ -2,10 +2,10 @@ package com.simibubi.create.content.equipment.bell;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.utility.AngleHelper;
 
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -26,7 +26,7 @@ public class BellRenderer<BE extends AbstractBellBlockEntity> extends SafeBlockE
 		Direction facing = state.getValue(BellBlock.FACING);
 		BellAttachType attachment = state.getValue(BellBlock.ATTACHMENT);
 
-		SuperByteBuffer bell = CachedBufferer.partial(be.getBellModel(), state);
+		SuperByteBuffer bell = CachedBuffers.partial(be.getBellModel(), state);
 
 		if (be.isRinging)
 			bell.rotateCentered(getSwingAngle(be.ringingTicks + partialTicks), be.ringDirection.getCounterClockWise());

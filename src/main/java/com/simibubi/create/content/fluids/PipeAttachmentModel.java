@@ -13,10 +13,9 @@ import com.simibubi.create.content.fluids.FluidTransportBehaviour.AttachmentType
 import com.simibubi.create.content.fluids.pipes.FluidPipeBlock;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
-import com.simibubi.create.foundation.utility.Iterate;
 
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
@@ -25,6 +24,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.minecraftforge.client.ChunkRenderTypeSet;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelData.Builder;
@@ -33,14 +33,24 @@ import net.minecraftforge.client.model.data.ModelProperty;
 public class PipeAttachmentModel extends BakedModelWrapperWithData {
 
 	private static final ModelProperty<PipeModelData> PIPE_PROPERTY = new ModelProperty<>();
+	private boolean ao;
 
-	public PipeAttachmentModel(BakedModel template) {
+	public static PipeAttachmentModel withAO(BakedModel template) {
+		return new PipeAttachmentModel(template, true);
+	}
+
+	public static PipeAttachmentModel withoutAO(BakedModel template) {
+		return new PipeAttachmentModel(template, false);
+	}
+
+	public PipeAttachmentModel(BakedModel template, boolean ao) {
 		super(template);
+		this.ao = ao;
 	}
 
 	@Override
 	protected ModelData.Builder gatherModelData(Builder builder, BlockAndTintGetter world, BlockPos pos, BlockState state,
-		ModelData blockEntityData) {
+												ModelData blockEntityData) {
 		PipeModelData data = new PipeModelData();
 		FluidTransportBehaviour transport = BlockEntityBehaviour.get(world, pos, FluidTransportBehaviour.TYPE);
 		BracketedBlockEntityBehaviour bracket = BlockEntityBehaviour.get(world, pos, BracketedBlockEntityBehaviour.TYPE);
@@ -55,14 +65,26 @@ public class PipeAttachmentModel extends BakedModelWrapperWithData {
 		return builder.with(PIPE_PROPERTY, data);
 	}
 
-	// TODO: Update once MinecraftForge#9163 is merged
 	@Override
 	public ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-		ChunkRenderTypeSet set = super.getRenderTypes(state, rand, data);
-		if (set.isEmpty()) {
-			return ItemBlockRenderTypes.getRenderLayers(state);
+		List<ChunkRenderTypeSet> set = new ArrayList<>();
+
+		set.add(super.getRenderTypes(state, rand, data));
+		set.add(AllPartialModels.FLUID_PIPE_CASING.get().getRenderTypes(state, rand, data));
+
+		if (data.has(PIPE_PROPERTY)) {
+			PipeModelData pipeData = data.get(PIPE_PROPERTY);
+			for (Direction d : Iterate.directions) {
+				AttachmentTypes type = pipeData.getAttachment(d);
+				for (ComponentPartials partial : type.partials) {
+					ChunkRenderTypeSet attachmentRenderTypeSet = AllPartialModels.PIPE_ATTACHMENTS.get(partial).get(d)
+						.get().getRenderTypes(state, rand, data);
+					set.add(attachmentRenderTypeSet);
+				}
+			}
 		}
-		return set;
+
+		return ChunkRenderTypeSet.union(set);
 	}
 
 	@Override
@@ -76,8 +98,23 @@ public class PipeAttachmentModel extends BakedModelWrapperWithData {
 		return quads;
 	}
 
+	@Override
+	public boolean useAmbientOcclusion(BlockState state, RenderType renderType) {
+		return ao;
+	}
+
+	@Override
+	public boolean useAmbientOcclusion(BlockState state) {
+		return ao;
+	}
+
+	@Override
+	public boolean useAmbientOcclusion() {
+		return ao;
+	}
+
 	private void addQuads(List<BakedQuad> quads, BlockState state, Direction side, RandomSource rand, ModelData data,
-		PipeModelData pipeData, RenderType renderType) {
+						  PipeModelData pipeData, RenderType renderType) {
 		BakedModel bracket = pipeData.getBracket();
 		if (bracket != null)
 			quads.addAll(bracket.getQuads(state, side, rand, data, renderType));

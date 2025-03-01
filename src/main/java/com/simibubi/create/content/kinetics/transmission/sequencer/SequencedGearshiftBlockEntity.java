@@ -12,8 +12,8 @@ import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.transmission.SplitShaftBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.foundation.utility.NBTHelper;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +31,7 @@ public class SequencedGearshiftBlockEntity extends SplitShaftBlockEntity {
 	float currentInstructionProgress;
 	int timer;
 	boolean poweredPreviously;
-	
+
 	public AbstractComputerBehaviour computerBehaviour;
 
 	public record SequenceContext(SequencerInstructions instruction, double relativeValue) {
@@ -190,7 +190,7 @@ public class SequencedGearshiftBlockEntity extends SplitShaftBlockEntity {
 
 	@Override
 	protected void copySequenceContextFrom(KineticBlockEntity sourceBE) {}
-	
+
 	@Override
 	public void write(CompoundTag compound, boolean clientPacket) {
 		compound.putInt("InstructionIndex", currentInstruction);

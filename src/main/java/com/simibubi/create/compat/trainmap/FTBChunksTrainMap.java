@@ -4,11 +4,12 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.RemovedGuiUtils;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.ftb.mods.ftbchunks.client.gui.LargeMapScreen;
 import dev.ftb.mods.ftbchunks.client.gui.RegionMapPanel;
+import dev.ftb.mods.ftblibrary.ui.BaseScreen;
 import dev.ftb.mods.ftblibrary.ui.ScreenWrapper;
 import dev.ftb.mods.ftblibrary.ui.Widget;
 import net.minecraft.client.Minecraft;
@@ -31,14 +32,17 @@ public class FTBChunksTrainMap {
 	public static void tick() {
 		if (cancelTooltips > 0)
 			cancelTooltips--;
-		if (!AllConfigs.client().showTrainMapOverlay.get()
-			|| getAsLargeMapScreen(Minecraft.getInstance().screen) == null) {
+
+		LargeMapScreen mapScreen = getAsLargeMapScreen(Minecraft.getInstance().screen);
+
+		if (!AllConfigs.client().showTrainMapOverlay.get() || mapScreen == null) {
 			if (requesting)
 				TrainMapSyncClient.stopRequesting();
 			requesting = false;
 			return;
 		}
-		TrainMapManager.tick();
+
+		TrainMapManager.tick(mapScreen.currentDimension());
 		requesting = true;
 		TrainMapSyncClient.requestData();
 	}
@@ -138,7 +142,7 @@ public class FTBChunksTrainMap {
 			return false;
 
 		renderingTooltip = true;
-		RemovedGuiUtils.drawHoveringText(graphics, List.of(Lang.translate("train_map.toggle")
+		RemovedGuiUtils.drawHoveringText(graphics, List.of(CreateLang.translate("train_map.toggle")
 			.component()), event.getMouseX(), event.getMouseY() + 20, largeMapScreen.width, largeMapScreen.height, 256,
 			Minecraft.getInstance().font);
 		renderingTooltip = false;
@@ -149,7 +153,7 @@ public class FTBChunksTrainMap {
 	private static LargeMapScreen getAsLargeMapScreen(Screen screen) {
 		if (!(screen instanceof ScreenWrapper screenWrapper))
 			return null;
-		Object wrapped = ObfuscationReflectionHelper.getPrivateValue(ScreenWrapper.class, screenWrapper, "wrappedGui");
+		BaseScreen wrapped = screenWrapper.getGui();
 		if (!(wrapped instanceof LargeMapScreen largeMapScreen))
 			return null;
 		return largeMapScreen;

@@ -6,11 +6,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.simibubi.create.content.kinetics.belt.BeltHelper;
 import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
+import com.simibubi.create.content.logistics.box.PackageItem;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
-import com.simibubi.create.foundation.utility.VecHelper;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -26,8 +27,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class DepotRenderer extends SafeBlockEntityRenderer<DepotBlockEntity> {
 
-	public DepotRenderer(BlockEntityRendererProvider.Context context) {
-	}
+	public DepotRenderer(BlockEntityRendererProvider.Context context) {}
 
 	@Override
 	protected void renderSafe(DepotBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource buffer,
@@ -58,7 +58,8 @@ public class DepotRenderer extends SafeBlockEntityRenderer<DepotBlockEntity> {
 			if (tis.insertedFrom.getAxis()
 				.isHorizontal()) {
 				Vec3 offsetVec = Vec3.atLowerCornerOf(tis.insertedFrom.getOpposite()
-					.getNormal()).scale(.5f - offset);
+					.getNormal())
+					.scale(.5f - offset);
 				ms.translate(offsetVec.x, offsetVec.y, offsetVec.z);
 				boolean alongX = tis.insertedFrom.getClockWise()
 					.getAxis() == Direction.Axis.X;
@@ -70,7 +71,7 @@ public class DepotRenderer extends SafeBlockEntityRenderer<DepotBlockEntity> {
 			ItemStack itemStack = tis.stack;
 			int angle = tis.angle;
 			Random r = new Random(0);
-			renderItem(be.getLevel(), ms, buffer, light, overlay, itemStack, angle, r, itemPosition);
+			renderItem(be.getLevel(), ms, buffer, light, overlay, itemStack, angle, r, itemPosition, false);
 			ms.popPose();
 		}
 
@@ -92,22 +93,23 @@ public class DepotRenderer extends SafeBlockEntityRenderer<DepotBlockEntity> {
 				msr.rotateYDegrees(-(360 / 8f * i));
 			Random r = new Random(i + 1);
 			int angle = (int) (360 * r.nextFloat());
-			renderItem(be.getLevel(), ms, buffer, light, overlay, stack, renderUpright ? angle + 90 : angle, r, itemPosition);
+			renderItem(be.getLevel(), ms, buffer, light, overlay, stack, renderUpright ? angle + 90 : angle, r,
+				itemPosition, false);
 			ms.popPose();
 		}
 
 		ms.popPose();
 	}
 
-	public static void renderItem(Level level, PoseStack ms, MultiBufferSource buffer, int light, int overlay, ItemStack itemStack,
-		int angle, Random r, Vec3 itemPosition) {
+	public static void renderItem(Level level, PoseStack ms, MultiBufferSource buffer, int light, int overlay,
+		ItemStack itemStack, int angle, Random r, Vec3 itemPosition, boolean alwaysUpright) {
 		ItemRenderer itemRenderer = Minecraft.getInstance()
 			.getItemRenderer();
 		var msr = TransformStack.of(ms);
 		int count = (int) (Mth.log2((int) (itemStack.getCount()))) / 2;
-		boolean renderUpright = BeltHelper.isItemUpright(itemStack);
 		BakedModel bakedModel = itemRenderer.getModel(itemStack, null, null, 0);
 		boolean blockItem = bakedModel.isGui3d();
+		boolean renderUpright = BeltHelper.isItemUpright(itemStack) || alwaysUpright && !blockItem;
 
 		ms.pushPose();
 		msr.rotateYDegrees(angle);
@@ -126,9 +128,18 @@ public class DepotRenderer extends SafeBlockEntityRenderer<DepotBlockEntity> {
 
 		for (int i = 0; i <= count; i++) {
 			ms.pushPose();
-			if (blockItem)
+			if (blockItem && r != null)
 				ms.translate(r.nextFloat() * .0625f * i, 0, r.nextFloat() * .0625f * i);
-			ms.scale(.5f, .5f, .5f);
+
+			if (PackageItem.isPackage(itemStack) && !alwaysUpright) {
+				ms.translate(0, 4 / 16f, 0);
+				ms.scale(1.5f, 1.5f, 1.5f);
+			} else if (blockItem && alwaysUpright) {
+				ms.translate(0, 1 / 16f, 0);
+				ms.scale(.755f, .755f, .755f);
+			} else
+				ms.scale(.5f, .5f, .5f);
+
 			if (!blockItem && !renderUpright) {
 				ms.translate(0, -3 / 16f, 0);
 				msr.rotateXDegrees(90);

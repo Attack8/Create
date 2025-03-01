@@ -3,20 +3,26 @@ package com.simibubi.create.content.logistics.filter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllKeys;
+import com.simibubi.create.content.logistics.box.PackageItem;
 import com.simibubi.create.content.logistics.filter.AttributeFilterMenu.WhitelistMode;
+import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.foundation.item.ItemHelper;
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.recipe.ItemCopyingRecipe.SupportsItemCopying;
+import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -31,18 +37,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 
-public class FilterItem extends Item implements MenuProvider {
+public class FilterItem extends Item implements MenuProvider, SupportsItemCopying {
 
 	private FilterType type;
 
 	private enum FilterType {
-		REGULAR, ATTRIBUTE;
+		REGULAR, ATTRIBUTE, PACKAGE;
 	}
 
 	public static FilterItem regular(Properties properties) {
@@ -51,6 +58,10 @@ public class FilterItem extends Item implements MenuProvider {
 
 	public static FilterItem attribute(Properties properties) {
 		return new FilterItem(FilterType.ATTRIBUTE, properties);
+	}
+
+	public static FilterItem address(Properties properties) {
+		return new FilterItem(FilterType.PACKAGE, properties);
 	}
 
 	private FilterItem(FilterType type, Properties properties) {
@@ -69,13 +80,13 @@ public class FilterItem extends Item implements MenuProvider {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
-		if (!AllKeys.shiftDown()) {
-			List<Component> makeSummary = makeSummary(stack);
-			if (makeSummary.isEmpty())
-				return;
-			tooltip.add(Components.literal(" "));
-			tooltip.addAll(makeSummary);
-		}
+		if (AllKeys.shiftDown())
+			return;
+		List<Component> makeSummary = makeSummary(stack);
+		if (makeSummary.isEmpty())
+			return;
+		tooltip.add(CommonComponents.SPACE);
+		tooltip.addAll(makeSummary);
 	}
 
 	private List<Component> makeSummary(ItemStack filter) {
@@ -88,12 +99,12 @@ public class FilterItem extends Item implements MenuProvider {
 			boolean blacklist = filter.getOrCreateTag()
 				.getBoolean("Blacklist");
 
-			list.add((blacklist ? Lang.translateDirect("gui.filter.deny_list")
-				: Lang.translateDirect("gui.filter.allow_list")).withStyle(ChatFormatting.GOLD));
+			list.add((blacklist ? CreateLang.translateDirect("gui.filter.deny_list")
+				: CreateLang.translateDirect("gui.filter.allow_list")).withStyle(ChatFormatting.GOLD));
 			int count = 0;
 			for (int i = 0; i < filterItems.getSlots(); i++) {
 				if (count > 3) {
-					list.add(Components.literal("- ...")
+					list.add(Component.literal("- ...")
 						.withStyle(ChatFormatting.DARK_GRAY));
 					break;
 				}
@@ -101,7 +112,7 @@ public class FilterItem extends Item implements MenuProvider {
 				ItemStack filterStack = filterItems.getStackInSlot(i);
 				if (filterStack.isEmpty())
 					continue;
-				list.add(Components.literal("- ")
+				list.add(Component.literal("- ")
 					.append(filterStack.getHoverName())
 					.withStyle(ChatFormatting.GRAY));
 				count++;
@@ -115,32 +126,43 @@ public class FilterItem extends Item implements MenuProvider {
 			WhitelistMode whitelistMode = WhitelistMode.values()[filter.getOrCreateTag()
 				.getInt("WhitelistMode")];
 			list.add((whitelistMode == WhitelistMode.WHITELIST_CONJ
-				? Lang.translateDirect("gui.attribute_filter.allow_list_conjunctive")
+				? CreateLang.translateDirect("gui.attribute_filter.allow_list_conjunctive")
 				: whitelistMode == WhitelistMode.WHITELIST_DISJ
-					? Lang.translateDirect("gui.attribute_filter.allow_list_disjunctive")
-					: Lang.translateDirect("gui.attribute_filter.deny_list")).withStyle(ChatFormatting.GOLD));
+				? CreateLang.translateDirect("gui.attribute_filter.allow_list_disjunctive")
+				: CreateLang.translateDirect("gui.attribute_filter.deny_list")).withStyle(ChatFormatting.GOLD));
 
 			int count = 0;
 			ListTag attributes = filter.getOrCreateTag()
 				.getList("MatchedAttributes", Tag.TAG_COMPOUND);
 			for (Tag inbt : attributes) {
 				CompoundTag compound = (CompoundTag) inbt;
-				ItemAttribute attribute = ItemAttribute.fromNBT(compound);
+				ItemAttribute attribute = ItemAttribute.loadStatic(compound);
 				if (attribute == null)
 					continue;
 				boolean inverted = compound.getBoolean("Inverted");
 				if (count > 3) {
-					list.add(Components.literal("- ...")
+					list.add(Component.literal("- ...")
 						.withStyle(ChatFormatting.DARK_GRAY));
 					break;
 				}
-				list.add(Components.literal("- ")
+				list.add(Component.literal("- ")
 					.append(attribute.format(inverted)));
 				count++;
 			}
 
 			if (count == 0)
 				return Collections.emptyList();
+		}
+
+		if (type == FilterType.PACKAGE) {
+			String address = filter.getOrCreateTag()
+				.getString("Address");
+			if (!address.isBlank())
+				list.add(CreateLang.text("-> ")
+					.style(ChatFormatting.GRAY)
+					.add(CreateLang.text(address)
+						.style(ChatFormatting.GOLD))
+					.component());
 		}
 
 		return list;
@@ -151,8 +173,8 @@ public class FilterItem extends Item implements MenuProvider {
 		ItemStack heldItem = player.getItemInHand(hand);
 
 		if (!player.isShiftKeyDown() && hand == InteractionHand.MAIN_HAND) {
-			if (!world.isClientSide && player instanceof ServerPlayer)
-				NetworkHooks.openScreen((ServerPlayer) player, this, buf -> {
+			if (!world.isClientSide && player instanceof ServerPlayer serverPlayer)
+				NetworkHooks.openScreen(serverPlayer, this, buf -> {
 					buf.writeItem(heldItem);
 				});
 			return InteractionResultHolder.success(heldItem);
@@ -167,6 +189,8 @@ public class FilterItem extends Item implements MenuProvider {
 			return FilterMenu.create(id, inv, heldItem);
 		if (type == FilterType.ATTRIBUTE)
 			return AttributeFilterMenu.create(id, inv, heldItem);
+		if (type == FilterType.PACKAGE)
+			return PackageFilterMenu.create(id, inv, heldItem);
 		return null;
 	}
 
@@ -189,10 +213,36 @@ public class FilterItem extends Item implements MenuProvider {
 
 	public static boolean testDirect(ItemStack filter, ItemStack stack, boolean matchNBT) {
 		if (matchNBT) {
+			if (PackageItem.isPackage(filter) && PackageItem.isPackage(stack))
+				return doPackagesHaveSameData(filter, stack);
+
 			return ItemHandlerHelper.canItemStacksStack(filter, stack);
-		} else {
-			return ItemHelper.sameItem(filter, stack);
 		}
+
+		if (PackageItem.isPackage(filter) && PackageItem.isPackage(stack))
+			return true;
+
+		return ItemHelper.sameItem(filter, stack);
+	}
+
+	public static boolean doPackagesHaveSameData(@NotNull ItemStack a, @NotNull ItemStack b) {
+		if (a.isEmpty() || a.hasTag() != b.hasTag())
+			return false;
+		if (!a.hasTag())
+			return true;
+		if (!a.areCapsCompatible(b))
+			return false;
+		for (String key : a.getTag()
+			.getAllKeys()) {
+			if (key.equals("Fragment"))
+				continue;
+			if (!Objects.equals(a.getTag()
+					.get(key),
+				b.getTag()
+					.get(key)))
+				return false;
+		}
+		return true;
 	}
 
 }

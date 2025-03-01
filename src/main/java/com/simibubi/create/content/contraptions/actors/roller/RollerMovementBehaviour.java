@@ -10,7 +10,6 @@ import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 
 import com.simibubi.create.AllTags;
-import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.contraptions.actors.roller.RollerBlockEntity.RollingMode;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.pulley.PulleyContraption;
@@ -31,15 +30,15 @@ import com.simibubi.create.content.trains.graph.TrackGraph;
 import com.simibubi.create.foundation.damageTypes.CreateDamageSources;
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.utility.BlockHelper;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.Pair;
-import com.simibubi.create.foundation.utility.VecHelper;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -60,6 +59,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
@@ -197,7 +197,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 		if (!getStateToPaveWith(context).isAir()) {
 			FilterItemStack filter = context.getFilterFromBE();
 			if (!ItemHelper
-				.extract(context.contraption.getSharedInventory(),
+				.extract(context.contraption.getStorage().getAllItems(),
 					stack -> filter.test(context.world, stack), 1, true)
 				.isEmpty())
 				startingY = 0;
@@ -476,7 +476,7 @@ public class RollerMovementBehaviour extends BlockBreakingMovementBehaviour {
 			return PaveResult.FAIL;
 
 		FilterItemStack filter = context.getFilterFromBE();
-		ItemStack held = ItemHelper.extract(context.contraption.getSharedInventory(),
+		ItemStack held = ItemHelper.extract(context.contraption.getStorage().getAllItems(),
 			stack -> filter.test(context.world, stack), 1, false);
 		if (held.isEmpty())
 			return PaveResult.FAIL;

@@ -1,0 +1,33 @@
+{
+  "type": "create:cutting",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+<<<<<<<< HEAD:src/generated/resources/data/create/recipes/cutting/compat/biomeswevegone/aspen_log.json
+      "modid": "biomeswevegone"
+========
+      "modid": "immersiveengineering"
+>>>>>>>> refs/heads/mc1.20.1/dev:src/generated/resources/data/create/recipes/cutting/compat/immersiveengineering/wire_lead.json
+    }
+  ],
+  "ingredients": [
+    {
+<<<<<<<< HEAD:src/generated/resources/data/create/recipes/cutting/compat/biomeswevegone/aspen_log.json
+      "item": "biomeswevegone:aspen_log"
+========
+      "tag": "forge:plates/lead"
+>>>>>>>> refs/heads/mc1.20.1/dev:src/generated/resources/data/create/recipes/cutting/compat/immersiveengineering/wire_lead.json
+    }
+  ],
+  "processingTime": 50,
+  "results": [
+    {
+<<<<<<<< HEAD:src/generated/resources/data/create/recipes/cutting/compat/biomeswevegone/aspen_log.json
+      "item": "biomeswevegone:stripped_aspen_log"
+========
+      "count": 2,
+      "item": "immersiveengineering:wire_lead"
+>>>>>>>> refs/heads/mc1.20.1/dev:src/generated/resources/data/create/recipes/cutting/compat/immersiveengineering/wire_lead.json
+    }
+  ]
+}

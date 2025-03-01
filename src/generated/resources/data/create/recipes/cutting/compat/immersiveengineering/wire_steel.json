@@ -1,0 +1,33 @@
+{
+  "type": "create:cutting",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+<<<<<<<< HEAD:src/generated/resources/data/create/recipes/cutting/compat/biomeswevegone/aspen_wood.json
+      "modid": "biomeswevegone"
+========
+      "modid": "immersiveengineering"
+>>>>>>>> refs/heads/mc1.20.1/dev:src/generated/resources/data/create/recipes/cutting/compat/immersiveengineering/wire_steel.json
+    }
+  ],
+  "ingredients": [
+    {
+<<<<<<<< HEAD:src/generated/resources/data/create/recipes/cutting/compat/biomeswevegone/aspen_wood.json
+      "item": "biomeswevegone:aspen_wood"
+========
+      "tag": "forge:plates/steel"
+>>>>>>>> refs/heads/mc1.20.1/dev:src/generated/resources/data/create/recipes/cutting/compat/immersiveengineering/wire_steel.json
+    }
+  ],
+  "processingTime": 50,
+  "results": [
+    {
+<<<<<<<< HEAD:src/generated/resources/data/create/recipes/cutting/compat/biomeswevegone/aspen_wood.json
+      "item": "biomeswevegone:stripped_aspen_wood"
+========
+      "count": 2,
+      "item": "immersiveengineering:wire_steel"
+>>>>>>>> refs/heads/mc1.20.1/dev:src/generated/resources/data/create/recipes/cutting/compat/immersiveengineering/wire_steel.json
+    }
+  ]
+}

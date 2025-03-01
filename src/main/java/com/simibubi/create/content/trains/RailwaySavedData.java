@@ -1,5 +1,6 @@
 package com.simibubi.create.content.trains;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -11,12 +12,16 @@ import com.simibubi.create.content.trains.graph.EdgePointType;
 import com.simibubi.create.content.trains.graph.TrackGraph;
 import com.simibubi.create.content.trains.signal.SignalBoundary;
 import com.simibubi.create.content.trains.signal.SignalEdgeGroup;
-import com.simibubi.create.foundation.utility.NBTHelper;
 
+import com.simibubi.create.foundation.utility.SavedDataUtil;
+
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
+
+import org.jetbrains.annotations.NotNull;
 
 public class RailwaySavedData extends SavedData {
 
@@ -77,6 +82,11 @@ public class RailwaySavedData extends SavedData {
 		}
 
 		return sd;
+	}
+
+	@Override
+	public void save(@NotNull File file) {
+		SavedDataUtil.saveWithDatOld(this, file);
 	}
 
 	public Map<UUID, TrackGraph> getTrackNetworks() {

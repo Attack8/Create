@@ -3,14 +3,15 @@ package com.simibubi.create.compat.jei;
 import java.util.List;
 
 import com.simibubi.create.content.fluids.potion.PotionFluid.BottleType;
-import com.simibubi.create.foundation.utility.NBTHelper;
 
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
+
 import net.minecraftforge.fluids.FluidStack;
 
 /* From JEI's Potion item subtype interpreter */

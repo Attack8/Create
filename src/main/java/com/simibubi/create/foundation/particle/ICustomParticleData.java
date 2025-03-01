@@ -6,6 +6,7 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleOptions.Deserializer;
 import net.minecraft.core.particles.ParticleType;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -14,10 +15,10 @@ public interface ICustomParticleData<T extends ParticleOptions> {
 
 	Deserializer<T> getDeserializer();
 
-	Codec<T> getCodec(ParticleType<T> type); 
-	
+	Codec<T> getCodec(ParticleType<T> type);
+
 	public default ParticleType<T> createType() {
-		return new ParticleType<T>(false, getDeserializer()) {
+		return new ParticleType<>(false, getDeserializer()) {
 
 			@Override
 			public Codec<T> codec() {
@@ -25,13 +26,13 @@ public interface ICustomParticleData<T extends ParticleOptions> {
 			}
 		};
 	}
-	
+
 	@OnlyIn(Dist.CLIENT)
 	public ParticleProvider<T> getFactory();
-	
+
 	@OnlyIn(Dist.CLIENT)
 	public default void register(ParticleType<T> type, RegisterParticleProvidersEvent event) {
 		event.registerSpecial(type, getFactory());
 	}
-	
+
 }

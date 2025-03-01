@@ -8,8 +8,8 @@ import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
-import com.simibubi.create.foundation.gui.ScreenOpener;
 
+import net.createmod.catnip.gui.ScreenOpener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -90,14 +90,14 @@ public class ClipboardBlock extends FaceAttachedHorizontalDirectionalBlock
 			breakAndCollect(pState, pLevel, pPos, pPlayer);
 			return InteractionResult.SUCCESS;
 		}
-		
+
 		return onBlockEntityUse(pLevel, pPos, cbe -> {
 			if (pLevel.isClientSide())
 				DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> openScreen(pPlayer, cbe.dataContainer, pPos));
 			return InteractionResult.SUCCESS;
 		});
 	}
-	
+
 	@OnlyIn(Dist.CLIENT)
 	private void openScreen(Player player, ItemStack stack, BlockPos pos) {
 		if (Minecraft.getInstance().player == player)

@@ -14,7 +14,6 @@ import com.simibubi.create.content.redstone.nixieTube.NixieTubeBlockEntity;
 import com.simibubi.create.content.trains.display.FlapDisplayBlockEntity;
 import com.simibubi.create.content.trains.display.FlapDisplayLayout;
 import com.simibubi.create.content.trains.display.FlapDisplaySection;
-import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.infrastructure.gametest.CreateGameTestHelper;
 import com.simibubi.create.infrastructure.gametest.GameTestGroup;
 
@@ -22,6 +21,7 @@ import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
@@ -31,6 +31,7 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RedstoneLampBlock;
+
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -316,7 +317,7 @@ public class TestItems {
 		helper.succeedWhen(() -> {
 			for (int i = 0; i < 2; i++) {
 				FlapDisplayLayout line = display.getLines().get(i);
-				MutableComponent textComponent = Components.empty();
+                MutableComponent textComponent = Component.empty();
 				line.getSections().stream().map(FlapDisplaySection::getText).forEach(textComponent::append);
 				String text = textComponent.getString().toLowerCase(Locale.ROOT).trim();
 
@@ -373,6 +374,39 @@ public class TestItems {
 			helper.assertNixiePower(smallNixie, 7);
 			helper.assertNixiePower(medNixie, 7);
 			helper.assertNixiePower(bigNixie, 7);
+		});
+	}
+
+	@GameTest(template = "depot_comparator_output")
+	public static void depotComparatorOutput(CreateGameTestHelper helper) {
+		BlockPos swordNixie = new BlockPos(7, 2, 1);
+		BlockPos diamondNixie = new BlockPos(5, 2, 1);
+		BlockPos fullPearlNixie = new BlockPos(3, 2, 1);
+		BlockPos halfPearlNixie = new BlockPos(1, 2, 1);
+
+		helper.succeedWhen(() -> {
+			helper.assertNixiePower(swordNixie, 15);
+			helper.assertNixiePower(diamondNixie, 15);
+			helper.assertNixiePower(fullPearlNixie, 15);
+			helper.assertNixiePower(halfPearlNixie, 8);
+		});
+	}
+
+	@GameTest(template = "fan_processing", timeoutTicks = CreateGameTestHelper.TEN_SECONDS)
+	public static void fanProcessing(CreateGameTestHelper helper) {
+		// why does the redstone explode
+		BlockPos.betweenClosed(new BlockPos(2, 7, 3), new BlockPos(11, 7, 3)).forEach(
+			pos -> helper.setBlock(pos, Blocks.REDSTONE_WIRE)
+		);
+		helper.pullLever(1, 7, 3);
+		List<BlockPos> lamps = List.of(
+			new BlockPos(1, 2, 1), new BlockPos(5, 2, 1), new BlockPos(7, 2, 1),
+			new BlockPos(9, 2, 1), new BlockPos(11, 2, 1)
+		);
+		helper.succeedWhen(() -> {
+			for (BlockPos lamp : lamps) {
+				helper.assertBlockProperty(lamp, RedstoneLampBlock.LIT, true);
+			}
 		});
 	}
 }

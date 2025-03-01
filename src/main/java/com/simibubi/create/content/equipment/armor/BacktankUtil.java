@@ -7,13 +7,14 @@ import java.util.function.Function;
 import com.simibubi.create.AllEnchantments;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.AllTags;
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket;
 import net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket;
@@ -23,13 +24,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 
 public class BacktankUtil {
 
 	private static final List<Function<LivingEntity, List<ItemStack>>> BACKTANK_SUPPLIERS = new ArrayList<>();
-	
+
 	static {
 		addBacktankSupplier(entity -> {
 			List<ItemStack> stacks = new ArrayList<>();
@@ -77,7 +79,7 @@ public class BacktankUtil {
 
 		if (!(entity instanceof ServerPlayer player))
 			return;
-		
+
 		sendWarning(player, air, newAir, maxAir / 10f);
 		sendWarning(player, air, newAir, 1);
 	}
@@ -89,16 +91,16 @@ public class BacktankUtil {
 			return;
 
 		boolean depleted = threshold == 1;
-		MutableComponent component = Lang.translateDirect(depleted ? "backtank.depleted" : "backtank.low");
+		MutableComponent component = CreateLang.translateDirect(depleted ? "backtank.depleted" : "backtank.low");
 
 		AllSoundEvents.DENY.play(player.level(), null, player.blockPosition(), 1, 1.25f);
 		AllSoundEvents.STEAM.play(player.level(), null, player.blockPosition(), .5f, .5f);
 
 		player.connection.send(new ClientboundSetTitlesAnimationPacket(10, 40, 10));
 		player.connection.send(new ClientboundSetSubtitleTextPacket(
-			Components.literal("\u26A0 ").withStyle(depleted ? ChatFormatting.RED : ChatFormatting.GOLD)
+			Component.literal("\u26A0 ").withStyle(depleted ? ChatFormatting.RED : ChatFormatting.GOLD)
 				.append(component.withStyle(ChatFormatting.GRAY))));
-		player.connection.send(new ClientboundSetTitleTextPacket(Components.immutableEmpty()));
+		player.connection.send(new ClientboundSetTitleTextPacket(CommonComponents.EMPTY));
 	}
 
 	public static int maxAir(ItemStack backtank) {
@@ -174,7 +176,7 @@ public class BacktankUtil {
 		if (player == null)
 			return 0;
 		List<ItemStack> backtanks = getAllWithAir(player);
-		
+
 		// Fallback colour
 		if (backtanks.isEmpty())
 			return Mth.hsvToRgb(Math.max(0.0F, 1.0F - (float) stack.getDamageValue() / stack.getMaxDamage()) / 3.0F,
