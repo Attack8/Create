@@ -1,15 +1,13 @@
 package com.simibubi.create.infrastructure.command;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.simibubi.create.AllPackets;
-import com.simibubi.create.foundation.utility.Components;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.PacketDistributor;
 
 public class OverlayConfigCommand {
 
@@ -18,32 +16,24 @@ public class OverlayConfigCommand {
 				.requires(cs -> cs.hasPermission(0))
 				.then(Commands.literal("reset")
 					.executes(ctx -> {
-						DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> SConfigureConfigPacket.Actions.overlayReset.performAction(""));
+						ServerPlayer player = ctx.getSource().getPlayerOrException();
 
-						DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> () ->
-								AllPackets.getChannel().send(
-										PacketDistributor.PLAYER.with(() -> (ServerPlayer) ctx.getSource().getEntity()),
-										new SConfigureConfigPacket(SConfigureConfigPacket.Actions.overlayReset.name(), "")));
+						CatnipServices.NETWORK.simpleActionToClient(player, "overlayReset", "");
 
-					ctx.getSource()
-						.sendSuccess(() -> Components.literal("reset overlay offset"), true);
+						ctx.getSource().sendSuccess(() -> {
+                            return Component.literal("Create Goggle Overlay has been reset to default position");
+                        }, true);
 
-						return 1;
+						return Command.SINGLE_SUCCESS;
 					})
 				)
 				.executes(ctx -> {
-					DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> SConfigureConfigPacket.Actions.overlayScreen.performAction(""));
+					ServerPlayer player = ctx.getSource().getPlayerOrException();
 
-					DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> () ->
-							AllPackets.getChannel().send(
-									PacketDistributor.PLAYER.with(() -> (ServerPlayer) ctx.getSource().getEntity()),
-									new SConfigureConfigPacket(SConfigureConfigPacket.Actions.overlayScreen.name(), "")));
+					CatnipServices.NETWORK.simpleActionToClient(player, "overlayScreen", "");
 
-					ctx.getSource()
-							.sendSuccess(() -> Components.literal("window opened"), true);
-
-				return 1;
-			});
+					return Command.SINGLE_SUCCESS;
+				});
 
 	}
 }

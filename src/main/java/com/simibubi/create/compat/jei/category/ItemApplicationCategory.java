@@ -1,30 +1,28 @@
 package com.simibubi.create.compat.jei.category;
 
-import java.util.List;
-import java.util.Optional;
-
-import javax.annotation.ParametersAreNonnullByDefault;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.simibubi.create.compat.jei.category.animations.AnimatedKinetics;
 import com.simibubi.create.content.kinetics.deployer.ItemApplicationRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
-import com.simibubi.create.foundation.gui.element.GuiGameElement;
-import com.simibubi.create.foundation.utility.Lang;
-
+import com.simibubi.create.foundation.utility.CreateLang;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import net.createmod.catnip.gui.element.GuiGameElement;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
+import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 public class ItemApplicationCategory extends CreateRecipeCategory<ItemApplicationRecipe> {
@@ -44,7 +42,7 @@ public class ItemApplicationCategory extends CreateRecipeCategory<ItemApplicatio
 				.addIngredients(recipe.getRequiredHeldItem())
 				.addTooltipCallback(
 					recipe.shouldKeepHeldItem()
-						? (view, tooltip) -> tooltip.add(1, Lang.translateDirect("recipe.deploying.not_consumed")
+						? (view, tooltip) -> tooltip.add(1, CreateLang.translateDirect("recipe.deploying.not_consumed")
 							.withStyle(ChatFormatting.GOLD))
 						: (view, tooltip) -> {}
 				);

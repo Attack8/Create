@@ -8,14 +8,19 @@ import net.minecraftforge.items.ItemHandlerHelper;
 public class BasinInventory extends SmartInventory {
 
 	private BasinBlockEntity blockEntity;
+	
+	public boolean packagerMode;
 
 	public BasinInventory(int slots, BasinBlockEntity be) {
-		super(slots, be, 16, true);
+		super(slots, be, 64, true);
 		this.blockEntity = be;
 	}
 
 	@Override
 	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
+		if (packagerMode) // Unique stack insertion only matters for belt setups
+			return inv.insertItem(slot, stack, simulate);
+		
 		int firstFreeSlot = -1;
 
 		for (int i = 0; i < getSlots(); i++) {

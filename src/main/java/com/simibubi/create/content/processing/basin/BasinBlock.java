@@ -41,6 +41,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -61,7 +62,7 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 	protected void createBlockStateDefinition(Builder<Block, BlockState> p_206840_1_) {
 		super.createBlockStateDefinition(p_206840_1_.add(FACING));
 	}
-	
+
 	public static boolean isBasin(LevelReader world, BlockPos pos) {
 		return world.getBlockEntity(pos) instanceof BasinBlockEntity;
 	}
@@ -84,7 +85,7 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 
 	@Override
 	public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn,
-		BlockHitResult hit) {
+								 BlockHitResult hit) {
 		ItemStack heldItem = player.getItemInHand(handIn);
 
 		return onBlockEntityUse(worldIn, pos, be -> {
@@ -100,9 +101,9 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 				if (heldItem.getItem()
 					.equals(Items.SPONGE)
 					&& !be.getCapability(ForgeCapabilities.FLUID_HANDLER)
-						.map(iFluidHandler -> iFluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE))
-						.orElse(FluidStack.EMPTY)
-						.isEmpty()) {
+					.map(iFluidHandler -> iFluidHandler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE))
+					.orElse(FluidStack.EMPTY)
+					.isEmpty()) {
 					return InteractionResult.SUCCESS;
 				}
 				return InteractionResult.PASS;
@@ -133,24 +134,17 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 		if (!worldIn.getBlockState(entityIn.blockPosition())
 			.is(this))
 			return;
-		if (!(entityIn instanceof ItemEntity))
+		if (!(entityIn instanceof ItemEntity itemEntity))
 			return;
 		if (!entityIn.isAlive())
 			return;
-		ItemEntity itemEntity = (ItemEntity) entityIn;
 		withBlockEntityDo(worldIn, entityIn.blockPosition(), be -> {
-
-			// Tossed items bypass the quarter-stack limit
-			be.inputInventory.withMaxStackSize(64);
 			ItemStack insertItem = ItemHandlerHelper.insertItem(be.inputInventory, itemEntity.getItem()
 				.copy(), false);
-			be.inputInventory.withMaxStackSize(16);
-
 			if (insertItem.isEmpty()) {
 				itemEntity.discard();
 				return;
 			}
-
 			itemEntity.setItem(insertItem);
 		});
 	}
@@ -212,8 +206,7 @@ public class BasinBlock extends Block implements IBE<BasinBlockEntity>, IWrencha
 			return false;
 		} else {
 			BlockEntity blockEntity = world.getBlockEntity(output);
-			if (blockEntity instanceof BeltBlockEntity) {
-				BeltBlockEntity belt = (BeltBlockEntity) blockEntity;
+			if (blockEntity instanceof BeltBlockEntity belt) {
 				return belt.getSpeed() == 0 || belt.getMovementFacing() != direction.getOpposite();
 			}
 		}

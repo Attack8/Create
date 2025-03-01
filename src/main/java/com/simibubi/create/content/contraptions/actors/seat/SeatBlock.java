@@ -42,6 +42,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.util.FakePlayer;
 
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
@@ -128,7 +129,7 @@ public class SeatBlock extends Block implements ProperWaterloggedBlock {
 	@Override
 	public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
 		BlockHitResult p_225533_6_) {
-		if (player.isShiftKeyDown())
+		if (player.isShiftKeyDown() || player instanceof FakePlayer)
 			return InteractionResult.PASS;
 
 		ItemStack heldItem = player.getItemInHand(hand);

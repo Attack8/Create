@@ -11,8 +11,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.sound.SoundScapes;
 import com.simibubi.create.foundation.sound.SoundScapes.AmbienceGroup;
-import com.simibubi.create.foundation.utility.VecHelper;
 
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -121,7 +121,7 @@ public class MillstoneBlockEntity extends KineticBlockEntity {
 		super.invalidate();
 		capability.invalidate();
 	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();
@@ -145,7 +145,7 @@ public class MillstoneBlockEntity extends KineticBlockEntity {
 		lastRecipe.rollResults()
 			.forEach(stack -> ItemHandlerHelper.insertItemStacked(outputInv, stack, false));
 		award(AllAdvancements.MILLSTONE);
-		
+
 		sendData();
 		setChanged();
 	}

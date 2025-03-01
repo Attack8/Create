@@ -3,19 +3,21 @@ package com.simibubi.create.content.logistics.funnel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.logistics.funnel.BeltFunnelBlock.Shape;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.math.AngleHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 public class FunnelFilterSlotPositioning extends ValueBoxTransform.Sided {
 
 	@Override
-	public Vec3 getLocalOffset(BlockState state) {
+	public Vec3 getLocalOffset(LevelAccessor level, BlockPos pos, BlockState state) {
 		Direction side = getSide();
 		float horizontalAngle = AngleHelper.horizontalAngle(side);
 		Direction funnelFacing = FunnelBlock.getFunnelFacing(state);
@@ -45,19 +47,19 @@ public class FunnelFilterSlotPositioning extends ValueBoxTransform.Sided {
 	}
 
 	@Override
-	public void rotate(BlockState state, PoseStack ms) {
+	public void rotate(LevelAccessor level, BlockPos pos, BlockState state, PoseStack ms) {
 		Direction facing = FunnelBlock.getFunnelFacing(state);
 
 		if (facing.getAxis()
 			.isVertical()) {
-			super.rotate(state, ms);
+			super.rotate(level, pos, state, ms);
 			return;
 		}
 
 		boolean isBeltFunnel = state.getBlock() instanceof BeltFunnelBlock;
 		if (isBeltFunnel && state.getValue(BeltFunnelBlock.SHAPE) != Shape.EXTENDED) {
 			Shape shape = state.getValue(BeltFunnelBlock.SHAPE);
-			super.rotate(state, ms);
+			super.rotate(level, pos, state, ms);
 			if (shape == Shape.PULLING || shape == Shape.PUSHING)
 				TransformStack.of(ms)
 					.rotateXDegrees(-22.5f);
@@ -65,7 +67,7 @@ public class FunnelFilterSlotPositioning extends ValueBoxTransform.Sided {
 		}
 
 		if (state.getBlock() instanceof FunnelBlock) {
-			super.rotate(state, ms);
+			super.rotate(level, pos, state, ms);
 			TransformStack.of(ms)
 				.rotateXDegrees(-22.5f);
 			return;

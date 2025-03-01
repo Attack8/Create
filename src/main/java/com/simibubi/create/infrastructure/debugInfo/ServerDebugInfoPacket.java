@@ -3,9 +3,9 @@ package com.simibubi.create.infrastructure.debugInfo;
 import java.util.List;
 import java.util.Objects;
 
+import com.simibubi.create.Create;
 import com.simibubi.create.foundation.networking.SimplePacketBase;
 import com.simibubi.create.foundation.utility.DyeHelper;
-import com.simibubi.create.foundation.utility.Lang;
 import com.simibubi.create.infrastructure.debugInfo.element.DebugInfoSection;
 
 import net.minecraft.client.Minecraft;
@@ -83,7 +83,7 @@ public class ServerDebugInfoPacket extends SimplePacketBase {
 
 		String text = output.toString();
 		Minecraft.getInstance().keyboardHandler.setClipboard(text);
-		Lang.translate("command.debuginfo.saved_to_clipboard")
+		Create.lang().translate("command.debuginfo.saved_to_clipboard")
 			.color(DyeHelper.getDyeColors(DyeColor.LIME)
 				.getFirst())
 			.sendChat(player);

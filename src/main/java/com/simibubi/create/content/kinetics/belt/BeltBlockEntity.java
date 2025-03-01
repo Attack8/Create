@@ -27,8 +27,8 @@ import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
 import com.simibubi.create.content.logistics.tunnel.BrassTunnelBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.VersionedInventoryTrackerBehaviour;
-import com.simibubi.create.foundation.utility.NBTHelper;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -45,6 +45,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -389,7 +390,7 @@ public class BeltBlockEntity extends KineticBlockEntity {
 	}
 
 	private void applyToAllItems(float maxDistanceFromCenter,
-		Function<TransportedItemStack, TransportedResult> processFunction) {
+								 Function<TransportedItemStack, TransportedResult> processFunction) {
 		BeltBlockEntity controller = getControllerBE();
 		if (controller == null)
 			return;
@@ -472,8 +473,7 @@ public class BeltBlockEntity extends KineticBlockEntity {
 			return inserted;
 
 		BlockEntity teAbove = level.getBlockEntity(worldPosition.above());
-		if (teAbove instanceof BrassTunnelBlockEntity) {
-			BrassTunnelBlockEntity tunnelBE = (BrassTunnelBlockEntity) teAbove;
+		if (teAbove instanceof BrassTunnelBlockEntity tunnelBE) {
 			if (tunnelBE.hasDistributionBehaviour()) {
 				if (!tunnelBE.getStackToDistribute()
 					.isEmpty())
@@ -501,11 +501,16 @@ public class BeltBlockEntity extends KineticBlockEntity {
 			.isVertical()) {
 			if (movementFacing != side) {
 				transportedStack.sideOffset = side.getAxisDirection()
-					.getStep() * .35f;
+					.getStep() * .675f;
 				if (side.getAxis() == Axis.X)
 					transportedStack.sideOffset *= -1;
-			} else
-				transportedStack.beltPosition = getDirectionAwareBeltMovementSpeed() > 0 ? index : index + 1;
+			} else {
+				float extraOffset =
+					BeltHelper.getSegmentBE(level, worldPosition.relative(movementFacing.getOpposite())) != null ? .26f
+						: 0;
+				transportedStack.beltPosition =
+					getDirectionAwareBeltMovementSpeed() > 0 ? index - extraOffset : index + 1 + extraOffset;
+			}
 		}
 
 		transportedStack.prevSideOffset = transportedStack.sideOffset;
@@ -537,7 +542,7 @@ public class BeltBlockEntity extends KineticBlockEntity {
 
 	@Override
 	public float propagateRotationTo(KineticBlockEntity target, BlockState stateFrom, BlockState stateTo, BlockPos diff,
-		boolean connectedViaAxes, boolean connectedViaCogs) {
+									 boolean connectedViaAxes, boolean connectedViaCogs) {
 		if (target instanceof BeltBlockEntity && !connectedViaAxes)
 			return getController().equals(((BeltBlockEntity) target).getController()) ? 1 : 0;
 		return 0;

@@ -1,7 +1,6 @@
 package com.simibubi.create.compat.jei;
 
 import com.simibubi.create.foundation.gui.AllGuiTextures;
-
 import mezz.jei.api.gui.drawable.IDrawable;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -15,18 +14,18 @@ public class ScreenResourceWrapper implements IDrawable {
 
 	@Override
 	public int getWidth() {
-		return resource.width;
+		return resource.getWidth();
 	}
 
 	@Override
 	public int getHeight() {
-		return resource.height;
+		return resource.getHeight();
 	}
 
 	@Override
 	public void draw(GuiGraphics graphics, int xOffset, int yOffset) {
-		graphics.blit(resource.location, xOffset, yOffset, 0, resource.startX, resource.startY, resource.width,
-			resource.height, 256, 256);
+		graphics.blit(resource.location, xOffset, yOffset, 0, resource.getStartX(), resource.getStartY(), resource.getWidth(),
+			resource.getHeight(), 256, 256);
 	}
 
 }

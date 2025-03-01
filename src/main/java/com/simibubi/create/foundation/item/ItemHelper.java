@@ -2,30 +2,31 @@ package com.simibubi.create.foundation.item;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-import com.simibubi.create.foundation.block.IBE;
-
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-
 import org.apache.commons.lang3.mutable.MutableInt;
 
-import com.simibubi.create.foundation.utility.Pair;
+import com.simibubi.create.content.logistics.box.PackageEntity;
+import com.simibubi.create.foundation.block.IBE;
 
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Containers;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class ItemHelper {
@@ -82,9 +83,9 @@ public class ItemHelper {
 
 	public static <T extends IBE<? extends BlockEntity>> int calcRedstoneFromBlockEntity(T ibe, Level level, BlockPos pos) {
 		return ibe.getBlockEntityOptional(level, pos)
-				.map(be -> be.getCapability(ForgeCapabilities.ITEM_HANDLER))
-				.map(lo -> lo.map(ItemHelper::calcRedstoneFromInventory).orElse(0))
-				.orElse(0);
+			.map(be -> be.getCapability(ForgeCapabilities.ITEM_HANDLER))
+			.map(lo -> lo.map(ItemHelper::calcRedstoneFromInventory).orElse(0))
+			.orElse(0);
 	}
 
 	public static int calcRedstoneFromInventory(@Nullable IItemHandler inv) {
@@ -116,7 +117,8 @@ public class ItemHelper {
 
 	public static List<Pair<Ingredient, MutableInt>> condenseIngredients(NonNullList<Ingredient> recipeIngredients) {
 		List<Pair<Ingredient, MutableInt>> actualIngredients = new ArrayList<>();
-		Ingredients: for (Ingredient igd : recipeIngredients) {
+		Ingredients:
+		for (Ingredient igd : recipeIngredients) {
 			for (Pair<Ingredient, MutableInt> pair : actualIngredients) {
 				ItemStack[] stacks1 = pair.getFirst()
 					.getItems();
@@ -177,7 +179,7 @@ public class ItemHelper {
 	}
 
 	public static ItemStack extract(IItemHandler inv, Predicate<ItemStack> test, ExtractionCountMode mode, int amount,
-		boolean simulate) {
+									boolean simulate) {
 		ItemStack extracting = ItemStack.EMPTY;
 		boolean amountRequired = mode == ExtractionCountMode.EXACTLY;
 		boolean checkHasEnoughItems = amountRequired;
@@ -185,7 +187,8 @@ public class ItemHelper {
 		boolean potentialOtherMatch = false;
 		int maxExtractionCount = amount;
 
-		Extraction: do {
+		Extraction:
+		do {
 			extracting = ItemStack.EMPTY;
 
 			for (int slot = 0; slot < inv.getSlots(); slot++) {
@@ -242,7 +245,7 @@ public class ItemHelper {
 	}
 
 	public static ItemStack extract(IItemHandler inv, Predicate<ItemStack> test,
-		Function<ItemStack, Integer> amountFunction, boolean simulate) {
+									Function<ItemStack, Integer> amountFunction, boolean simulate) {
 		ItemStack extracting = ItemStack.EMPTY;
 		int maxExtractionCount = 64;
 
@@ -298,7 +301,16 @@ public class ItemHelper {
 		}
 		return -1;
 	}
-	
+
+	public static ItemStack fromItemEntity(Entity entityIn) {
+		if (!entityIn.isAlive())
+			return ItemStack.EMPTY;
+		if (entityIn instanceof PackageEntity packageEntity) {
+			return packageEntity.getBox();
+		}
+		return entityIn instanceof ItemEntity ? ((ItemEntity) entityIn).getItem() : ItemStack.EMPTY;
+	}
+
 	public static ItemStack limitCountToMaxStackSize(ItemStack stack, boolean simulate) {
 		int count = stack.getCount();
 		int max = stack.getMaxStackSize();
@@ -309,5 +321,14 @@ public class ItemHelper {
 			stack.setCount(max);
 		return remainder;
 	}
-	
+
+	public static void copyContents(IItemHandler from, IItemHandlerModifiable to) {
+		if (from.getSlots() != to.getSlots()) {
+			throw new IllegalArgumentException("Slot count mismatch");
+		}
+
+		for (int i = 0; i < from.getSlots(); i++) {
+			to.setStackInSlot(i, from.getStackInSlot(i).copy());
+		}
+	}
 }

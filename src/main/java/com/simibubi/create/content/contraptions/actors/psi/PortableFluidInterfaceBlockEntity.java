@@ -24,7 +24,7 @@ public class PortableFluidInterfaceBlockEntity extends PortableStorageInterfaceB
 	@Override
 	public void startTransferringTo(Contraption contraption, float distance) {
 		LazyOptional<IFluidHandler> oldcap = capability;
-		capability = LazyOptional.of(() -> new InterfaceFluidHandler(contraption.getSharedFluidTanks()));
+		capability = LazyOptional.of(() -> new InterfaceFluidHandler(contraption.getStorage().getFluids()));
 		oldcap.invalidate();
 		super.startTransferringTo(contraption, distance);
 	}

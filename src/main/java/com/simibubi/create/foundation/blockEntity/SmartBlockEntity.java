@@ -2,35 +2,37 @@ package com.simibubi.create.foundation.blockEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import com.simibubi.create.api.event.BlockEntityBehaviourEvent;
-import com.simibubi.create.content.schematics.requirement.ISpecialBlockEntityItemRequirement;
+import com.simibubi.create.api.schematic.nbt.PartialSafeNBT;
+import com.simibubi.create.api.schematic.requirement.SpecialBlockEntityItemRequirement;
 import com.simibubi.create.content.schematics.requirement.ItemRequirement;
 import com.simibubi.create.foundation.advancement.AdvancementBehaviour;
 import com.simibubi.create.foundation.advancement.CreateAdvancement;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.utility.IInteractionChecker;
-import com.simibubi.create.foundation.utility.IPartialSafeNBT;
 
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
+import net.createmod.ponder.api.VirtualBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 public abstract class SmartBlockEntity extends CachedRenderBBBlockEntity
-	implements IPartialSafeNBT, IInteractionChecker, ISpecialBlockEntityItemRequirement {
+	implements PartialSafeNBT, IInteractionChecker, SpecialBlockEntityItemRequirement, VirtualBlockEntity {
 
-	private final Map<BehaviourType<?>, BlockEntityBehaviour> behaviours = new HashMap<>();
+	private final Map<BehaviourType<?>, BlockEntityBehaviour> behaviours = new Reference2ObjectArrayMap<>();
 	private boolean initialized = false;
 	private boolean firstNbtRead = true;
 	protected int lazyTickRate;
@@ -97,7 +99,7 @@ public abstract class SmartBlockEntity extends CachedRenderBBBlockEntity
 		super.saveAdditional(tag);
 		forEachBehaviour(tb -> {
 			if (tb.isSafeNBT())
-				tb.write(tag, false);
+				tb.writeSafe(tag);
 		});
 	}
 
@@ -183,8 +185,9 @@ public abstract class SmartBlockEntity extends CachedRenderBBBlockEntity
 		return behaviours.values();
 	}
 
-	protected void attachBehaviourLate(BlockEntityBehaviour behaviour) {
+	public void attachBehaviourLate(BlockEntityBehaviour behaviour) {
 		behaviours.put(behaviour.getType(), behaviour);
+		behaviour.blockEntity = this;
 		behaviour.initialize();
 	}
 
@@ -193,7 +196,7 @@ public abstract class SmartBlockEntity extends CachedRenderBBBlockEntity
 			.reduce(ItemRequirement.NONE, (r, b) -> r.union(b.getRequiredItems()), (r, r1) -> r.union(r1));
 	}
 
-	protected void removeBehaviour(BehaviourType<?> type) {
+	public void removeBehaviour(BehaviourType<?> type) {
 		BlockEntityBehaviour remove = behaviours.remove(type);
 		if (remove != null) {
 			remove.unload();

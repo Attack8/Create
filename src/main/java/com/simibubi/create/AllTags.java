@@ -8,8 +8,12 @@ import static com.simibubi.create.AllTags.NameSpace.TIC;
 
 import java.util.Collections;
 
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.api.contraption.ContraptionType;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorage;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorageType;
+import com.simibubi.create.api.registry.CreateRegistries;
 
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -26,12 +30,13 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class AllTags {
 	public static <T> TagKey<T> optionalTag(IForgeRegistry<T> registry,
-		ResourceLocation id) {
+											ResourceLocation id) {
 		return registry.tags()
 			.createOptionalTagKey(id, Collections.emptySet());
 	}
@@ -59,9 +64,7 @@ public class AllTags {
 		TIC("tconstruct"),
 		QUARK("quark"),
 		GS("galosphere"),
-		CURIOS("curios")
-
-		;
+		CURIOS("curios");
 
 		public final String id;
 		public final boolean optionalDefault;
@@ -82,7 +85,6 @@ public class AllTags {
 
 		BRITTLE,
 		CASING,
-		CONTRAPTION_INVENTORY_DENY,
 		COPYCAT_ALLOW,
 		COPYCAT_DENY,
 		FAN_PROCESSING_CATALYSTS_BLASTING(MOD, "fan_processing_catalysts/blasting"),
@@ -93,18 +95,25 @@ public class AllTags {
 		GIRDABLE_TRACKS,
 		MOVABLE_EMPTY_COLLIDER,
 		NON_MOVABLE,
+		NON_BREAKABLE,
 		ORE_OVERRIDE_STONE,
 		PASSIVE_BOILER_HEATERS,
 		SAFE_NBT,
 		SEATS,
+		POSTBOXES,
+		TABLE_CLOTHS,
 		TOOLBOXES,
 		TRACKS,
 		TREE_ATTACHMENTS,
 		VALVE_HANDLES,
 		WINDMILL_SAILS,
 		WRENCH_PICKUP,
+		CHEST_MOUNTED_STORAGE,
+		SIMPLE_MOUNTED_STORAGE,
+		FALLBACK_MOUNTED_STORAGE_BLACKLIST,
 		ROOTS,
 		SUGAR_CANE_VARIANTS,
+		NON_HARVESTABLE,
 
 		CORALS,
 
@@ -159,7 +168,8 @@ public class AllTags {
 			return state.is(tag);
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
 
 	}
 
@@ -171,34 +181,40 @@ public class AllTags {
 		CONTRAPTION_CONTROLLED,
 		CREATE_INGOTS,
 		CRUSHED_RAW_MATERIALS,
+		INVALID_FOR_TRACK_PAVING,
 		DEPLOYABLE_DRINK,
 		MODDED_STRIPPED_LOGS,
 		MODDED_STRIPPED_WOOD,
 		PRESSURIZED_AIR_SOURCES,
 		SANDPAPER,
 		SEATS,
+		POSTBOXES,
+		TABLE_CLOTHS,
+		DYED_TABLE_CLOTHS,
+		PULPIFIABLE,
 		SLEEPERS,
 		TOOLBOXES,
+		PACKAGES,
+		CHAIN_RIDEABLE,
 		TRACKS,
 		UPRIGHT_ON_BELT,
 		VALVE_HANDLES,
 		VANILLA_STRIPPED_LOGS,
 		VANILLA_STRIPPED_WOOD,
+		DISPENSE_BEHAVIOR_WRAP_BLACKLIST,
 
 		STRIPPED_LOGS(FORGE),
 		STRIPPED_WOOD(FORGE),
 		PLATES(FORGE),
-		OBSIDIAN_DUST(FORGE,"dusts/obsidian"),
+		OBSIDIAN_DUST(FORGE, "dusts/obsidian"),
 		WRENCH(FORGE, "tools/wrench"),
 
-		ALLURITE(MOD,"stone_types/galosphere/allurite"),
-		AMETHYST(MOD,"stone_types/galosphere/amethyst"),
+		ALLURITE(MOD, "stone_types/galosphere/allurite"),
+		AMETHYST(MOD, "stone_types/galosphere/amethyst"),
 		LUMIERE(MOD, "stone_types/galosphere/lumiere"),
 
 		UA_CORAL(MOD, "upgrade_aquatic/coral"),
-		CURIOS_HEAD(CURIOS, "head")
-
-		;
+		CURIOS_HEAD(CURIOS, "head");
 
 		public final TagKey<Item> tag;
 		public final boolean alwaysDatagen;
@@ -239,7 +255,8 @@ public class AllTags {
 			return stack.is(tag);
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
 
 	}
 
@@ -252,9 +269,7 @@ public class AllTags {
 		FAN_PROCESSING_CATALYSTS_SMOKING(MOD, "fan_processing_catalysts/smoking"),
 		FAN_PROCESSING_CATALYSTS_SPLASHING(MOD, "fan_processing_catalysts/splashing"),
 
-		HONEY(FORGE)
-
-		;
+		HONEY(FORGE);
 
 		public final TagKey<Fluid> tag;
 		public final boolean alwaysDatagen;
@@ -294,7 +309,8 @@ public class AllTags {
 			return state.is(tag);
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
 
 	}
 
@@ -342,7 +358,8 @@ public class AllTags {
 			return matches(entity.getType());
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
 
 	}
 
@@ -385,7 +402,54 @@ public class AllTags {
 			return ForgeRegistries.RECIPE_SERIALIZERS.getHolder(recipeSerializer).orElseThrow().is(tag);
 		}
 
-		private static void init() {}
+		private static void init() {
+		}
+	}
+
+	public enum AllContraptionTypeTags {
+		OPENS_CONTROLS,
+		REQUIRES_VEHICLE_FOR_RENDER;
+
+		public final TagKey<ContraptionType> tag;
+		public final boolean alwaysDatagen;
+
+		AllContraptionTypeTags() {
+			ResourceLocation tagId = Create.asResource(Lang.asId(this.name()));
+			this.tag = TagKey.create(CreateRegistries.CONTRAPTION_TYPE, tagId);
+			this.alwaysDatagen = true;
+		}
+
+		public boolean matches(ContraptionType type) {
+			return type.is(this.tag);
+		}
+
+		private static void init() {
+		}
+	}
+
+	public enum AllMountedItemStorageTypeTags {
+		INTERNAL,
+		FUEL_BLACKLIST;
+
+		public final TagKey<MountedItemStorageType<?>> tag;
+		public final boolean alwaysDatagen;
+
+		AllMountedItemStorageTypeTags() {
+			ResourceLocation tagId = Create.asResource(Lang.asId(this.name()));
+			this.tag = TagKey.create(CreateRegistries.MOUNTED_ITEM_STORAGE_TYPE, tagId);
+			this.alwaysDatagen = true;
+		}
+
+		public boolean matches(MountedItemStorage storage) {
+			return this.matches(storage.type);
+		}
+
+		public boolean matches(MountedItemStorageType<?> type) {
+			return type.is(this.tag);
+		}
+
+		private static void init() {
+		}
 	}
 
 	public static void init() {
@@ -394,5 +458,7 @@ public class AllTags {
 		AllFluidTags.init();
 		AllEntityTags.init();
 		AllRecipeSerializerTags.init();
+		AllContraptionTypeTags.init();
+		AllMountedItemStorageTypeTags.init();
 	}
 }

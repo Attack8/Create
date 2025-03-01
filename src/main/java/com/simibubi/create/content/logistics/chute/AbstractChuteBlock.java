@@ -6,12 +6,15 @@ import javax.annotation.Nullable;
 
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
+import com.simibubi.create.content.logistics.box.PackageEntity;
 import com.simibubi.create.foundation.advancement.AdvancementBehaviour;
+import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.render.ReducedDestroyEffects;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.foundation.utility.Iterate;
+import com.simibubi.create.foundation.item.ItemHelper;
 
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -29,6 +32,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
@@ -85,30 +89,33 @@ public abstract class AbstractChuteBlock extends Block implements IWrenchable, I
 	@Override
 	public void updateEntityAfterFallOn(BlockGetter worldIn, Entity entityIn) {
 		super.updateEntityAfterFallOn(worldIn, entityIn);
-		if (!(entityIn instanceof ItemEntity))
+		ItemStack stack = ItemHelper.fromItemEntity(entityIn);
+		if (stack.isEmpty())
 			return;
 		if (entityIn.level().isClientSide)
 			return;
 		if (!entityIn.isAlive())
 			return;
-		DirectBeltInputBehaviour input = BlockEntityBehaviour.get(entityIn.level(),
-			BlockPos.containing(entityIn.position()
-				.add(0, 0.5f, 0))
-				.below(),
-			DirectBeltInputBehaviour.TYPE);
+		BlockPos pos = BlockPos.containing(entityIn.position()
+			.add(0, 0.5f, 0))
+			.below();
+		DirectBeltInputBehaviour input = BlockEntityBehaviour.get(entityIn.level(), pos, DirectBeltInputBehaviour.TYPE);
 		if (input == null)
 			return;
 		if (!input.canInsertFromSide(Direction.UP))
 			return;
-
-		ItemEntity itemEntity = (ItemEntity) entityIn;
-		ItemStack toInsert = itemEntity.getItem();
-		ItemStack remainder = input.handleInsertion(toInsert, Direction.UP, false);
-
-		if (remainder.isEmpty())
-			itemEntity.discard();
-		if (remainder.getCount() < toInsert.getCount())
-			itemEntity.setItem(remainder);
+		if (!PackageEntity.centerPackage(entityIn, Vec3.atBottomCenterOf(pos.above())))
+			return;
+		ItemStack remainder = input.handleInsertion(stack, Direction.UP, false);
+		if (remainder.isEmpty()) {
+			entityIn.discard();
+			if (entityIn instanceof PackageEntity box) {
+				Player player = box.tossedBy.get();
+				if (player != null)
+					AllAdvancements.PACKAGE_CHUTE_THROW.awardTo(player);
+			}
+		} else if (remainder.getCount() < stack.getCount() && entityIn instanceof ItemEntity)
+			((ItemEntity) entityIn).setItem(remainder);
 	}
 
 	@Override

@@ -1,14 +1,15 @@
 package com.simibubi.create.content.contraptions.render;
 
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.foundation.utility.WorldAttached;
 
 import dev.engine_room.flywheel.api.event.ReloadLevelRendererEvent;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import net.createmod.catnip.data.WorldAttached;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;

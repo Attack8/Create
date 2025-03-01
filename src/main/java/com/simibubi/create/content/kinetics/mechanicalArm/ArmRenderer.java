@@ -5,14 +5,14 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
 import com.simibubi.create.content.kinetics.mechanicalArm.ArmBlockEntity.Phase;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
-import com.simibubi.create.foundation.utility.Color;
-import com.simibubi.create.foundation.utility.Iterate;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -111,19 +111,19 @@ public class ArmRenderer extends KineticBlockEntityRenderer<ArmBlockEntity> {
 	private void renderArm(VertexConsumer builder, PoseStack ms, PoseStack msLocal, TransformStack msr,
 		BlockState blockState, int color, float baseAngle, float lowerArmAngle, float upperArmAngle, float headAngle,
 		boolean goggles, boolean inverted, boolean hasItem, boolean isBlockItem, int light) {
-		SuperByteBuffer base = CachedBufferer.partial(AllPartialModels.ARM_BASE, blockState)
+		SuperByteBuffer base = CachedBuffers.partial(AllPartialModels.ARM_BASE, blockState)
 			.light(light);
-		SuperByteBuffer lowerBody = CachedBufferer.partial(AllPartialModels.ARM_LOWER_BODY, blockState)
+		SuperByteBuffer lowerBody = CachedBuffers.partial(AllPartialModels.ARM_LOWER_BODY, blockState)
 			.light(light);
-		SuperByteBuffer upperBody = CachedBufferer.partial(AllPartialModels.ARM_UPPER_BODY, blockState)
+		SuperByteBuffer upperBody = CachedBuffers.partial(AllPartialModels.ARM_UPPER_BODY, blockState)
 			.light(light);
-		SuperByteBuffer claw = CachedBufferer
+		SuperByteBuffer claw = CachedBuffers
 			.partial(goggles ? AllPartialModels.ARM_CLAW_BASE_GOGGLES : AllPartialModels.ARM_CLAW_BASE, blockState)
 			.light(light);
-		SuperByteBuffer upperClawGrip = CachedBufferer.partial(AllPartialModels.ARM_CLAW_GRIP_UPPER,
+		SuperByteBuffer upperClawGrip = CachedBuffers.partial(AllPartialModels.ARM_CLAW_GRIP_UPPER,
 			blockState)
 			.light(light);
-		SuperByteBuffer lowerClawGrip = CachedBufferer.partial(AllPartialModels.ARM_CLAW_GRIP_LOWER, blockState)
+		SuperByteBuffer lowerClawGrip = CachedBuffers.partial(AllPartialModels.ARM_CLAW_GRIP_LOWER, blockState)
 			.light(light);
 
 		transformBase(msr, baseAngle);
@@ -200,7 +200,7 @@ public class ArmRenderer extends KineticBlockEntityRenderer<ArmBlockEntity> {
 
 	@Override
 	protected SuperByteBuffer getRotatedModel(ArmBlockEntity be, BlockState state) {
-		return CachedBufferer.partial(AllPartialModels.ARM_COG, state);
+		return CachedBuffers.partial(AllPartialModels.ARM_COG, state);
 	}
 
 }

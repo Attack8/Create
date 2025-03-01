@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.foundation.model.BakedModelWrapperWithData;
-import com.simibubi.create.foundation.utility.Iterate;
 
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -22,6 +22,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelData.Builder;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -79,6 +80,12 @@ public abstract class CopycatModel extends BakedModelWrapperWithData {
 			if (!Block.shouldRenderFace(material, world, pos, face, neighbourPos))
 				occlusionData.occlude(face);
 		}
+	}
+	
+	@Override
+	public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand) {
+		return getCroppedQuads(state, side, rand, getMaterial(ModelData.EMPTY), ModelData.EMPTY,
+			RenderType.cutoutMipped());
 	}
 
 	@Override

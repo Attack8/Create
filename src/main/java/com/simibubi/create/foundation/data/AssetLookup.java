@@ -28,7 +28,8 @@ public class AssetLookup {
 		String... suffix) {
 		String string = "/block";
 		for (String suf : suffix)
-			string += "_" + suf;
+			if (!suf.isEmpty())
+				string += "_" + suf;
 		final String location = "block/" + ctx.getName() + string;
 		return prov.models()
 			.getExistingFile(prov.modLoc(location));

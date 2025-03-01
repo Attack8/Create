@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.AllParticleTypes;
 import com.simibubi.create.AllTags;
-import com.simibubi.create.content.equipment.goggles.IHaveGoggleInformation;
+import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.fluids.FluidFX;
 import com.simibubi.create.content.fluids.particle.FluidParticleData;
 import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
@@ -28,19 +28,18 @@ import com.simibubi.create.foundation.blockEntity.behaviour.inventory.InvManipul
 import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.item.SmartInventory;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
 import com.simibubi.create.foundation.utility.BlockHelper;
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.IntAttached;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.LangBuilder;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat.Chaser;
+import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.IntAttached;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.lang.LangBuilder;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -59,6 +58,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -256,12 +256,11 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 		}
 
 		BlockEntity blockEntity = level.getBlockEntity(worldPosition.above(2));
-		if (!(blockEntity instanceof MechanicalMixerBlockEntity)) {
+		if (!(blockEntity instanceof MechanicalMixerBlockEntity mixer)) {
 			setAreFluidsMoving(false);
 			return;
 		}
 
-		MechanicalMixerBlockEntity mixer = (MechanicalMixerBlockEntity) blockEntity;
 		setAreFluidsMoving(mixer.running && mixer.runningTicks <= 20);
 	}
 
@@ -384,15 +383,15 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 
 		IItemHandler targetInv = be == null ? null
 			: be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite())
-				.orElse(inserter == null ? null : inserter.getInventory());
+			.orElse(inserter == null ? null : inserter.getInventory());
 
 		IFluidHandler targetTank = be == null ? null
 			: be.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite())
-				.orElse(null);
+			.orElse(null);
 
 		boolean update = false;
 
-		for (Iterator<ItemStack> iterator = spoutputBuffer.iterator(); iterator.hasNext();) {
+		for (Iterator<ItemStack> iterator = spoutputBuffer.iterator(); iterator.hasNext(); ) {
 			ItemStack itemStack = iterator.next();
 
 			if (direction == Direction.DOWN) {
@@ -422,7 +421,7 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 				itemStack.setCount(remainder.getCount());
 		}
 
-		for (Iterator<FluidStack> iterator = spoutputFluidBuffer.iterator(); iterator.hasNext();) {
+		for (Iterator<FluidStack> iterator = spoutputFluidBuffer.iterator(); iterator.hasNext(); ) {
 			FluidStack fluidStack = iterator.next();
 
 			if (direction == Direction.DOWN) {
@@ -536,10 +535,10 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 				be == null ? null : BlockEntityBehaviour.get(level, be.getBlockPos(), InvManipulationBehaviour.TYPE);
 			IItemHandler targetInv = be == null ? null
 				: be.getCapability(ForgeCapabilities.ITEM_HANDLER, direction.getOpposite())
-					.orElse(inserter == null ? null : inserter.getInventory());
+				.orElse(inserter == null ? null : inserter.getInventory());
 			IFluidHandler targetTank = be == null ? null
 				: be.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite())
-					.orElse(null);
+				.orElse(null);
 			boolean externalTankNotPresent = targetTank == null;
 
 			if (!outputItems.isEmpty() && targetInv == null)
@@ -584,7 +583,7 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 	}
 
 	private boolean acceptFluidOutputsIntoBasin(List<FluidStack> outputFluids, boolean simulate,
-		IFluidHandler targetTank) {
+												IFluidHandler targetTank) {
 		for (FluidStack fluidStack : outputFluids) {
 			FluidAction action = simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE;
 			int fill = targetTank instanceof SmartFluidTankBehaviour.InternalFluidHandler
@@ -742,7 +741,7 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 
 	@Override
 	public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-		Lang.translate("gui.goggles.basin_contents")
+		CreateLang.translate("gui.goggles.basin_contents")
 			.forGoggles(tooltip);
 
 		IItemHandlerModifiable items = itemCapability.orElse(new ItemStackHandler());
@@ -753,25 +752,25 @@ public class BasinBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 			ItemStack stackInSlot = items.getStackInSlot(i);
 			if (stackInSlot.isEmpty())
 				continue;
-			Lang.text("")
-				.add(Components.translatable(stackInSlot.getDescriptionId())
+			CreateLang.text("")
+				.add(Component.translatable(stackInSlot.getDescriptionId())
 					.withStyle(ChatFormatting.GRAY))
-				.add(Lang.text(" x" + stackInSlot.getCount())
+				.add(CreateLang.text(" x" + stackInSlot.getCount())
 					.style(ChatFormatting.GREEN))
 				.forGoggles(tooltip, 1);
 			isEmpty = false;
 		}
 
-		LangBuilder mb = Lang.translate("generic.unit.millibuckets");
+		LangBuilder mb = CreateLang.translate("generic.unit.millibuckets");
 		for (int i = 0; i < fluids.getTanks(); i++) {
 			FluidStack fluidStack = fluids.getFluidInTank(i);
 			if (fluidStack.isEmpty())
 				continue;
-			Lang.text("")
-				.add(Lang.fluidName(fluidStack)
-					.add(Lang.text(" "))
+			CreateLang.text("")
+				.add(CreateLang.fluidName(fluidStack)
+					.add(CreateLang.text(" "))
 					.style(ChatFormatting.GRAY)
-					.add(Lang.number(fluidStack.getAmount())
+					.add(CreateLang.number(fluidStack.getAmount())
 						.add(mb)
 						.style(ChatFormatting.BLUE)))
 				.forGoggles(tooltip, 1);

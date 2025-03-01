@@ -11,14 +11,14 @@ import com.simibubi.create.content.equipment.clipboard.ClipboardOverrides.Clipbo
 import com.simibubi.create.content.trains.track.TrackBlockOutline;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -55,11 +55,11 @@ public class ClipboardValueSettingsHandler {
 			return;
 		if (!(mc.level.getBlockEntity(pos) instanceof SmartBlockEntity smartBE))
 			return;
-		if (!smartBE.getAllBehaviours()
+		if (!(smartBE instanceof ClipboardBlockEntity) && !smartBE.getAllBehaviours()
 			.stream()
 			.anyMatch(b -> b instanceof ClipboardCloneable cc
 				&& cc.writeToClipboard(new CompoundTag(), target.getDirection()))
-				&& !(smartBE instanceof ClipboardCloneable))
+			&& !(smartBE instanceof ClipboardCloneable))
 			return;
 
 		VoxelShape shape = blockstate.getShape(mc.level, pos);
@@ -92,6 +92,14 @@ public class ClipboardValueSettingsHandler {
 		if (!(mc.level.getBlockEntity(pos) instanceof SmartBlockEntity smartBE))
 			return;
 
+		if (smartBE instanceof ClipboardBlockEntity) {
+			List<MutableComponent> tip = new ArrayList<>();
+			tip.add(CreateLang.translateDirect("clipboard.actions"));
+            tip.add(CreateLang.translateDirect("clipboard.copy_other_clipboard", Component.keybind("key.use")));
+			CreateClient.VALUE_SETTINGS_HANDLER.showHoverTip(tip);
+			return;
+		}
+
 		CompoundTag tagElement = mc.player.getMainHandItem()
 			.getTagElement("CopiedValues");
 
@@ -113,11 +121,11 @@ public class ClipboardValueSettingsHandler {
 			return;
 
 		List<MutableComponent> tip = new ArrayList<>();
-		tip.add(Lang.translateDirect("clipboard.actions"));
+		tip.add(CreateLang.translateDirect("clipboard.actions"));
 		if (canCopy)
-			tip.add(Lang.translateDirect("clipboard.to_copy", Components.keybind("key.use")));
+            tip.add(CreateLang.translateDirect("clipboard.to_copy", Component.keybind("key.use")));
 		if (canPaste)
-			tip.add(Lang.translateDirect("clipboard.to_paste", Components.keybind("key.attack")));
+            tip.add(CreateLang.translateDirect("clipboard.to_paste", Component.keybind("key.attack")));
 
 		CreateClient.VALUE_SETTINGS_HANDLER.showHoverTip(tip);
 	}
@@ -146,6 +154,55 @@ public class ClipboardValueSettingsHandler {
 			return;
 		if (!(world.getBlockEntity(pos) instanceof SmartBlockEntity smartBE))
 			return;
+
+		if (smartBE instanceof ClipboardBlockEntity cbe) {
+			event.setCanceled(true);
+			event.setCancellationResult(InteractionResult.SUCCESS);
+
+			if (!world.isClientSide()) {
+				List<List<ClipboardEntry>> listTo = ClipboardEntry.readAll(itemStack);
+				List<List<ClipboardEntry>> listFrom = ClipboardEntry.readAll(cbe.dataContainer);
+				List<ClipboardEntry> toAdd = new ArrayList<>();
+
+				for (List<ClipboardEntry> page : listFrom) {
+					Copy: for (ClipboardEntry entry : page) {
+						String entryToAdd = entry.text.getString();
+						for (List<ClipboardEntry> pageTo : listTo)
+							for (ClipboardEntry existing : pageTo)
+								if (entryToAdd.equals(existing.text.getString()))
+									continue Copy;
+						toAdd.add(new ClipboardEntry(entry.checked, entry.text));
+					}
+				}
+
+				for (ClipboardEntry entry : toAdd) {
+					List<ClipboardEntry> page = null;
+					for (List<ClipboardEntry> freePage : listTo) {
+						if (freePage.size() > 11)
+							continue;
+						page = freePage;
+						break;
+					}
+					if (page == null) {
+						page = new ArrayList<>();
+						listTo.add(page);
+					}
+					page.add(entry);
+					ClipboardOverrides.switchTo(ClipboardType.WRITTEN, itemStack);
+				}
+
+				ClipboardEntry.saveAll(listTo, itemStack);
+			}
+
+			player.displayClientMessage(CreateLang.translate("clipboard.copied_from_clipboard", world.getBlockState(pos)
+				.getBlock()
+				.getName()
+				.withStyle(ChatFormatting.WHITE))
+				.style(ChatFormatting.GREEN)
+				.component(), true);
+			return;
+		}
+
 		CompoundTag tag = itemStack.getTagElement("CopiedValues");
 		if (paste && tag == null)
 			return;
@@ -197,7 +254,7 @@ public class ClipboardValueSettingsHandler {
 		if (!anySuccess)
 			return;
 
-		player.displayClientMessage(Lang
+		player.displayClientMessage(CreateLang
 			.translate(paste ? "clipboard.pasted_to" : "clipboard.copied_from", world.getBlockState(pos)
 				.getBlock()
 				.getName()

@@ -3,13 +3,13 @@ package com.simibubi.create.compat;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.RegisteredObjects;
-
+import net.createmod.catnip.lang.Lang;
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -18,8 +18,8 @@ import net.minecraftforge.registries.ForgeRegistries;
  */
 public enum Mods {
 	AETHER,
+	BETTEREND,
 	COMPUTERCRAFT,
-	CONNECTIVITY,
 	CURIOS,
 	DYNAMICTREES,
 	FUNCTIONALSTORAGE,
@@ -34,7 +34,7 @@ public enum Mods {
 	MODERNUI,
 	FTBCHUNKS,
 	JOURNEYMAP,
-	BETTEREND;
+	FTBLIBRARY;
 
 	private final String id;
 
@@ -65,7 +65,7 @@ public enum Mods {
 		if (!isLoaded())
 			return false;
 		Item asItem = entry.asItem();
-		return asItem != null && RegisteredObjects.getKeyOrThrow(asItem)
+		return asItem != null && CatnipServices.REGISTRIES.getKeyOrThrow(asItem)
 			.getNamespace()
 			.equals(id);
 	}

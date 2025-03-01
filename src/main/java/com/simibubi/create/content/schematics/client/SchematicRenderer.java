@@ -4,13 +4,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.content.schematics.SchematicWorld;
 import com.simibubi.create.foundation.render.BlockEntityRenderHelper;
-import com.simibubi.create.foundation.render.ShadedBlockSbbBuilder;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.render.SuperRenderTypeBuffer;
 
-import dev.engine_room.flywheel.lib.model.ModelUtil;
+import net.createmod.catnip.render.ShadedBlockSbbBuilder;
+import net.createmod.catnip.render.SuperByteBuffer;
+import net.createmod.catnip.render.SuperRenderTypeBuffer;
+import net.createmod.catnip.levelWrappers.SchematicLevel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -32,14 +31,14 @@ public class SchematicRenderer {
 	private final Map<RenderType, SuperByteBuffer> bufferCache = new LinkedHashMap<>(getLayerCount());
 	private boolean active;
 	private boolean changed;
-	protected SchematicWorld schematic;
+	protected SchematicLevel schematic;
 	private BlockPos anchor;
 
 	public SchematicRenderer() {
 		changed = false;
 	}
 
-	public void display(SchematicWorld world) {
+	public void display(SchematicLevel world) {
 		this.anchor = world.anchor;
 		this.schematic = world;
 		this.active = true;
@@ -54,20 +53,17 @@ public class SchematicRenderer {
 		changed = true;
 	}
 
-	public void tick() {
-		if (!active)
-			return;
-		Minecraft mc = Minecraft.getInstance();
-		if (mc.level == null || mc.player == null || !changed)
-			return;
-
-		redraw();
-		changed = false;
-	}
-
 	public void render(PoseStack ms, SuperRenderTypeBuffer buffers) {
 		if (!active)
 			return;
+		
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null || mc.player == null)
+			return;
+		if (changed)
+			redraw();
+		changed = false;
+		
 		bufferCache.forEach((layer, buffer) -> {
 			buffer.renderInto(ms, buffers.getBuffer(layer));
 		});
@@ -85,14 +81,15 @@ public class SchematicRenderer {
 	}
 
 	protected SuperByteBuffer drawLayer(RenderType layer) {
-		BlockRenderDispatcher dispatcher = ModelUtil.VANILLA_RENDERER;
+		BlockRenderDispatcher dispatcher = Minecraft.getInstance()
+			.getBlockRenderer();
 		ModelBlockRenderer renderer = dispatcher.getModelRenderer();
 		ThreadLocalObjects objects = THREAD_LOCAL_OBJECTS.get();
 
 		PoseStack poseStack = objects.poseStack;
 		RandomSource random = objects.random;
 		BlockPos.MutableBlockPos mutableBlockPos = objects.mutableBlockPos;
-		SchematicWorld renderWorld = schematic;
+		SchematicLevel renderWorld = schematic;
 		BoundingBox bounds = renderWorld.getBounds();
 
 		ShadedBlockSbbBuilder sbbBuilder = objects.sbbBuilder;
@@ -137,7 +134,7 @@ public class SchematicRenderer {
 		public final PoseStack poseStack = new PoseStack();
 		public final RandomSource random = RandomSource.createNewThreadLocalInstance();
 		public final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-		public final ShadedBlockSbbBuilder sbbBuilder = new ShadedBlockSbbBuilder();
+		public final ShadedBlockSbbBuilder sbbBuilder = ShadedBlockSbbBuilder.create();
 	}
 
 }

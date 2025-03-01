@@ -1,7 +1,7 @@
 package com.simibubi.create.foundation.model;
 
-import static com.simibubi.create.foundation.block.render.SpriteShiftEntry.getUnInterpolatedU;
-import static com.simibubi.create.foundation.block.render.SpriteShiftEntry.getUnInterpolatedV;
+import static net.createmod.catnip.render.SpriteShiftEntry.getUnInterpolatedU;
+import static net.createmod.catnip.render.SpriteShiftEntry.getUnInterpolatedV;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.VecHelper;
-
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -26,10 +25,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
 
 public class BakedModelHelper {
-	
+
 	public static int[] cropAndMove(int[] vertexData, TextureAtlasSprite sprite, AABB crop, Vec3 move) {
 		vertexData = Arrays.copyOf(vertexData, vertexData.length);
-		
+
 		Vec3 xyz0 = BakedQuadHelper.getXYZ(vertexData, 0);
 		Vec3 xyz1 = BakedQuadHelper.getXYZ(vertexData, 1);
 		Vec3 xyz2 = BakedQuadHelper.getXYZ(vertexData, 2);
@@ -65,7 +64,7 @@ public class BakedModelHelper {
 				.round((getUnInterpolatedU(sprite, u1) - getUnInterpolatedU(sprite, u0)) / xyz1.distanceTo(xyz0));
 			vScale = (float) Math
 				.round((getUnInterpolatedV(sprite, v3) - getUnInterpolatedV(sprite, v0)) / xyz3.distanceTo(xyz0));
-			
+
 		}
 
 		uAxis = uAxis.subtract(center)
@@ -92,7 +91,7 @@ public class BakedModelHelper {
 
 			BakedQuadHelper.setXYZ(vertexData, vertex, newXyz.add(move));
 		}
-		
+
 		return vertexData;
 	}
 

@@ -8,8 +8,9 @@ import java.util.UUID;
 
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.compat.trainmap.TrainMapSync.TrainMapSyncEntry;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
-import com.simibubi.create.foundation.utility.Pair;
+
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.data.Pair;
 
 public class TrainMapSyncClient {
 
@@ -34,7 +35,7 @@ public class TrainMapSyncClient {
 	public static void receive(TrainMapSyncPacket packet) {
 		if (ticks == 0)
 			return;
-		
+
 		lastPacket = AnimationTickHolder.getTicks();
 		lastPacket += AnimationTickHolder.getPartialTicks();
 

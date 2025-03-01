@@ -5,17 +5,17 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.simibubi.create.api.behaviour.display.DisplaySource;
+import com.simibubi.create.api.behaviour.display.DisplayTarget;
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 import com.simibubi.create.compat.computercraft.AbstractComputerBehaviour;
 import com.simibubi.create.compat.computercraft.ComputerCraftProxy;
-import com.simibubi.create.content.redstone.displayLink.source.DisplaySource;
-import com.simibubi.create.content.redstone.displayLink.target.DisplayTarget;
+import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelPosition;
+import com.simibubi.create.content.logistics.factoryBoard.FactoryPanelSupportBehaviour;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
-import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat.Chaser;
 
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -23,10 +23,12 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
-public class DisplayLinkBlockEntity extends SmartBlockEntity {
+public class DisplayLinkBlockEntity extends LinkWithBulbBlockEntity {
 
 	protected BlockPos targetOffset;
 
@@ -36,25 +38,23 @@ public class DisplayLinkBlockEntity extends SmartBlockEntity {
 	public DisplayTarget activeTarget;
 	public int targetLine;
 
-	public LerpedFloat glow;
-	private boolean sendPulse;
-
 	public int refreshTicks;
 	public AbstractComputerBehaviour computerBehaviour;
+	public FactoryPanelSupportBehaviour factoryPanelSupport;
 
 	public DisplayLinkBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
 		targetOffset = BlockPos.ZERO;
 		sourceConfig = new CompoundTag();
 		targetLine = 0;
-		glow = LerpedFloat.linear()
-			.startWithValue(0);
-		glow.chase(0, 0.5f, Chaser.EXP);
 	}
 
 	@Override
 	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
 		behaviours.add(computerBehaviour = ComputerCraftProxy.behaviour(this));
+		behaviours.add(factoryPanelSupport = new FactoryPanelSupportBehaviour(this, () -> false, () -> false, () -> {
+			updateGatheredData();
+		}));
 		registerAwardables(behaviours, AllAdvancements.DISPLAY_LINK, AllAdvancements.DISPLAY_BOARD);
 	}
 
@@ -62,17 +62,12 @@ public class DisplayLinkBlockEntity extends SmartBlockEntity {
 	public void tick() {
 		super.tick();
 
-		if (isVirtual()) {
-			glow.tickChaser();
+		if (isVirtual())
 			return;
-		}
-
 		if (activeSource == null)
 			return;
-		if (level.isClientSide) {
-			glow.tickChaser();
+		if (level.isClientSide)
 			return;
-		}
 
 		refreshTicks++;
 		if (refreshTicks < activeSource.getPassiveRefreshTicks() || !activeSource.shouldPassiveReset())
@@ -104,8 +99,8 @@ public class DisplayLinkBlockEntity extends SmartBlockEntity {
 		if (!level.isLoaded(targetPosition) || !level.isLoaded(sourcePosition))
 			return;
 
-		DisplayTarget target = AllDisplayBehaviours.targetOf(level, targetPosition);
-		List<DisplaySource> sources = AllDisplayBehaviours.sourcesOf(level, sourcePosition);
+		DisplayTarget target = DisplayTarget.get(level, targetPosition);
+		List<DisplaySource> sources = DisplaySource.getAll(level, sourcePosition);
 		boolean notify = false;
 
 		if (activeTarget != target) {
@@ -126,7 +121,7 @@ public class DisplayLinkBlockEntity extends SmartBlockEntity {
 
 		DisplayLinkContext context = new DisplayLinkContext(level, this);
 		activeSource.transferData(context, activeTarget, targetLine);
-		sendPulse = true;
+		sendPulseNextSync();
 		sendData();
 
 		award(AllAdvancements.DISPLAY_LINK);
@@ -142,11 +137,11 @@ public class DisplayLinkBlockEntity extends SmartBlockEntity {
 	protected void write(CompoundTag tag, boolean clientPacket) {
 		super.write(tag, clientPacket);
 		writeGatheredData(tag);
-		if (clientPacket && activeTarget != null)
-			tag.putString("TargetType", activeTarget.id.toString());
-		if (clientPacket && sendPulse) {
-			sendPulse = false;
-			NBTHelper.putMarker(tag, "Pulse");
+		if (clientPacket && activeTarget != null) {
+			ResourceLocation id = CreateBuiltInRegistries.DISPLAY_TARGET.getKey(this.activeTarget);
+			if (id != null) {
+				tag.putString("TargetType", id.toString());
+			}
 		}
 	}
 
@@ -156,7 +151,10 @@ public class DisplayLinkBlockEntity extends SmartBlockEntity {
 
 		if (activeSource != null) {
 			CompoundTag data = sourceConfig.copy();
-			data.putString("Id", activeSource.id.toString());
+			ResourceLocation id = CreateBuiltInRegistries.DISPLAY_SOURCE.getKey(this.activeSource);
+			if (id != null) {
+				data.putString("Id", id.toString());
+			}
 			tag.put("Source", data);
 		}
 	}
@@ -168,15 +166,12 @@ public class DisplayLinkBlockEntity extends SmartBlockEntity {
 		targetLine = tag.getInt("TargetLine");
 
 		if (clientPacket && tag.contains("TargetType"))
-			activeTarget = AllDisplayBehaviours.getTarget(new ResourceLocation(tag.getString("TargetType")));
-		if (clientPacket && tag.contains("Pulse"))
-			glow.setValue(2);
-
+			activeTarget = DisplayTarget.get(ResourceLocation.tryParse(tag.getString("TargetType")));
 		if (!tag.contains("Source"))
 			return;
 
 		CompoundTag data = tag.getCompound("Source");
-		activeSource = AllDisplayBehaviours.getSource(new ResourceLocation(data.getString("Id")));
+		activeSource = DisplaySource.get(ResourceLocation.tryParse(data.getString("Id")));
 		sourceConfig = new CompoundTag();
 		if (activeSource != null)
 			sourceConfig = data.copy();
@@ -202,6 +197,8 @@ public class DisplayLinkBlockEntity extends SmartBlockEntity {
 	}
 
 	public BlockPos getSourcePosition() {
+		for (FactoryPanelPosition position : factoryPanelSupport.getLinkedPanels())
+			return position.pos();
 		return worldPosition.relative(getDirection());
 	}
 
@@ -221,6 +218,16 @@ public class DisplayLinkBlockEntity extends SmartBlockEntity {
 
 	public BlockPos getTargetPosition() {
 		return worldPosition.offset(targetOffset);
+	}
+
+	private static final Vec3 bulbOffset = VecHelper.voxelSpace(11, 7, 5);
+	private static final Vec3 bulbOffsetVertical = VecHelper.voxelSpace(5, 7, 11);
+
+	@Override
+	public Vec3 getBulbOffset(BlockState state) {
+		if (state.getOptionalValue(DisplayLinkBlock.FACING).orElse(Direction.UP).getAxis().isVertical())
+			return bulbOffsetVertical;
+		return bulbOffset;
 	}
 
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import net.minecraft.core.BlockPos;
@@ -66,7 +66,7 @@ public class TriplePlaneMirror extends SymmetryMirror {
 
 	@Override
 	public List<Component> getAlignToolTips() {
-		return ImmutableList.of(Lang.translateDirect("orientation.horizontal"));
+		return ImmutableList.of(CreateLang.translateDirect("orientation.horizontal"));
 	}
 
 }

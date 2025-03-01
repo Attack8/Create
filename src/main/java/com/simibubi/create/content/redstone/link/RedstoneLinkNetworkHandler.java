@@ -9,10 +9,10 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.simibubi.create.Create;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.WorldHelper;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.levelWrappers.WorldHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -104,13 +104,13 @@ public class RedstoneLinkNetworkHandler {
 		globalPowerVersion.incrementAndGet();
 		int power = 0;
 
-		for (Iterator<IRedstoneLinkable> iterator = network.iterator(); iterator.hasNext();) {
+		for (Iterator<IRedstoneLinkable> iterator = network.iterator(); iterator.hasNext(); ) {
 			IRedstoneLinkable other = iterator.next();
 			if (!other.isAlive()) {
 				iterator.remove();
 				continue;
 			}
-			
+
 			if (!withinRange(actor, other))
 				continue;
 
@@ -118,8 +118,7 @@ public class RedstoneLinkNetworkHandler {
 				power = Math.max(other.getTransmittedStrength(), power);
 		}
 
-		if (actor instanceof LinkBehaviour) {
-			LinkBehaviour linkBehaviour = (LinkBehaviour) actor;
+		if (actor instanceof LinkBehaviour linkBehaviour) {
 			// fix one-to-one loading order problem
 			if (linkBehaviour.isListening()) {
 				linkBehaviour.newPosition = true;
