@@ -4,10 +4,9 @@ import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllItems;
-import com.simibubi.create.foundation.gui.element.GuiGameElement;
-import com.simibubi.create.foundation.utility.Color;
-import com.simibubi.create.foundation.utility.Components;
 
+import net.createmod.catnip.gui.element.GuiGameElement;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -16,6 +15,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
+
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
@@ -49,7 +49,7 @@ public class RemainingAirOverlay implements IGuiOverlay {
 		poseStack.translate(width / 2 + 90, height - 53 + (backtank.getItem()
 			.isFireResistant() ? 9 : 0), 0);
 
-		Component text = Components.literal(StringUtil.formatTickDuration(Math.max(0, timeLeft - 1) * 20));
+		Component text = Component.literal(StringUtil.formatTickDuration(Math.max(0, timeLeft - 1) * 20));
 		GuiGameElement.of(backtank)
 			.at(0, 0)
 			.render(graphics);

@@ -6,9 +6,9 @@ import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.trains.entity.CarriageContraption;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.Train;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.data.Couple;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -16,6 +16,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteractSpecific;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -33,7 +34,7 @@ public class ScheduleItemEntityInteraction {
 			return;
 
 		Entity rootVehicle = entity.getRootVehicle();
-		if (!(rootVehicle instanceof CarriageContraptionEntity))
+		if (!(rootVehicle instanceof CarriageContraptionEntity cce))
 			return;
 		if (!(entity instanceof LivingEntity living))
 			return;
@@ -42,7 +43,7 @@ public class ScheduleItemEntityInteraction {
 			return;
 
 		ItemStack itemStack = event.getItemStack();
-		if (itemStack.getItem()instanceof ScheduleItem si) {
+		if (itemStack.getItem() instanceof ScheduleItem si) {
 			InteractionResult result = si.handScheduleTo(itemStack, player, living, event.getHand());
 			if (result.consumesAction()) {
 				player.getCooldowns()
@@ -56,7 +57,6 @@ public class ScheduleItemEntityInteraction {
 		if (event.getHand() == InteractionHand.OFF_HAND)
 			return;
 
-		CarriageContraptionEntity cce = (CarriageContraptionEntity) rootVehicle;
 		Contraption contraption = cce.getContraption();
 		if (!(contraption instanceof CarriageContraption cc))
 			return;
@@ -83,7 +83,7 @@ public class ScheduleItemEntityInteraction {
 			if (onServer) {
 				train.runtime.paused = false;
 				AllSoundEvents.CONFIRM.playOnServer(player.level(), player.blockPosition(), 1, 1);
-				player.displayClientMessage(Lang.translateDirect("schedule.continued"), true);
+				player.displayClientMessage(CreateLang.translateDirect("schedule.continued"), true);
 			}
 
 			player.getCooldowns()
@@ -97,7 +97,7 @@ public class ScheduleItemEntityInteraction {
 		if (!itemInHand.isEmpty()) {
 			if (onServer) {
 				AllSoundEvents.DENY.playOnServer(player.level(), player.blockPosition(), 1, 1);
-				player.displayClientMessage(Lang.translateDirect("schedule.remove_with_empty_hand"), true);
+				player.displayClientMessage(CreateLang.translateDirect("schedule.remove_with_empty_hand"), true);
 			}
 			event.setCancellationResult(InteractionResult.SUCCESS);
 			event.setCanceled(true);
@@ -107,7 +107,7 @@ public class ScheduleItemEntityInteraction {
 		if (onServer) {
 			AllSoundEvents.playItemPickup(player);
 			player.displayClientMessage(
-				Lang.translateDirect(
+				CreateLang.translateDirect(
 					train.runtime.isAutoSchedule ? "schedule.auto_removed_from_train" : "schedule.removed_from_train"),
 				true);
 

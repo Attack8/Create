@@ -5,7 +5,7 @@ import java.util.List;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.gui.RemovedGuiUtils;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import journeymap.client.api.display.Context.UI;
@@ -100,7 +100,7 @@ public class JourneyTrainMap {
 		if (!TrainMapManager.isToggleWidgetHovered(mouseX, mouseY, 3, 30))
 			return false;
 
-		RemovedGuiUtils.drawHoveringText(graphics, List.of(Lang.translate("train_map.toggle")
+		RemovedGuiUtils.drawHoveringText(graphics, List.of(CreateLang.translate("train_map.toggle")
 			.component()), mouseX, mouseY + 20, screen.width, screen.height, 256, Minecraft.getInstance().font);
 		return true;
 	}

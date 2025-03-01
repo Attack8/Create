@@ -7,7 +7,7 @@ import java.util.Map;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
@@ -105,7 +105,7 @@ public class CrossPlaneMirror extends SymmetryMirror {
 
 	@Override
 	public List<Component> getAlignToolTips() {
-		return ImmutableList.of(Lang.translateDirect("orientation.orthogonal"), Lang.translateDirect("orientation.diagonal"));
+		return ImmutableList.of(CreateLang.translateDirect("orientation.orthogonal"), CreateLang.translateDirect("orientation.diagonal"));
 	}
 
 }

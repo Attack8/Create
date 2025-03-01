@@ -1,10 +1,10 @@
 package com.simibubi.create.content.kinetics.steamEngine;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
-import com.simibubi.create.foundation.utility.AngleHelper;
 
 import dev.engine_room.flywheel.api.instance.Instance;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
@@ -14,6 +14,7 @@ import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.util.Mth;
@@ -24,34 +25,55 @@ public class SteamEngineVisual extends AbstractBlockEntityVisual<SteamEngineBloc
 	protected final TransformedInstance linkage;
 	protected final TransformedInstance connector;
 
+	private Float lastAngle = Float.NaN;
+	private Axis lastAxis = null;
+
 	public SteamEngineVisual(VisualizationContext context, SteamEngineBlockEntity blockEntity, float partialTick) {
 		super(context, blockEntity, partialTick);
 
 		piston = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.ENGINE_PISTON))
-				.createInstance();
+			.createInstance();
 		linkage = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.ENGINE_LINKAGE))
-				.createInstance();
+			.createInstance();
 		connector = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.ENGINE_CONNECTOR))
-				.createInstance();
+			.createInstance();
+
+		animate();
 	}
 
 	@Override
 	public void beginFrame(DynamicVisual.Context ctx) {
-		Float angle = blockEntity.getTargetAngle();
-		if (angle == null) {
-			piston.setZeroTransform().setChanged();
-			linkage.setZeroTransform().setChanged();
-			connector.setZeroTransform().setChanged();
-			return;
-		}
+		animate();
+	}
 
-		Direction facing = SteamEngineBlock.getFacing(blockState);
-		Axis facingAxis = facing.getAxis();
+	private void animate() {
+		Float angle = blockEntity.getTargetAngle();
 		Axis axis = Axis.Y;
 
 		PoweredShaftBlockEntity shaft = blockEntity.getShaft();
 		if (shaft != null)
 			axis = KineticBlockEntityRenderer.getRotationAxisOf(shaft);
+
+		if (Objects.equals(angle, lastAngle) && lastAxis == axis) {
+			return;
+		}
+		
+		lastAngle = angle;
+		lastAxis = axis;
+
+		if (angle == null) {
+			piston.setVisible(false);
+			linkage.setVisible(false);
+			connector.setVisible(false);
+			return;
+		} else {
+			piston.setVisible(true);
+			linkage.setVisible(true);
+			connector.setVisible(true);
+		}
+
+		Direction facing = SteamEngineBlock.getFacing(blockState);
+		Axis facingAxis = facing.getAxis();
 
 		boolean roll90 = facingAxis.isHorizontal() && axis == Axis.Y || facingAxis.isVertical() && axis == Axis.Z;
 		float sine = Mth.sin(angle);

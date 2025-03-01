@@ -6,9 +6,9 @@ import java.util.List;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.AllSpriteShifts;
 import com.simibubi.create.content.kinetics.belt.BeltBlockEntity.CasingType;
-import com.simibubi.create.foundation.block.render.SpriteShiftEntry;
 import com.simibubi.create.foundation.model.BakedQuadHelper;
 
+import net.createmod.catnip.render.SpriteShiftEntry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -31,7 +31,7 @@ public class BeltModel extends BakedModelWrapper<BakedModel> {
 	public BeltModel(BakedModel template) {
 		super(template);
 	}
-	
+
 	@Override
 	public TextureAtlasSprite getParticleIcon(ModelData data) {
 		if (!data.has(CASING_PROPERTY))
@@ -47,11 +47,11 @@ public class BeltModel extends BakedModelWrapper<BakedModel> {
 		List<BakedQuad> quads = super.getQuads(state, side, rand, extraData, renderType);
 		if (!extraData.has(CASING_PROPERTY))
 			return quads;
-		
+
 		boolean cover = extraData.get(COVER_PROPERTY);
 		CasingType type = extraData.get(CASING_PROPERTY);
 		boolean brassCasing = type == CasingType.BRASS;
-		
+
 		if (type == CasingType.NONE || brassCasing && !cover)
 			return quads;
 

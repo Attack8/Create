@@ -20,10 +20,9 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableObject;
 
-import com.simibubi.create.AllMovementBehaviours;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.Create;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
 import com.simibubi.create.content.trains.bogey.AbstractBogeyBlockEntity;
 import com.simibubi.create.content.trains.entity.Carriage.DimensionalCarriageEntity;
@@ -46,14 +45,14 @@ import com.simibubi.create.content.trains.signal.SignalEdgeGroup;
 import com.simibubi.create.content.trains.station.GlobalStation;
 import com.simibubi.create.content.trains.station.StationBlockEntity;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.Pair;
-import com.simibubi.create.foundation.utility.VecHelper;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -70,6 +69,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.Level.ExplosionInteraction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -131,6 +131,7 @@ public class Train {
 	public float accumulatedSteamRelease;
 
 	int tickOffset;
+	int ticksSinceLastMailTransfer;
 	double[] stress;
 
 	// advancements
@@ -146,7 +147,7 @@ public class Train {
 		this.carriageSpacing = carriageSpacing;
 		this.icon = TrainIconType.getDefault();
 		this.stress = new double[carriageSpacing.size()];
-		this.name = Lang.translateDirect("train.unnamed");
+		this.name = CreateLang.translateDirect("train.unnamed");
 		this.status = new TrainStatus(this);
 		this.doubleEnded = doubleEnded;
 
@@ -217,7 +218,7 @@ public class Train {
 				if (shouldActivate)
 					break;
 
-				IItemHandlerModifiable inv = carriage.storage.getItems();
+				IItemHandlerModifiable inv = carriage.storage.getAllItems();
 				if (inv != null) {
 					for (int slot = 0; slot < inv.getSlots(); slot++) {
 						if (shouldActivate)
@@ -267,6 +268,15 @@ public class Train {
 			carriages.forEach(c -> c.manageEntities(level));
 			updateConductors();
 			return;
+		}
+
+		GlobalStation currentStation = getCurrentStation();
+		if (currentStation != null) {
+			ticksSinceLastMailTransfer++;
+			if (ticksSinceLastMailTransfer > 20) {
+				currentStation.runMailTransfer();
+				ticksSinceLastMailTransfer = 0;
+			}
 		}
 
 		updateConductors();
@@ -421,7 +431,7 @@ public class Train {
 		} else if (speed != 0)
 			status.trackOK();
 
-		updateNavigationTarget(distance);
+		updateNavigationTarget(level, distance);
 	}
 
 	public IEdgePointListener frontSignalListener() {
@@ -477,7 +487,7 @@ public class Train {
 			c.forEachPresentEntity(cce -> cce.getContraption()
 				.getActors()
 				.forEach(pair -> {
-					MovementBehaviour behaviour = AllMovementBehaviours.getBehaviour(pair.getKey().state());
+					MovementBehaviour behaviour = MovementBehaviour.REGISTRY.get(pair.getKey().state());
 					if (behaviour != null)
 						behaviour.cancelStall(pair.getValue());
 				}));
@@ -508,7 +518,7 @@ public class Train {
 		};
 	}
 
-	private void updateNavigationTarget(double distance) {
+	private void updateNavigationTarget(Level level, double distance) {
 		if (navigation.destination == null)
 			return;
 
@@ -542,7 +552,7 @@ public class Train {
 			return;
 
 		if (!navigatingManually && fullRefresh) {
-			DiscoveredPath preferredPath = runtime.startCurrentInstruction();
+			DiscoveredPath preferredPath = runtime.startCurrentInstruction(level);
 			if (preferredPath != null){
 				navigation.startNavigation(preferredPath);
 			}
@@ -762,8 +772,10 @@ public class Train {
 		if (currentStation != null) {
 			currentStation.cancelReservation(this);
 			BlockPos blockEntityPos = currentStation.getBlockEntityPos();
-			if (level.getBlockEntity(blockEntityPos) instanceof StationBlockEntity sbe)
+			if (level.getBlockEntity(blockEntityPos) instanceof StationBlockEntity sbe) {
 				sbe.lastDisassembledTrainName = name.copy();
+				sbe.lastDisassembledMapColorIndex = mapColorIndex;
+			}
 		}
 
 		Create.RAILWAYS.removeTrain(id);
@@ -917,6 +929,8 @@ public class Train {
 		setCurrentStation(station);
 		reservedSignalBlocks.clear();
 		runtime.destinationReached();
+		station.runMailTransfer();
+		ticksSinceLastMailTransfer = 0;
 	}
 
 	public void setCurrentStation(GlobalStation station) {
@@ -1251,6 +1265,21 @@ public class Train {
 			distance = Math.min(distance, (float) dce.positionAnchor.distanceToSqr(location));
 		}
 		return distance;
+	}
+
+	public List<ResourceKey<Level>> getPresentDimensions() {
+		return carriages.stream()
+				.flatMap((Carriage carriage) -> carriage.getPresentDimensions().stream())
+				.distinct()
+				.toList();
+	}
+
+	public Optional<BlockPos> getPositionInDimension(ResourceKey<Level> dimension) {
+		return carriages.stream()
+				.map(carriage -> carriage.getPositionInDimension(dimension))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.findFirst();
 	}
 
 }

@@ -7,6 +7,9 @@ import javax.annotation.Nullable;
 
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllTags.AllBlockTags;
+import com.simibubi.create.api.schematic.nbt.PartialSafeNBT;
+import com.simibubi.create.api.schematic.nbt.SafeNbtWriterRegistry;
+import com.simibubi.create.api.schematic.nbt.SafeNbtWriterRegistry.SafeNbtWriter;
 import com.simibubi.create.compat.Mods;
 import com.simibubi.create.compat.framedblocks.FramedBlocksInSchematics;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -15,6 +18,7 @@ import com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
 import com.simibubi.create.foundation.blockEntity.IMergeableBE;
 import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
 
+import net.createmod.catnip.nbt.NBTProcessors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
@@ -53,6 +57,7 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.material.FluidState;
+
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.BlockEvent;
@@ -273,17 +278,20 @@ public class BlockHelper {
 	public static CompoundTag prepareBlockEntityData(BlockState blockState, BlockEntity blockEntity) {
 		CompoundTag data = null;
 		if (blockEntity == null)
-			return data;
+			return null;
 
+		SafeNbtWriter writer = SafeNbtWriterRegistry.REGISTRY.get(blockEntity.getType());
 		if (AllBlockTags.SAFE_NBT.matches(blockState)) {
 			data = blockEntity.saveWithFullMetadata();
-
-		} else if (blockEntity instanceof IPartialSafeNBT) {
+		} else if (writer != null) {
 			data = new CompoundTag();
-			((IPartialSafeNBT) blockEntity).writeSafe(data);
-
-		} else if (Mods.FRAMEDBLOCKS.contains(blockState.getBlock()))
+			writer.writeSafe(blockEntity, data);
+		} else if (blockEntity instanceof PartialSafeNBT safeNbtBE) {
+			data = new CompoundTag();
+			safeNbtBE.writeSafe(data);
+		} else if (Mods.FRAMEDBLOCKS.contains(blockState.getBlock())) {
 			data = FramedBlocksInSchematics.prepareBlockEntityData(blockState, blockEntity);
+		}
 
 		return NBTProcessors.process(blockState, blockEntity, data, true);
 	}

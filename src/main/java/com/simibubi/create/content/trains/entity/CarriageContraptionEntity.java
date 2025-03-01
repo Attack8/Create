@@ -14,10 +14,10 @@ import com.simibubi.create.AllEntityTypes;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.Create;
 import com.simibubi.create.CreateClient;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.ContraptionBlockChangedPacket;
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsBlock;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.trains.CubeParticleData;
 import com.simibubi.create.content.trains.TrainHUDUpdatePacket;
@@ -25,18 +25,18 @@ import com.simibubi.create.content.trains.entity.Carriage.DimensionalCarriageEnt
 import com.simibubi.create.content.trains.entity.TravellingPoint.SteerDirection;
 import com.simibubi.create.content.trains.graph.TrackGraph;
 import com.simibubi.create.content.trains.station.GlobalStation;
-import com.simibubi.create.foundation.utility.Color;
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.VecHelper;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -50,6 +50,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.PacketDistributor;
@@ -90,7 +91,7 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 		firstPositionUpdate = true;
 		arrivalSoundTicks = Integer.MIN_VALUE;
 		derailParticleOffset = VecHelper.offsetRandomly(Vec3.ZERO, world.random, 1.5f)
-				.multiply(1, .25f, 1);
+			.multiply(1, .25f, 1);
 	}
 
 	@Override
@@ -157,7 +158,7 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 	}
 
 	public boolean isLocalCoordWithin(BlockPos localPos, int min, int max) {
-		if (!(getContraption()instanceof CarriageContraption cc))
+		if (!(getContraption() instanceof CarriageContraption cc))
 			return false;
 		Direction facing = cc.getAssemblyDirection();
 		Axis axis = facing.getClockWise()
@@ -389,7 +390,8 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 	}
 
 	@Override
-	protected void handleStallInformation(double x, double y, double z, float angle) {}
+	protected void handleStallInformation(double x, double y, double z, float angle) {
+	}
 
 	Vec3 derailParticleOffset;
 
@@ -532,7 +534,7 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 	@Override
 	public Component getDisplayName() {
 		if (carriage == null)
-			return Lang.translateDirect("train");
+			return CreateLang.translateDirect("train");
 		return carriage.train.name;
 	}
 
@@ -591,8 +593,8 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 		boolean spaceDown = heldControls.contains(4);
 		GlobalStation currentStation = carriage.train.getCurrentStation();
 		if (currentStation != null && spaceDown) {
-			sendPrompt(player, Lang.translateDirect("train.arrived_at",
-				Components.literal(currentStation.name).withStyle(s -> s.withColor(0x704630))), false);
+			sendPrompt(player, CreateLang.translateDirect("train.arrived_at",
+				Component.literal(currentStation.name).withStyle(s -> s.withColor(0x704630))), false);
 			return true;
 		}
 
@@ -603,8 +605,8 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 
 		if (currentStation != null && targetSpeed != 0) {
 			stationMessage = false;
-			sendPrompt(player, Lang.translateDirect("train.departing_from",
-				Components.literal(currentStation.name).withStyle(s -> s.withColor(0x704630))), false);
+			sendPrompt(player, CreateLang.translateDirect("train.departing_from",
+				Component.literal(currentStation.name).withStyle(s -> s.withColor(0x704630))), false);
 		}
 
 		if (currentStation == null) {
@@ -617,8 +619,8 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 					double f = (nav.distanceToDestination / navDistanceTotal);
 					int progress = (int) (Mth.clamp(1 - ((1 - f) * (1 - f)), 0, 1) * 30);
 					boolean arrived = progress == 0;
-					MutableComponent whiteComponent = Components.literal(Strings.repeat("|", progress));
-					MutableComponent greenComponent = Components.literal(Strings.repeat("|", 30 - progress));
+					MutableComponent whiteComponent = Component.literal(Strings.repeat("|", progress));
+					MutableComponent greenComponent = Component.literal(Strings.repeat("|", 30 - progress));
 
 					int fromColor = 0x00_FFC244;
 					int toColor = 0x00_529915;
@@ -683,15 +685,15 @@ public class CarriageContraptionEntity extends OrientedContraptionEntity {
 	boolean stationMessage = false;
 
 	private void displayApproachStationMessage(Player player, GlobalStation station) {
-		sendPrompt(player, Lang.translateDirect("contraption.controls.approach_station",
-			Components.keybind("key.jump"), station.name), false);
+		sendPrompt(player, CreateLang.translateDirect("contraption.controls.approach_station",
+			Component.keybind("key.jump"), station.name), false);
 		stationMessage = true;
 	}
 
 	private void cleanUpApproachStationMessage(Player player) {
 		if (!stationMessage)
 			return;
-		player.displayClientMessage(Components.immutableEmpty(), true);
+		player.displayClientMessage(CommonComponents.EMPTY, true);
 		stationMessage = false;
 	}
 

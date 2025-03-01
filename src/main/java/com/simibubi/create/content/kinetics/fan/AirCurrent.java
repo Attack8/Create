@@ -5,20 +5,20 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import com.simibubi.create.AllTags;
 import com.simibubi.create.content.decoration.copycat.CopycatBlock;
 import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour;
 import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour.TransportedResult;
-import com.simibubi.create.content.kinetics.fan.processing.AllFanProcessingTypes;
 import com.simibubi.create.content.kinetics.fan.processing.FanProcessing;
 import com.simibubi.create.content.kinetics.fan.processing.FanProcessingType;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.VecHelper;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -35,6 +35,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
@@ -74,7 +75,7 @@ public class AirCurrent {
 	}
 
 	protected void tickAffectedEntities(Level world) {
-		for (Iterator<Entity> iterator = caughtEntities.iterator(); iterator.hasNext();) {
+		for (Iterator<Entity> iterator = caughtEntities.iterator(); iterator.hasNext(); ) {
 			Entity entity = iterator.next();
 			if (!entity.isAlive() || !entity.getBoundingBox()
 				.intersects(bounds) || isPlayerCreativeFlying(entity)) {
@@ -107,7 +108,7 @@ public class AirCurrent {
 
 			FanProcessingType processingType = getTypeAt((float) entityDistance);
 
-			if (processingType == AllFanProcessingTypes.NONE)
+			if (processingType == null)
 				continue;
 
 			if (entity instanceof ItemEntity itemEntity) {
@@ -128,8 +129,7 @@ public class AirCurrent {
 	}
 
 	public static boolean isPlayerCreativeFlying(Entity entity) {
-		if (entity instanceof Player) {
-			Player player = (Player) entity;
+		if (entity instanceof Player player) {
 			return player.isCreative() && player.getAbilities().flying;
 		}
 		return false;
@@ -140,6 +140,8 @@ public class AirCurrent {
 			TransportedItemStackHandlerBehaviour handler = pair.getKey();
 			Level world = handler.getWorld();
 			FanProcessingType processingType = pair.getRight();
+			if (processingType == null)
+				continue;
 
 			handler.handleProcessingOnAllItems(transported -> {
 				if (world.isClientSide) {
@@ -176,7 +178,7 @@ public class AirCurrent {
 		// Determine segments with transported fluids/gases
 		segments.clear();
 		AirCurrentSegment currentSegment = null;
-		FanProcessingType type = AllFanProcessingTypes.NONE;
+		FanProcessingType type = null;
 
 		int limit = getLimit();
 		int searchStart = pushing ? 1 : limit;
@@ -187,7 +189,7 @@ public class AirCurrent {
 		for (int i = searchStart; i * searchStep <= searchEnd * searchStep; i += searchStep) {
 			BlockPos currentPos = start.relative(direction, i);
 			FanProcessingType newType = FanProcessingType.getAt(world, currentPos);
-			if (newType != AllFanProcessingTypes.NONE) {
+			if (newType != null) {
 				type = newType;
 			}
 			if (currentSegment == null) {
@@ -248,18 +250,18 @@ public class AirCurrent {
 			if (shapeDepth == Double.POSITIVE_INFINITY) {
 				continue;
 			}
-			return Math.min((float) (i + shapeDepth + 1/32d), max);
+			return Math.min((float) (i + shapeDepth + 1 / 32d), max);
 		}
 
 		return max;
 	}
 
 	private static final double[][] DEPTH_TEST_COORDINATES = {
-			{ 0.25, 0.25 },
-			{ 0.25, 0.75 },
-			{ 0.5, 0.5 },
-			{ 0.75, 0.25 },
-			{ 0.75, 0.75 }
+		{0.25, 0.25},
+		{0.25, 0.75},
+		{0.5, 0.5},
+		{0.75, 0.25},
+		{0.75, 0.75}
 	};
 
 	// Finds the maximum depth of the shape when traveling in the given direction.
@@ -320,7 +322,7 @@ public class AirCurrent {
 					BlockEntityBehaviour.get(world, pos, TransportedItemStackHandlerBehaviour.TYPE);
 				if (behaviour != null) {
 					FanProcessingType type = FanProcessingType.getAt(world, pos);
-					if (type == AllFanProcessingTypes.NONE)
+					if (type == null)
 						type = segmentType;
 					affectedItemHandlers.add(Pair.of(behaviour, type));
 				}
@@ -337,6 +339,7 @@ public class AirCurrent {
 			.getEntities(null, bounds);
 	}
 
+	@Nullable
 	public FanProcessingType getTypeAt(float offset) {
 		if (offset >= 0 && offset <= maxDistance) {
 			if (pushing) {
@@ -353,10 +356,11 @@ public class AirCurrent {
 				}
 			}
 		}
-		return AllFanProcessingTypes.NONE;
+		return null;
 	}
 
 	private static class AirCurrentSegment {
+		@Nullable
 		private FanProcessingType type;
 		private int startOffset;
 		private int endOffset;

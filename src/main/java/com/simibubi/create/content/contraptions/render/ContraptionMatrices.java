@@ -4,8 +4,8 @@ import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 

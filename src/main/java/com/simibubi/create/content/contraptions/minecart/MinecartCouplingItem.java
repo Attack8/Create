@@ -3,8 +3,8 @@ package com.simibubi.create.content.contraptions.minecart;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.contraptions.minecart.capability.CapabilityMinecartController;
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartController;
-import com.simibubi.create.foundation.utility.Iterate;
 
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -12,6 +12,7 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
@@ -32,9 +33,8 @@ public class MinecartCouplingItem extends Item {
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void handleInteractionWithMinecart(PlayerInteractEvent.EntityInteract event) {
 		Entity interacted = event.getTarget();
-		if (!(interacted instanceof AbstractMinecart))
+		if (!(interacted instanceof AbstractMinecart minecart))
 			return;
-		AbstractMinecart minecart = (AbstractMinecart) interacted;
 		Player player = event.getEntity();
 		if (player == null)
 			return;
@@ -59,7 +59,7 @@ public class MinecartCouplingItem extends Item {
 	}
 
 	protected static boolean onCouplingInteractOnMinecart(PlayerInteractEvent.EntityInteract event,
-		AbstractMinecart minecart, Player player, MinecartController controller) {
+														  AbstractMinecart minecart, Player player, MinecartController controller) {
 		Level world = event.getLevel();
 		if (controller.isFullyCoupled()) {
 			if (!world.isClientSide)
@@ -72,7 +72,7 @@ public class MinecartCouplingItem extends Item {
 	}
 
 	private static boolean onWrenchInteractOnMinecart(EntityInteract event, AbstractMinecart minecart, Player player,
-		MinecartController controller) {
+													  MinecartController controller) {
 		int couplings = (controller.isConnectedToCoupling() ? 1 : 0) + (controller.isLeadingCoupling() ? 1 : 0);
 		if (couplings == 0)
 			return false;

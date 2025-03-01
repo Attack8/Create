@@ -1,21 +1,18 @@
 package com.simibubi.create.content.contraptions.minecart;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.simibubi.create.content.contraptions.Contraption.ContraptionInvWrapper;
-import com.simibubi.create.content.contraptions.MountedStorageManager;
-import com.simibubi.create.foundation.fluid.CombinedTankWrapper;
+import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.core.BlockPos;
+import com.simibubi.create.api.contraption.storage.fluid.MountedFluidStorageWrapper;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorageWrapper;
+import com.simibubi.create.content.contraptions.Contraption;
+import com.simibubi.create.content.contraptions.MountedStorageManager;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
+
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 
 public class TrainCargoManager extends MountedStorageManager {
 
@@ -28,20 +25,13 @@ public class TrainCargoManager extends MountedStorageManager {
 	}
 
 	@Override
-	public void createHandlers() {
-		super.createHandlers();
-	}
-
-	@Override
-	protected ContraptionInvWrapper wrapItems(Collection<IItemHandlerModifiable> list, boolean fuel) {
-		if (fuel)
-			return super.wrapItems(list, fuel);
-		return new CargoInvWrapper(Arrays.copyOf(list.toArray(), list.size(), IItemHandlerModifiable[].class));
-	}
-
-	@Override
-	protected CombinedTankWrapper wrapFluids(Collection<IFluidHandler> list) {
-		return new CargoTankWrapper(Arrays.copyOf(list.toArray(), list.size(), IFluidHandler[].class));
+	public void initialize() {
+		super.initialize();
+		this.items = new CargoInvWrapper(this.items);
+		if (this.fuelItems != null) {
+			this.fuelItems = new CargoInvWrapper(this.fuelItems);
+		}
+		this.fluids = new CargoTankWrapper(this.fluids);
 	}
 
 	@Override
@@ -51,36 +41,35 @@ public class TrainCargoManager extends MountedStorageManager {
 	}
 
 	@Override
-	public void read(CompoundTag nbt, Map<BlockPos, BlockEntity> presentBlockEntities, boolean clientPacket) {
-		super.read(nbt, presentBlockEntities, clientPacket);
+	public void read(CompoundTag nbt, boolean clientPacket, @Nullable Contraption contraption) {
+		super.read(nbt, clientPacket, contraption);
 		ticksSinceLastExchange = nbt.getInt("TicksSinceLastExchange");
 	}
 
 	public void resetIdleCargoTracker() {
 		ticksSinceLastExchange = 0;
 	}
-	
+
 	public void tickIdleCargoTracker() {
 		ticksSinceLastExchange++;
 	}
-	
+
 	public int getTicksSinceLastExchange() {
 		return ticksSinceLastExchange;
 	}
-	
+
 	public int getVersion() {
 		return version.get();
 	}
-	
+
 	void changeDetected() {
 		version.incrementAndGet();
 		resetIdleCargoTracker();
 	}
 
-	class CargoInvWrapper extends ContraptionInvWrapper {
-
-		public CargoInvWrapper(IItemHandlerModifiable... itemHandler) {
-			super(false, itemHandler);
+	class CargoInvWrapper extends MountedItemStorageWrapper {
+		CargoInvWrapper(MountedItemStorageWrapper wrapped) {
+			super(wrapped.storages);
 		}
 
 		@Override
@@ -108,10 +97,9 @@ public class TrainCargoManager extends MountedStorageManager {
 
 	}
 
-	class CargoTankWrapper extends CombinedTankWrapper {
-
-		public CargoTankWrapper(IFluidHandler... fluidHandler) {
-			super(fluidHandler);
+	class CargoTankWrapper extends MountedFluidStorageWrapper {
+		CargoTankWrapper(MountedFluidStorageWrapper wrapped) {
+			super(wrapped.storages);
 		}
 
 		@Override
@@ -137,7 +125,7 @@ public class TrainCargoManager extends MountedStorageManager {
 				changeDetected();
 			return drained;
 		}
-		
+
 	}
 
 }

@@ -5,7 +5,7 @@ import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.CreateClient;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.SidedFilteringBehaviour;
-import com.simibubi.create.foundation.utility.RaycastHelper;
+import com.simibubi.create.foundation.utility.AdventureUtil;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -48,8 +48,12 @@ public class ValueSettingsInputHandler {
 		for (BlockEntityBehaviour behaviour : sbe.getAllBehaviours()) {
 			if (!(behaviour instanceof ValueSettingsBehaviour valueSettingsBehaviour))
 				continue;
+			if (valueSettingsBehaviour.bypassesInput(player.getMainHandItem()))
+				continue;
+			if (!valueSettingsBehaviour.mayInteract(player))
+				continue;
 
-			BlockHitResult ray = RaycastHelper.rayTraceRange(world, player, 10);
+			BlockHitResult ray = event.getHitVec();
 			if (ray == null)
 				return;
 			if (behaviour instanceof SidedFilteringBehaviour) {
@@ -77,7 +81,7 @@ public class ValueSettingsInputHandler {
 			event.setCancellationResult(InteractionResult.SUCCESS);
 
 			if (!valueSettingsBehaviour.acceptsValueSettings() || fakePlayer) {
-				valueSettingsBehaviour.onShortInteract(player, hand, ray.getDirection());
+				valueSettingsBehaviour.onShortInteract(player, hand, ray.getDirection(), ray);
 				return;
 			}
 
@@ -92,7 +96,6 @@ public class ValueSettingsInputHandler {
 	}
 
 	public static boolean canInteract(Player player) {
-		return player != null && !player.isSpectator() && !player.isShiftKeyDown();
+		return player != null && !player.isSpectator() && !player.isShiftKeyDown() && !AdventureUtil.isAdventure(player);
 	}
-
 }

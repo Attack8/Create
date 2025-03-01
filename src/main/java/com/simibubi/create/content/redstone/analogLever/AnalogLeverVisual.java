@@ -3,8 +3,6 @@ package com.simibubi.create.content.redstone.analogLever;
 import java.util.function.Consumer;
 
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.Color;
 
 import dev.engine_room.flywheel.api.instance.Instance;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
@@ -16,6 +14,8 @@ import dev.engine_room.flywheel.lib.transform.Rotate;
 import dev.engine_room.flywheel.lib.transform.Translate;
 import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 

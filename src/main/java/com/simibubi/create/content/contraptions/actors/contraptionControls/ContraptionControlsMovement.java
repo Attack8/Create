@@ -1,21 +1,22 @@
 package com.simibubi.create.content.contraptions.actors.contraptionControls;
 
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.elevator.ElevatorContraption;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.IntAttached;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat.Chaser;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.IntAttached;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -134,7 +135,7 @@ public class ContraptionControlsMovement implements MovementBehaviour {
 		efs.targetYEqualsSelection = efs.currentTargetY == ec.clientYTarget;
 
 		if (ec.isTargetUnreachable(efs.currentTargetY))
-			efs.currentLongName = Lang.translate("contraption.controls.floor_unreachable")
+			efs.currentLongName = CreateLang.translate("contraption.controls.floor_unreachable")
 				.string();
 	}
 

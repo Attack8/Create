@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import net.minecraft.network.chat.Component;
+
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import com.simibubi.create.content.contraptions.actors.seat.SeatBlock;
@@ -14,9 +16,11 @@ import com.simibubi.create.content.decoration.palettes.AllPaletteBlocks;
 import com.simibubi.create.content.equipment.armor.BacktankUtil;
 import com.simibubi.create.content.equipment.toolbox.ToolboxBlock;
 import com.simibubi.create.content.kinetics.crank.ValveHandleBlock;
+import com.simibubi.create.content.logistics.box.PackageStyles;
+import com.simibubi.create.content.logistics.packagePort.postbox.PostboxBlock;
+import com.simibubi.create.content.logistics.tableCloth.TableClothBlock;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.TagDependentIngredientItem;
-import com.simibubi.create.foundation.utility.Components;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.entry.ItemEntry;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
@@ -59,7 +63,7 @@ public class AllCreativeModeTabs {
 
 	public static final RegistryObject<CreativeModeTab> BASE_CREATIVE_TAB = REGISTER.register("base",
 		() -> CreativeModeTab.builder()
-			.title(Components.translatable("itemGroup.create.base"))
+			.title(Component.translatable("itemGroup.create.base"))
 			.withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
 			.icon(() -> AllBlocks.COGWHEEL.asStack())
 			.displayItems(new RegistrateDisplayItemsGenerator(true, AllCreativeModeTabs.BASE_CREATIVE_TAB))
@@ -67,7 +71,7 @@ public class AllCreativeModeTabs {
 
 	public static final RegistryObject<CreativeModeTab> PALETTES_CREATIVE_TAB = REGISTER.register("palettes",
 		() -> CreativeModeTab.builder()
-			.title(Components.translatable("itemGroup.create.palettes"))
+			.title(Component.translatable("itemGroup.create.palettes"))
 			.withTabsBefore(BASE_CREATIVE_TAB.getKey())
 			.icon(() -> AllPaletteBlocks.ORNATE_IRON_WINDOW.asStack())
 			.displayItems(new RegistrateDisplayItemsGenerator(false, AllCreativeModeTabs.PALETTES_CREATIVE_TAB))
@@ -127,6 +131,7 @@ public class AllCreativeModeTabs {
 					AllItems.FURNACE_MINECART_CONTRAPTION,
 					AllItems.CHEST_MINECART_CONTRAPTION,
 					AllItems.SCHEMATIC,
+					AllItems.SHOPPING_LIST,
 					AllBlocks.ANDESITE_ENCASED_SHAFT,
 					AllBlocks.BRASS_ENCASED_SHAFT,
 					AllBlocks.ANDESITE_ENCASED_COGWHEEL,
@@ -150,6 +155,8 @@ public class AllCreativeModeTabs {
 					AllItems.CRUSHED_URANIUM,
 					AllItems.CRUSHED_NICKEL
 			);
+
+			exclusions.addAll(PackageStyles.RARE_BOXES);
 
 			for (ItemProviderEntry<?> entry : simpleExclusions) {
 				exclusions.add(entry.asItem());
@@ -183,6 +190,10 @@ public class AllCreativeModeTabs {
 
 			simpleAfterOrderings.forEach((entry, otherEntry) -> {
 				orderings.add(ItemOrdering.after(entry.asItem(), otherEntry.asItem()));
+			});
+
+			PackageStyles.STANDARD_BOXES.forEach(item -> {
+				orderings.add(ItemOrdering.after(item, AllBlocks.PACKAGER.asItem()));
 			});
 
 			return orderings;
@@ -235,6 +246,20 @@ public class AllCreativeModeTabs {
 			for (BlockEntry<SeatBlock> entry : AllBlocks.SEATS) {
 				SeatBlock block = entry.get();
 				if (block.getColor() != DyeColor.RED) {
+					visibilities.put(entry.asItem(), TabVisibility.SEARCH_TAB_ONLY);
+				}
+			}
+
+			for (BlockEntry<TableClothBlock> entry : AllBlocks.TABLE_CLOTHS) {
+				TableClothBlock block = entry.get();
+				if (block.getColor() != DyeColor.RED) {
+					visibilities.put(entry.asItem(), TabVisibility.SEARCH_TAB_ONLY);
+				}
+			}
+
+			for (BlockEntry<PostboxBlock> entry : AllBlocks.PACKAGE_POSTBOXES) {
+				PostboxBlock block = entry.get();
+				if (block.getColor() != DyeColor.WHITE) {
 					visibilities.put(entry.asItem(), TabVisibility.SEARCH_TAB_ONLY);
 				}
 			}

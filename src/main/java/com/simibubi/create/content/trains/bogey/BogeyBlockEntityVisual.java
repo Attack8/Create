@@ -45,6 +45,8 @@ public class BogeyBlockEntityVisual extends AbstractBlockEntityVisual<AbstractBo
 		poseStack.translate(0, -1.5 - 1 / 128f, 0);
 
 		bogey = lastStyle.createVisual(bogeySize, visualizationContext, partialTick, false);
+
+		updateBogey(partialTick);
 	}
 
 	@Override
@@ -63,12 +65,16 @@ public class BogeyBlockEntityVisual extends AbstractBlockEntityVisual<AbstractBo
 			bogey = lastStyle.createVisual(bogeySize, visualizationContext, context.partialTick(), false);
 		}
 
+		updateBogey(context.partialTick());
+	}
+
+	private void updateBogey(float partialTick) {
 		if (bogey == null) {
 			return;
 		}
 
 		CompoundTag bogeyData = blockEntity.getBogeyData();
-		float angle = blockEntity.getVirtualAngle(context.partialTick());
+		float angle = blockEntity.getVirtualAngle(partialTick);
 		bogey.update(bogeyData, angle, poseStack);
 	}
 

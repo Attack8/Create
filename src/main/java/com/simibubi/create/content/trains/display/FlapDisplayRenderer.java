@@ -2,6 +2,7 @@ package com.simibubi.create.content.trains.display;
 
 import java.util.List;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.font.GlyphInfo;
@@ -10,12 +11,11 @@ import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.font.FontSet;
@@ -229,7 +229,7 @@ public class FlapDisplayRenderer extends KineticBlockEntityRenderer<FlapDisplayB
 
 	@Override
 	protected SuperByteBuffer getRotatedModel(FlapDisplayBlockEntity be, BlockState state) {
-		return CachedBufferer.partialFacingVertical(AllPartialModels.SHAFTLESS_COGWHEEL, state,
+		return CachedBuffers.partialFacingVertical(AllPartialModels.SHAFTLESS_COGWHEEL, state,
 			state.getValue(FlapDisplayBlock.HORIZONTAL_FACING));
 	}
 

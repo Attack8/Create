@@ -2,15 +2,18 @@ package com.simibubi.create.content.contraptions.pulley;
 
 import java.util.function.Consumer;
 
+import org.joml.Quaternionf;
+import org.joml.Quaternionfc;
+
 import com.mojang.math.Axis;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.base.ShaftVisual;
+import com.simibubi.create.content.processing.burner.ScrollInstance;
 
 import dev.engine_room.flywheel.api.instance.Instance;
 import dev.engine_room.flywheel.api.instance.Instancer;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
-import dev.engine_room.flywheel.lib.instance.OrientedInstance;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.math.MoreMath;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
@@ -19,6 +22,8 @@ import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.render.SpriteShiftEntry;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,7 +32,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 
 public abstract class AbstractPulleyVisual<T extends KineticBlockEntity> extends ShaftVisual<T> implements SimpleDynamicVisual {
-	private final OrientedInstance coil;
+	private final ScrollInstance coil;
 	private final TransformedInstance magnet;
 	private final SmartRecycler<Boolean, TransformedInstance> rope;
 
@@ -41,11 +46,17 @@ public abstract class AbstractPulleyVisual<T extends KineticBlockEntity> extends
 	public AbstractPulleyVisual(VisualizationContext dispatcher, T blockEntity, float partialTick) {
 		super(dispatcher, blockEntity, partialTick);
 
-		rotatingAbout = Direction.get(Direction.AxisDirection.POSITIVE, axis);
+		rotatingAbout = Direction.get(Direction.AxisDirection.POSITIVE, rotationAxis());
 		rotationAxis = Axis.of(rotatingAbout.step());
 
+		float blockStateAngle = AngleHelper.horizontalAngle(rotatingAbout);
+		Quaternionfc rotation = new Quaternionf().rotationY(Mth.DEG_TO_RAD * blockStateAngle);
+
 		coil = getCoilModel().createInstance()
-				.position(getVisualPosition());
+			.rotation(rotation)
+			.position(getVisualPosition())
+			.setSpriteShift(getCoilAnimation());
+
 		coil.setChanged();
 
 		magnet = magnetInstancer().createInstance();
@@ -54,6 +65,7 @@ public abstract class AbstractPulleyVisual<T extends KineticBlockEntity> extends
 
 		updateOffset(partialTick);
 		updateLight(partialTick);
+		animate();
 	}
 
 	@Override
@@ -68,13 +80,15 @@ public abstract class AbstractPulleyVisual<T extends KineticBlockEntity> extends
 
 	protected abstract Instancer<TransformedInstance> getHalfMagnetModel();
 
-	protected abstract Instancer<OrientedInstance> getCoilModel();
+	protected abstract Instancer<ScrollInstance> getCoilModel();
 
 	protected abstract Instancer<TransformedInstance> getHalfRopeModel();
 
 	protected abstract float getOffset(float pt);
 
 	protected abstract boolean isRunning();
+
+	protected abstract SpriteShiftEntry getCoilAnimation();
 
 	private Instancer<TransformedInstance> magnetInstancer() {
 		return offset > .25f ? getMagnetModel() : getHalfMagnetModel();
@@ -83,8 +97,12 @@ public abstract class AbstractPulleyVisual<T extends KineticBlockEntity> extends
 	@Override
 	public void beginFrame(DynamicVisual.Context ctx) {
 		updateOffset(ctx.partialTick());
-		coil.rotation(rotationAxis.rotationDegrees(offset * 180))
-				.setChanged();
+		animate();
+	}
+
+	private void animate() {
+		coil.offsetV = -offset;
+		coil.setChanged();
 
 		magnet.setVisible(isRunning() || offset == 0);
 

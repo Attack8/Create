@@ -14,10 +14,10 @@ import com.simibubi.create.content.redstone.link.IRedstoneLinkable;
 import com.simibubi.create.content.redstone.link.LinkBehaviour;
 import com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler.Frequency;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.IntAttached;
-import com.simibubi.create.foundation.utility.WorldAttached;
 
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.IntAttached;
+import net.createmod.catnip.data.WorldAttached;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelAccessor;
 
@@ -30,12 +30,12 @@ public class LinkedControllerServerHandler {
 	public static void tick(LevelAccessor world) {
 		Map<UUID, Collection<ManualFrequencyEntry>> map = receivedInputs.get(world);
 		for (Iterator<Entry<UUID, Collection<ManualFrequencyEntry>>> iterator = map.entrySet()
-			.iterator(); iterator.hasNext();) {
+			.iterator(); iterator.hasNext(); ) {
 
 			Entry<UUID, Collection<ManualFrequencyEntry>> entry = iterator.next();
 			Collection<ManualFrequencyEntry> list = entry.getValue();
 
-			for (Iterator<ManualFrequencyEntry> entryIterator = list.iterator(); entryIterator.hasNext();) {
+			for (Iterator<ManualFrequencyEntry> entryIterator = list.iterator(); entryIterator.hasNext(); ) {
 				ManualFrequencyEntry manualFrequencyEntry = entryIterator.next();
 				manualFrequencyEntry.decrement();
 				if (!manualFrequencyEntry.isAlive()) {
@@ -50,13 +50,13 @@ public class LinkedControllerServerHandler {
 	}
 
 	public static void receivePressed(LevelAccessor world, BlockPos pos, UUID uniqueID, List<Couple<Frequency>> collect,
-		boolean pressed) {
+									  boolean pressed) {
 		Map<UUID, Collection<ManualFrequencyEntry>> map = receivedInputs.get(world);
 		Collection<ManualFrequencyEntry> list = map.computeIfAbsent(uniqueID, $ -> new ArrayList<>());
 
-		WithNext: for (Couple<Frequency> activated : collect) {
-			for (Iterator<ManualFrequencyEntry> iterator = list.iterator(); iterator.hasNext();) {
-				ManualFrequencyEntry entry = iterator.next();
+		WithNext:
+		for (Couple<Frequency> activated : collect) {
+			for (ManualFrequencyEntry entry : list) {
 				if (entry.getSecond()
 					.equals(activated)) {
 					if (!pressed)
@@ -73,8 +73,8 @@ public class LinkedControllerServerHandler {
 			ManualFrequencyEntry entry = new ManualFrequencyEntry(pos, activated);
 			Create.REDSTONE_LINK_NETWORK_HANDLER.addToNetwork(world, entry);
 			list.add(entry);
-			
-			for (IRedstoneLinkable linkable : Create.REDSTONE_LINK_NETWORK_HANDLER.getNetworkOf(world, entry)) 
+
+			for (IRedstoneLinkable linkable : Create.REDSTONE_LINK_NETWORK_HANDLER.getNetworkOf(world, entry))
 				if (linkable instanceof LinkBehaviour lb && lb.isListening())
 					AllAdvancements.LINKED_CONTROLLER.awardTo(world.getPlayerByUUID(uniqueID));
 		}
@@ -110,7 +110,8 @@ public class LinkedControllerServerHandler {
 		}
 
 		@Override
-		public void setReceivedStrength(int power) {}
+		public void setReceivedStrength(int power) {
+		}
 
 		@Override
 		public boolean isListening() {
