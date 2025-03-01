@@ -5,8 +5,9 @@ import javax.annotation.Nullable;
 import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -112,10 +113,10 @@ public class SignalBlock extends Block implements IBE<SignalBlockEntity>, IWrenc
 			if (signal != null) {
 				signal.cycleSignalType(pos);
 				if (player != null)
-					player.displayClientMessage(Lang.translateDirect("track_signal.mode_change." + signal.getTypeFor(pos)
+					player.displayClientMessage(CreateLang.translateDirect("track_signal.mode_change." + signal.getTypeFor(pos)
 						.getSerializedName()), true);
 			} else if (player != null)
-				player.displayClientMessage(Lang.translateDirect("track_signal.cannot_change_mode"), true);
+				player.displayClientMessage(CreateLang.translateDirect("track_signal.cannot_change_mode"), true);
 		});
 		return InteractionResult.SUCCESS;
 	}

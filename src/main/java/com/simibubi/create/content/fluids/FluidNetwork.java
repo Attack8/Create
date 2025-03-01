@@ -17,10 +17,10 @@ import com.simibubi.create.content.contraptions.actors.psi.PortableFluidInterfac
 import com.simibubi.create.content.fluids.PipeConnection.Flow;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.fluid.FluidHelper;
-import com.simibubi.create.foundation.utility.BlockFace;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.Pair;
 
+import net.createmod.catnip.math.BlockFace;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.data.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -185,7 +185,7 @@ public class FluidNetwork {
 
 		int flowSpeed = transferSpeed;
 		Map<IFluidHandler, Integer> accumulatedFill = new IdentityHashMap<>();
-		
+
 		for (boolean simulate : Iterate.trueAndFalse) {
 			FluidAction action = simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE;
 
@@ -214,9 +214,9 @@ public class FluidNetwork {
 				return;
 			if (simulate)
 				flowSpeed = transfer.getAmount();
-			
+
 			List<Pair<BlockFace, LazyOptional<IFluidHandler>>> availableOutputs = new ArrayList<>(targets);
-			
+
 			while (!availableOutputs.isEmpty() && transfer.getAmount() > 0) {
 				int dividedTransfer = transfer.getAmount() / availableOutputs.size();
 				int remainder = transfer.getAmount() % availableOutputs.size();
@@ -238,20 +238,20 @@ public class FluidNetwork {
 						iterator.remove();
 						continue;
 					}
-					
+
 					int simulatedTransfer = toTransfer;
 					if (simulate)
 						simulatedTransfer += accumulatedFill.getOrDefault(targetHandler, 0);
-					
+
 					FluidStack divided = transfer.copy();
 					divided.setAmount(simulatedTransfer);
 					int fill = targetHandler.fill(divided, action);
-					
+
 					if (simulate) {
 						accumulatedFill.put(targetHandler, Integer.valueOf(fill));
 						fill -= simulatedTransfer - toTransfer;
 					}
-					
+
 					transfer.setAmount(transfer.getAmount() - fill);
 					if (fill < simulatedTransfer)
 						iterator.remove();

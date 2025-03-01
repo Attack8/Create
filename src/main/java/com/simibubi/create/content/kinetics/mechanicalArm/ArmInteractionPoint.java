@@ -2,10 +2,11 @@ package com.simibubi.create.content.kinetics.mechanicalArm;
 
 import javax.annotation.Nullable;
 
+import com.simibubi.create.api.registry.CreateBuiltInRegistries;
 import com.simibubi.create.content.contraptions.StructureTransform;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
 
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
@@ -88,7 +90,8 @@ public class ArmInteractionPoint {
 		return type.canCreatePoint(level, pos, cachedState);
 	}
 
-	public void keepAlive() {}
+	public void keepAlive() {
+	}
 
 	@Nullable
 	protected IItemHandler getHandler() {
@@ -135,8 +138,12 @@ public class ArmInteractionPoint {
 	}
 
 	public final CompoundTag serialize(BlockPos anchor) {
+		ResourceLocation key = CreateBuiltInRegistries.ARM_INTERACTION_POINT_TYPE.getKey(type);
+		if (key == null)
+			throw new IllegalArgumentException("Could not get id for ArmInteractionPointType " + type + "!");
+
 		CompoundTag nbt = new CompoundTag();
-		nbt.putString("Type", type.getId().toString());
+		nbt.putString("Type", key.toString());
 		nbt.put("Pos", NbtUtils.writeBlockPos(pos.subtract(anchor)));
 		serialize(nbt, anchor);
 		return nbt;
@@ -147,7 +154,7 @@ public class ArmInteractionPoint {
 		ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type"));
 		if (id == null)
 			return null;
-		ArmInteractionPointType type = ArmInteractionPointType.get(id);
+		ArmInteractionPointType type = CreateBuiltInRegistries.ARM_INTERACTION_POINT_TYPE.get(id);
 		if (type == null)
 			return null;
 		BlockPos pos = NbtUtils.readBlockPos(nbt.getCompound("Pos")).offset(anchor);

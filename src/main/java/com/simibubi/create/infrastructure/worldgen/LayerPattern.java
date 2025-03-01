@@ -8,9 +8,9 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.simibubi.create.foundation.utility.Couple;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 
+import net.createmod.catnip.data.Couple;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
@@ -138,7 +138,7 @@ public class LayerPattern {
 				}
 				return blocks(block.defaultBlockState(), block.defaultBlockState());
 			}
-			
+
 			public Builder blocks(Block block, Block deepblock) {
 				return blocks(block.defaultBlockState(), deepblock.defaultBlockState());
 			}

@@ -2,12 +2,14 @@ package com.simibubi.create.foundation.blockEntity.behaviour.inventory;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.item.ItemHelper.ExtractionCountMode;
-import com.simibubi.create.foundation.utility.BlockFace;
 
+import net.createmod.catnip.math.BlockFace;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -21,6 +23,7 @@ public abstract class CapManipulationBehaviourBase<T, S extends CapManipulationB
 
 	protected InterfaceProvider target;
 	protected LazyOptional<T> targetCapability;
+	protected Predicate<BlockEntity> filter;
 	protected boolean simulateNext;
 	protected boolean bypassSided;
 	private boolean findNewNextTick;
@@ -32,6 +35,7 @@ public abstract class CapManipulationBehaviourBase<T, S extends CapManipulationB
 		targetCapability = LazyOptional.empty();
 		simulateNext = false;
 		bypassSided = false;
+		filter = Predicates.alwaysTrue();
 	}
 
 	protected abstract Capability<T> capability();
@@ -62,6 +66,12 @@ public abstract class CapManipulationBehaviourBase<T, S extends CapManipulationB
 	@SuppressWarnings("unchecked")
 	public S simulate() {
 		simulateNext = true;
+		return (S) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public S withFilter(Predicate<BlockEntity> filter) {
+		this.filter = filter;
 		return (S) this;
 	}
 
@@ -122,7 +132,7 @@ public abstract class CapManipulationBehaviourBase<T, S extends CapManipulationB
 		if (!world.isLoaded(pos))
 			return;
 		BlockEntity invBE = world.getBlockEntity(pos);
-		if (invBE == null)
+		if (invBE == null || !filter.test(invBE))
 			return;
 		Capability<T> capability = capability();
 		targetCapability =

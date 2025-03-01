@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
@@ -57,7 +58,7 @@ public abstract class AbstractFunnelBlock extends Block
 		return withWater(defaultBlockState().setValue(POWERED, context.getLevel()
 			.hasNeighborSignal(context.getClickedPos())), context);
 	}
-	
+
 	@Override
 	public FluidState getFluidState(BlockState pState) {
 		return fluidState(pState);
@@ -65,11 +66,11 @@ public abstract class AbstractFunnelBlock extends Block
 
 	@Override
 	public BlockState updateShape(BlockState pState, Direction pDirection, BlockState pNeighborState,
-		LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
+								  LevelAccessor pLevel, BlockPos pCurrentPos, BlockPos pNeighborPos) {
 		updateWater(pLevel, pState, pCurrentPos);
 		return pState;
 	}
-	
+
 	@Override
 	public boolean isPathfindable(BlockState state, BlockGetter reader, BlockPos pos, PathComputationType type) {
 		return false;
@@ -81,16 +82,16 @@ public abstract class AbstractFunnelBlock extends Block
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos,
-		boolean isMoving) {
-		if (worldIn.isClientSide)
+	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos,
+								boolean isMoving) {
+		if (level.isClientSide)
 			return;
-		InvManipulationBehaviour behaviour = BlockEntityBehaviour.get(worldIn, pos, InvManipulationBehaviour.TYPE);
+		InvManipulationBehaviour behaviour = BlockEntityBehaviour.get(level, pos, InvManipulationBehaviour.TYPE);
 		if (behaviour != null)
 			behaviour.onNeighborChanged(fromPos);
-		if (!worldIn.getBlockTicks()
+		if (!level.getBlockTicks()
 			.willTickThisTick(pos, this))
-			worldIn.scheduleTick(pos, this, 0);
+			level.scheduleTick(pos, this, 1);
 	}
 
 	@Override
@@ -113,8 +114,7 @@ public abstract class AbstractFunnelBlock extends Block
 
 		if (!simulate && insert.getCount() != toInsert.getCount()) {
 			BlockEntity blockEntity = worldIn.getBlockEntity(pos);
-			if (blockEntity instanceof FunnelBlockEntity) {
-				FunnelBlockEntity funnelBlockEntity = (FunnelBlockEntity) blockEntity;
+			if (blockEntity instanceof FunnelBlockEntity funnelBlockEntity) {
 				funnelBlockEntity.onTransfer(toInsert);
 				if (funnelBlockEntity.hasFlap())
 					funnelBlockEntity.flap(true);
@@ -157,6 +157,8 @@ public abstract class AbstractFunnelBlock extends Block
 
 	public BlockEntityType<? extends FunnelBlockEntity> getBlockEntityType() {
 		return AllBlockEntityTypes.FUNNEL.get();
-	};
+	}
+
+	;
 
 }

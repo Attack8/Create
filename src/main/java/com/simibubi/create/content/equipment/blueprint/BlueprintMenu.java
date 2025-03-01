@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.IItemHandler;
@@ -69,12 +70,12 @@ public class BlueprintMenu extends GhostItemMenu<BlueprintSection> {
 		ServerPlayer serverplayerentity = (ServerPlayer) player;
 		CraftingContainer craftingInventory = new BlueprintCraftingInventory(this, ghostInventory);
 		Optional<CraftingRecipe> optional = player.getServer()
-				.getRecipeManager()
-				.getRecipeFor(RecipeType.CRAFTING, craftingInventory, player.getCommandSenderWorld());
+			.getRecipeManager()
+			.getRecipeFor(RecipeType.CRAFTING, craftingInventory, player.getCommandSenderWorld());
 
 		if (!optional.isPresent()) {
 			if (ghostInventory.getStackInSlot(9)
-					.isEmpty())
+				.isEmpty())
 				return;
 			if (!contentHolder.inferredIcon)
 				return;
@@ -91,7 +92,7 @@ public class BlueprintMenu extends GhostItemMenu<BlueprintSection> {
 		contentHolder.inferredIcon = true;
 		ItemStack toSend = itemstack.copy();
 		toSend.getOrCreateTag()
-				.putBoolean("InferredFromRecipe", true);
+			.putBoolean("InferredFromRecipe", true);
 		serverplayerentity.connection.send(new ClientboundContainerSetSlotPacket(containerId, incrementStateId(), 36 + 9, toSend));
 	}
 
@@ -100,9 +101,9 @@ public class BlueprintMenu extends GhostItemMenu<BlueprintSection> {
 		if (slotId == 36 + 9) {
 			if (stack.hasTag()) {
 				contentHolder.inferredIcon = stack.getTag()
-						.getBoolean("InferredFromRecipe");
+					.getBoolean("InferredFromRecipe");
 				stack.getTag()
-						.remove("InferredFromRecipe");
+					.remove("InferredFromRecipe");
 			} else
 				contentHolder.inferredIcon = false;
 		}
@@ -130,9 +131,8 @@ public class BlueprintMenu extends GhostItemMenu<BlueprintSection> {
 		int entityID = extraData.readVarInt();
 		int section = extraData.readVarInt();
 		Entity entityByID = Minecraft.getInstance().level.getEntity(entityID);
-		if (!(entityByID instanceof BlueprintEntity))
+		if (!(entityByID instanceof BlueprintEntity blueprintEntity))
 			return null;
-		BlueprintEntity blueprintEntity = (BlueprintEntity) entityByID;
 		BlueprintSection blueprintSection = blueprintEntity.getSection(section);
 		return blueprintSection;
 	}

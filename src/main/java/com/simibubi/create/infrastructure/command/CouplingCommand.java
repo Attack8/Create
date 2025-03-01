@@ -12,12 +12,12 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.simibubi.create.content.contraptions.minecart.CouplingHandler;
 import com.simibubi.create.content.contraptions.minecart.capability.CapabilityMinecartController;
 import com.simibubi.create.content.contraptions.minecart.capability.MinecartController;
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.foundation.utility.Iterate;
 
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.AbstractMinecart;
@@ -25,13 +25,23 @@ import net.minecraftforge.common.util.LazyOptional;
 
 public class CouplingCommand {
 
-	public static final SimpleCommandExceptionType ONLY_MINECARTS_ALLOWED =
-		new SimpleCommandExceptionType(Components.literal("Only Minecarts can be coupled"));
-	public static final SimpleCommandExceptionType SAME_DIMENSION =
-		new SimpleCommandExceptionType(Components.literal("Minecarts have to be in the same Dimension"));
-	public static final DynamicCommandExceptionType TWO_CARTS =
-		new DynamicCommandExceptionType(a -> Components.literal(
-			"Your selector targeted " + a + " entities. You can only couple 2 Minecarts at a time."));
+	public static final SimpleCommandExceptionType ONLY_MINECARTS_ALLOWED;
+
+    static {
+        ONLY_MINECARTS_ALLOWED = new SimpleCommandExceptionType(Component.literal("Only Minecarts can be coupled"));
+    }
+
+    public static final SimpleCommandExceptionType SAME_DIMENSION;
+
+    static {
+        SAME_DIMENSION = new SimpleCommandExceptionType(Component.literal("Minecarts have to be in the same Dimension"));
+    }
+
+    public static final DynamicCommandExceptionType TWO_CARTS =
+		new DynamicCommandExceptionType(a -> {
+            return Component.literal(
+                "Your selector targeted " + a + " entities. You can only couple 2 Minecarts at a time.");
+        });
 
 	public static ArgumentBuilder<CommandSourceStack, ?> register() {
 
@@ -105,7 +115,9 @@ public class CouplingCommand {
 								cart1.getCapability(CapabilityMinecartController.MINECART_CONTROLLER_CAPABILITY);
 							if (!cart1Capability.isPresent()) {
 								ctx.getSource()
-									.sendSuccess(() -> Components.literal("Minecart has no Couplings Attached"), true);
+									.sendSuccess(() -> {
+                                        return Component.literal("Minecart has no Couplings Attached");
+                                    }, true);
 								return 0;
 							}
 
@@ -115,7 +127,9 @@ public class CouplingCommand {
 								+ (cart1Controller.isLeadingCoupling() ? 1 : 0);
 							if (cart1Couplings == 0) {
 								ctx.getSource()
-									.sendSuccess(() -> Components.literal("Minecart has no Couplings Attached"), true);
+									.sendSuccess(() -> {
+                                        return Component.literal("Minecart has no Couplings Attached");
+                                    }, true);
 								return 0;
 							}
 
@@ -138,7 +152,9 @@ public class CouplingCommand {
 							}
 
 							ctx.getSource()
-								.sendSuccess(() -> Components.literal("The specified Carts are not coupled"), true);
+								.sendSuccess(() -> {
+                                    return Component.literal("The specified Carts are not coupled");
+                                }, true);
 
 							return 0;
 						}))))
@@ -153,7 +169,9 @@ public class CouplingCommand {
 							cart.getCapability(CapabilityMinecartController.MINECART_CONTROLLER_CAPABILITY);
 						if (!capability.isPresent()) {
 							ctx.getSource()
-								.sendSuccess(() -> Components.literal("Minecart has no Couplings Attached"), true);
+								.sendSuccess(() -> {
+                                    return Component.literal("Minecart has no Couplings Attached");
+                                }, true);
 							return 0;
 						}
 
@@ -163,15 +181,19 @@ public class CouplingCommand {
 							(controller.isConnectedToCoupling() ? 1 : 0) + (controller.isLeadingCoupling() ? 1 : 0);
 						if (couplings == 0) {
 							ctx.getSource()
-								.sendSuccess(() -> Components.literal("Minecart has no Couplings Attached"), true);
+								.sendSuccess(() -> {
+                                    return Component.literal("Minecart has no Couplings Attached");
+                                }, true);
 							return 0;
 						}
 
 						controller.decouple();
 
 						ctx.getSource()
-							.sendSuccess(() -> 
-								Components.literal("Removed " + couplings + " couplings from the Minecart"), true);
+							.sendSuccess(() ->
+                            {
+                                return Component.literal("Removed " + couplings + " couplings from the Minecart");
+                            }, true);
 
 						return couplings;
 					})));

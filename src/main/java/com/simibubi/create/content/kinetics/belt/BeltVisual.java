@@ -1,135 +1,117 @@
 package com.simibubi.create.content.kinetics.belt;
 
-import java.util.ArrayList;
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
-import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityVisual;
 import com.simibubi.create.content.kinetics.base.RotatingInstance;
-import com.simibubi.create.foundation.block.render.SpriteShiftEntry;
+import com.simibubi.create.content.processing.burner.ScrollInstance;
 import com.simibubi.create.foundation.render.AllInstanceTypes;
-import com.simibubi.create.foundation.utility.Iterate;
 
 import dev.engine_room.flywheel.api.instance.Instance;
 import dev.engine_room.flywheel.api.instance.Instancer;
+import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
-import dev.engine_room.flywheel.lib.instance.AbstractInstance;
-import dev.engine_room.flywheel.lib.instance.FlatLit;
 import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.render.SpriteShiftEntry;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.level.LightLayer;
 
 public class BeltVisual extends KineticBlockEntityVisual<BeltBlockEntity> {
+	public static final float MAGIC_SCROLL_MULTIPLIER = 1f / (31.5f * 16f);
+	public static final float SCROLL_FACTOR_DIAGONAL = 3f / 8f;
+	public static final float SCROLL_FACTOR_OTHERWISE = 0.5f;
+	public static final float SCROLL_OFFSET_BOTTOM = 0.5f;
+	public static final float SCROLL_OFFSET_OTHERWISE = 0f;
 
-    boolean upward;
-    boolean diagonal;
-    boolean sideways;
-    boolean vertical;
-    boolean alongX;
-    boolean alongZ;
-    BeltSlope beltSlope;
-    Direction facing;
-    protected ArrayList<BeltInstance> keys;
-    protected RotatingInstance pulleyKey;
+	protected final ScrollInstance[] belts;
+	@Nullable
+    protected final RotatingInstance pulley;
 
     public BeltVisual(VisualizationContext context, BeltBlockEntity blockEntity, float partialTick) {
         super(context, blockEntity, partialTick);
 
-        if (!AllBlocks.BELT.has(blockState))
-            return;
 
-        keys = new ArrayList<>(2);
+		BeltPart part = blockState.getValue(BeltBlock.PART);
+		boolean start = part == BeltPart.START;
+		boolean end = part == BeltPart.END;
+		DyeColor color = blockEntity.color.orElse(null);
 
-        beltSlope = blockState.getValue(BeltBlock.SLOPE);
-        facing = blockState.getValue(BeltBlock.HORIZONTAL_FACING);
-        upward = beltSlope == BeltSlope.UPWARD;
-        diagonal = beltSlope.isDiagonal();
-        sideways = beltSlope == BeltSlope.SIDEWAYS;
-        vertical = beltSlope == BeltSlope.VERTICAL;
-        alongX = facing.getAxis() == Direction.Axis.X;
-        alongZ = facing.getAxis() == Direction.Axis.Z;
+		boolean diagonal = blockState.getValue(BeltBlock.SLOPE)
+			.isDiagonal();
+		belts = new ScrollInstance[diagonal ? 1 : 2];
 
-        BeltPart part = blockState.getValue(BeltBlock.PART);
-        boolean start = part == BeltPart.START;
-        boolean end = part == BeltPart.END;
-        DyeColor color = blockEntity.color.orElse(null);
-
-        for (boolean bottom : Iterate.trueAndFalse) {
+		for (boolean bottom : Iterate.trueAndFalse) {
             PartialModel beltPartial = BeltRenderer.getBeltPartial(diagonal, start, end, bottom);
             SpriteShiftEntry spriteShift = BeltRenderer.getSpriteShiftEntry(color, diagonal, bottom);
 
-            Instancer<BeltInstance> beltModel = instancerProvider().instancer(AllInstanceTypes.BELT, Models.partial(beltPartial));
+            Instancer<ScrollInstance> beltModel = instancerProvider().instancer(AllInstanceTypes.SCROLLING, Models.partial(beltPartial));
 
-            keys.add(setup(beltModel.createInstance(), bottom, spriteShift));
+            belts[bottom ? 0 : 1] = setup(beltModel.createInstance(), bottom, spriteShift);
 
             if (diagonal) break;
         }
 
         if (blockEntity.hasPulley()) {
-            Instancer<RotatingInstance> pulleyModel = getPulleyModel();
+			pulley = instancerProvider()
+				.instancer(AllInstanceTypes.ROTATING, getPulleyModel())
+				.createInstance();
 
-            pulleyKey = setup(pulleyModel.createInstance());
-        }
+			pulley.setup(BeltVisual.this.blockEntity)
+				.setPosition(getVisualPosition())
+				.setChanged();
+        } else {
+			pulley = null;
+		}
     }
 
     @Override
     public void update(float pt) {
         DyeColor color = blockEntity.color.orElse(null);
 
-        boolean bottom = true;
-        for (BeltInstance key : keys) {
+		boolean diagonal = blockState.getValue(BeltBlock.SLOPE)
+			.isDiagonal();
 
-            SpriteShiftEntry spriteShiftEntry = BeltRenderer.getSpriteShiftEntry(color, diagonal, bottom);
-            key.setScrollTexture(spriteShiftEntry)
-					.setColor(blockEntity)
-					.setRotationalSpeed(getScrollSpeed())
-					.setChanged();
+        boolean bottom = true;
+        for (ScrollInstance key : belts) {
+			setup(key, bottom, BeltRenderer.getSpriteShiftEntry(color, diagonal, bottom));
             bottom = false;
         }
 
-        if (pulleyKey != null) {
-            updateRotation(pulleyKey);
-        }
+        if (pulley != null) {
+			pulley.setup(blockEntity)
+				.setChanged();
+		}
     }
 
     @Override
     public void updateLight(float partialTick) {
-        relight(keys.toArray(FlatLit[]::new));
+        relight(belts);
 
-        if (pulleyKey != null) relight(pulleyKey);
+        if (pulley != null) relight(pulley);
     }
 
     @Override
     protected void _delete() {
-        keys.forEach(AbstractInstance::delete);
-        keys.clear();
-        if (pulleyKey != null) pulleyKey.delete();
-        pulleyKey = null;
+		for (var key : belts) {
+			key.delete();
+		}
+        if (pulley != null) {
+			pulley.delete();
+		}
     }
 
-    private float getScrollSpeed() {
-        float speed = blockEntity.getSpeed();
-        if (((facing.getAxisDirection() == Direction.AxisDirection.NEGATIVE) ^ upward) ^
-                ((alongX && !diagonal) || (alongZ && diagonal))) {
-            speed = -speed;
-        }
-        if (sideways && (facing == Direction.SOUTH || facing == Direction.WEST) || (vertical && facing == Direction.EAST))
-            speed = -speed;
-
-        return speed;
-    }
-
-    private Instancer<RotatingInstance> getPulleyModel() {
+    private Model getPulleyModel() {
         Direction dir = getOrientation();
 
-        var model = Models.partial(AllPartialModels.BELT_PULLEY, dir.getAxis(), (axis11, modelTransform1) -> {
+        return Models.partial(AllPartialModels.BELT_PULLEY, dir.getAxis(), (axis11, modelTransform1) -> {
             var msr = TransformStack.of(modelTransform1);
             msr.center();
             if (axis11 == Direction.Axis.X) msr.rotateYDegrees(90);
@@ -137,35 +119,50 @@ public class BeltVisual extends KineticBlockEntityVisual<BeltBlockEntity> {
             msr.rotateXDegrees(90);
             msr.uncenter();
         });
-
-		return instancerProvider().instancer(AllInstanceTypes.ROTATING, model);
     }
 
     private Direction getOrientation() {
         Direction dir = blockState.getValue(BeltBlock.HORIZONTAL_FACING)
                                   .getClockWise();
-        if (beltSlope == BeltSlope.SIDEWAYS)
+
+		if (blockState.getValue(BeltBlock.SLOPE) == BeltSlope.SIDEWAYS)
             dir = Direction.UP;
 
         return dir;
     }
 
-    private BeltInstance setup(BeltInstance key, boolean bottom, SpriteShiftEntry spriteShift) {
+    private ScrollInstance setup(ScrollInstance key, boolean bottom, SpriteShiftEntry spriteShift) {
+		BeltSlope beltSlope = blockState.getValue(BeltBlock.SLOPE);
+		Direction facing = blockState.getValue(BeltBlock.HORIZONTAL_FACING);
+		boolean diagonal = beltSlope.isDiagonal();
+		boolean sideways = beltSlope == BeltSlope.SIDEWAYS;
+		boolean vertical = beltSlope == BeltSlope.VERTICAL;
+		boolean upward = beltSlope == BeltSlope.UPWARD;
+		boolean alongX = facing.getAxis() == Direction.Axis.X;
+		boolean alongZ = facing.getAxis() == Direction.Axis.Z;
         boolean downward = beltSlope == BeltSlope.DOWNWARD;
+
+		float speed = blockEntity.getSpeed();
+		if (((facing.getAxisDirection() == Direction.AxisDirection.NEGATIVE) ^ upward) ^
+			((alongX && !diagonal) || (alongZ && diagonal))) {
+			speed = -speed;
+		}
+		if (sideways && (facing == Direction.SOUTH || facing == Direction.WEST) || (vertical && facing == Direction.EAST)) {
+			speed = -speed;
+		}
+
         float rotX = (!diagonal && beltSlope != BeltSlope.HORIZONTAL ? 90 : 0) + (downward ? 180 : 0) + (sideways ? 90 : 0) + (vertical && alongZ ? 180 : 0);
         float rotY = facing.toYRot() + ((diagonal ^ alongX) && !downward ? 180 : 0) + (sideways && alongZ ? 180 : 0) + (vertical && alongX ? 90 : 0);
         float rotZ = (sideways ? 90 : 0) + (vertical && alongX ? 90 : 0);
 
         Quaternionf q = new Quaternionf().rotationXYZ(rotX * Mth.DEG_TO_RAD, rotY * Mth.DEG_TO_RAD, rotZ * Mth.DEG_TO_RAD);
 
-		key.setScrollTexture(spriteShift)
-				.setScrollMult(diagonal ? 3f / 8f : 0.5f)
-				.setRotation(q)
-				.setRotationalSpeed(getScrollSpeed())
-				.setRotationOffset(bottom ? 0.5f : 0f)
-                .setColor(blockEntity)
-                .setPosition(getVisualPosition())
-                .light(level.getBrightness(LightLayer.BLOCK, pos), level.getBrightness(LightLayer.SKY, pos))
+		key.setSpriteShift(spriteShift, 1f, (diagonal ? SCROLL_FACTOR_DIAGONAL : SCROLL_FACTOR_OTHERWISE))
+				.position(getVisualPosition())
+				.rotation(q)
+				.speed(0, speed * MAGIC_SCROLL_MULTIPLIER)
+				.offset(0, bottom ? SCROLL_OFFSET_BOTTOM : SCROLL_OFFSET_OTHERWISE)
+				.colorRgb(RotatingInstance.colorFromBE(blockEntity))
 				.setChanged();
 
         return key;
@@ -173,9 +170,11 @@ public class BeltVisual extends KineticBlockEntityVisual<BeltBlockEntity> {
 
 	@Override
 	public void collectCrumblingInstances(Consumer<Instance> consumer) {
-		if (pulleyKey != null) {
-			consumer.accept(pulleyKey);
+		if (pulley != null) {
+			consumer.accept(pulley);
 		}
-		keys.forEach(consumer);
+		for (var key : belts) {
+			consumer.accept(key);
+		}
 	}
 }

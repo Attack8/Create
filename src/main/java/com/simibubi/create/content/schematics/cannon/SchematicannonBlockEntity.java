@@ -24,11 +24,11 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.item.ItemHelper;
 import com.simibubi.create.foundation.item.ItemHelper.ExtractionCountMode;
 import com.simibubi.create.foundation.utility.BlockHelper;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CSchematics;
 
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -566,6 +566,8 @@ public class SchematicannonBlockEntity extends SmartBlockEntity implements MenuP
 	}
 
 	public void finishedPrinting() {
+		if (replaceMode == ConfigureSchematicannonPacket.Option.REPLACE_EMPTY.ordinal())
+			printer.sendBlockUpdates(level);
 		inventory.setStackInSlot(0, ItemStack.EMPTY);
 		inventory.setStackInSlot(1, new ItemStack(AllItems.EMPTY_SCHEMATIC.get(), inventory.getStackInSlot(1)
 			.getCount() + 1));
@@ -652,9 +654,9 @@ public class SchematicannonBlockEntity extends SmartBlockEntity implements MenuP
 		if (remainingFuel > getShotsPerGunpowder()) {
 			remainingFuel = getShotsPerGunpowder();
 			sendUpdate = true;
-			return;	
+			return;
 		}
-		
+
 		if (remainingFuel > 0)
 			return;
 
@@ -829,7 +831,7 @@ public class SchematicannonBlockEntity extends SmartBlockEntity implements MenuP
 
 	@Override
 	public Component getDisplayName() {
-		return Lang.translateDirect("gui.schematicannon.title");
+		return CreateLang.translateDirect("gui.schematicannon.title");
 	}
 
 	public void updateChecklist() {

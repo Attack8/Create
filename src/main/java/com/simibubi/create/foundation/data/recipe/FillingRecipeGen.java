@@ -3,6 +3,7 @@ package com.simibubi.create.foundation.data.recipe;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllRecipeTypes;
+import com.simibubi.create.AllTags;
 import com.simibubi.create.AllTags.AllFluidTags;
 import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
 
@@ -61,6 +62,7 @@ public class FillingRecipeGen extends ProcessingRecipeGen {
 			.require(AllItems.CINDER_FLOUR.get())
 			.output(Items.GLOWSTONE_DUST)),
 
+		// Compat
 
 		AM_LAVA = create(Mods.AM.recipeId("lava_bottle"), b -> b.require(Fluids.LAVA, 250)
 			.require(Items.GLASS_BOTTLE)
@@ -88,9 +90,20 @@ public class FillingRecipeGen extends ProcessingRecipeGen {
 		VMP_CURSED_GRASS = create(Mods.VMP.recipeId("cursed_grass"), b -> b.require(Fluids.WATER, 500)
 			.require(Mods.VMP, "cursed_earth")
 			.output(Mods.VMP, "cursed_grass")
-			.whenModLoaded(Mods.VMP.getId()));
+			.whenModLoaded(Mods.VMP.getId())),
 
-	;
+		// IE
+
+		IE_TREATED_WOOD = create(Mods.IE.recipeId("treated_wood_in_spout"),
+			b -> b.require(AllTags.forgeFluidTag("creosote"), 125)
+				.require(I.planks())
+				.output(Mods.IE, "treated_wood_horizontal")
+				.whenModLoaded(Mods.IE.getId())),
+
+		UG_DEEPTURF = create(Mods.UG.recipeId("deepturf"), b -> b.require(Fluids.WATER, 500)
+				.require(Mods.UG, "deepsoil")
+				.output(Mods.UG, "deepturf_block")
+				.whenModLoaded(Mods.UG.getId()));
 
 	public GeneratedRecipe moddedGrass(Mods mod, String name) {
 		String grass = name + "_grass_block";

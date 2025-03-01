@@ -7,19 +7,20 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.ImmutableList;
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllContraptionTypes;
 import com.simibubi.create.AllPackets;
+import com.simibubi.create.api.contraption.ContraptionType;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.AssemblyException;
-import com.simibubi.create.content.contraptions.ContraptionType;
 import com.simibubi.create.content.contraptions.actors.contraptionControls.ContraptionControlsMovement.ElevatorFloorSelection;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.elevator.ElevatorColumn.ColumnCoords;
 import com.simibubi.create.content.contraptions.pulley.PulleyContraption;
 import com.simibubi.create.content.redstone.contact.RedstoneContactBlock;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.IntAttached;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.IntAttached;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -28,6 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
+
 import net.minecraftforge.network.PacketDistributor;
 
 public class ElevatorContraption extends PulleyContraption {
@@ -39,7 +41,7 @@ public class ElevatorContraption extends PulleyContraption {
 	private int namesListVersion = -1;
 	public List<IntAttached<Couple<String>>> namesList = ImmutableList.of();
 	public int clientYTarget;
-	
+
 	public int maxContactY;
 	public int minContactY;
 
@@ -94,7 +96,7 @@ public class ElevatorContraption extends PulleyContraption {
 			return null;
 		return targetedYLevel;
 	}
-	
+
 	public boolean isTargetUnreachable(int contactY) {
 		return contactY < minContactY || contactY > maxContactY;
 	}
@@ -106,14 +108,14 @@ public class ElevatorContraption extends PulleyContraption {
 		if (blocks.size() <= 0)
 			return false;
 		if (contacts == 0)
-			throw new AssemblyException(Lang.translateDirect("gui.assembly.exception.no_contacts"));
+			throw new AssemblyException(CreateLang.translateDirect("gui.assembly.exception.no_contacts"));
 		if (contacts > 1)
-			throw new AssemblyException(Lang.translateDirect("gui.assembly.exception.too_many_contacts"));
-		
+			throw new AssemblyException(CreateLang.translateDirect("gui.assembly.exception.too_many_contacts"));
+
 		ElevatorColumn column = ElevatorColumn.get(world, getGlobalColumn());
 		if (column != null && column.isActive())
-			throw new AssemblyException(Lang.translateDirect("gui.assembly.exception.column_conflict"));
-		
+			throw new AssemblyException(CreateLang.translateDirect("gui.assembly.exception.column_conflict"));
+
 		startMoving(world);
 		return true;
 	}
@@ -172,7 +174,7 @@ public class ElevatorContraption extends PulleyContraption {
 
 	@Override
 	public ContraptionType getType() {
-		return ContraptionType.ELEVATOR;
+		return AllContraptionTypes.ELEVATOR.get();
 	}
 
 	public void setClientYTarget(int clientYTarget) {

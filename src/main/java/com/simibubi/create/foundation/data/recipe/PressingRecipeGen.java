@@ -2,6 +2,7 @@ package com.simibubi.create.foundation.data.recipe;
 
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllRecipeTypes;
+import com.simibubi.create.AllTags;
 
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Items;
@@ -26,13 +27,16 @@ public class PressingRecipeGen extends ProcessingRecipeGen {
 		BRASS = create("brass_ingot", b -> b.require(I.brass())
 			.output(AllItems.BRASS_SHEET.get())),
 
+		CARDBOARD = create("cardboard", b -> b.require(AllItems.PULP)
+			.output(AllItems.CARDBOARD.get())),
+
 		// Atmospheric
 		ATM = moddedPaths(Mods.ATM, "crustose"),
 
 		// Better End Forge
 
 		BEF = moddedPaths(Mods.BEF, "amber_moss", "cave_moss", "chorus_nylium", "crystal_moss",
-				"end_moss", "end_myclium", "jungle_moss", "pink_moss", "shadow_grass"),
+				"end_moss", "end_mycelium", "jungle_moss", "pink_moss", "shadow_grass"),
 		// Environmental
 		ENV_MYCELIUM = create("compat/environmental/mycelium_path", b -> b.require(Blocks.MYCELIUM)
 				.output(Mods.ENV, "mycelium_path")
@@ -86,6 +90,10 @@ public class PressingRecipeGen extends ProcessingRecipeGen {
 				.output(Mods.RU, "silt_dirt_path")
 				.whenModLoaded(Mods.RU.getId())),
 
+		// IE
+		
+		IE_PLATES = iePlates("aluminum", "lead", "silver", "nickel", "uranium", "constantan", "electrum", "steel"),
+		
 		// Vampirism
 
 		VMP_CURSED_PATH = moddedPaths(Mods.VMP, "cursed_earth"),
@@ -101,6 +109,14 @@ public class PressingRecipeGen extends ProcessingRecipeGen {
 		for(String block : blocks) {
 			moddedCompacting(mod, block, block + "_path");
 		}
+		return null;
+	}
+
+	GeneratedRecipe iePlates(String... metals) {
+		for (String metal : metals)
+			create(Mods.IE.recipeId("plate_" + metal), b -> b.require(AllTags.forgeItemTag("ingots/" + metal))
+				.output(Mods.IE, "plate_" + metal)
+				.whenModLoaded(Mods.IE.getId()));
 		return null;
 	}
 

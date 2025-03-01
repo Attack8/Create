@@ -7,9 +7,9 @@ import com.simibubi.create.Create;
 import com.simibubi.create.content.trains.entity.Train;
 import com.simibubi.create.content.trains.entity.TrainIconType;
 import com.simibubi.create.foundation.networking.SimplePacketBase;
-import com.simibubi.create.foundation.utility.Components;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -53,8 +53,9 @@ public class TrainEditPacket extends SimplePacketBase {
 			Train train = Create.RAILWAYS.sided(level).trains.get(id);
 			if (train == null)
 				return;
-			if (!name.isBlank())
-				train.name = Components.literal(name);
+			if (!name.isBlank()) {
+                train.name = Component.literal(name);
+            }
 			train.icon = TrainIconType.byId(iconType);
 			train.mapColorIndex = mapColor;
 			if (sender != null)

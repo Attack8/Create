@@ -5,6 +5,7 @@ import com.simibubi.create.foundation.networking.SimplePacketBase;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+
 import net.minecraftforge.network.NetworkEvent.Context;
 
 public class BlueprintAssignCompleteRecipePacket extends SimplePacketBase {
@@ -30,12 +31,11 @@ public class BlueprintAssignCompleteRecipePacket extends SimplePacketBase {
 			ServerPlayer player = context.getSender();
 			if (player == null)
 				return;
-			if (player.containerMenu instanceof BlueprintMenu) {
-				BlueprintMenu c = (BlueprintMenu) player.containerMenu;
+			if (player.containerMenu instanceof BlueprintMenu c) {
 				player.level()
-						.getRecipeManager()
-						.byKey(recipeID)
-						.ifPresent(r -> BlueprintItem.assignCompleteRecipe(c.player.level(), c.ghostInventory, r));
+					.getRecipeManager()
+					.byKey(recipeID)
+					.ifPresent(r -> BlueprintItem.assignCompleteRecipe(c.player.level(), c.ghostInventory, r));
 			}
 		});
 		return true;

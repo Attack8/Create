@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
+
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.NetworkEvent.Context;
 
@@ -50,16 +51,15 @@ public class ContraptionInteractionPacket extends SimplePacketBase {
 			if (sender == null)
 				return;
 			Entity entityByID = sender.level().getEntity(target);
-			if (!(entityByID instanceof AbstractContraptionEntity))
+			if (!(entityByID instanceof AbstractContraptionEntity contraptionEntity))
 				return;
-			AbstractContraptionEntity contraptionEntity = (AbstractContraptionEntity) entityByID;
 			AABB bb = contraptionEntity.getBoundingBox();
 			double boundsExtra = Math.max(bb.getXsize(), bb.getYsize());
 			double d = sender.getAttribute(ForgeMod.BLOCK_REACH.get()).getValue() + 10 + boundsExtra;
 			if (!sender.hasLineOfSight(entityByID))
 				d -= 3;
 			d *= d;
-			if (sender.distanceToSqr(entityByID) > d) 
+			if (sender.distanceToSqr(entityByID) > d)
 				return;
 			if (contraptionEntity.handlePlayerInteraction(sender, localPos, face, interactionHand))
 				sender.swing(interactionHand, true);

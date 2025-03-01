@@ -5,9 +5,9 @@ import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStat
 import com.simibubi.create.content.redstone.smartObserver.SmartObserverBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.TankManipulationBehaviour;
-import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.FluidFormatter;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
@@ -38,7 +38,7 @@ public class FluidAmountDisplaySource extends SingleLineDisplaySource {
 			collected += stack.getAmount();
 		}
 
-		return Components.literal(FluidFormatter.asString(collected, false));
+		return Component.literal(FluidFormatter.asString(collected, false));
 	}
 
 	@Override

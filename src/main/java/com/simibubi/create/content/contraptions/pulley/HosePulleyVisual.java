@@ -1,14 +1,17 @@
 package com.simibubi.create.content.contraptions.pulley;
 
 import com.simibubi.create.AllPartialModels;
+import com.simibubi.create.AllSpriteShifts;
 import com.simibubi.create.content.fluids.hosePulley.HosePulleyBlockEntity;
+import com.simibubi.create.content.processing.burner.ScrollInstance;
+import com.simibubi.create.foundation.render.AllInstanceTypes;
 
 import dev.engine_room.flywheel.api.instance.Instancer;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
-import dev.engine_room.flywheel.lib.instance.OrientedInstance;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
+import net.createmod.catnip.render.SpriteShiftEntry;
 
 public class HosePulleyVisual extends AbstractPulleyVisual<HosePulleyBlockEntity> {
 	public HosePulleyVisual(VisualizationContext dispatcher, HosePulleyBlockEntity blockEntity, float partialTick) {
@@ -31,8 +34,8 @@ public class HosePulleyVisual extends AbstractPulleyVisual<HosePulleyBlockEntity
 	}
 
 	@Override
-	protected Instancer<OrientedInstance> getCoilModel() {
-		return instancerProvider().instancer(InstanceTypes.ORIENTED, Models.partial(AllPartialModels.HOSE_COIL, rotatingAbout));
+	protected Instancer<ScrollInstance> getCoilModel() {
+		return instancerProvider().instancer(AllInstanceTypes.SCROLLING, Models.partial(AllPartialModels.HOSE_COIL));
 	}
 
 	@Override
@@ -49,4 +52,10 @@ public class HosePulleyVisual extends AbstractPulleyVisual<HosePulleyBlockEntity
 	protected boolean isRunning() {
 		return true;
 	}
+	
+	@Override
+	protected SpriteShiftEntry getCoilAnimation() {
+		return AllSpriteShifts.HOSE_PULLEY_COIL;
+	}
+	
 }

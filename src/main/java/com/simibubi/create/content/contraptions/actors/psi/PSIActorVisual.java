@@ -2,11 +2,11 @@ package com.simibubi.create.content.contraptions.actors.psi;
 
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ActorVisual;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.animation.LerpedFloat;
 
 public class PSIActorVisual extends ActorVisual {
 
@@ -15,9 +15,8 @@ public class PSIActorVisual extends ActorVisual {
 	public PSIActorVisual(VisualizationContext context, VirtualRenderWorld world, MovementContext movementContext) {
 		super(context, world, movementContext);
 
-		instance = new PIInstance(context.instancerProvider(), movementContext.state, movementContext.localPos);
+		instance = new PIInstance(context.instancerProvider(), movementContext.state, movementContext.localPos, false);
 
-		instance.init(false);
 		instance.middle.light(localBlockLight(), 0);
 		instance.top.light(localBlockLight(), 0);
 	}

@@ -10,12 +10,13 @@ import javax.annotation.Nullable;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.simibubi.create.AllPartialModels;
+import com.simibubi.create.content.contraptions.render.ContraptionVisual;
 import com.simibubi.create.content.trains.track.BezierConnection.GirderAngles;
 import com.simibubi.create.content.trains.track.BezierConnection.SegmentAngles;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Iterate;
+import com.simibubi.create.foundation.render.SpecialModels;
 
 import dev.engine_room.flywheel.api.instance.Instance;
+import dev.engine_room.flywheel.api.visual.ShaderLightVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.FlatLit;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
@@ -25,12 +26,14 @@ import dev.engine_room.flywheel.lib.transform.TransformStack;
 import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
 import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 
-public class TrackVisual extends AbstractBlockEntityVisual<TrackBlockEntity> {
+public class TrackVisual extends AbstractBlockEntityVisual<TrackBlockEntity> implements ShaderLightVisual {
 
 	private final List<BezierTrackVisual> visuals = new ArrayList<>();
 
@@ -38,6 +41,12 @@ public class TrackVisual extends AbstractBlockEntityVisual<TrackBlockEntity> {
 		super(context, track, partialTick);
 
 		collectConnections();
+	}
+
+	@Override
+	public void setSectionCollector(SectionCollector sectionCollector) {
+		super.setSectionCollector(sectionCollector);
+		lightSections.sections(collectLightSections());
 	}
 
 	@Override
@@ -79,8 +88,6 @@ public class TrackVisual extends AbstractBlockEntityVisual<TrackBlockEntity> {
 	}
 
 	public LongSet collectLightSections() {
-		LongSet longSet = new LongArraySet();
-
 		if (blockEntity.connections.isEmpty()) {
 			return LongSet.of();
 		}
@@ -90,19 +97,35 @@ public class TrackVisual extends AbstractBlockEntityVisual<TrackBlockEntity> {
 		int maxX = Integer.MIN_VALUE;
 		int maxY = Integer.MIN_VALUE;
 		int maxZ = Integer.MIN_VALUE;
-		for (BlockPos pos : blockEntity.connections.keySet()) {
-			minX = Math.min(minX, pos.getX());
-			minY = Math.min(minY, pos.getY());
-			minZ = Math.min(minZ, pos.getZ());
-			maxX = Math.max(maxX, pos.getX());
-			maxY = Math.max(maxY, pos.getY());
-			maxZ = Math.max(maxZ, pos.getZ());
+		for (BezierConnection connection : blockEntity.connections.values()) {
+			for (BlockPos pos : connection.bePositions) {
+				minX = Math.min(minX, pos.getX());
+				minY = Math.min(minY, pos.getY());
+				minZ = Math.min(minZ, pos.getZ());
+				maxX = Math.max(maxX, pos.getX());
+				maxY = Math.max(maxY, pos.getY());
+				maxZ = Math.max(maxZ, pos.getZ());
+			}
 		}
-		SectionPos.betweenClosedStream(SectionPos.blockToSectionCoord(minX), SectionPos.blockToSectionCoord(minY), SectionPos.blockToSectionCoord(minZ), SectionPos.blockToSectionCoord(maxX), SectionPos.blockToSectionCoord(maxY), SectionPos.blockToSectionCoord(maxZ))
-			.mapToLong(SectionPos::asLong)
-			.forEach(longSet::add);
 
-		return longSet;
+		var minSectionX = ContraptionVisual.minLightSection(minX);
+		var minSectionY = ContraptionVisual.minLightSection(minY);
+		var minSectionZ = ContraptionVisual.minLightSection(minZ);
+		int maxSectionX = ContraptionVisual.maxLightSection(maxX);
+		int maxSectionY = ContraptionVisual.maxLightSection(maxY);
+		int maxSectionZ = ContraptionVisual.maxLightSection(maxZ);
+
+		LongSet out = new LongArraySet();
+
+		for (int x = minSectionX; x <= maxSectionX; x++) {
+			for (int y = minSectionY; y <= maxSectionY; y++) {
+				for (int z = minSectionZ; z <= maxSectionZ; z++) {
+					out.add(SectionPos.asLong(x, y, z));
+				}
+			}
+		}
+
+		return out;
 	}
 
 	@Override
@@ -117,14 +140,10 @@ public class TrackVisual extends AbstractBlockEntityVisual<TrackBlockEntity> {
 		private final TransformedInstance[] ties;
 		private final TransformedInstance[] left;
 		private final TransformedInstance[] right;
-		private final BlockPos[] tiesLightPos;
-		private final BlockPos[] leftLightPos;
-		private final BlockPos[] rightLightPos;
 
 		private @Nullable GirderVisual girder;
 
 		private BezierTrackVisual(BezierConnection bc) {
-			BlockPos tePosition = bc.bePositions.getFirst();
 			girder = bc.hasGirder ? new GirderVisual(bc) : null;
 
 			PoseStack pose = new PoseStack();
@@ -135,17 +154,14 @@ public class TrackVisual extends AbstractBlockEntityVisual<TrackBlockEntity> {
 			ties = new TransformedInstance[segCount];
 			left = new TransformedInstance[segCount];
 			right = new TransformedInstance[segCount];
-			tiesLightPos = new BlockPos[segCount];
-			leftLightPos = new BlockPos[segCount];
-			rightLightPos = new BlockPos[segCount];
 
 			TrackMaterial.TrackModelHolder modelHolder = bc.getMaterial().getModelHolder();
 
-			instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(modelHolder.tie()))
+			instancerProvider().instancer(InstanceTypes.TRANSFORMED, SpecialModels.flatChunk(modelHolder.tie()))
 				.createInstances(ties);
-			instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(modelHolder.leftSegment()))
+			instancerProvider().instancer(InstanceTypes.TRANSFORMED, SpecialModels.flatChunk(modelHolder.leftSegment()))
 				.createInstances(left);
-			instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(modelHolder.rightSegment()))
+			instancerProvider().instancer(InstanceTypes.TRANSFORMED, SpecialModels.flatChunk(modelHolder.rightSegment()))
 				.createInstances(right);
 
 			SegmentAngles[] segments = bc.getBakedSegments();
@@ -156,14 +172,12 @@ public class TrackVisual extends AbstractBlockEntityVisual<TrackBlockEntity> {
 				ties[modelIndex].setTransform(pose)
 					.mul(segment.tieTransform)
 					.setChanged();
-				tiesLightPos[modelIndex] = segment.lightPosition.offset(tePosition);
 
 				for (boolean first : Iterate.trueAndFalse) {
 					Pose transform = segment.railTransforms.get(first);
 					(first ? this.left : this.right)[modelIndex].setTransform(pose)
 						.mul(transform)
 						.setChanged();
-					(first ? leftLightPos : rightLightPos)[modelIndex] = segment.lightPosition.offset(tePosition);
 				}
 			}
 
@@ -182,12 +196,7 @@ public class TrackVisual extends AbstractBlockEntityVisual<TrackBlockEntity> {
 		}
 
 		void updateLight() {
-			for (int i = 0; i < ties.length; i++)
-				TrackVisual.updateLight(ties[i], level, tiesLightPos[i]);
-			for (int i = 0; i < left.length; i++)
-				TrackVisual.updateLight(left[i], level, leftLightPos[i]);
-			for (int i = 0; i < right.length; i++)
-				TrackVisual.updateLight(right[i], level, rightLightPos[i]);
+			// Light for ties/rails handled by shader light since they tend to clip into blocks
 			if (girder != null)
 				girder.updateLight();
 		}

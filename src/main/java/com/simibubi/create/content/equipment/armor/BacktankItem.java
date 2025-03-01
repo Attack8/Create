@@ -1,13 +1,7 @@
 package com.simibubi.create.content.equipment.armor;
 
-import java.util.Locale;
-import java.util.function.Supplier;
-
-import org.jetbrains.annotations.Nullable;
-
 import com.simibubi.create.content.equipment.armor.CapacityEnchantment.ICapacityEnchantable;
 import com.simibubi.create.foundation.item.LayeredArmorItem;
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -22,12 +16,16 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Locale;
+import java.util.function.Supplier;
 
 public class BacktankItem extends BaseArmorItem implements ICapacityEnchantable {
 	public static final EquipmentSlot SLOT = EquipmentSlot.CHEST;
 	public static final ArmorItem.Type TYPE = ArmorItem.Type.CHESTPLATE;
 	public static final int BAR_COLOR = 0xEFEFEF;
-	
+
 	private final Supplier<BacktankBlockItem> blockItem;
 
 	public BacktankItem(ArmorMaterial material, Properties properties, ResourceLocation textureLoc, Supplier<BacktankBlockItem> placeable) {

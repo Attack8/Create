@@ -3,6 +3,7 @@ package com.simibubi.create.foundation.data.recipe;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllRecipeTypes;
+import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.content.processing.recipe.HeatCondition;
 import com.simibubi.create.foundation.recipe.BlockTagIngredient;
 
@@ -62,6 +63,14 @@ public class MixingRecipeGen extends ProcessingRecipeGen {
 		MUD = create("mud_by_mixing", b -> b.require(BlockTagIngredient.create(BlockTags.CONVERTABLE_TO_MUD))
 			.require(Fluids.WATER, 250)
 			.output(Blocks.MUD, 1)),
+		
+		PULP = create("cardboard_pulp", b -> b
+			.require(AllItemTags.PULPIFIABLE.tag)
+			.require(AllItemTags.PULPIFIABLE.tag)
+			.require(AllItemTags.PULPIFIABLE.tag)
+			.require(AllItemTags.PULPIFIABLE.tag)
+			.require(Fluids.WATER, 250)
+			.output(AllItems.PULP, 1)),
 
 		// AE2
 

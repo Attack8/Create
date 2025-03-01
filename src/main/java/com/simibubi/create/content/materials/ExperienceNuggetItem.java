@@ -1,7 +1,6 @@
 package com.simibubi.create.content.materials;
 
-import com.simibubi.create.foundation.utility.VecHelper;
-
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -61,11 +60,11 @@ public class ExperienceNuggetItem extends Item {
 			xp.setDeltaMovement(motion);
 			pLevel.addFreshEntity(xp);
 		}
-		
+
 		itemInHand.shrink(amountUsed);
 		if (!itemInHand.isEmpty())
 			return InteractionResultHolder.success(itemInHand);
-		
+
 		pPlayer.setItemInHand(pUsedHand, ItemStack.EMPTY);
 		return InteractionResultHolder.consume(itemInHand);
 	}

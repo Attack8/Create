@@ -1,74 +1,41 @@
 package com.simibubi.create.content.logistics.tunnel;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.content.logistics.flwdata.FlapInstance;
-import com.simibubi.create.foundation.render.AllInstanceTypes;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
+import com.simibubi.create.content.logistics.FlapStuffs;
 
 import dev.engine_room.flywheel.api.instance.Instance;
-import dev.engine_room.flywheel.api.instance.Instancer;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
-import dev.engine_room.flywheel.lib.instance.AbstractInstance;
-import dev.engine_room.flywheel.lib.instance.FlatLit;
 import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.visual.AbstractBlockEntityVisual;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
+import net.createmod.catnip.animation.LerpedFloat;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.LightLayer;
 
 public class BeltTunnelVisual extends AbstractBlockEntityVisual<BeltTunnelBlockEntity> implements SimpleDynamicVisual {
 
-    private final Map<Direction, ArrayList<FlapInstance>> tunnelFlaps = new EnumMap<>(Direction.class);
+	private final Map<Direction, FlapStuffs.Visual> tunnelFlaps = new EnumMap<>(Direction.class);
+	private int light;
 
-    public BeltTunnelVisual(VisualizationContext context, BeltTunnelBlockEntity blockEntity, float partialTick) {
+	public BeltTunnelVisual(VisualizationContext context, BeltTunnelBlockEntity blockEntity, float partialTick) {
         super(context, blockEntity, partialTick);
 
-		setupFlaps(partialTick);
+		createFlaps();
+		updateFlaps(partialTick);
 	}
 
-	private void setupFlaps(float partialTick) {
-		Instancer<FlapInstance> model = instancerProvider().instancer(AllInstanceTypes.FLAP, Models.partial(AllPartialModels.BELT_TUNNEL_FLAP));
-
-		int blockLight = level.getBrightness(LightLayer.BLOCK, pos);
-		int skyLight = level.getBrightness(LightLayer.SKY, pos);
-
+	private void createFlaps() {
 		blockEntity.flaps.forEach((direction, flapValue) -> {
+			var commonTransform = FlapStuffs.commonTransform(visualPos, direction, 0);
+			var flapSide = new FlapStuffs.Visual(instancerProvider(), commonTransform, FlapStuffs.TUNNEL_PIVOT, Models.partial(AllPartialModels.BELT_TUNNEL_FLAP));
 
-			float flapness = flapValue.getValue(partialTick);
+			flapSide.updateLight(light);
 
-			float horizontalAngle = direction.getOpposite().toYRot();
-
-			float flapScale = direction.getAxis() == Direction.Axis.X ? 1 : -1;
-
-			ArrayList<FlapInstance> flaps = new ArrayList<>(4);
-
-			for (int segment = 0; segment <= 3; segment++) {
-				float intensity = segment == 3 ? 1.5f : segment + 1;
-				float segmentOffset = -3.05f / 16f * segment + 0.075f / 16f;
-
-				FlapInstance key = model.createInstance();
-
-				key.setPosition(getVisualPosition())
-						.setSegmentOffset(segmentOffset, 0, 0)
-						.light(blockLight, skyLight)
-						.setHorizontalAngle(horizontalAngle)
-						.setFlapness(flapness)
-						.setFlapScale(flapScale)
-						.setPivotVoxelSpace(0, 10, 1)
-						.setIntensity(intensity)
-						.setChanged();
-
-				flaps.add(key);
-			}
-
-			tunnelFlaps.put(direction, flaps);
+			tunnelFlaps.put(direction, flapSide);
 		});
 	}
 
@@ -77,42 +44,47 @@ public class BeltTunnelVisual extends AbstractBlockEntityVisual<BeltTunnelBlockE
 		super.update(partialTick);
 
 		_delete();
-		setupFlaps(partialTick);
+		createFlaps();
+		updateFlaps(partialTick);
 	}
 
 	@Override
     public void beginFrame(DynamicVisual.Context ctx) {
-        tunnelFlaps.forEach((direction, keys) -> {
-            LerpedFloat lerpedFloat = blockEntity.flaps.get(direction);
-            if (lerpedFloat == null)
-                return;
+		updateFlaps(ctx.partialTick());
+	}
 
-            float flapness = lerpedFloat.getValue(ctx.partialTick());
-            for (FlapInstance flap : keys) {
-                flap.setFlapness(flapness)
-						.setChanged();
-            }
+	private void updateFlaps(float partialTicks) {
+		tunnelFlaps.forEach((direction, keys) -> {
+			LerpedFloat lerpedFloat = blockEntity.flaps.get(direction);
+			if (lerpedFloat == null) {
+				return;
+			}
+
+			keys.update(lerpedFloat.getValue(partialTicks));
         });
-    }
+	}
 
-    @Override
+	@Override
     public void updateLight(float partialTick) {
-        relight(tunnelFlaps.values().stream().flatMap(Collection::stream).toArray(FlatLit[]::new));
+		// Need to save the packed light in case we need to recreate the instances.
+		light = computePackedLight();
+		for (FlapStuffs.Visual value : tunnelFlaps.values()) {
+			value.updateLight(light);
+		}
     }
 
     @Override
     protected void _delete() {
         tunnelFlaps.values()
-                   .stream()
-                   .flatMap(Collection::stream)
-                   .forEach(AbstractInstance::delete);
+                   .forEach(FlapStuffs.Visual::delete);
+
+		tunnelFlaps.clear();
     }
 
 	@Override
 	public void collectCrumblingInstances(Consumer<Instance> consumer) {
-		tunnelFlaps.values()
-				   .stream()
-				   .flatMap(Collection::stream)
-				   .forEach(consumer);
+		for (FlapStuffs.Visual value : tunnelFlaps.values()) {
+			value.collectCrumblingInstances(consumer);
+		}
 	}
 }

@@ -8,16 +8,16 @@ import com.google.gson.JsonElement;
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.DyeHelper;
 import com.simibubi.create.foundation.utility.DynamicComponent;
-import com.simibubi.create.foundation.utility.NBTHelper;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -150,7 +150,7 @@ public class FlapDisplayBlockEntity extends KineticBlockEntity {
 		FlapDisplaySection flapDisplaySection = sections.get(0);
 		if (rawComponentText == null) {
 			manualLines[lineIndex] = false;
-			flapDisplaySection.setText(Components.immutableEmpty());
+			flapDisplaySection.setText(CommonComponents.EMPTY);
 			notifyUpdate();
 			return;
 		}
@@ -318,13 +318,14 @@ public class FlapDisplayBlockEntity extends KineticBlockEntity {
 	}
 
 	@Override
-	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {}
+	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+	}
 
 	public int getLineColor(int line) {
 		DyeColor color = colour[line];
 		return color == null ? 0xFF_D3C6BA
 			: DyeHelper.getDyeColors(color)
-				.getFirst() | 0xFF_000000;
+			.getFirst() | 0xFF_000000;
 	}
 
 	public boolean isLineGlowing(int line) {

@@ -22,8 +22,8 @@ import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity.Mode;
 import com.simibubi.create.content.trains.track.ITrackBlock;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.utility.BlockHelper;
-import com.simibubi.create.foundation.utility.worldWrappers.WrappedWorld;
 
+import net.createmod.catnip.levelWrappers.WrappedLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -49,6 +49,7 @@ import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MobBucketItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
@@ -67,6 +68,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.extensions.IForgeBaseRailBlock;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock;
@@ -75,7 +77,7 @@ import net.minecraftforge.eventbus.api.Event;
 
 public class DeployerHandler {
 
-	private static final class ItemUseWorld extends WrappedWorld {
+	private static final class ItemUseWorld extends WrappedLevel {
 		private final Direction face;
 		private final BlockPos pos;
 		boolean rayMode = false;
@@ -99,9 +101,9 @@ public class DeployerHandler {
 			if (rayMode && (pos.relative(face.getOpposite(), 3)
 				.equals(position)
 				|| pos.relative(face.getOpposite(), 1)
-					.equals(position)))
+				.equals(position)))
 				return Blocks.BEDROCK.defaultBlockState();
-			return world.getBlockState(position);
+			return level.getBlockState(position);
 		}
 	}
 
@@ -111,8 +113,7 @@ public class DeployerHandler {
 				.getBlock() == ((BlockItem) held.getItem()).getBlock())
 				return false;
 
-		if (held.getItem() instanceof BucketItem) {
-			BucketItem bucketItem = (BucketItem) held.getItem();
+		if (held.getItem() instanceof BucketItem bucketItem) {
 			Fluid fluid = bucketItem.getFluid();
 			if (fluid != Fluids.EMPTY && world.getFluidState(targetPos)
 				.getType() == fluid)
@@ -133,11 +134,11 @@ public class DeployerHandler {
 			.addTransientAttributeModifiers(attributeModifiers);
 		activateInner(player, vec, clickedPos, extensionVector, mode);
 		player.getAttributes()
-			.addTransientAttributeModifiers(attributeModifiers);
+			.removeAttributeModifiers(attributeModifiers);
 	}
 
 	private static void activateInner(DeployerFakePlayer player, Vec3 vec, BlockPos clickedPos, Vec3 extensionVector,
-		Mode mode) {
+									  Mode mode) {
 
 		Vec3 rayOrigin = vec.add(extensionVector.scale(3 / 2f + 1 / 64f));
 		Vec3 rayTarget = vec.add(extensionVector.scale(5 / 2f - 1 / 64f));
@@ -169,15 +170,14 @@ public class DeployerHandler {
 				if (cancelResult == null) {
 					if (entity.interact(player, hand)
 						.consumesAction()) {
-						if (entity instanceof AbstractVillager) {
-							AbstractVillager villager = ((AbstractVillager) entity);
+						if (entity instanceof AbstractVillager villager) {
 							if (villager.getTradingPlayer() instanceof DeployerFakePlayer)
 								villager.setTradingPlayer(null);
 						}
 						success = true;
 					} else if (entity instanceof LivingEntity
 						&& stack.interactLivingEntity(player, (LivingEntity) entity, hand)
-							.consumesAction())
+						.consumesAction())
 						success = true;
 				}
 				if (!success && entity instanceof Player playerEntity) {
@@ -336,6 +336,10 @@ public class DeployerHandler {
 			itemUseWorld = new ItemUseWorld(world, face, pos);
 
 		InteractionResultHolder<ItemStack> onItemRightClick = item.use(itemUseWorld, player, hand);
+
+		if (onItemRightClick.getResult().consumesAction() && item instanceof MobBucketItem bucketItem)
+			bucketItem.checkExtraContent(player, world, stack, clickedPos);
+
 		ItemStack resultStack = onItemRightClick.getObject();
 		if (resultStack != stack || resultStack.getCount() != stack.getCount() || resultStack.getUseDuration() > 0
 			|| resultStack.getDamageValue() != stack.getDamageValue()) {
@@ -406,14 +410,14 @@ public class DeployerHandler {
 	}
 
 	public static InteractionResult safeOnUse(BlockState state, Level world, BlockPos pos, Player player,
-		InteractionHand hand, BlockHitResult ray) {
+											  InteractionHand hand, BlockHitResult ray) {
 		if (state.getBlock() instanceof BeehiveBlock)
 			return safeOnBeehiveUse(state, world, pos, player, hand);
 		return state.use(world, player, hand, ray);
 	}
 
 	protected static InteractionResult safeOnBeehiveUse(BlockState state, Level world, BlockPos pos, Player player,
-		InteractionHand hand) {
+														InteractionHand hand) {
 		// <> BeehiveBlock#onUse
 
 		BeehiveBlock block = (BeehiveBlock) state.getBlock();

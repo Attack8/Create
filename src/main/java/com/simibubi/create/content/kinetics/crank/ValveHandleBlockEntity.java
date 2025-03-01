@@ -14,14 +14,11 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueBoxTransform;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatter;
 import com.simibubi.create.foundation.blockEntity.behaviour.scrollValue.ScrollValueBehaviour;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.render.VirtualRenderHelper;
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.VecHelper;
+import com.simibubi.create.foundation.utility.CreateLang;
 
-import dev.engine_room.flywheel.api.model.Model;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -31,10 +28,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -101,7 +100,7 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 
 		return (inUse > 0 && totalUseTicks > 0
 			? Mth.lerp(Math.min(totalUseTicks, totalUseTicks - inUse + partialTicks) / (float) totalUseTicks,
-				startAngle, targetAngle)
+			startAngle, targetAngle)
 			: targetAngle) * Mth.DEG_TO_RAD * (backwards ? -1 : 1) * step;
 	}
 
@@ -138,18 +137,13 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 	}
 
 	@Override
-	protected void copySequenceContextFrom(KineticBlockEntity sourceBE) {}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public SuperByteBuffer getRenderedHandle() {
-		return CachedBufferer.block(getBlockState());
+	protected void copySequenceContextFrom(KineticBlockEntity sourceBE) {
 	}
 
 	@Override
 	@OnlyIn(Dist.CLIENT)
-	public Model getRenderedHandleInstance() {
-		return VirtualRenderHelper.blockModel(getBlockState());
+	public SuperByteBuffer getRenderedHandle() {
+		return CachedBuffers.block(getBlockState());
 	}
 
 	@Override
@@ -161,16 +155,16 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 	public static class ValveHandleScrollValueBehaviour extends ScrollValueBehaviour {
 
 		public ValveHandleScrollValueBehaviour(SmartBlockEntity be) {
-			super(Lang.translateDirect("kinetics.valve_handle.rotated_angle"), be, new ValveHandleValueBox());
-			withFormatter(v -> String.valueOf(Math.abs(v)) + Lang.translateDirect("generic.unit.degrees")
+			super(CreateLang.translateDirect("kinetics.valve_handle.rotated_angle"), be, new ValveHandleValueBox());
+			withFormatter(v -> String.valueOf(Math.abs(v)) + CreateLang.translateDirect("generic.unit.degrees")
 				.getString());
 		}
 
 		@Override
 		public ValueSettingsBoard createBoard(Player player, BlockHitResult hitResult) {
-			ImmutableList<Component> rows = ImmutableList.of(Components.literal("\u27f3")
-				.withStyle(ChatFormatting.BOLD),
-				Components.literal("\u27f2")
+			ImmutableList<Component> rows = ImmutableList.of(Component.literal("\u27f3")
+					.withStyle(ChatFormatting.BOLD),
+				Component.literal("\u27f2")
 					.withStyle(ChatFormatting.BOLD));
 			return new ValueSettingsBoard(label, 180, 45, rows, new ValueSettingsFormatter(this::formatValue));
 		}
@@ -189,13 +183,15 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 		}
 
 		public MutableComponent formatValue(ValueSettings settings) {
-			return Lang.number(Math.max(1, Math.abs(settings.value())))
-				.add(Lang.translateDirect("generic.unit.degrees"))
+			return CreateLang.number(Math.max(1, Math.abs(settings.value())))
+				.add(CreateLang.translateDirect("generic.unit.degrees"))
 				.component();
 		}
 
 		@Override
-		public void onShortInteract(Player player, InteractionHand hand, Direction side) {
+		public void onShortInteract(Player player, InteractionHand hand, Direction side, BlockHitResult hitResult) {
+			if (getWorld().isClientSide)
+				return;
 			BlockState blockState = blockEntity.getBlockState();
 			if (blockState.getBlock() instanceof ValveHandleBlock vhb)
 				vhb.clicked(getWorld(), getPos(), blockState, player, hand);
@@ -216,8 +212,8 @@ public class ValveHandleBlockEntity extends HandCrankBlockEntity {
 		}
 
 		@Override
-		public boolean testHit(BlockState state, Vec3 localHit) {
-			Vec3 offset = getLocalOffset(state);
+		public boolean testHit(LevelAccessor level, BlockPos pos, BlockState state, Vec3 localHit) {
+			Vec3 offset = getLocalOffset(level, pos, state);
 			if (offset == null)
 				return false;
 			return localHit.distanceTo(offset) < scale / 1.5f;

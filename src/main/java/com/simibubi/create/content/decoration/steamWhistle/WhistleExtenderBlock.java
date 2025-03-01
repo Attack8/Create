@@ -4,8 +4,8 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.decoration.steamWhistle.WhistleBlock.WhistleSize;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
-import com.simibubi.create.foundation.utility.Lang;
 
+import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -62,7 +62,7 @@ public class WhistleExtenderBlock extends Block implements IWrenchable {
 		if (!(world instanceof ServerLevel))
 			return InteractionResult.SUCCESS;
 		world.setBlock(pos, state.setValue(SHAPE, WhistleExtenderShape.SINGLE), 3);
-		playRemoveSound(world, pos);
+		IWrenchable.playRemoveSound(world, pos);
 		return InteractionResult.SUCCESS;
 	}
 

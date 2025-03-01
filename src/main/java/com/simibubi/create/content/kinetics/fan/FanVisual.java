@@ -29,12 +29,20 @@ public class FanVisual extends KineticBlockEntityVisual<EncasedFanBlockEntity> {
 		direction = blockState.getValue(FACING);
 
 		opposite = direction.getOpposite();
-		shaft = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF, opposite)).createInstance();
-		fan = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.ENCASED_FAN_INNER, opposite))
+		shaft = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF))
+			.createInstance();
+		fan = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.ENCASED_FAN_INNER))
 				.createInstance();
 
-		setup(shaft);
-		setup(fan, getFanSpeed());
+		shaft.setup(blockEntity)
+			.setPosition(getVisualPosition())
+			.rotateToFace(Direction.SOUTH, opposite)
+			.setChanged();
+
+		fan.setup(blockEntity, getFanSpeed())
+			.setPosition(getVisualPosition())
+			.rotateToFace(Direction.SOUTH, opposite)
+			.setChanged();
 	}
 
     private float getFanSpeed() {
@@ -48,9 +56,11 @@ public class FanVisual extends KineticBlockEntityVisual<EncasedFanBlockEntity> {
 
     @Override
     public void update(float pt) {
-        updateRotation(shaft);
-        updateRotation(fan, getFanSpeed());
-    }
+		shaft.setup(blockEntity)
+			.setChanged();
+		fan.setup(blockEntity, getFanSpeed())
+			.setChanged();
+	}
 
     @Override
     public void updateLight(float partialTick) {

@@ -3,9 +3,9 @@ package com.simibubi.create.content.kinetics.belt;
 import java.util.Map;
 
 import com.simibubi.create.AllTags.AllItemTags;
-import com.simibubi.create.foundation.utility.VecHelper;
 
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;

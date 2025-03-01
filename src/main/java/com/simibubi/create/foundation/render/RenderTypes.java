@@ -2,10 +2,10 @@ package com.simibubi.create.foundation.render;
 
 import java.io.IOException;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.simibubi.create.AllSpecialTextures;
 import com.simibubi.create.Create;
 
 import net.minecraft.Util;
@@ -62,16 +62,6 @@ public class RenderTypes extends RenderStateShard {
 			.setOverlayState(OVERLAY)
 			.createCompositeState(true));
 
-	private static final RenderType FLUID = RenderType.create(createLayerName("fluid"),
-		DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, RenderType.CompositeState.builder()
-			.setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_CULL_SHADER)
-			.setTextureState(BLOCK_SHEET_MIPPED)
-			.setCullState(NO_CULL)
-			.setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-			.setLightmapState(LIGHTMAP)
-			.setOverlayState(OVERLAY)
-			.createCompositeState(true));
-
 	private static final RenderType ITEM_GLOWING_SOLID = RenderType.create(createLayerName("item_glowing_solid"),
 		DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, RenderType.CompositeState.builder()
 			.setShaderState(GLOWING_SHADER)
@@ -89,25 +79,15 @@ public class RenderTypes extends RenderStateShard {
 			.setOverlayState(OVERLAY)
 			.createCompositeState(true));
 
-	private static final RenderType OUTLINE_SOLID =
-		RenderType.create(createLayerName("outline_solid"), DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false,
-			false, RenderType.CompositeState.builder()
-				.setShaderState(RENDERTYPE_ENTITY_SOLID_SHADER)
-				.setTextureState(new RenderStateShard.TextureStateShard(AllSpecialTextures.BLANK.getLocation(), false, false))
+	private static final Function<ResourceLocation, RenderType> CHAIN = Util.memoize((p_234330_) -> {
+		return RenderType.create("chain_conveyor_chain", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 256, false,
+			true, RenderType.CompositeState.builder()
+				.setShaderState(RENDERTYPE_CUTOUT_MIPPED_SHADER)
+				.setTextureState(new RenderStateShard.TextureStateShard(p_234330_, false, true))
+				.setTransparencyState(NO_TRANSPARENCY)
+				.setWriteMaskState(COLOR_DEPTH_WRITE)
 				.setLightmapState(LIGHTMAP)
 				.setOverlayState(OVERLAY)
-				.createCompositeState(false));
-
-	private static final BiFunction<ResourceLocation, Boolean, RenderType> OUTLINE_TRANSLUCENT = Util.memoize((texture, cull) -> {
-		return RenderType.create(createLayerName("outline_translucent" + (cull ? "_cull" : "")),
-			DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, RenderType.CompositeState.builder()
-				.setShaderState(cull ? RENDERTYPE_ENTITY_TRANSLUCENT_CULL_SHADER : RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-				.setTextureState(new RenderStateShard.TextureStateShard(texture, false, false))
-				.setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-				.setCullState(cull ? CULL : NO_CULL)
-				.setLightmapState(LIGHTMAP)
-				.setOverlayState(OVERLAY)
-				.setWriteMaskState(COLOR_WRITE)
 				.createCompositeState(false));
 	});
 
@@ -140,10 +120,6 @@ public class RenderTypes extends RenderStateShard {
 			VertexFormat.Mode.QUADS, 256, false, true, rendertype$state);
 	}
 
-	public static RenderType fluid() {
-		return FLUID;
-	}
-
 	public static RenderType itemGlowingSolid() {
 		return ITEM_GLOWING_SOLID;
 	}
@@ -152,12 +128,8 @@ public class RenderTypes extends RenderStateShard {
 		return ITEM_GLOWING_TRANSLUCENT;
 	}
 
-	public static RenderType outlineSolid() {
-		return OUTLINE_SOLID;
-	}
-
-	public static RenderType outlineTranslucent(ResourceLocation texture, boolean cull) {
-		return OUTLINE_TRANSLUCENT.apply(texture, cull);
+	public static RenderType chain(ResourceLocation pLocation) {
+		return CHAIN.apply(pLocation);
 	}
 
 	private static String createLayerName(String name) {
@@ -176,7 +148,8 @@ public class RenderTypes extends RenderStateShard {
 		@SubscribeEvent
 		public static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
 			ResourceProvider resourceProvider = event.getResourceProvider();
-			event.registerShader(new ShaderInstance(resourceProvider, Create.asResource("glowing_shader"), DefaultVertexFormat.NEW_ENTITY), shader -> glowingShader = shader);
+			event.registerShader(new ShaderInstance(resourceProvider, Create.asResource("glowing_shader"),
+				DefaultVertexFormat.NEW_ENTITY), shader -> glowingShader = shader);
 		}
 	}
 }

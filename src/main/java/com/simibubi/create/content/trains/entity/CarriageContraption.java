@@ -7,25 +7,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.simibubi.create.api.contraption.train.TrainConductorHandler;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
+import com.simibubi.create.AllContraptionTypes;
+import com.simibubi.create.api.behaviour.interaction.ConductorBlockInteractionBehavior;
+import com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour;
+import com.simibubi.create.api.contraption.ContraptionType;
 import com.simibubi.create.content.contraptions.AssemblyException;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.ContraptionType;
 import com.simibubi.create.content.contraptions.MountedStorageManager;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsBlock;
 import com.simibubi.create.content.contraptions.minecart.TrainCargoManager;
 import com.simibubi.create.content.trains.bogey.AbstractBogeyBlock;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
+import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -39,11 +39,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
 
 public class CarriageContraption extends Contraption {
 
@@ -67,8 +62,12 @@ public class CarriageContraption extends Contraption {
 	public int portalCutoffMin;
 	public int portalCutoffMax;
 
-	static final IItemHandlerModifiable fallbackItems = new ItemStackHandler();
-	static final IFluidHandler fallbackFluids = new FluidTank(0);
+	static final MountedStorageManager fallbackStorage;
+
+	static {
+		fallbackStorage = new MountedStorageManager();
+		fallbackStorage.initialize();
+	}
 
 	public CarriageContraption() {
 		conductorSeats = new HashMap<>();
@@ -99,9 +98,9 @@ public class CarriageContraption extends Contraption {
 		if (bogeys == 0)
 			return false;
 		if (bogeys > 2)
-			throw new AssemblyException(Lang.translateDirect("train_assembly.too_many_bogeys", bogeys));
+			throw new AssemblyException(CreateLang.translateDirect("train_assembly.too_many_bogeys", bogeys));
 		if (sidewaysControls)
-			throw new AssemblyException(Lang.translateDirect("train_assembly.sideways_controls"));
+			throw new AssemblyException(CreateLang.translateDirect("train_assembly.sideways_controls"));
 
 		for (BlockPos blazePos : assembledBlockConductors)
 			for (Direction direction : Iterate.directionsInAxis(assemblyDirection.getAxis()))
@@ -123,7 +122,8 @@ public class CarriageContraption extends Contraption {
 		StructureBlockInfo info = blocks.get(controlsPos);
 		if (!AllBlocks.TRAIN_CONTROLS.has(info.state()))
 			return false;
-		return info.state().getValue(ControlsBlock.FACING) == direction.getOpposite();
+		return info.state()
+			.getValue(ControlsBlock.FACING) == direction.getOpposite();
 	}
 
 	public void swapStorageAfterAssembly(CarriageContraptionEntity cce) {
@@ -166,8 +166,10 @@ public class CarriageContraption extends Contraption {
 				captureBE ? world.getBlockEntity(pos) : null);
 		}
 
-		if (TrainConductorHandler.CONDUCTOR_HANDLERS.stream().anyMatch(handler -> handler.isValidConductor(blockState)))
+		MovingInteractionBehaviour behaviour = MovingInteractionBehaviour.REGISTRY.get(blockState);
+		if (behaviour instanceof ConductorBlockInteractionBehavior conductor && conductor.isValidConductor(blockState)) {
 			assembledBlockConductors.add(toLocalPos(pos));
+		}
 
 		if (AllBlocks.TRAIN_CONTROLS.has(blockState)) {
 			Direction facing = blockState.getValue(ControlsBlock.FACING);
@@ -228,16 +230,11 @@ public class CarriageContraption extends Contraption {
 	}
 
 	@Override
-	protected MountedStorageManager getStorageForSpawnPacket() {
-		return storageProxy;
-	}
-
-	@Override
 	public ContraptionType getType() {
-		return ContraptionType.CARRIAGE;
+		return AllContraptionTypes.CARRIAGE.get();
 	}
 
-    public Direction getAssemblyDirection() {
+	public Direction getAssemblyDirection() {
 		return assemblyDirection;
 	}
 
@@ -320,25 +317,16 @@ public class CarriageContraption extends Contraption {
 	}
 
 	@Override
-	public IItemHandlerModifiable getSharedInventory() {
-		return storageProxy == null ? fallbackItems : storageProxy.getItems();
+	public MountedStorageManager getStorage() {
+		return storageProxy == null ? fallbackStorage : storageProxy;
 	}
 
 	@Override
-	public IFluidHandler getSharedFluidTanks() {
-		return storageProxy == null ? fallbackFluids : storageProxy.getFluids();
-	}
-
-	public void handleContraptionFluidPacket(BlockPos localPos, FluidStack containedFluid) {
-		storage.updateContainedFluid(localPos, containedFluid);
-	}
-
-	@Override
-	public void tickStorage(AbstractContraptionEntity entity) {
-		if (entity.level().isClientSide)
-			storage.entityTick(entity);
-		else if (storageProxy != null)
-			storageProxy.entityTick(entity);
+	public void writeStorage(CompoundTag nbt, boolean spawnPacket) {
+		if (!spawnPacket)
+			return;
+		if (storageProxy != null)
+			storageProxy.write(nbt, spawnPacket);
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.simibubi.create.content.contraptions;
 
-import static com.simibubi.create.foundation.utility.AngleHelper.angleLerp;
-import static com.simibubi.create.foundation.utility.AngleHelper.wrapAngle180;
+import static net.createmod.catnip.math.AngleHelper.angleLerp;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +9,7 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllEntityTypes;
+import com.simibubi.create.api.contraption.storage.item.MountedItemStorageWrapper;
 import com.simibubi.create.content.contraptions.bearing.StabilizedContraption;
 import com.simibubi.create.content.contraptions.minecart.MinecartSim2020;
 import com.simibubi.create.content.contraptions.minecart.capability.CapabilityMinecartController;
@@ -17,12 +17,12 @@ import com.simibubi.create.content.contraptions.minecart.capability.MinecartCont
 import com.simibubi.create.content.contraptions.mounted.CartAssemblerBlockEntity.CartMovementMode;
 import com.simibubi.create.content.contraptions.mounted.MountedContraption;
 import com.simibubi.create.foundation.item.ItemHelper;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -46,6 +46,7 @@ import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
@@ -97,7 +98,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	}
 
 	public static OrientedContraptionEntity createAtYaw(Level world, Contraption contraption,
-		Direction initialOrientation, float initialYaw) {
+														Direction initialOrientation, float initialYaw) {
 		OrientedContraptionEntity entity = create(world, contraption, initialOrientation);
 		entity.startAtYaw(initialYaw);
 		entity.manuallyPlaced = true;
@@ -257,8 +258,7 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		boolean rotationLock = false;
 		boolean pauseWhileRotating = false;
 		boolean wasStalled = isStalled();
-		if (contraption instanceof MountedContraption) {
-			MountedContraption mountedContraption = (MountedContraption) contraption;
+		if (contraption instanceof MountedContraption mountedContraption) {
 			rotationLock = mountedContraption.rotationMode == CartMovementMode.ROTATION_LOCKED;
 			pauseWhileRotating = mountedContraption.rotationMode == CartMovementMode.ROTATE_PAUSED;
 		}
@@ -344,17 +344,15 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 			return false;
 		}
 
-		if (contraption instanceof StabilizedContraption) {
-			if (!(riding instanceof OrientedContraptionEntity))
+		if (contraption instanceof StabilizedContraption stabilized) {
+			if (!(riding instanceof OrientedContraptionEntity parent))
 				return false;
-			StabilizedContraption stabilized = (StabilizedContraption) contraption;
 			Direction facing = stabilized.getFacing();
 			if (facing.getAxis()
 				.isVertical())
 				return false;
-			OrientedContraptionEntity parent = (OrientedContraptionEntity) riding;
 			prevYaw = yaw;
-			yaw = wrapAngle180(getInitialYaw() - parent.getInitialYaw()) - parent.getViewYRot(1);
+			yaw = AngleHelper.wrapAngle180(getInitialYaw() - parent.getInitialYaw()) - parent.getViewYRot(1);
 			return false;
 		}
 
@@ -371,12 +369,10 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 		Vec3 motion = movementVector.normalize();
 
 		if (!rotationLock) {
-			if (riding instanceof AbstractMinecart) {
-				AbstractMinecart minecartEntity = (AbstractMinecart) riding;
+			if (riding instanceof AbstractMinecart minecartEntity) {
 				BlockPos railPosition = minecartEntity.getCurrentRailPosition();
 				BlockState blockState = level().getBlockState(railPosition);
-				if (blockState.getBlock() instanceof BaseRailBlock) {
-					BaseRailBlock abstractRailBlock = (BaseRailBlock) blockState.getBlock();
+				if (blockState.getBlock() instanceof BaseRailBlock abstractRailBlock) {
 					RailShape railDirection =
 						abstractRailBlock.getRailDirection(blockState, level(), railPosition, minecartEntity);
 					motion = VecHelper.project(motion, MinecartSim2020.getRailVec(railDirection));
@@ -406,9 +402,8 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 	}
 
 	protected void powerFurnaceCartWithFuelFromStorage(Entity riding) {
-		if (!(riding instanceof MinecartFurnace))
+		if (!(riding instanceof MinecartFurnace furnaceCart))
 			return;
-		MinecartFurnace furnaceCart = (MinecartFurnace) riding;
 
 		// Notify to not trigger serialization side-effects
 		isSerializingFurnaceCart = true;
@@ -435,9 +430,12 @@ public class OrientedContraptionEntity extends AbstractContraptionEntity {
 					.normalize()
 					.scale(1));
 		if (fuel < 5 && contraption != null) {
-			ItemStack coal = ItemHelper.extract(contraption.getSharedInventory(), FUEL_ITEMS, 1, false);
-			if (!coal.isEmpty())
-				fuel += 3600;
+			MountedItemStorageWrapper fuelItems = contraption.getStorage().getFuelItems();
+			if (fuelItems != null) {
+				ItemStack coal = ItemHelper.extract(fuelItems, FUEL_ITEMS, 1, false);
+				if (!coal.isEmpty())
+					fuel += 3600;
+			}
 		}
 
 		if (fuel != fuelBefore || pushX != 0 || pushZ != 0) {

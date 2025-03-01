@@ -13,14 +13,14 @@ import com.simibubi.create.Create;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
-import com.simibubi.create.foundation.utility.Components;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.Pair;
+import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.data.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -31,6 +31,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -58,18 +59,18 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 	}
 
 	public static <C extends Container, R extends ProcessingRecipe<C>> Optional<R> getRecipe(Level world, C inv,
-		RecipeType<R> type, Class<R> recipeClass) {
+																							 RecipeType<R> type, Class<R> recipeClass) {
 		return getRecipe(world, inv, type, recipeClass, r -> r.matches(inv, world));
 	}
 
 	public static <C extends Container, R extends ProcessingRecipe<C>> Optional<R> getRecipe(Level world, C inv,
-		RecipeType<R> type, Class<R> recipeClass, Predicate<? super R> recipeFilter) {
+																							 RecipeType<R> type, Class<R> recipeClass, Predicate<? super R> recipeFilter) {
 		return getRecipes(world, inv.getItem(0), type, recipeClass).filter(recipeFilter)
 			.findFirst();
 	}
 
 	public static <R extends ProcessingRecipe<?>> Optional<R> getRecipe(Level world, ItemStack item,
-		RecipeType<R> type, Class<R> recipeClass) {
+																		RecipeType<R> type, Class<R> recipeClass) {
 		List<SequencedAssemblyRecipe> all = world.getRecipeManager()
 			.<RecipeWrapper, SequencedAssemblyRecipe>getAllRecipesFor(AllRecipeTypes.SEQUENCED_ASSEMBLY.getType());
 		for (SequencedAssemblyRecipe sequencedAssemblyRecipe : all) {
@@ -86,21 +87,21 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 	}
 
 	public static <R extends ProcessingRecipe<?>> Stream<R> getRecipes(Level world, ItemStack item,
-		RecipeType<R> type, Class<R> recipeClass) {
+																	   RecipeType<R> type, Class<R> recipeClass) {
 		List<SequencedAssemblyRecipe> all = world.getRecipeManager()
 			.<RecipeWrapper, SequencedAssemblyRecipe>getAllRecipesFor(AllRecipeTypes.SEQUENCED_ASSEMBLY.getType());
 
 		return all.stream()
-				.filter(it -> it.appliesTo(item))
-				.map(it -> Pair.of(it, it.getNextRecipe(item).getRecipe()))
-				.filter(it -> it.getSecond()
-						.getType() == type && recipeClass.isInstance(it.getSecond()))
-				.map(it -> {
-					it.getSecond()
-							.enforceNextResult(() -> it.getFirst().advance(item));
-					return it.getSecond();
-				})
-				.map(recipeClass::cast);
+			.filter(it -> it.appliesTo(item))
+			.map(it -> Pair.of(it, it.getNextRecipe(item).getRecipe()))
+			.filter(it -> it.getSecond()
+				.getType() == type && recipeClass.isInstance(it.getSecond()))
+			.map(it -> {
+				it.getSecond()
+					.enforceNextResult(() -> it.getFirst().advance(item));
+				return it.getSecond();
+			})
+			.map(recipeClass::cast);
 	}
 
 	private ItemStack advance(ItemStack input) {
@@ -158,9 +159,9 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 			return true;
 		return input.hasTag() && getTransitionalItem().getItem() == input.getItem() && input.getTag()
 			.contains("SequencedAssembly") && input.getTag()
-				.getCompound("SequencedAssembly")
-				.getString("id")
-				.equals(id.toString());
+			.getCompound("SequencedAssembly")
+			.getString("id")
+			.equals(id.toString());
 	}
 
 	private SequencedRecipe<?> getNextRecipe(ItemStack input) {
@@ -241,18 +242,17 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 		if (!optionalRecipe.isPresent())
 			return;
 		Recipe<?> recipe = optionalRecipe.get();
-		if (!(recipe instanceof SequencedAssemblyRecipe))
+		if (!(recipe instanceof SequencedAssemblyRecipe sequencedAssemblyRecipe))
 			return;
 
-		SequencedAssemblyRecipe sequencedAssemblyRecipe = (SequencedAssemblyRecipe) recipe;
 		int length = sequencedAssemblyRecipe.sequence.size();
 		int step = sequencedAssemblyRecipe.getStep(stack);
 		int total = length * sequencedAssemblyRecipe.loops;
 		List<Component> tooltip = event.getToolTip();
-		tooltip.add(Components.immutableEmpty());
-		tooltip.add(Lang.translateDirect("recipe.sequenced_assembly")
+		tooltip.add(CommonComponents.EMPTY);
+		tooltip.add(CreateLang.translateDirect("recipe.sequenced_assembly")
 			.withStyle(ChatFormatting.GRAY));
-		tooltip.add(Lang.translateDirect("recipe.assembly.progress", step, total)
+		tooltip.add(CreateLang.translateDirect("recipe.assembly.progress", step, total)
 			.withStyle(ChatFormatting.DARK_GRAY));
 
 		int remaining = total - step;
@@ -263,11 +263,12 @@ public class SequencedAssemblyRecipe implements Recipe<RecipeWrapper> {
 			Component textComponent = sequencedRecipe.getAsAssemblyRecipe()
 				.getDescriptionForAssembly();
 			if (i == 0)
-				tooltip.add(Lang.translateDirect("recipe.assembly.next", textComponent)
+				tooltip.add(CreateLang.translateDirect("recipe.assembly.next", textComponent)
 					.withStyle(ChatFormatting.AQUA));
-			else
-				tooltip.add(Components.literal("-> ").append(textComponent)
+			else {
+				tooltip.add(Component.literal("-> ").append(textComponent)
 					.withStyle(ChatFormatting.DARK_AQUA));
+			}
 		}
 
 	}

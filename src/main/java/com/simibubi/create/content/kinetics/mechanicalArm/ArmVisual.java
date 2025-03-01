@@ -4,15 +4,10 @@ import java.util.ArrayList;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.content.kinetics.base.SingleRotatingVisual;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
-import com.simibubi.create.foundation.utility.Color;
-import com.simibubi.create.foundation.utility.Iterate;
+import com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual;
 
 import dev.engine_room.flywheel.api.instance.Instance;
-import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.AbstractInstance;
@@ -21,33 +16,38 @@ import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import dev.engine_room.flywheel.lib.util.RecyclingPoseStack;
 import dev.engine_room.flywheel.lib.visual.SimpleDynamicVisual;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 
-public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements SimpleDynamicVisual {
+public class ArmVisual extends SingleAxisRotatingVisual<ArmBlockEntity> implements SimpleDynamicVisual {
 
 	final TransformedInstance base;
 	final TransformedInstance lowerBody;
 	final TransformedInstance upperBody;
-	TransformedInstance claw;
+	final TransformedInstance claw;
 
 	private final ArrayList<TransformedInstance> clawGrips;
 	private final ArrayList<TransformedInstance> models;
-	private final Boolean ceiling;
+	private final boolean ceiling;
 
-	private boolean firstRender = true;
+	private final RecyclingPoseStack poseStack = new RecyclingPoseStack();
 
+	private boolean wasDancing = false;
 	private float baseAngle = Float.NaN;
 	private float lowerArmAngle = Float.NaN;
 	private float upperArmAngle = Float.NaN;
 	private float headAngle = Float.NaN;
 
 	public ArmVisual(VisualizationContext context, ArmBlockEntity blockEntity, float partialTick) {
-		super(context, blockEntity, partialTick);
+		super(context, blockEntity, partialTick, Models.partial(AllPartialModels.ARM_COG));
 
 		base = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.ARM_BASE))
 			.createInstance();
@@ -67,18 +67,27 @@ public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements S
 		models = Lists.newArrayList(base, lowerBody, upperBody, claw, clawGrip1, clawGrip2);
 		ceiling = blockState.getValue(ArmBlock.CEILING);
 
-		animateArm();
+		var msr = TransformStack.of(poseStack);
+		msr.translate(getVisualPosition());
+		msr.center();
+
+		if (ceiling)
+			msr.rotateXDegrees(180);
+
+		animate(partialTick);
 	}
 
 	@Override
 	public void beginFrame(DynamicVisual.Context ctx) {
+		animate(ctx.partialTick());
+	}
+
+	private void animate(float pt) {
 		if (blockEntity.phase == ArmBlockEntity.Phase.DANCING && blockEntity.getSpeed() != 0) {
-			animateRave(ctx.partialTick());
-			firstRender = true;
+			animateRave(pt);
+			wasDancing = true;
 			return;
 		}
-
-		float pt = ctx.partialTick();
 
 		float baseAngleNow = blockEntity.baseAngle.getValue(pt);
 		float lowerArmAngleNow = blockEntity.lowerArmAngle.getValue(pt);
@@ -93,11 +102,11 @@ public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements S
 		this.upperArmAngle = upperArmAngleNow;
 		this.headAngle = headAngleNow;
 
-		if (!settled || firstRender)
+		// Need to reset the animation if the arm is dancing. We'd very likely be settled
+		if (!settled || wasDancing)
 			animateArm();
 
-		if (firstRender)
-			firstRender = false;
+		wasDancing = false;
 	}
 
 	private void animateRave(float partialTick) {
@@ -111,32 +120,28 @@ public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements S
 		int color = Color.rainbowColor(ticks * 100)
 			.getRGB();
 		updateAngles(baseAngle, lowerArmAngle, upperArmAngle, headAngle, color);
-    }
+	}
 
 	private void animateArm() {
-        updateAngles(this.baseAngle, this.lowerArmAngle - 135, this.upperArmAngle - 90, this.headAngle, 0xFFFFFF);
+		updateAngles(this.baseAngle, this.lowerArmAngle - 135, this.upperArmAngle - 90, this.headAngle, 0xFFFFFF);
 	}
 
 	private void updateAngles(float baseAngle, float lowerArmAngle, float upperArmAngle, float headAngle, int color) {
-		PoseStack msLocal = new PoseStack();
-		var msr = TransformStack.of(msLocal);
-		msr.translate(getVisualPosition());
-		msr.center();
+		poseStack.pushPose();
 
-		if (ceiling)
-			msr.rotateXDegrees(180);
+		var msr = TransformStack.of(poseStack);
 
 		ArmRenderer.transformBase(msr, baseAngle);
-		base.setTransform(msLocal)
+		base.setTransform(poseStack)
 			.setChanged();
 
 		ArmRenderer.transformLowerArm(msr, lowerArmAngle);
-		lowerBody.setTransform(msLocal)
+		lowerBody.setTransform(poseStack)
 			.colorRgb(color)
 			.setChanged();
 
 		ArmRenderer.transformUpperArm(msr, upperArmAngle);
-		upperBody.setTransform(msLocal)
+		upperBody.setTransform(poseStack)
 			.colorRgb(color)
 			.setChanged();
 
@@ -145,7 +150,7 @@ public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements S
 		if (ceiling && blockEntity.goggles)
 			msr.rotateZDegrees(180);
 
-		claw.setTransform(msLocal)
+		claw.setTransform(poseStack)
 			.setChanged();
 
 		if (ceiling && blockEntity.goggles)
@@ -157,29 +162,26 @@ public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements S
 		boolean hasItem = !item.isEmpty();
 		boolean isBlockItem = hasItem && (item.getItem() instanceof BlockItem)
 			&& itemRenderer.getModel(item, Minecraft.getInstance().level, null, 0)
-				.isGui3d();
+			.isGui3d();
 
 		for (int index : Iterate.zeroAndOne) {
-			msLocal.pushPose();
+			poseStack.pushPose();
 			int flip = index * 2 - 1;
 			ArmRenderer.transformClawHalf(msr, hasItem, isBlockItem, flip);
 			clawGrips.get(index)
-				.setTransform(msLocal)
+				.setTransform(poseStack)
 				.setChanged();
-			msLocal.popPose();
+			poseStack.popPose();
 		}
+
+		poseStack.popPose();
 	}
 
 	@Override
 	public void update(float pt) {
 		super.update(pt);
-		models.remove(claw);
-		claw.delete();
-		claw = instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(blockEntity.goggles ? AllPartialModels.ARM_CLAW_BASE_GOGGLES : AllPartialModels.ARM_CLAW_BASE))
-				.createInstance();
-		models.add(claw);
-		updateLight(pt);
-		animateArm();
+		instancerProvider().instancer(InstanceTypes.TRANSFORMED, Models.partial(blockEntity.goggles ? AllPartialModels.ARM_CLAW_BASE_GOGGLES : AllPartialModels.ARM_CLAW_BASE))
+			.stealInstance(claw);
 	}
 
 	@Override
@@ -190,12 +192,7 @@ public class ArmVisual extends SingleRotatingVisual<ArmBlockEntity> implements S
 	}
 
 	@Override
-	protected Model model() {
-		return Models.partial(AllPartialModels.ARM_COG);
-	}
-
-	@Override
-    protected void _delete() {
+	protected void _delete() {
 		super._delete();
 		models.forEach(AbstractInstance::delete);
 	}

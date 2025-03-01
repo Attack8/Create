@@ -5,7 +5,7 @@ import static net.minecraft.commands.Commands.literal;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.simibubi.create.AllPackets;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.Create;
 import com.simibubi.create.infrastructure.debugInfo.ServerDebugInfoPacket;
 
 import net.minecraft.commands.CommandSourceStack;
@@ -17,12 +17,12 @@ public class DebugInfoCommand {
 		return literal("debuginfo").executes(ctx -> {
 			CommandSourceStack source = ctx.getSource();
 			ServerPlayer player = source.getPlayerOrException();
-			
-			Lang.translate("command.debuginfo.sending")
+
+			Create.lang().translate("command.debuginfo.sending")
 				.sendChat(player);
 			AllPackets.getChannel()
 				.send(PacketDistributor.PLAYER.with(() -> player), new ServerDebugInfoPacket(player));
-			
+
 			return Command.SINGLE_SUCCESS;
 		});
 	}

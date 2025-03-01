@@ -15,8 +15,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.foundation.utility.Iterate;
 
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -28,6 +28,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
@@ -125,7 +126,7 @@ public class ConnectedInputHandler {
 	}
 
 	public static void connectControllers(Level world, MechanicalCrafterBlockEntity crafter1,
-		MechanicalCrafterBlockEntity crafter2) {
+										  MechanicalCrafterBlockEntity crafter2) {
 
 		crafter1.input.data.forEach(offset -> {
 			BlockPos connectedPos = crafter1.getBlockPos()
@@ -151,10 +152,9 @@ public class ConnectedInputHandler {
 
 	private static void modifyAndUpdate(Level world, BlockPos pos, Consumer<ConnectedInput> callback) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (!(blockEntity instanceof MechanicalCrafterBlockEntity))
+		if (!(blockEntity instanceof MechanicalCrafterBlockEntity crafter))
 			return;
 
-		MechanicalCrafterBlockEntity crafter = (MechanicalCrafterBlockEntity) blockEntity;
 		callback.accept(crafter.input);
 		crafter.setChanged();
 		crafter.connectivityChanged();

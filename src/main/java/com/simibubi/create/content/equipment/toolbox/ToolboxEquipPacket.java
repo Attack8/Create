@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkEvent.Context;
 
@@ -59,7 +60,7 @@ public class ToolboxEquipPacket extends SimplePacketBase {
 			if (player.distanceToSqr(toolboxPos.getX() + 0.5, toolboxPos.getY(), toolboxPos.getZ() + 0.5) > maxRange
 				* maxRange)
 				return;
-			if (!(blockEntity instanceof ToolboxBlockEntity))
+			if (!(blockEntity instanceof ToolboxBlockEntity toolboxBlockEntity))
 				return;
 
 			ToolboxHandler.unequip(player, hotbarSlot, false);
@@ -68,8 +69,6 @@ public class ToolboxEquipPacket extends SimplePacketBase {
 				ToolboxHandler.syncData(player);
 				return;
 			}
-
-			ToolboxBlockEntity toolboxBlockEntity = (ToolboxBlockEntity) blockEntity;
 
 			ItemStack playerStack = player.getInventory().getItem(hotbarSlot);
 			if (!playerStack.isEmpty() && !ToolboxInventory.canItemsShareCompartment(playerStack,

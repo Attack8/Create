@@ -10,12 +10,12 @@ import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.fluid.FluidHelper;
-import com.simibubi.create.foundation.utility.BBHelper;
-import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.BBHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -203,8 +203,7 @@ public class FluidFillingBehaviour extends FluidManipulationBehaviour {
 					}
 
 					LevelTickAccess<Fluid> pendingFluidTicks = world.getFluidTicks();
-					if (pendingFluidTicks instanceof LevelTicks) {
-						LevelTicks<Fluid> serverTickList = (LevelTicks<Fluid>) pendingFluidTicks;
+					if (pendingFluidTicks instanceof LevelTicks<Fluid> serverTickList) {
 						serverTickList.clearArea(new BoundingBox(currentPos));
 					}
 
@@ -268,7 +267,7 @@ public class FluidFillingBehaviour extends FluidManipulationBehaviour {
 
 		if (fluidState.getType() != Fluids.EMPTY
 			&& blockState.getCollisionShape(getWorld(), pos, CollisionContext.empty())
-				.isEmpty())
+			.isEmpty())
 			return toFill.isSame(fluidState.getType()) ? SpaceType.FILLED : SpaceType.BLOCKING;
 
 		return canBeReplacedByFluid(world, pos, blockState) ? SpaceType.FILLABLE : SpaceType.BLOCKING;

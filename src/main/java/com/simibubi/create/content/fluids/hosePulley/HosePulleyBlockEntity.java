@@ -10,8 +10,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.utility.ServerSpeedProvider;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
 
+import net.createmod.catnip.animation.LerpedFloat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -178,7 +178,7 @@ public class HosePulleyBlockEntity extends KineticBlockEntity {
 	}
 
 	public float getInterpolatedOffset(float pt) {
-		return offset.getValue(pt);
+		return Math.max(offset.getValue(pt), 3 / 16f);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleOptions.Deserializer;
 import net.minecraft.core.particles.ParticleType;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
@@ -14,9 +15,9 @@ import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 public interface ICustomParticleDataWithSprite<T extends ParticleOptions> extends ICustomParticleData<T> {
 
 	Deserializer<T> getDeserializer();
-	
+
 	public default ParticleType<T> createType() {
-		return new ParticleType<T>(false, getDeserializer()) {
+		return new ParticleType<>(false, getDeserializer()) {
 
 			@Override
 			public Codec<T> codec() {
@@ -24,20 +25,20 @@ public interface ICustomParticleDataWithSprite<T extends ParticleOptions> extend
 			}
 		};
 	}
-	
+
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	default ParticleProvider<T> getFactory() {
 		throw new IllegalAccessError("This particle type uses a metaFactory!");
 	}
-	
+
 	@OnlyIn(Dist.CLIENT)
 	public SpriteParticleRegistration<T> getMetaFactory();
-	
+
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public default void register(ParticleType<T> type, RegisterParticleProvidersEvent event) {
 		event.registerSpriteSet(type, getMetaFactory());
 	}
-	
+
 }

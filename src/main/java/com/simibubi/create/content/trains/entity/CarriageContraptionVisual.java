@@ -6,19 +6,18 @@ import org.joml.Vector3f;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.content.contraptions.render.ContraptionVisual;
 import com.simibubi.create.content.trains.bogey.BogeyVisual;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Iterate;
 
 import dev.engine_room.flywheel.api.visual.DynamicVisual;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.transform.TransformStack;
+import dev.engine_room.flywheel.lib.util.RecyclingPoseStack;
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.nbt.CompoundTag;
 
 public class CarriageContraptionVisual extends ContraptionVisual<CarriageContraptionEntity> {
-	private final PoseStack poseStack = new PoseStack();
+	private final PoseStack poseStack = new RecyclingPoseStack();
 
-	@Nullable
-	private Carriage carriage;
 	@Nullable
 	private Couple<@Nullable VisualizedBogey> bogeys;
 	private Couple<Boolean> bogeyHidden = Couple.create(() -> false);
@@ -26,17 +25,8 @@ public class CarriageContraptionVisual extends ContraptionVisual<CarriageContrap
 	public CarriageContraptionVisual(VisualizationContext context, CarriageContraptionEntity entity, float partialTick) {
 		super(context, entity, partialTick);
 		entity.bindInstance(this);
-	}
 
-	@Override
-	protected void init(float pt) {
-		carriage = entity.getCarriage();
-
-		if (carriage != null) {
-			bogeys = carriage.bogeys.mapNotNull(bogey -> VisualizedBogey.of(visualizationContext, bogey, pt));
-		}
-
-		super.init(pt);
+		animate(partialTick);
 	}
 
 	public void setBogeyVisibility(boolean first, boolean visible) {
@@ -46,19 +36,37 @@ public class CarriageContraptionVisual extends ContraptionVisual<CarriageContrap
 	@Override
 	public void beginFrame(DynamicVisual.Context ctx) {
 		super.beginFrame(ctx);
-		if (bogeys == null) {
-			if (entity.isReadyForRender()) {
-				init(ctx.partialTick());
-				updateLight(ctx.partialTick());
-			}
+
+		animate(ctx.partialTick());
+	}
+
+	/**
+	 * @return True if we're ready to actually animate.
+	 */
+	private boolean checkCarriage(float pt) {
+		if (bogeys != null) {
+			return true;
+		}
+
+		var carriage = entity.getCarriage();
+
+		if (entity.validForRender && carriage != null) {
+			bogeys = carriage.bogeys.mapNotNull(bogey -> VisualizedBogey.of(visualizationContext, bogey, pt));
+			updateLight(pt);
+			return true;
+		}
+
+		return false;
+	}
+
+	private void animate(float partialTick) {
+		if (!checkCarriage(partialTick)) {
 			return;
 		}
 
-		float partialTick = ctx.partialTick();
-
 		float viewYRot = entity.getViewYRot(partialTick);
 		float viewXRot = entity.getViewXRot(partialTick);
-		int bogeySpacing = carriage.bogeySpacing;
+		int bogeySpacing = entity.getCarriage().bogeySpacing;
 
 		poseStack.pushPose();
 

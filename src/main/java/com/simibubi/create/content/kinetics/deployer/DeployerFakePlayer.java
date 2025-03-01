@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.authlib.GameProfile;
-import com.simibubi.create.foundation.utility.Lang;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 import com.simibubi.create.infrastructure.config.CKinetics;
 
@@ -35,6 +35,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.UsernameCache;
@@ -71,7 +72,7 @@ public class DeployerFakePlayer extends FakePlayer {
 
 	@Override
 	public Component getDisplayName() {
-		return Lang.translateDirect("block.deployer.damage_source_name");
+		return CreateLang.translateDirect("block.deployer.damage_source_name");
 	}
 
 	@Override
@@ -121,8 +122,7 @@ public class DeployerFakePlayer extends FakePlayer {
 	public static void deployerCollectsDropsFromKilledEntities(LivingDropsEvent event) {
 		DamageSource source = event.getSource();
 		Entity trueSource = source.getEntity();
-		if (trueSource != null && trueSource instanceof DeployerFakePlayer) {
-			DeployerFakePlayer fakePlayer = (DeployerFakePlayer) trueSource;
+		if (trueSource != null && trueSource instanceof DeployerFakePlayer fakePlayer) {
 			event.getDrops()
 				.forEach(stack -> fakePlayer.getInventory()
 					.placeItemBackInInventory(stack.getItem()));
@@ -158,7 +158,7 @@ public class DeployerFakePlayer extends FakePlayer {
 
 		CKinetics.DeployerAggroSetting setting = AllConfigs.server().kinetics.ignoreDeployerAttacks.get();
 
-		switch(setting) {
+		switch (setting) {
 			case ALL -> event.setCanceled(true);
 			case CREEPERS -> {
 				if (mob instanceof Creeper)
@@ -216,10 +216,12 @@ public class DeployerFakePlayer extends FakePlayer {
 		}
 
 		@Override
-		public void send(Packet<?> packetIn) {}
+		public void send(Packet<?> packetIn) {
+		}
 
 		@Override
-		public void send(Packet<?> p_243227_, @Nullable PacketSendListener p_243273_) {}
+		public void send(Packet<?> p_243227_, @Nullable PacketSendListener p_243273_) {
+		}
 	}
 
 }

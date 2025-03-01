@@ -15,13 +15,12 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllMovementBehaviours;
 import com.simibubi.create.AllPackets;
+import com.simibubi.create.api.behaviour.interaction.MovingInteractionBehaviour;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity.ContraptionRotationState;
 import com.simibubi.create.content.contraptions.ContraptionColliderLockPacket.ContraptionColliderLockPacketRequest;
 import com.simibubi.create.content.contraptions.actors.harvester.HarvesterMovementBehaviour;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
-import com.simibubi.create.content.contraptions.behaviour.MovingInteractionBehaviour;
 import com.simibubi.create.content.contraptions.sync.ClientMotionPacket;
 import com.simibubi.create.content.kinetics.base.BlockBreakingMovementBehaviour;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
@@ -31,10 +30,10 @@ import com.simibubi.create.foundation.collision.Matrix3d;
 import com.simibubi.create.foundation.collision.OrientedBB;
 import com.simibubi.create.foundation.damageTypes.CreateDamageSources;
 import com.simibubi.create.foundation.utility.BlockHelper;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.VecHelper;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -63,6 +62,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
@@ -140,6 +140,10 @@ public class ContraptionCollider {
 			Vec3 motion = entity.getDeltaMovement();
 			float yawOffset = rotation.getYawOffset();
 			Vec3 position = getWorldToLocalTranslation(entity, anchorVec, rotationMatrix, yawOffset);
+
+			// Make player 'shorter' to make it less likely to become stuck
+			if (playerType == PlayerType.CLIENT && entityBounds.getYsize() > 1)
+				entityBounds = entityBounds.contract(0, 2 / 16f, 0);
 
 			motion = motion.subtract(contraptionMotion);
 			motion = rotationMatrix.transform(motion);
@@ -765,17 +769,14 @@ public class ContraptionCollider {
 			if (collidedState.getBlock() instanceof CocoaBlock)
 				continue;
 
-			MovementBehaviour movementBehaviour = AllMovementBehaviours.getBehaviour(blockInfo.state());
+			MovementBehaviour movementBehaviour = MovementBehaviour.REGISTRY.get(blockInfo.state());
 			if (movementBehaviour != null) {
-				if (movementBehaviour instanceof BlockBreakingMovementBehaviour) {
-					BlockBreakingMovementBehaviour behaviour = (BlockBreakingMovementBehaviour) movementBehaviour;
+				if (movementBehaviour instanceof BlockBreakingMovementBehaviour behaviour) {
 					if (!behaviour.canBreak(world, colliderPos, collidedState) && !emptyCollider)
 						return true;
 					continue;
 				}
-				if (movementBehaviour instanceof HarvesterMovementBehaviour) {
-					HarvesterMovementBehaviour harvesterMovementBehaviour =
-						(HarvesterMovementBehaviour) movementBehaviour;
+				if (movementBehaviour instanceof HarvesterMovementBehaviour harvesterMovementBehaviour) {
 					if (!harvesterMovementBehaviour.isValidCrop(world, colliderPos, collidedState)
 						&& !harvesterMovementBehaviour.isValidOther(world, colliderPos, collidedState)
 						&& !emptyCollider)

@@ -6,15 +6,15 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.AllMovementBehaviours;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.Contraption.RenderedBlocks;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.foundation.utility.worldWrappers.WrappedBlockAndTintGetter;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
+import dev.engine_room.flywheel.api.material.CardinalLightingMode;
 import dev.engine_room.flywheel.api.model.Model;
 import dev.engine_room.flywheel.api.task.Plan;
 import dev.engine_room.flywheel.api.visual.BlockEntityVisual;
@@ -28,6 +28,8 @@ import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.api.visualization.VisualizerRegistry;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
+import dev.engine_room.flywheel.lib.material.SimpleMaterial;
+import dev.engine_room.flywheel.lib.model.ModelUtil;
 import dev.engine_room.flywheel.lib.model.baked.ForgeMultiBlockModelBuilder;
 import dev.engine_room.flywheel.lib.task.ForEachPlan;
 import dev.engine_room.flywheel.lib.task.NestedPlan;
@@ -45,6 +47,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+
 import net.minecraftforge.client.model.data.ModelData;
 
 public class ContraptionVisual<E extends AbstractContraptionEntity> extends AbstractEntityVisual<E> implements DynamicVisual, TickableVisual, LightUpdatedVisual, ShaderLightVisual {
@@ -68,13 +71,22 @@ public class ContraptionVisual<E extends AbstractContraptionEntity> extends Abst
 		super(ctx, entity, partialTick);
 		embedding = ctx.createEmbedding(Vec3i.ZERO);
 
-		init(partialTick);
-    }
-
-	protected void init(float partialTick) {
 		setEmbeddingMatrices(partialTick);
 
 		Contraption contraption = entity.getContraption();
+		// The contraption could be null if it wasn't synced (ex. too much data)
+		if (contraption == null)
+			return;
+
+		setupModel(contraption);
+
+		setupChildren(partialTick, contraption);
+
+		setupActors(partialTick, contraption);
+	}
+
+	// Must be called before setup children or setup actors as this creates the render world
+	private void setupModel(Contraption contraption) {
 		virtualRenderWorld = ContraptionRenderInfo.setupRenderWorld(level, contraption);
 
 		RenderedBlocks blocks = contraption.getRenderedBlocks();
@@ -86,19 +98,37 @@ public class ContraptionVisual<E extends AbstractContraptionEntity> extends Abst
 		};
 
 		model = new ForgeMultiBlockModelBuilder(modelWorld, blocks.positions())
-				.modelDataLookup(pos -> contraption.modelData.getOrDefault(pos, ModelData.EMPTY))
-				.build();
+			.modelDataLookup(pos -> contraption.modelData.getOrDefault(pos, ModelData.EMPTY))
+			.materialFunc((renderType, aBoolean) -> SimpleMaterial.builderOf(ModelUtil.getMaterial(renderType, aBoolean))
+				.cardinalLightingMode(CardinalLightingMode.CHUNK))
+			.build();
 
-		structure = embedding.instancerProvider()
-				.instancer(InstanceTypes.TRANSFORMED, model)
-				.createInstance();
+		var instancer = embedding.instancerProvider()
+			.instancer(InstanceTypes.TRANSFORMED, model);
+
+		// Null in ctor, so we need to create it
+		// But we can steal it if it already exists
+		if (structure == null) {
+			structure = instancer.createInstance();
+		} else {
+			instancer.stealInstance(structure);
+		}
 
 		structure.setChanged();
 
+	}
+
+	private void setupChildren(float partialTick, Contraption contraption) {
+		children.forEach(BlockEntityVisual::delete);
+		children.clear();
 		for (BlockEntity be : contraption.getRenderedBEs()) {
 			setupVisualizer(be, partialTick);
 		}
+	}
 
+	private void setupActors(float partialTick, Contraption contraption) {
+		actors.forEach(ActorVisual::delete);
+		actors.clear();
 		for (var actor : contraption.getActors()) {
 			setupActor(actor, partialTick);
 		}
@@ -139,7 +169,7 @@ public class ContraptionVisual<E extends AbstractContraptionEntity> extends Abst
 
 		StructureTemplate.StructureBlockInfo blockInfo = actor.getLeft();
 
-		MovementBehaviour movementBehaviour = AllMovementBehaviours.getBehaviour(blockInfo.state());
+		MovementBehaviour movementBehaviour = MovementBehaviour.REGISTRY.get(blockInfo.state());
 		if (movementBehaviour == null) {
 			return;
 		}
@@ -180,12 +210,33 @@ public class ContraptionVisual<E extends AbstractContraptionEntity> extends Abst
 		if (hasMovedBlocks()) {
 			updateLight(partialTick);
 		}
+
+		var contraption = entity.getContraption();
+		if (contraption.deferInvalidate) {
+			setupModel(contraption);
+			setupChildren(partialTick, contraption);
+			setupActors(partialTick, contraption);
+
+			contraption.deferInvalidate = false;
+		}
 	}
 
 	private void setEmbeddingMatrices(float partialTick) {
-		double x = Mth.lerp(partialTick, entity.xOld, entity.getX());
-		double y = Mth.lerp(partialTick, entity.yOld, entity.getY());
-		double z = Mth.lerp(partialTick, entity.zOld, entity.getZ());
+		var origin = renderOrigin();
+		double x;
+		double y;
+		double z;
+		if (entity.isPrevPosInvalid()) {
+			// When the visual is created the entity's old position is often zero
+			x = entity.getX() - origin.getX();
+			y = entity.getY() - origin.getY();
+			z = entity.getZ() - origin.getZ();
+
+		} else {
+			x = Mth.lerp(partialTick, entity.xo, entity.getX()) - origin.getX();
+			y = Mth.lerp(partialTick, entity.yo, entity.getY()) - origin.getY();
+			z = Mth.lerp(partialTick, entity.zo, entity.getZ()) - origin.getZ();
+		}
 
 		contraptionMatrix.setIdentity();
 		contraptionMatrix.translate(x, y, z);

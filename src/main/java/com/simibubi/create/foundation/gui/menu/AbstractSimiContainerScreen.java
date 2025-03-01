@@ -6,11 +6,13 @@ import java.util.List;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import com.simibubi.create.foundation.gui.AllGuiTextures;
-import com.simibubi.create.foundation.gui.TickableGuiEventListener;
-import com.simibubi.create.foundation.gui.widget.AbstractSimiWidget;
+import org.lwjgl.glfw.GLFW;
 
+import com.simibubi.create.foundation.gui.AllGuiTextures;
+
+import net.createmod.catnip.gui.TickableGuiEventListener;
+import net.createmod.catnip.gui.widget.AbstractSimiWidget;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
@@ -20,7 +22,9 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraftforge.api.distmarker.Dist;
@@ -137,19 +141,18 @@ public abstract class AbstractSimiContainerScreen<T extends AbstractContainerMen
 
 	@Override
 	public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-		InputConstants.Key mouseKey = InputConstants.getKey(pKeyCode, pScanCode);
-		if (getFocused() instanceof EditBox && this.minecraft.options.keyInventory.isActiveAndMatches(mouseKey))
-			return false;
+		if (getFocused() instanceof EditBox && pKeyCode != GLFW.GLFW_KEY_ESCAPE)
+			return getFocused().keyPressed(pKeyCode, pScanCode, pModifiers);
 		return super.keyPressed(pKeyCode, pScanCode, pModifiers);
 	}
-	
+
 	@Override
 	public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
 		if (getFocused() != null && !getFocused().isMouseOver(pMouseX, pMouseY))
 			setFocused(null);
 		return super.mouseClicked(pMouseX, pMouseY, pButton);
 	}
-	
+
 	@Override
 	public GuiEventListener getFocused() {
 		GuiEventListener focused = super.getFocused();
@@ -180,6 +183,12 @@ public abstract class AbstractSimiContainerScreen<T extends AbstractContainerMen
 			graphics.fill(area.getX() + area.getWidth(), area.getY() + area.getHeight(), area.getX(), area.getY(),
 				0xD3D3D3D3);
 		}
+	}
+
+	protected void playUiSound(SoundEvent sound, float volume, float pitch) {
+		Minecraft.getInstance()
+			.getSoundManager()
+			.play(SimpleSoundInstance.forUI(sound, pitch, volume * 0.25f));
 	}
 
 }

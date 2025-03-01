@@ -15,11 +15,11 @@ import com.simibubi.create.Create;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity;
 import com.simibubi.create.content.contraptions.minecart.CouplingHandler;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
 
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -33,6 +33,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.PoweredRailBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -104,15 +105,15 @@ public class MinecartController implements INBTSerializable<CompoundTag> {
 		int j = Mth.floor(cart.getY());
 		int k = Mth.floor(cart.getZ());
 		if (world.getBlockState(new BlockPos(i, j - 1, k))
-				.is(BlockTags.RAILS)) {
+			.is(BlockTags.RAILS)) {
 			--j;
 		}
 		BlockPos blockpos = new BlockPos(i, j, k);
 		BlockState blockstate = world.getBlockState(blockpos);
 		if (cart.canUseRail() && blockstate.is(BlockTags.RAILS)
-				&& blockstate.getBlock() instanceof PoweredRailBlock
-				&& ((PoweredRailBlock) blockstate.getBlock())
-						.isActivatorRail()) {
+			&& blockstate.getBlock() instanceof PoweredRailBlock
+			&& ((PoweredRailBlock) blockstate.getBlock())
+			.isActivatorRail()) {
 			if (cart.isVehicle()) {
 				cart.ejectPassengers();
 			}
@@ -176,11 +177,11 @@ public class MinecartController implements INBTSerializable<CompoundTag> {
 			List<Entity> passengers = cart().getPassengers();
 			if (!passengers.isEmpty()) {
 				Entity entity = passengers.get(0);
-				if (entity instanceof AbstractContraptionEntity) 
+				if (entity instanceof AbstractContraptionEntity)
 					((AbstractContraptionEntity) entity).disassemble();
 			}
 		}
-		
+
 		couplings.set(main, Optional.empty());
 		needsEntryRefresh |= main;
 		sendData();
@@ -217,9 +218,8 @@ public class MinecartController implements INBTSerializable<CompoundTag> {
 					if (passengers.isEmpty())
 						return;
 					Entity entity = passengers.get(0);
-					if (!(entity instanceof OrientedContraptionEntity))
+					if (!(entity instanceof OrientedContraptionEntity contraption))
 						return;
-					OrientedContraptionEntity contraption = (OrientedContraptionEntity) entity;
 					UUID couplingId = contraption.getCouplingId();
 					if (couplingId == cd.mainCartID) {
 						contraption.setCouplingId(cd.connectedCartID);
@@ -393,7 +393,8 @@ public class MinecartController implements INBTSerializable<CompoundTag> {
 		Vec3 motion;
 		float yaw, pitch;
 
-		private StallData() {}
+		private StallData() {
+		}
 
 		StallData(AbstractMinecart entity) {
 			position = entity.position();

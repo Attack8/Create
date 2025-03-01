@@ -1,32 +1,25 @@
 package com.simibubi.create.compat.tconstruct;
 
-import com.simibubi.create.api.behaviour.BlockSpoutingBehaviour;
-import com.simibubi.create.compat.Mods;
+import com.simibubi.create.api.behaviour.spouting.BlockSpoutingBehaviour;
 import com.simibubi.create.content.fluids.spout.SpoutBlockEntity;
 import com.simibubi.create.foundation.fluid.FluidHelper;
-import com.simibubi.create.foundation.utility.RegisteredObjects;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
-public class SpoutCasting extends BlockSpoutingBehaviour {
-
-	static Boolean TICON_PRESENT = null;
-
-	ResourceLocation TABLE = new ResourceLocation("tconstruct", "table");
-	ResourceLocation BASIN = new ResourceLocation("tconstruct", "basin");
+public enum SpoutCasting implements BlockSpoutingBehaviour {
+	INSTANCE;
 
 	@Override
-	public int fillBlock(Level level, BlockPos pos, SpoutBlockEntity spout, FluidStack availableFluid,
-		boolean simulate) {
+	public int fillBlock(Level level, BlockPos pos, SpoutBlockEntity spout, FluidStack availableFluid, boolean simulate) {
 		if (!enabled())
 			return 0;
 
@@ -41,9 +34,6 @@ public class SpoutCasting extends BlockSpoutingBehaviour {
 		if (handler.getTanks() != 1)
 			return 0;
 
-		ResourceLocation registryName = RegisteredObjects.getKeyOrThrow(blockEntity.getType());
-		if (!registryName.equals(TABLE) && !registryName.equals(BASIN))
-			return 0;
 		if (!handler.isFluidValid(0, availableFluid))
 			return 0;
 
@@ -62,11 +52,6 @@ public class SpoutCasting extends BlockSpoutingBehaviour {
 	}
 
 	private boolean enabled() {
-		if (TICON_PRESENT == null)
-			TICON_PRESENT = Mods.TCONSTRUCT.isLoaded();
-		if (!TICON_PRESENT)
-			return false;
 		return AllConfigs.server().recipes.allowCastingBySpout.get();
 	}
-
 }

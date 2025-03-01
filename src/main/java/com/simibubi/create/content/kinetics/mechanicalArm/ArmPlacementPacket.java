@@ -12,6 +12,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent.Context;
@@ -55,10 +56,9 @@ public class ArmPlacementPacket extends SimplePacketBase {
 			if (world == null || !world.isLoaded(pos))
 				return;
 			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (!(blockEntity instanceof ArmBlockEntity))
+			if (!(blockEntity instanceof ArmBlockEntity arm))
 				return;
 
-			ArmBlockEntity arm = (ArmBlockEntity) blockEntity;
 			arm.interactionPointTag = receivedTag;
 		});
 		return true;

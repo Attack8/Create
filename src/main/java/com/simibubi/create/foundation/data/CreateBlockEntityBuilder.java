@@ -6,17 +6,21 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.simibubi.create.Create;
+import com.simibubi.create.api.behaviour.display.DisplaySource;
+import com.simibubi.create.api.behaviour.display.DisplayTarget;
+import com.simibubi.create.api.registry.CreateRegistries;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.builders.BlockEntityBuilder;
 import com.tterrag.registrate.builders.BuilderCallback;
 import com.tterrag.registrate.util.OneTimeEventReceiver;
+import com.tterrag.registrate.util.entry.RegistryEntry;
 import com.tterrag.registrate.util.nullness.NonNullSupplier;
 
 import dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.util.NonNullPredicate;
 import net.minecraftforge.fml.DistExecutor;
@@ -32,12 +36,12 @@ public class CreateBlockEntityBuilder<T extends BlockEntity, P> extends BlockEnt
 		new ArrayList<>();
 
 	public static <T extends BlockEntity, P> BlockEntityBuilder<T, P> create(AbstractRegistrate<?> owner, P parent,
-		String name, BuilderCallback callback, BlockEntityFactory<T> factory) {
+																			 String name, BuilderCallback callback, BlockEntityFactory<T> factory) {
 		return new CreateBlockEntityBuilder<>(owner, parent, name, callback, factory);
 	}
 
 	protected CreateBlockEntityBuilder(AbstractRegistrate<?> owner, P parent, String name, BuilderCallback callback,
-		BlockEntityFactory<T> factory) {
+									   BlockEntityFactory<T> factory) {
 		super(owner, parent, name, callback, factory);
 	}
 
@@ -54,6 +58,22 @@ public class CreateBlockEntityBuilder<T extends BlockEntity, P> extends BlockEnt
 			.flatMap(Collection::stream)
 			.forEach(this::validBlock);
 		return super.createEntry();
+	}
+
+	public CreateBlockEntityBuilder<T, P> displaySource(RegistryEntry<? extends DisplaySource> source) {
+		this.onRegisterAfter(
+			CreateRegistries.DISPLAY_SOURCE,
+			type -> DisplaySource.BY_BLOCK_ENTITY.add(type, source.get())
+		);
+		return this;
+	}
+
+	public CreateBlockEntityBuilder<T, P> displayTarget(RegistryEntry<? extends DisplayTarget> target) {
+		this.onRegisterAfter(
+			CreateRegistries.DISPLAY_TARGET,
+			type -> DisplayTarget.BY_BLOCK_ENTITY.register(type, target.get())
+		);
+		return this;
 	}
 
 	public CreateBlockEntityBuilder<T, P> visual(
@@ -81,7 +101,7 @@ public class CreateBlockEntityBuilder<T extends BlockEntity, P> extends BlockEnt
 	}
 
 	protected void registerVisualizer() {
-		OneTimeEventReceiver.addModListener(Create.REGISTRATE, FMLClientSetupEvent.class, $ -> {
+		OneTimeEventReceiver.addModListener(getOwner(), FMLClientSetupEvent.class, $ -> {
 			var visualFactory = this.visualFactory;
 			if (visualFactory != null) {
 				NonNullPredicate<T> renderNormally = this.renderNormally;

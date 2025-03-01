@@ -3,12 +3,11 @@ package com.simibubi.create.infrastructure.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.simibubi.create.AllPackets;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.PacketDistributor;
 
 public class CameraDistanceCommand {
 
@@ -17,10 +16,7 @@ public class CameraDistanceCommand {
 				.then(Commands.literal("reset")
 						.executes(ctx -> {
 							ServerPlayer player = ctx.getSource().getPlayerOrException();
-							AllPackets.getChannel().send(
-									PacketDistributor.PLAYER.with(() -> player),
-									new SConfigureConfigPacket(SConfigureConfigPacket.Actions.zoomMultiplier.name(), "1")
-							);
+							CatnipServices.NETWORK.simpleActionToClient(player, "zoomMultiplier", "1");
 
 							return Command.SINGLE_SUCCESS;
 						})
@@ -28,10 +24,7 @@ public class CameraDistanceCommand {
 						.executes(ctx -> {
 							float multiplier = FloatArgumentType.getFloat(ctx, "multiplier");
 							ServerPlayer player = ctx.getSource().getPlayerOrException();
-							AllPackets.getChannel().send(
-									PacketDistributor.PLAYER.with(() -> player),
-									new SConfigureConfigPacket(SConfigureConfigPacket.Actions.zoomMultiplier.name(), String.valueOf(multiplier))
-							);
+							CatnipServices.NETWORK.simpleActionToClient(player, "zoomMultiplier", String.valueOf(multiplier));
 
 							return Command.SINGLE_SUCCESS;
 						})

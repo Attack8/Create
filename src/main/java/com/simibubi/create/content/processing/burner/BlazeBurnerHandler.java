@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -47,7 +48,7 @@ public class BlazeBurnerHandler {
 		BlockEntity blockEntity = projectile.level()
 			.getBlockEntity(BlockPos.containing(event.getRayTraceResult()
 				.getLocation()));
-		if (!(blockEntity instanceof BlazeBurnerBlockEntity)) {
+		if (!(blockEntity instanceof BlazeBurnerBlockEntity heater)) {
 			return;
 		}
 
@@ -59,7 +60,6 @@ public class BlazeBurnerHandler {
 		if (world.isClientSide)
 			return;
 
-		BlazeBurnerBlockEntity heater = (BlazeBurnerBlockEntity) blockEntity;
 		if (!heater.isCreative()) {
 			if (heater.activeFuel != FuelType.SPECIAL) {
 				heater.activeFuel = FuelType.NORMAL;
@@ -77,9 +77,8 @@ public class BlazeBurnerHandler {
 		Projectile projectile = event.getProjectile();
 		if (projectile.level().isClientSide)
 			return;
-		if (!(projectile instanceof ThrownPotion))
+		if (!(projectile instanceof ThrownPotion entity))
 			return;
-		ThrownPotion entity = (ThrownPotion) projectile;
 
 		if (event.getRayTraceResult()
 			.getType() != HitResult.Type.BLOCK)

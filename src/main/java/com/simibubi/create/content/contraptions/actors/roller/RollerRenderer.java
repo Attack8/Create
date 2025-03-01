@@ -9,12 +9,12 @@ import com.simibubi.create.content.contraptions.actors.harvester.HarvesterRender
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
 import com.simibubi.create.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -39,7 +39,7 @@ public class RollerRenderer extends SmartBlockEntityRenderer<RollerBlockEntity> 
 
 		ms.pushPose();
 		ms.translate(0, -0.25, 0);
-		SuperByteBuffer superBuffer = CachedBufferer.partial(AllPartialModels.ROLLER_WHEEL, blockState);
+		SuperByteBuffer superBuffer = CachedBuffers.partial(AllPartialModels.ROLLER_WHEEL, blockState);
 		Direction facing = blockState.getValue(RollerBlock.FACING);
 		superBuffer.translate(Vec3.atLowerCornerOf(facing.getNormal())
 			.scale(17 / 16f));
@@ -50,7 +50,7 @@ public class RollerRenderer extends SmartBlockEntityRenderer<RollerBlockEntity> 
 			.renderInto(ms, vc);
 		ms.popPose();
 
-		CachedBufferer.partial(AllPartialModels.ROLLER_FRAME, blockState)
+		CachedBuffers.partial(AllPartialModels.ROLLER_FRAME, blockState)
 			.rotateCentered(AngleHelper.rad(AngleHelper.horizontalAngle(facing) + 180), Direction.UP)
 			.light(light)
 			.renderInto(ms, vc);
@@ -61,7 +61,7 @@ public class RollerRenderer extends SmartBlockEntityRenderer<RollerBlockEntity> 
 		BlockState blockState = context.state;
 		Direction facing = blockState.getValue(HORIZONTAL_FACING);
 		VertexConsumer vc = buffers.getBuffer(RenderType.cutoutMipped());
-		SuperByteBuffer superBuffer = CachedBufferer.partial(AllPartialModels.ROLLER_WHEEL, blockState);
+		SuperByteBuffer superBuffer = CachedBuffers.partial(AllPartialModels.ROLLER_WHEEL, blockState);
 		float speed = (float) (!VecHelper.isVecPointingTowards(context.relativeMotion, facing.getOpposite())
 			? context.getAnimationSpeed()
 			: -context.getAnimationSpeed());
@@ -84,7 +84,7 @@ public class RollerRenderer extends SmartBlockEntityRenderer<RollerBlockEntity> 
 			.renderInto(viewProjection, vc);
 		viewProjection.popPose();
 
-		CachedBufferer.partial(AllPartialModels.ROLLER_FRAME, blockState)
+		CachedBuffers.partial(AllPartialModels.ROLLER_FRAME, blockState)
 			.transform(matrices.getModel())
 			.rotateCentered(AngleHelper.rad(AngleHelper.horizontalAngle(facing) + 180), Direction.UP)
 			.light(contraptionWorldLight)

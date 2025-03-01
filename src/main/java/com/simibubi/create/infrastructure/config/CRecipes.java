@@ -1,6 +1,6 @@
 package com.simibubi.create.infrastructure.config;
 
-import com.simibubi.create.foundation.config.ConfigBase;
+import net.createmod.catnip.config.ConfigBase;
 
 public class CRecipes extends ConfigBase {
 
@@ -14,7 +14,6 @@ public class CRecipes extends ConfigBase {
 	public final ConfigInt maxFireworkIngredientsInCrafter =
 		i(9, 1, "maxFireworkIngredientsInCrafter", Comments.maxFireworkIngredientsInCrafter);
 	public final ConfigBool allowStonecuttingOnSaw = b(true, "allowStonecuttingOnSaw", Comments.allowStonecuttingOnSaw);
-	public final ConfigBool allowWoodcuttingOnSaw = b(true, "allowWoodcuttingOnSaw", Comments.allowWoodcuttingOnSaw);
 	public final ConfigBool allowCastingBySpout = b(true, "allowCastingBySpout", Comments.allowCastingBySpout);
 	public final ConfigBool displayLogStrippingRecipes = b(true, "displayLogStrippingRecipes", Comments.displayLogStrippingRecipes);
 	public final ConfigInt lightSourceCountForRefinedRadiance =
@@ -43,7 +42,7 @@ public class CRecipes extends ConfigBase {
 		static String allowStonecuttingOnSaw =
 			"Allow any stonecutting recipes to be processed by a Mechanical Saw.";
 		static String allowWoodcuttingOnSaw =
-			"Allow any Druidcraft woodcutter recipes to be processed by a Mechanical Saw.";
+			"Allow any wood related recipes to be processed by a Mechanical Saw.";
 		static String allowCastingBySpout =
 			"Allow Spouts to interact with Casting Tables and Basins from Tinkers' Construct.";
 		static String refinedRadiance =

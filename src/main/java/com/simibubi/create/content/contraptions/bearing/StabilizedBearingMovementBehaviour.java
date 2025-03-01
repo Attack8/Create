@@ -6,27 +6,28 @@ import org.joml.Quaternionf;
 
 import com.mojang.math.Axis;
 import com.simibubi.create.AllPartialModels;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.ControlledContraptionEntity;
 import com.simibubi.create.content.contraptions.OrientedContraptionEntity;
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ActorVisual;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -45,13 +46,13 @@ public class StabilizedBearingMovementBehaviour implements MovementBehaviour {
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public void renderInContraption(MovementContext context, VirtualRenderWorld renderWorld,
-		ContraptionMatrices matrices, MultiBufferSource buffer) {
-		if (!VisualizationManager.supportsVisualization(context.world))
+									ContraptionMatrices matrices, MultiBufferSource buffer) {
+		if (VisualizationManager.supportsVisualization(context.world))
 			return;
 
 		Direction facing = context.state.getValue(BlockStateProperties.FACING);
 		PartialModel top = AllPartialModels.BEARING_TOP;
-		SuperByteBuffer superBuffer = CachedBufferer.partial(top, context.state);
+		SuperByteBuffer superBuffer = CachedBuffers.partial(top, context.state);
 		float renderPartialTicks = AnimationTickHolder.getPartialTicks();
 
 		// rotate to match blockstate
@@ -80,7 +81,7 @@ public class StabilizedBearingMovementBehaviour implements MovementBehaviour {
 	@Nullable
 	@Override
 	public ActorVisual createVisual(VisualizationContext visualizationContext, VirtualRenderWorld simulationWorld,
-		MovementContext movementContext) {
+									MovementContext movementContext) {
 		return new StabilizedBearingVisual(visualizationContext, simulationWorld, movementContext);
 	}
 
@@ -92,13 +93,11 @@ public class StabilizedBearingMovementBehaviour implements MovementBehaviour {
 		Direction.Axis axis = facing.getAxis();
 		AbstractContraptionEntity entity = context.contraption.entity;
 
-		if (entity instanceof ControlledContraptionEntity) {
-			ControlledContraptionEntity controlledCE = (ControlledContraptionEntity) entity;
+		if (entity instanceof ControlledContraptionEntity controlledCE) {
 			if (context.contraption.canBeStabilized(facing, context.localPos))
 				offset = -controlledCE.getAngle(renderPartialTicks);
 
-		} else if (entity instanceof OrientedContraptionEntity) {
-			OrientedContraptionEntity orientedCE = (OrientedContraptionEntity) entity;
+		} else if (entity instanceof OrientedContraptionEntity orientedCE) {
 			if (axis.isVertical())
 				offset = -orientedCE.getViewYRot(renderPartialTicks);
 			else {

@@ -10,15 +10,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
 
 public class ReducedDestroyEffects implements IClientBlockExtensions {
 
 	@Override
 	public boolean addDestroyEffects(BlockState state, Level worldIn, BlockPos pos, ParticleEngine manager) {
-		if (!(worldIn instanceof ClientLevel))
+		if (!(worldIn instanceof ClientLevel world))
 			return true;
-		ClientLevel world = (ClientLevel) worldIn;
 		VoxelShape voxelshape = state.getShape(world, pos);
 		MutableInt amtBoxes = new MutableInt(0);
 		voxelshape.forAllBoxes((x1, y1, z1, x2, y2, z2) -> amtBoxes.increment());

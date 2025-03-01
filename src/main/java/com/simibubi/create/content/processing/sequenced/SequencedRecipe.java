@@ -5,14 +5,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeSerializer;
-import com.simibubi.create.foundation.utility.RegisteredObjects;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+
 import net.minecraftforge.common.crafting.conditions.ICondition.IContext;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -36,7 +37,7 @@ public class SequencedRecipe<T extends ProcessingRecipe<?>> {
 		@SuppressWarnings("unchecked")
 		ProcessingRecipeSerializer<T> serializer = (ProcessingRecipeSerializer<T>) wrapped.getSerializer();
 		JsonObject json = new JsonObject();
-		json.addProperty("type", RegisteredObjects.getKeyOrThrow(serializer)
+		json.addProperty("type", CatnipServices.REGISTRIES.getKeyOrThrow(serializer)
 			.toString());
 		serializer.write(json, wrapped);
 		return json;
@@ -46,9 +47,7 @@ public class SequencedRecipe<T extends ProcessingRecipe<?>> {
 		ResourceLocation parentId = parent.getId();
 		Recipe<?> recipe = RecipeManager.fromJson(
 			new ResourceLocation(parentId.getNamespace(), parentId.getPath() + "_step_" + index), json, IContext.EMPTY);
-		if (recipe instanceof ProcessingRecipe<?> && recipe instanceof IAssemblyRecipe) {
-			ProcessingRecipe<?> processingRecipe = (ProcessingRecipe<?>) recipe;
-			IAssemblyRecipe assemblyRecipe = (IAssemblyRecipe) recipe;
+		if (recipe instanceof ProcessingRecipe<?> processingRecipe && recipe instanceof IAssemblyRecipe assemblyRecipe) {
 			if (assemblyRecipe.supportsAssembly()) {
 				Ingredient transit = Ingredient.of(parent.getTransitionalItem());
 				processingRecipe.getIngredients()
@@ -63,7 +62,7 @@ public class SequencedRecipe<T extends ProcessingRecipe<?>> {
 	public void writeToBuffer(FriendlyByteBuf buffer) {
 		@SuppressWarnings("unchecked")
 		ProcessingRecipeSerializer<T> serializer = (ProcessingRecipeSerializer<T>) wrapped.getSerializer();
-		buffer.writeResourceLocation(RegisteredObjects.getKeyOrThrow(serializer));
+		buffer.writeResourceLocation(CatnipServices.REGISTRIES.getKeyOrThrow(serializer));
 		buffer.writeResourceLocation(wrapped.getId());
 		serializer.toNetwork(buffer, wrapped);
 	}

@@ -5,19 +5,20 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.content.kinetics.simpleRelays.ShaftBlock;
-import com.simibubi.create.foundation.render.VirtualRenderHelper;
-import com.simibubi.create.foundation.utility.AngleHelper;
+import com.simibubi.create.AllSpriteShifts;
+import com.simibubi.create.content.processing.burner.ScrollTransformedInstance;
+import com.simibubi.create.foundation.render.AllInstanceTypes;
 
 import dev.engine_room.flywheel.api.instance.Instance;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.InstanceTypes;
 import dev.engine_room.flywheel.lib.instance.TransformedInstance;
 import dev.engine_room.flywheel.lib.model.Models;
+import net.createmod.catnip.math.AngleHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 
 public class StandardBogeyVisual implements BogeyVisual {
 	private final TransformedInstance shaft1;
@@ -25,8 +26,8 @@ public class StandardBogeyVisual implements BogeyVisual {
 
 	public StandardBogeyVisual(VisualizationContext ctx, float partialTick, boolean inContraption) {
 		var shaftInstancer = ctx.instancerProvider()
-				.instancer(InstanceTypes.TRANSFORMED, VirtualRenderHelper.blockModel(AllBlocks.SHAFT.getDefaultState()
-						.setValue(ShaftBlock.AXIS, Direction.Axis.Z)));
+			.instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.SHAFT));
+
 		shaft1 = shaftInstancer.createInstance();
 		shaft2 = shaftInstancer.createInstance();
 	}
@@ -36,13 +37,15 @@ public class StandardBogeyVisual implements BogeyVisual {
 		shaft1.setTransform(poseStack)
 			.translate(-.5f, .25f, 0)
 			.center()
-			.rotateZDegrees(wheelAngle)
+			.rotateTo(Direction.UP, Direction.SOUTH)
+			.rotateYDegrees(wheelAngle)
 			.uncenter()
 			.setChanged();
 		shaft2.setTransform(poseStack)
 			.translate(-.5f, .25f, -1)
 			.center()
-			.rotateZDegrees(wheelAngle)
+			.rotateTo(Direction.UP, Direction.SOUTH)
+			.rotateYDegrees(wheelAngle)
 			.uncenter()
 			.setChanged();
 	}
@@ -140,6 +143,7 @@ public class StandardBogeyVisual implements BogeyVisual {
 		private final TransformedInstance secondaryShaft1;
 		private final TransformedInstance secondaryShaft2;
 		private final TransformedInstance drive;
+		private final ScrollTransformedInstance belt;
 		private final TransformedInstance piston;
 		private final TransformedInstance wheels;
 		private final TransformedInstance pin;
@@ -147,12 +151,14 @@ public class StandardBogeyVisual implements BogeyVisual {
 		public Large(VisualizationContext ctx, float partialTick, boolean inContraption) {
 			super(ctx, partialTick, inContraption);
 			var secondaryShaftInstancer = ctx.instancerProvider()
-					.instancer(InstanceTypes.TRANSFORMED, VirtualRenderHelper.blockModel(AllBlocks.SHAFT.getDefaultState()
-							.setValue(ShaftBlock.AXIS, Direction.Axis.X)));
+				.instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.SHAFT));
 			secondaryShaft1 = secondaryShaftInstancer.createInstance();
 			secondaryShaft2 = secondaryShaftInstancer.createInstance();
 			drive = ctx.instancerProvider()
 					.instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.BOGEY_DRIVE))
+					.createInstance();
+			belt = ctx.instancerProvider()
+					.instancer(AllInstanceTypes.SCROLLING_TRANSFORMED, Models.partial(AllPartialModels.BOGEY_DRIVE_BELT))
 					.createInstance();
 			piston = ctx.instancerProvider()
 					.instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.BOGEY_PISTON))
@@ -163,6 +169,8 @@ public class StandardBogeyVisual implements BogeyVisual {
 			pin = ctx.instancerProvider()
 					.instancer(InstanceTypes.TRANSFORMED, Models.partial(AllPartialModels.BOGEY_PIN))
 					.createInstance();
+
+			belt.setSpriteShift(AllSpriteShifts.BOGEY_BELT);
 		}
 
 		@Override
@@ -171,16 +179,22 @@ public class StandardBogeyVisual implements BogeyVisual {
 			secondaryShaft1.setTransform(poseStack)
 				.translate(-.5f, .25f, .5f)
 				.center()
-				.rotateXDegrees(wheelAngle)
+				.rotateTo(Direction.UP, Direction.EAST)
+				.rotateYDegrees(wheelAngle)
 				.uncenter()
 				.setChanged();
 			secondaryShaft2.setTransform(poseStack)
 				.translate(-.5f, .25f, -1.5f)
 				.center()
-				.rotateXDegrees(wheelAngle)
+				.rotateTo(Direction.UP, Direction.EAST)
+				.rotateYDegrees(wheelAngle)
 				.uncenter()
 				.setChanged();
 			drive.setTransform(poseStack)
+				.scale(1 - 1/512f)
+				.setChanged();
+			belt.offset(0, StandardBogeyRenderer.Large.BELT_RADIUS_IN_UV_SPACE * Mth.DEG_TO_RAD * wheelAngle)
+				.setTransform(poseStack)
 				.scale(1 - 1/512f)
 				.setChanged();
 			piston.setTransform(poseStack)
@@ -205,6 +219,7 @@ public class StandardBogeyVisual implements BogeyVisual {
 			secondaryShaft2.setZeroTransform().setChanged();
 			wheels.setZeroTransform().setChanged();
 			drive.setZeroTransform().setChanged();
+			belt.setZeroTransform().setChanged();
 			piston.setZeroTransform().setChanged();
 			pin.setZeroTransform().setChanged();
 		}
@@ -216,6 +231,7 @@ public class StandardBogeyVisual implements BogeyVisual {
 			secondaryShaft2.light(packedLight).setChanged();
 			wheels.light(packedLight).setChanged();
 			drive.light(packedLight).setChanged();
+			belt.light(packedLight).setChanged();
 			piston.light(packedLight).setChanged();
 			pin.light(packedLight).setChanged();
 		}
@@ -227,6 +243,7 @@ public class StandardBogeyVisual implements BogeyVisual {
 			consumer.accept(secondaryShaft2);
 			consumer.accept(wheels);
 			consumer.accept(drive);
+			consumer.accept(belt);
 			consumer.accept(piston);
 			consumer.accept(pin);
 		}
@@ -238,6 +255,7 @@ public class StandardBogeyVisual implements BogeyVisual {
 			secondaryShaft2.delete();
 			wheels.delete();
 			drive.delete();
+			belt.delete();
 			piston.delete();
 			pin.delete();
 		}

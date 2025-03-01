@@ -8,11 +8,12 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.content.equipment.goggles.IHaveHoveringInformation;
+import com.simibubi.create.api.equipment.goggles.IHaveHoveringInformation;
 import com.simibubi.create.content.kinetics.belt.BeltBlockEntity;
 import com.simibubi.create.content.kinetics.belt.BeltHelper;
 import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
 import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
+import com.simibubi.create.content.logistics.box.PackageEntity;
 import com.simibubi.create.content.logistics.funnel.BeltFunnelBlock.Shape;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
@@ -21,16 +22,17 @@ import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringB
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.InvManipulationBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.inventory.VersionedInventoryTrackerBehaviour;
 import com.simibubi.create.foundation.item.ItemHelper.ExtractionCountMode;
-import com.simibubi.create.foundation.utility.BlockFace;
-import com.simibubi.create.foundation.utility.VecHelper;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat.Chaser;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import dev.engine_room.flywheel.lib.visualization.VisualizationHelper;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.animation.LerpedFloat.Chaser;
+import net.createmod.catnip.math.BlockFace;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -38,6 +40,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 
@@ -48,7 +51,7 @@ public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHovering
 	private VersionedInventoryTrackerBehaviour invVersionTracker;
 	private int extractionCooldown;
 
-	private WeakReference<ItemEntity> lastObserved; // In-world Extractors only
+	private WeakReference<Entity> lastObserved; // In-world Extractors only
 
 	LerpedFloat flap;
 
@@ -131,7 +134,7 @@ public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHovering
 		if (lastObserved == null) {
 			trackingEntityPresent = false;
 		} else {
-			ItemEntity lastEntity = lastObserved.get();
+			Entity lastEntity = lastObserved.get();
 			if (lastEntity == null || !lastEntity.isAlive() || !lastEntity.getBoundingBox()
 				.intersects(area)) {
 				trackingEntityPresent = false;
@@ -151,9 +154,11 @@ public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHovering
 			invVersionTracker.awaitNewVersion(invManipulation);
 			return;
 		}
-		for (ItemEntity itemEntity : level.getEntitiesOfClass(ItemEntity.class, area)) {
-			lastObserved = new WeakReference<>(itemEntity);
-			return;
+		for (Entity entity : level.getEntities(null, area)) {
+			if (entity instanceof ItemEntity || entity instanceof PackageEntity) {
+				lastObserved = new WeakReference<>(entity);
+				return;
+			}
 		}
 
 		// Extract
@@ -187,7 +192,7 @@ public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHovering
 		startCooldown();
 	}
 
-	static final AABB coreBB = new AABB(VecHelper.CENTER_OF_ORIGIN, VecHelper.CENTER_OF_ORIGIN).inflate(.75f);
+	static final AABB coreBB = new AABB(BlockPos.ZERO);
 
 	private AABB getEntityOverflowScanningArea() {
 		Direction facing = AbstractFunnelBlock.getFunnelFacing(getBlockState());
@@ -321,7 +326,7 @@ public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHovering
 			AllPackets.getChannel()
 				.send(packetTarget(), new FunnelFlapPacket(this, inward));
 		} else {
-			flap.setValue(inward ? 1 : -1);
+			flap.setValue(inward ? -1 : 1);
 			AllSoundEvents.FUNNEL_FLAP.playAt(level, worldPosition, 1, 1, true);
 		}
 	}
@@ -340,14 +345,14 @@ public class FunnelBlockEntity extends SmartBlockEntity implements IHaveHovering
 		if (!(blockState.getBlock() instanceof BeltFunnelBlock))
 			return -1 / 16f;
 		switch (blockState.getValue(BeltFunnelBlock.SHAPE)) {
-		default:
-		case RETRACTED:
-			return 0;
-		case EXTENDED:
-			return 8 / 16f;
-		case PULLING:
-		case PUSHING:
-			return -2 / 16f;
+			default:
+			case RETRACTED:
+				return 0;
+			case EXTENDED:
+				return 8 / 16f;
+			case PULLING:
+			case PUSHING:
+				return -2 / 16f;
 		}
 	}
 

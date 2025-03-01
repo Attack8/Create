@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.network.NetworkEvent.Context;
 
@@ -43,9 +44,8 @@ public class ToolboxDisposeAllPacket extends SimplePacketBase {
 			if (player.distanceToSqr(toolboxPos.getX() + 0.5, toolboxPos.getY(), toolboxPos.getZ() + 0.5) > maxRange
 				* maxRange)
 				return;
-			if (!(blockEntity instanceof ToolboxBlockEntity))
+			if (!(blockEntity instanceof ToolboxBlockEntity toolbox))
 				return;
-			ToolboxBlockEntity toolbox = (ToolboxBlockEntity) blockEntity;
 
 			CompoundTag compound = player.getPersistentData()
 				.getCompound("CreateToolboxData");
@@ -55,19 +55,19 @@ public class ToolboxDisposeAllPacket extends SimplePacketBase {
 				for (int i = 0; i < 36; i++) {
 					String key = String.valueOf(i);
 					if (compound.contains(key) && NbtUtils.readBlockPos(compound.getCompound(key)
-						.getCompound("Pos"))
+							.getCompound("Pos"))
 						.equals(toolboxPos)) {
 						ToolboxHandler.unequip(player, i, true);
 						sendData.setTrue();
 					}
-					
+
 					ItemStack itemStack = player.getInventory().getItem(i);
 					ItemStack remainder = ItemHandlerHelper.insertItemStacked(toolbox.inventory, itemStack, false);
 					if (remainder.getCount() != itemStack.getCount())
 						player.getInventory().setItem(i, remainder);
 				}
 			});
-			
+
 			if (sendData.booleanValue())
 				ToolboxHandler.syncData(player);
 		});

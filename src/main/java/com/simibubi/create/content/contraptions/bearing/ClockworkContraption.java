@@ -6,11 +6,12 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.simibubi.create.AllContraptionTypes;
+import com.simibubi.create.api.contraption.ContraptionType;
 import com.simibubi.create.content.contraptions.AssemblyException;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.ContraptionType;
-import com.simibubi.create.foundation.utility.NBTHelper;
 
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +26,7 @@ public class ClockworkContraption extends Contraption {
 
 	@Override
 	public ContraptionType getType() {
-		return ContraptionType.CLOCKWORK;
+		return AllContraptionTypes.CLOCKWORK.get();
 	}
 
 	private void ignoreBlocks(Set<BlockPos> blocks, BlockPos anchor) {

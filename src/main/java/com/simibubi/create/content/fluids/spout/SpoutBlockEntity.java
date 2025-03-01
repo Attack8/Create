@@ -8,8 +8,8 @@ import java.util.List;
 
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllSoundEvents;
-import com.simibubi.create.api.behaviour.BlockSpoutingBehaviour;
-import com.simibubi.create.content.equipment.goggles.IHaveGoggleInformation;
+import com.simibubi.create.api.behaviour.spouting.BlockSpoutingBehaviour;
+import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import com.simibubi.create.content.fluids.FluidFX;
 import com.simibubi.create.content.kinetics.belt.behaviour.BeltProcessingBehaviour;
 import com.simibubi.create.content.kinetics.belt.behaviour.BeltProcessingBehaviour.ProcessingResult;
@@ -22,9 +22,9 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 import com.simibubi.create.foundation.fluid.FluidHelper;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
 
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -35,6 +35,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -76,7 +77,7 @@ public class SpoutBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 	}
 
 	protected ProcessingResult onItemReceived(TransportedItemStack transported,
-		TransportedItemStackHandlerBehaviour handler) {
+											  TransportedItemStackHandlerBehaviour handler) {
 		if (handler.blockEntity.isVirtual())
 			return PASS;
 		if (!FillingBySpout.canItemBeFilled(level, transported.stack))
@@ -89,7 +90,7 @@ public class SpoutBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 	}
 
 	protected ProcessingResult whenItemHeld(TransportedItemStack transported,
-		TransportedItemStackHandlerBehaviour handler) {
+											TransportedItemStackHandlerBehaviour handler) {
 		if (processingTicks != -1 && processingTicks != 5)
 			return HOLD;
 		if (!FillingBySpout.canItemBeFilled(level, transported.stack))
@@ -106,13 +107,14 @@ public class SpoutBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 		if (processingTicks == -1) {
 			processingTicks = FILLING_TIME;
 			notifyUpdate();
-			AllSoundEvents.SPOUTING.playOnServer(level, worldPosition, 0.75f, 0.9f + 0.2f * (float)Math.random());
+			AllSoundEvents.SPOUTING.playOnServer(level, worldPosition, 0.75f, 0.9f + 0.2f * (float) Math.random());
 			return HOLD;
 		}
 
 		// Process finished
 		ItemStack out = FillingBySpout.fillItem(level, requiredAmountForItem, transported.stack, fluid);
 		if (!out.isEmpty()) {
+			transported.clearFanProcessingData();
 			List<TransportedItemStack> outList = new ArrayList<>();
 			TransportedItemStack held = null;
 			TransportedItemStack result = transported.copy();
@@ -197,21 +199,19 @@ public class SpoutBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 
 		FluidStack currentFluidInTank = getCurrentFluidInTank();
 		if (processingTicks == -1 && (isVirtual() || !level.isClientSide()) && !currentFluidInTank.isEmpty()) {
-			BlockSpoutingBehaviour.forEach(behaviour -> {
-				if (customProcess != null)
-					return;
-				if (behaviour.fillBlock(level, worldPosition.below(2), this, currentFluidInTank, true) > 0) {
-					processingTicks = FILLING_TIME;
-					customProcess = behaviour;
-					notifyUpdate();
-				}
-			});
+			BlockPos filling = this.worldPosition.below(2);
+			BlockSpoutingBehaviour behavior = BlockSpoutingBehaviour.get(this.level, filling);
+			if (behavior != null && behavior.fillBlock(this.level, filling, this, currentFluidInTank.copy(), true) > 0) {
+				processingTicks = FILLING_TIME;
+				customProcess = behavior;
+				notifyUpdate();
+			}
 		}
 
 		if (processingTicks >= 0) {
 			processingTicks--;
 			if (processingTicks == 5 && customProcess != null) {
-				int fillBlock = customProcess.fillBlock(level, worldPosition.below(2), this, currentFluidInTank, false);
+				int fillBlock = customProcess.fillBlock(level, worldPosition.below(2), this, currentFluidInTank.copy(), false);
 				customProcess = null;
 				if (fillBlock > 0) {
 					tank.getPrimaryHandler()
@@ -225,7 +225,7 @@ public class SpoutBlockEntity extends SmartBlockEntity implements IHaveGoggleInf
 
 		if (processingTicks >= 8 && level.isClientSide) {
 			spawnProcessingParticles(tank.getPrimaryTank()
-					.getRenderedFluid());
+				.getRenderedFluid());
 		}
 	}
 

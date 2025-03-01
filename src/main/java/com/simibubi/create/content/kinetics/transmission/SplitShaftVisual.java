@@ -8,13 +8,13 @@ import com.simibubi.create.content.kinetics.base.IRotate;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityVisual;
 import com.simibubi.create.content.kinetics.base.RotatingInstance;
 import com.simibubi.create.foundation.render.AllInstanceTypes;
-import com.simibubi.create.foundation.utility.Iterate;
 
 import dev.engine_room.flywheel.api.instance.Instance;
 import dev.engine_room.flywheel.api.visualization.VisualizationContext;
 import dev.engine_room.flywheel.lib.instance.AbstractInstance;
 import dev.engine_room.flywheel.lib.instance.FlatLit;
 import dev.engine_room.flywheel.lib.model.Models;
+import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 
@@ -29,14 +29,19 @@ public class SplitShaftVisual extends KineticBlockEntityVisual<SplitShaftBlockEn
 
         float speed = blockEntity.getSpeed();
 
-        for (Direction dir : Iterate.directionsInAxis(getRotationAxis())) {
+        for (Direction dir : Iterate.directionsInAxis(rotationAxis())) {
 
             float splitSpeed = speed * blockEntity.getRotationSpeedModifier(dir);
 
-			var instance = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF, dir))
+			var instance = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF))
                 .createInstance();
 
-			keys.add(setup(instance, splitSpeed));
+			instance.setup(blockEntity, splitSpeed)
+				.setPosition(getVisualPosition())
+				.rotateToFace(Direction.SOUTH, dir)
+				.setChanged();
+
+			keys.add(instance);
 		}
     }
 
@@ -48,7 +53,9 @@ public class SplitShaftVisual extends KineticBlockEntityVisual<SplitShaftBlockEn
         Direction[] directions = Iterate.directionsInAxis(boxAxis);
 
         for (int i : Iterate.zeroAndOne) {
-            updateRotation(keys.get(i), blockEntity.getSpeed() * blockEntity.getRotationSpeedModifier(directions[i]));
+            keys.get(i)
+				.setup(blockEntity, blockEntity.getSpeed() * blockEntity.getRotationSpeedModifier(directions[i]))
+				.setChanged();
         }
     }
 

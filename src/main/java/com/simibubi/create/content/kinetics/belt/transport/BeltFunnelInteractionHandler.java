@@ -15,12 +15,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class BeltFunnelInteractionHandler {
 
 	public static boolean checkForFunnels(BeltInventory beltInventory, TransportedItemStack currentItem,
-		float nextOffset) {
+										  float nextOffset) {
 		boolean beltMovementPositive = beltInventory.beltMovementPositive;
 		int firstUpcomingSegment = (int) Math.floor(currentItem.beltPosition);
 		int step = beltMovementPositive ? 1 : -1;
@@ -59,10 +60,9 @@ public class BeltFunnelInteractionHandler {
 					continue;
 
 			BlockEntity be = world.getBlockEntity(funnelPos);
-			if (!(be instanceof FunnelBlockEntity))
+			if (!(be instanceof FunnelBlockEntity funnelBE))
 				return true;
 
-			FunnelBlockEntity funnelBE = (FunnelBlockEntity) be;
 			InvManipulationBehaviour inserting = funnelBE.getBehaviour(InvManipulationBehaviour.TYPE);
 			FilteringBehaviour filtering = funnelBE.getBehaviour(FilteringBehaviour.TYPE);
 
@@ -72,7 +72,7 @@ public class BeltFunnelInteractionHandler {
 				else
 					continue;
 
-			if(beltInventory.belt.invVersionTracker.stillWaiting(inserting))
+			if (beltInventory.belt.invVersionTracker.stillWaiting(inserting))
 				continue;
 
 			int amountToExtract = funnelBE.getAmountToExtract();

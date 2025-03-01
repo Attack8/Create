@@ -9,15 +9,15 @@ import com.simibubi.create.AllPartialModels;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
 import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
-import com.simibubi.create.foundation.utility.animation.LerpedFloat;
 import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
 
 import dev.engine_room.flywheel.api.visualization.VisualizationManager;
 import dev.engine_room.flywheel.lib.model.baked.PartialModel;
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.animation.LerpedFloat;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -62,8 +62,8 @@ public class PortableStorageInterfaceRenderer extends SafeBlockEntityRenderer<Po
 
 	private static void render(BlockState blockState, boolean lit, float progress, PoseStack local,
 		Consumer<SuperByteBuffer> drawCallback) {
-		SuperByteBuffer middle = CachedBufferer.partial(getMiddleForState(blockState, lit), blockState);
-		SuperByteBuffer top = CachedBufferer.partial(getTopForState(blockState), blockState);
+		SuperByteBuffer middle = CachedBuffers.partial(getMiddleForState(blockState, lit), blockState);
+		SuperByteBuffer top = CachedBuffers.partial(getTopForState(blockState), blockState);
 
 		if (local != null) {
 			middle.transform(local);

@@ -81,6 +81,11 @@ public abstract class GhostItemMenu<T> extends MenuBase<T> implements IClearable
 		ghostInventory.setStackInSlot(slot, insert);
 		getSlot(slotId).setChanged();
 	}
+	
+	@Override
+	protected boolean moveItemStackTo(ItemStack pStack, int pStartIndex, int pEndIndex, boolean pReverseDirection) {
+		return false;
+	}
 
 	@Override
 	public ItemStack quickMoveStack(Player playerIn, int index) {

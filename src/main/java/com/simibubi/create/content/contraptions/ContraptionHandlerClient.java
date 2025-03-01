@@ -12,12 +12,12 @@ import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.contraptions.sync.ContraptionInteractionPacket;
 import com.simibubi.create.content.trains.entity.CarriageContraptionEntity;
 import com.simibubi.create.content.trains.entity.TrainRelocator;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Iterate;
 import com.simibubi.create.foundation.utility.RaycastHelper;
 import com.simibubi.create.foundation.utility.RaycastHelper.PredicateTraceResult;
-import com.simibubi.create.foundation.utility.VecHelper;
 
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
@@ -32,6 +32,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
@@ -48,9 +49,8 @@ public class ContraptionHandlerClient {
 	public static void preventRemotePlayersWalkingAnimations(PlayerTickEvent event) {
 		if (event.phase == Phase.START)
 			return;
-		if (!(event.player instanceof RemotePlayer))
+		if (!(event.player instanceof RemotePlayer remotePlayer))
 			return;
-		RemotePlayer remotePlayer = (RemotePlayer) event.player;
 		CompoundTag data = remotePlayer.getPersistentData();
 		if (!data.contains("LastOverrideLimbSwingUpdate"))
 			return;
@@ -91,7 +91,11 @@ public class ContraptionHandlerClient {
 		Collection<WeakReference<AbstractContraptionEntity>> contraptions =
 			ContraptionHandler.loadedContraptions.get(mc.level)
 				.values();
-		
+
+		double bestDistance = Double.MAX_VALUE;
+		BlockHitResult bestResult = null;
+		AbstractContraptionEntity bestEntity = null;
+
 		for (WeakReference<AbstractContraptionEntity> ref : contraptions) {
 			AbstractContraptionEntity contraptionEntity = ref.get();
 			if (contraptionEntity == null)
@@ -104,23 +108,34 @@ public class ContraptionHandlerClient {
 			if (rayTraceResult == null)
 				continue;
 
-			InteractionHand hand = event.getHand();
-			Direction face = rayTraceResult.getDirection();
-			BlockPos pos = rayTraceResult.getBlockPos();
-
-			if (contraptionEntity.handlePlayerInteraction(player, pos, face, hand)) {
-				AllPackets.getChannel().sendToServer(new ContraptionInteractionPacket(contraptionEntity, hand, pos, face));
-			} else if (handleSpecialInteractions(contraptionEntity, player, pos, face, hand)) {
-			} else
+			double distance = contraptionEntity.toGlobalVector(rayTraceResult.getLocation(), 1).distanceTo(origin);
+			if (distance > bestDistance)
 				continue;
 
-			event.setCanceled(true);
-			event.setSwingHand(false);
+			bestResult = rayTraceResult;
+			bestDistance = distance;
+			bestEntity = contraptionEntity;
 		}
+
+		if (bestResult == null)
+			return;
+
+		InteractionHand hand = event.getHand();
+		Direction face = bestResult.getDirection();
+		BlockPos pos = bestResult.getBlockPos();
+
+		if (bestEntity.handlePlayerInteraction(player, pos, face, hand)) {
+			AllPackets.getChannel()
+				.sendToServer(new ContraptionInteractionPacket(bestEntity, hand, pos, face));
+		} else
+			handleSpecialInteractions(bestEntity, player, pos, face, hand);
+
+		event.setCanceled(true);
+		event.setSwingHand(false);
 	}
 
 	private static boolean handleSpecialInteractions(AbstractContraptionEntity contraptionEntity, Player player,
-		BlockPos localPos, Direction side, InteractionHand interactionHand) {
+													 BlockPos localPos, Direction side, InteractionHand interactionHand) {
 		if (AllItems.WRENCH.isIn(player.getItemInHand(interactionHand))
 			&& contraptionEntity instanceof CarriageContraptionEntity car)
 			return TrainRelocator.carriageWrenched(car.toGlobalVector(VecHelper.getCenterOf(localPos), 1), car);
@@ -141,7 +156,7 @@ public class ContraptionHandlerClient {
 
 	@Nullable
 	public static BlockHitResult rayTraceContraption(Vec3 origin, Vec3 target,
-		AbstractContraptionEntity contraptionEntity) {
+													 AbstractContraptionEntity contraptionEntity) {
 		Vec3 localOrigin = contraptionEntity.toLocalVector(origin, 1);
 		Vec3 localTarget = contraptionEntity.toLocalVector(target, 1);
 		Contraption contraption = contraptionEntity.getContraption();

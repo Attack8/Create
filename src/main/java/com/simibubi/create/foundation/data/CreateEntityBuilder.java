@@ -3,7 +3,6 @@ package com.simibubi.create.foundation.data;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
-import com.simibubi.create.Create;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.builders.BuilderCallback;
 import com.tterrag.registrate.builders.EntityBuilder;
@@ -14,6 +13,7 @@ import dev.engine_room.flywheel.lib.visualization.SimpleEntityVisualizer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.util.NonNullPredicate;
 import net.minecraftforge.fml.DistExecutor;
@@ -54,7 +54,7 @@ public class CreateEntityBuilder<T extends Entity, P> extends EntityBuilder<T, P
 	}
 
 	protected void registerVisualizer() {
-		OneTimeEventReceiver.addModListener(Create.REGISTRATE, FMLClientSetupEvent.class, $ -> {
+		OneTimeEventReceiver.addModListener(getOwner(), FMLClientSetupEvent.class, $ -> {
 			var visualFactory = this.visualFactory;
 			if (visualFactory != null) {
 				NonNullPredicate<T> renderNormally = this.renderNormally;

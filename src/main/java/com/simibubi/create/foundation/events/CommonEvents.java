@@ -6,36 +6,38 @@ import com.simibubi.create.content.contraptions.ContraptionHandler;
 import com.simibubi.create.content.contraptions.actors.trainControls.ControlsServerHandler;
 import com.simibubi.create.content.contraptions.minecart.CouplingPhysics;
 import com.simibubi.create.content.contraptions.minecart.capability.CapabilityMinecartController;
-import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileTypeManager;
 import com.simibubi.create.content.equipment.toolbox.ToolboxHandler;
 import com.simibubi.create.content.equipment.wrench.WrenchItem;
 import com.simibubi.create.content.equipment.zapper.ZapperInteractionHandler;
 import com.simibubi.create.content.equipment.zapper.ZapperItem;
 import com.simibubi.create.content.kinetics.belt.BeltHelper;
+import com.simibubi.create.content.kinetics.chainConveyor.ServerChainConveyorHandler;
+import com.simibubi.create.content.kinetics.drill.CobbleGenOptimisation;
 import com.simibubi.create.content.redstone.link.controller.LinkedControllerServerHandler;
 import com.simibubi.create.content.trains.entity.CarriageEntityHandler;
-import com.simibubi.create.foundation.ModFilePackResources;
+import com.simibubi.create.foundation.data.RuntimeDataGenerator;
+import com.simibubi.create.foundation.pack.DynamicPack;
+import com.simibubi.create.foundation.pack.DynamicPackSource;
 import com.simibubi.create.foundation.recipe.RecipeFinder;
-import com.simibubi.create.foundation.utility.Components;
 import com.simibubi.create.foundation.utility.ServerSpeedProvider;
-import com.simibubi.create.foundation.utility.WorldAttached;
+import com.simibubi.create.foundation.utility.TickBasedCache;
 import com.simibubi.create.infrastructure.command.AllCommands;
 
+import net.createmod.catnip.data.WorldAttached;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent.LevelTickEvent;
 import net.minecraftforge.event.TickEvent.Phase;
@@ -52,10 +54,7 @@ import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.forgespi.language.IModFileInfo;
-import net.minecraftforge.forgespi.locating.IModFile;
 
 @EventBusSubscriber
 public class CommonEvents {
@@ -69,6 +68,8 @@ public class CommonEvents {
 		ServerSpeedProvider.serverTick();
 		Create.RAILWAYS.sync.serverTick();
 		TrainMapSync.serverTick(event);
+		ServerChainConveyorHandler.tick();
+		TickBasedCache.tick();
 	}
 
 	@SubscribeEvent
@@ -102,6 +103,7 @@ public class CommonEvents {
 		LinkedControllerServerHandler.tick(world);
 		ControlsServerHandler.tick(world);
 		Create.RAILWAYS.tick(world);
+		Create.LOGISTICS.tick(world);
 	}
 
 	@SubscribeEvent
@@ -139,18 +141,7 @@ public class CommonEvents {
 	@SubscribeEvent
 	public static void addReloadListeners(AddReloadListenerEvent event) {
 		event.addListener(RecipeFinder.LISTENER);
-		event.addListener(PotatoProjectileTypeManager.ReloadListener.INSTANCE);
 		event.addListener(BeltHelper.LISTENER);
-	}
-
-	@SubscribeEvent
-	public static void onDatapackSync(OnDatapackSyncEvent event) {
-		ServerPlayer player = event.getPlayer();
-		if (player != null) {
-			PotatoProjectileTypeManager.syncTo(player);
-		} else {
-			PotatoProjectileTypeManager.syncToAll();
-		}
 	}
 
 	@SubscribeEvent
@@ -164,6 +155,7 @@ public class CommonEvents {
 		Create.REDSTONE_LINK_NETWORK_HANDLER.onLoadWorld(world);
 		Create.TORQUE_PROPAGATOR.onLoadWorld(world);
 		Create.RAILWAYS.levelLoaded(world);
+		Create.LOGISTICS.levelLoaded(world);
 	}
 
 	@SubscribeEvent
@@ -172,6 +164,7 @@ public class CommonEvents {
 		Create.REDSTONE_LINK_NETWORK_HANDLER.onUnloadWorld(world);
 		Create.TORQUE_PROPAGATOR.onUnloadWorld(world);
 		WorldAttached.invalidateWorld(world);
+		CobbleGenOptimisation.invalidateWorld(world);
 	}
 
 	@SubscribeEvent
@@ -201,19 +194,26 @@ public class CommonEvents {
 
 		@SubscribeEvent
 		public static void addPackFinders(AddPackFindersEvent event) {
-			if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-				IModFileInfo modFileInfo = ModList.get().getModFileById(Create.ID);
-				if (modFileInfo == null) {
-					Create.LOGGER.error("Could not find Create mod file info; built-in resource packs will be missing!");
-					return;
-				}
-				IModFile modFile = modFileInfo.getFile();
-				event.addRepositorySource(consumer -> {
-					Pack pack = Pack.readMetaAndCreate(Create.asResource("legacy_copper").toString(), Components.literal("Create Legacy Copper"), false, id -> new ModFilePackResources(id, modFile, "resourcepacks/legacy_copper"), PackType.CLIENT_RESOURCES, Pack.Position.TOP, PackSource.BUILT_IN);
-					if (pack != null) {
-						consumer.accept(pack);
-					}
-				});
+			// Uncomment and rename pack to add built in resource packs
+//			if (event.getPackType() == PackType.CLIENT_RESOURCES) {
+//				IModFileInfo modFileInfo = ModList.get().getModFileById(Create.ID);
+//				if (modFileInfo == null) {
+//					Create.LOGGER.error("Could not find Create mod file info; built-in resource packs will be missing!");
+//					return;
+//				}
+//				IModFile modFile = modFileInfo.getFile();
+//				event.addRepositorySource(consumer -> {
+//                    Pack pack = Pack.readMetaAndCreate(Create.asResource("legacy_copper").toString(), Component.literal("Create Legacy Copper"), false, id -> new ModFilePackResources(id, modFile, "resourcepacks/legacy_copper"), PackType.CLIENT_RESOURCES, Pack.Position.TOP, PackSource.BUILT_IN);
+//					if (pack != null) {
+//						consumer.accept(pack);
+//					}
+//				});
+//			}
+
+			if (event.getPackType() == PackType.SERVER_DATA) {
+				DynamicPack dynamicPack = new DynamicPack("create:dynamic_data", PackType.SERVER_DATA);
+				RuntimeDataGenerator.insertIntoPack(dynamicPack);
+				event.addRepositorySource(new DynamicPackSource("create:dynamic_data", PackType.SERVER_DATA, Pack.Position.BOTTOM, dynamicPack));
 			}
 		}
 	}

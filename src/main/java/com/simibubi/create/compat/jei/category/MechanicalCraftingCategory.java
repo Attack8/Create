@@ -11,7 +11,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.compat.jei.category.animations.AnimatedCrafter;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
-import com.simibubi.create.foundation.utility.Components;
 
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -30,6 +29,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
+
 import net.minecraftforge.common.crafting.IShapedRecipe;
 
 @ParametersAreNonnullByDefault
@@ -188,7 +188,7 @@ public class MechanicalCraftingCategory extends CreateRecipeCategory<CraftingRec
 				return ingredient.getTooltipLines(player, tooltipFlag);
 			} catch (RuntimeException | LinkageError e) {
 				List<Component> list = new ArrayList<>();
-				MutableComponent crash = Components.translatable("jei.tooltip.error.crash");
+                MutableComponent crash = Component.translatable("jei.tooltip.error.crash");
 				list.add(crash.withStyle(ChatFormatting.RED));
 				return list;
 			}

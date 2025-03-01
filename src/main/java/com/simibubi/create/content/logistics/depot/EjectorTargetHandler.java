@@ -5,13 +5,13 @@ import org.joml.Vector3f;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllPackets;
-import com.simibubi.create.CreateClient;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
-import com.simibubi.create.foundation.utility.Color;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.VecHelper;
+import com.simibubi.create.foundation.utility.CreateLang;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.outliner.Outliner;
+import net.createmod.catnip.theme.Color;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -33,6 +33,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -60,7 +61,7 @@ public class EjectorTargetHandler {
 
 		String key = "weighted_ejector.target_set";
 		ChatFormatting colour = ChatFormatting.GOLD;
-		player.displayClientMessage(Lang.translateDirect(key)
+		player.displayClientMessage(CreateLang.translateDirect(key)
 			.withStyle(colour), true);
 		currentSelection = pos;
 		launcher = null;
@@ -99,7 +100,7 @@ public class EjectorTargetHandler {
 
 		Direction validTargetDirection = getValidTargetDirection(pos);
 		if (validTargetDirection == null) {
-			player.displayClientMessage(Lang.translateDirect(key)
+			player.displayClientMessage(CreateLang.translateDirect(key)
 				.withStyle(colour), true);
 			currentItem = null;
 			currentSelection = null;
@@ -110,7 +111,7 @@ public class EjectorTargetHandler {
 		colour = ChatFormatting.GREEN;
 
 		player.displayClientMessage(
-			Lang.translateDirect(key, currentSelection.getX(), currentSelection.getY(), currentSelection.getZ())
+			CreateLang.translateDirect(key, currentSelection.getX(), currentSelection.getY(), currentSelection.getZ())
 				.withStyle(colour),
 			true);
 
@@ -176,9 +177,8 @@ public class EjectorTargetHandler {
 			return;
 
 		HitResult objectMouseOver = mc.hitResult;
-		if (!(objectMouseOver instanceof BlockHitResult))
+		if (!(objectMouseOver instanceof BlockHitResult blockRayTraceResult))
 			return;
-		BlockHitResult blockRayTraceResult = (BlockHitResult) objectMouseOver;
 		if (blockRayTraceResult.getType() == Type.MISS)
 			return;
 
@@ -211,7 +211,7 @@ public class EjectorTargetHandler {
 		ClientLevel world = mc.level;
 
 		AABB bb = new AABB(0, 0, 0, 1, 0, 1).move(currentSelection.offset(-validX, -yDiff, -validZ));
-		CreateClient.OUTLINER.chaseAABB("valid", bb)
+		Outliner.getInstance().chaseAABB("valid", bb)
 			.colored(intColor)
 			.lineWidth(1 / 16f);
 
@@ -227,9 +227,8 @@ public class EjectorTargetHandler {
 		if (!AllItems.WRENCH.isIn(heldItem))
 			return;
 		HitResult objectMouseOver = Minecraft.getInstance().hitResult;
-		if (!(objectMouseOver instanceof BlockHitResult))
+		if (!(objectMouseOver instanceof BlockHitResult result))
 			return;
-		BlockHitResult result = (BlockHitResult) objectMouseOver;
 		BlockPos pos = result.getBlockPos();
 
 		BlockEntity be = Minecraft.getInstance().level.getBlockEntity(pos);
@@ -261,7 +260,7 @@ public class EjectorTargetHandler {
 		BlockState state = world.getBlockState(pos);
 		VoxelShape shape = state.getShape(world, pos);
 		AABB boundingBox = shape.isEmpty() ? new AABB(BlockPos.ZERO) : shape.bounds();
-		CreateClient.OUTLINER.showAABB("target", boundingBox.move(pos))
+		Outliner.getInstance().showAABB("target", boundingBox.move(pos))
 			.colored(0xffcb74)
 			.lineWidth(1 / 16f);
 	}

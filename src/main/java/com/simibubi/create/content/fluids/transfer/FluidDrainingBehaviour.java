@@ -12,11 +12,11 @@ import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.fluid.FluidHelper;
-import com.simibubi.create.foundation.utility.BBHelper;
-import com.simibubi.create.foundation.utility.Iterate;
 
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectHeapPriorityQueue;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.BBHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -29,6 +29,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.CollisionContext;
+
 import net.minecraftforge.fluids.FluidStack;
 
 public class FluidDrainingBehaviour extends FluidManipulationBehaviour {
@@ -106,8 +107,7 @@ public class FluidDrainingBehaviour extends FluidManipulationBehaviour {
 				&& blockState.getValue(BlockStateProperties.WATERLOGGED)) {
 				emptied = blockState.setValue(BlockStateProperties.WATERLOGGED, Boolean.valueOf(false));
 				fluid = Fluids.WATER;
-			} else if (blockState.getBlock() instanceof LiquidBlock) {
-				LiquidBlock flowingFluid = (LiquidBlock) blockState.getBlock();
+			} else if (blockState.getBlock() instanceof LiquidBlock flowingFluid) {
 				emptied = Blocks.AIR.defaultBlockState();
 				if (blockState.getValue(LiquidBlock.LEVEL) == 0)
 					fluid = flowingFluid.getFluid();
@@ -124,7 +124,7 @@ public class FluidDrainingBehaviour extends FluidManipulationBehaviour {
 				}
 			} else if (blockState.getFluidState()
 				.getType() != Fluids.EMPTY && blockState.getCollisionShape(world, currentPos, CollisionContext.empty())
-					.isEmpty()) {
+				.isEmpty()) {
 				fluid = blockState.getFluidState()
 					.getType();
 				emptied = Blocks.AIR.defaultBlockState();
@@ -148,8 +148,14 @@ public class FluidDrainingBehaviour extends FluidManipulationBehaviour {
 			playEffect(world, currentPos, fluid, true);
 			blockEntity.award(AllAdvancements.HOSE_PULLEY);
 
-			if (!blockEntity.isVirtual())
+			if (!blockEntity.isVirtual()) {
 				world.setBlock(currentPos, emptied, 2 | 16);
+
+				BlockState stateAbove = world.getBlockState(currentPos.above());
+				if (stateAbove.getFluidState()
+					.getType() == Fluids.EMPTY && !stateAbove.canSurvive(world, currentPos.above()))
+					world.setBlock(currentPos.above(), Blocks.AIR.defaultBlockState(), 2 | 16);
+			}
 			affectedArea = BBHelper.encapsulate(affectedArea, currentPos);
 
 			queue.dequeue();
@@ -223,7 +229,7 @@ public class FluidDrainingBehaviour extends FluidManipulationBehaviour {
 			return blockState.getValue(LiquidBlock.LEVEL) == 0 ? FluidBlockType.SOURCE : FluidBlockType.FLOWING;
 		if (blockState.getFluidState()
 			.getType() != Fluids.EMPTY && blockState.getCollisionShape(getWorld(), pos, CollisionContext.empty())
-				.isEmpty())
+			.isEmpty())
 			return FluidBlockType.SOURCE;
 		return FluidBlockType.NONE;
 	}

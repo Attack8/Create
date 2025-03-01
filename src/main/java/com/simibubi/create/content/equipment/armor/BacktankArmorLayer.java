@@ -2,11 +2,11 @@ package com.simibubi.create.content.equipment.armor;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.simibubi.create.foundation.render.CachedBufferer;
-import com.simibubi.create.foundation.render.SuperByteBuffer;
-import com.simibubi.create.foundation.utility.AngleHelper;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
+import net.createmod.catnip.math.AngleHelper;
+import net.createmod.catnip.render.CachedBuffers;
+import net.createmod.catnip.render.SuperByteBuffer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -30,7 +30,7 @@ public class BacktankArmorLayer<T extends LivingEntity, M extends EntityModel<T>
 
 	@Override
 	public void render(PoseStack ms, MultiBufferSource buffer, int light, LivingEntity entity, float yaw, float pitch,
-		float pt, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
+					   float pt, float p_225628_8_, float p_225628_9_, float p_225628_10_) {
 		if (entity.getPose() == Pose.SLEEPING)
 			return;
 
@@ -39,15 +39,15 @@ public class BacktankArmorLayer<T extends LivingEntity, M extends EntityModel<T>
 			return;
 
 		M entityModel = getParentModel();
-		if (!(entityModel instanceof HumanoidModel))
+		if (!(entityModel instanceof HumanoidModel<?> model))
 			return;
 
-		HumanoidModel<?> model = (HumanoidModel<?>) entityModel;
 		VertexConsumer vc = buffer.getBuffer(Sheets.cutoutBlockSheet());
 		BlockState renderedState = item.getBlock().defaultBlockState()
-				.setValue(BacktankBlock.HORIZONTAL_FACING, Direction.SOUTH);
-		SuperByteBuffer backtank = CachedBufferer.block(renderedState);
-		SuperByteBuffer cogs = CachedBufferer.partial(BacktankRenderer.getCogsModel(renderedState), renderedState);
+			.setValue(BacktankBlock.HORIZONTAL_FACING, Direction.SOUTH);
+		SuperByteBuffer backtank = CachedBuffers.block(renderedState);
+		SuperByteBuffer cogs = CachedBuffers.partial(BacktankRenderer.getCogsModel(renderedState), renderedState);
+		SuperByteBuffer nob = CachedBuffers.partial(BacktankRenderer.getShaftModel(renderedState), renderedState);
 
 		ms.pushPose();
 
@@ -56,6 +56,11 @@ public class BacktankArmorLayer<T extends LivingEntity, M extends EntityModel<T>
 		ms.scale(1, -1, -1);
 
 		backtank.disableDiffuse()
+			.light(light)
+			.renderInto(ms, vc);
+
+		nob.disableDiffuse()
+			.translate(0, -3f / 16, 0)
 			.light(light)
 			.renderInto(ms, vc);
 
@@ -80,11 +85,10 @@ public class BacktankArmorLayer<T extends LivingEntity, M extends EntityModel<T>
 			registerOn(renderer);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static void registerOn(EntityRenderer<?> entityRenderer) {
-		if (!(entityRenderer instanceof LivingEntityRenderer))
+		if (!(entityRenderer instanceof LivingEntityRenderer<?, ?> livingRenderer))
 			return;
-		LivingEntityRenderer<?, ?> livingRenderer = (LivingEntityRenderer<?, ?>) entityRenderer;
 		if (!(livingRenderer.getModel() instanceof HumanoidModel))
 			return;
 		BacktankArmorLayer<?, ?> layer = new BacktankArmorLayer<>(livingRenderer);

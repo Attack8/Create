@@ -8,8 +8,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
-import com.simibubi.create.foundation.utility.IntAttached;
 
+import net.createmod.catnip.data.IntAttached;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +22,7 @@ public class CountedItemStackList {
 
 	public CountedItemStackList(IItemHandler inventory, FilteringBehaviour filteringBehaviour) {
 		for (int slot = 0; slot < inventory.getSlots(); slot++) {
-			ItemStack extractItem = inventory.extractItem(slot, inventory.getSlotLimit(slot), true);
+			ItemStack extractItem = inventory.getStackInSlot(slot);
 			if (filteringBehaviour.test(extractItem))
 				add(extractItem);
 		}

@@ -7,13 +7,13 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.contraptions.AssemblyException;
 import com.simibubi.create.content.contraptions.IDisplayAssemblyExceptions;
-import com.simibubi.create.foundation.utility.Components;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -59,8 +60,10 @@ public class HighlightCommand {
 	}
 
 	private static void sendMissMessage(CommandSourceStack source) {
-		source.sendSuccess(() -> 
-			Components.literal("Try looking at a Block that has failed to assemble a Contraption and try again."),
+		source.sendSuccess(() ->
+			{
+				return Component.literal("Try looking at a Block that has failed to assemble a Contraption and try again.");
+			},
 			true);
 	}
 
@@ -81,12 +84,11 @@ public class HighlightCommand {
 
 		BlockPos pos = ray.getBlockPos();
 		BlockEntity be = world.getBlockEntity(pos);
-		if (!(be instanceof IDisplayAssemblyExceptions)) {
+		if (!(be instanceof IDisplayAssemblyExceptions display)) {
 			sendMissMessage(source);
 			return 0;
 		}
 
-		IDisplayAssemblyExceptions display = (IDisplayAssemblyExceptions) be;
 		AssemblyException exception = display.getLastAssemblyException();
 		if (exception == null) {
 			sendMissMessage(source);
@@ -94,7 +96,9 @@ public class HighlightCommand {
 		}
 
 		if (!exception.hasPosition()) {
-			source.sendSuccess(() -> Components.literal("Can't highlight a specific position for this issue"), true);
+			source.sendSuccess(() -> {
+				return Component.literal("Can't highlight a specific position for this issue");
+			}, true);
 			return Command.SINGLE_SUCCESS;
 		}
 

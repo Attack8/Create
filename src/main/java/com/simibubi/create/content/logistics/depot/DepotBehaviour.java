@@ -21,9 +21,9 @@ import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.item.ItemHelper;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
 
+import net.createmod.catnip.nbt.NBTHelper;
+import net.createmod.catnip.math.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -59,7 +59,7 @@ public class DepotBehaviour extends BlockEntityBehaviour {
 
 	public DepotBehaviour(SmartBlockEntity be) {
 		super(be);
-		maxStackSize = () -> 64;
+		maxStackSize = () -> heldItem != null ? heldItem.stack.getMaxStackSize() : 64;
 		canAcceptItems = () -> true;
 		canFunnelsPullFrom = $ -> true;
 		acceptedItems = $ -> true;
@@ -78,12 +78,12 @@ public class DepotBehaviour extends BlockEntityBehaviour {
 	public void enableMerging() {
 		allowMerge = true;
 	}
-	
+
 	public DepotBehaviour withCallback(Consumer<ItemStack> changeListener) {
 		onHeldInserted = changeListener;
 		return this;
 	}
-	
+
 	public DepotBehaviour onlyAccepts(Predicate<ItemStack> filter) {
 		acceptedItems = filter;
 		return this;
@@ -267,8 +267,9 @@ public class DepotBehaviour extends BlockEntityBehaviour {
 		int cumulativeStackSize = getPresentStackSize();
 		for (TransportedItemStack transportedItemStack : incoming)
 			cumulativeStackSize += transportedItemStack.stack.getCount();
-		int fromGetter = maxStackSize.get();
-		return (fromGetter == 0 ? 64 : fromGetter) - cumulativeStackSize;
+		int fromGetter =
+			Math.min(maxStackSize.get() == 0 ? 64 : maxStackSize.get(), getHeldItemStack().getMaxStackSize());
+		return (fromGetter) - cumulativeStackSize;
 	}
 
 	public ItemStack insert(TransportedItemStack heldItem, boolean simulate) {
@@ -315,7 +316,7 @@ public class DepotBehaviour extends BlockEntityBehaviour {
 
 		if (simulate)
 			return returned;
-		
+
 		if (this.isEmpty()) {
 			if (heldItem.insertedFrom.getAxis()
 				.isHorizontal())
@@ -328,7 +329,7 @@ public class DepotBehaviour extends BlockEntityBehaviour {
 			heldItem = heldItem.copy();
 			heldItem.stack.setCount(maxCount);
 		}
-		
+
 		this.heldItem = heldItem;
 		onHeldInserted.accept(heldItem.stack);
 		return returned;
@@ -361,7 +362,7 @@ public class DepotBehaviour extends BlockEntityBehaviour {
 			return true;
 		return false;
 	}
-	
+
 	private ItemStack tryInsertingFromSide(TransportedItemStack transportedStack, Direction side, boolean simulate) {
 		ItemStack inserted = transportedStack.stack;
 

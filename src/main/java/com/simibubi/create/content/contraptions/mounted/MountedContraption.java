@@ -7,14 +7,15 @@ import java.util.Queue;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.simibubi.create.AllBlocks;
+import com.simibubi.create.AllContraptionTypes;
+import com.simibubi.create.api.contraption.ContraptionType;
 import com.simibubi.create.content.contraptions.AssemblyException;
 import com.simibubi.create.content.contraptions.Contraption;
-import com.simibubi.create.content.contraptions.ContraptionType;
 import com.simibubi.create.content.contraptions.mounted.CartAssemblerBlockEntity.CartMovementMode;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.NBTHelper;
-import com.simibubi.create.foundation.utility.VecHelper;
 
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -30,6 +31,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
 import net.minecraft.world.phys.AABB;
+
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class MountedContraption extends Contraption {
@@ -47,7 +49,7 @@ public class MountedContraption extends Contraption {
 
 	@Override
 	public ContraptionType getType() {
-		return ContraptionType.MOUNTED;
+		return AllContraptionTypes.MOUNTED.get();
 	}
 
 	@Override
@@ -59,7 +61,7 @@ public class MountedContraption extends Contraption {
 			return false;
 
 		Axis axis = state.getValue(RAIL_SHAPE) == RailShape.EAST_WEST ? Axis.X : Axis.Z;
-		addBlock(pos, Pair.of(new StructureBlockInfo(pos, AllBlocks.MINECART_ANCHOR.getDefaultState()
+		addBlock(world, pos, Pair.of(new StructureBlockInfo(pos, AllBlocks.MINECART_ANCHOR.getDefaultState()
 			.setValue(BlockStateProperties.HORIZONTAL_AXIS, axis), null), null));
 
 		if (blocks.size() == 1)
@@ -153,7 +155,7 @@ public class MountedContraption extends Contraption {
 
 	public void addExtraInventories(Entity cart) {
 		if (cart instanceof Container container)
-			storage.attachExternal(new ContraptionInvWrapper(true, new InvWrapper(container)));
+			storage.attachExternal(new InvWrapper(container));
 	}
 
 }

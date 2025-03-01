@@ -1,13 +1,13 @@
 package com.simibubi.create.content.equipment.armor;
 
-import java.util.Locale;
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Locale;
 
 public class BaseArmorItem extends ArmorItem {
 	protected final ResourceLocation textureLoc;

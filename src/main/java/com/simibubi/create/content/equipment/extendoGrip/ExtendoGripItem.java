@@ -12,9 +12,9 @@ import com.simibubi.create.AllPackets;
 import com.simibubi.create.content.equipment.armor.BacktankUtil;
 import com.simibubi.create.foundation.advancement.AllAdvancements;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
-import com.simibubi.create.foundation.utility.AnimationTickHolder;
 import com.simibubi.create.infrastructure.config.AllConfigs;
 
+import net.createmod.catnip.animation.AnimationTickHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
@@ -34,6 +34,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult.Type;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
@@ -63,11 +64,11 @@ public class ExtendoGripItem extends Item {
 			AttributeModifier.Operation.ADDITION);
 
 	private static final Supplier<Multimap<Attribute, AttributeModifier>> rangeModifier = Suppliers.memoize(() ->
-	// Holding an ExtendoGrip
-	ImmutableMultimap.of(ForgeMod.BLOCK_REACH.get(), singleRangeAttributeModifier));
+		// Holding an ExtendoGrip
+		ImmutableMultimap.of(ForgeMod.BLOCK_REACH.get(), singleRangeAttributeModifier));
 	private static final Supplier<Multimap<Attribute, AttributeModifier>> doubleRangeModifier = Suppliers.memoize(() ->
-	// Holding two ExtendoGrips o.O
-	ImmutableMultimap.of(ForgeMod.BLOCK_REACH.get(), doubleRangeAttributeModifier));
+		// Holding two ExtendoGrips o.O
+		ImmutableMultimap.of(ForgeMod.BLOCK_REACH.get(), doubleRangeAttributeModifier));
 
 	private static DamageSource lastActiveDamageSource;
 
@@ -80,10 +81,8 @@ public class ExtendoGripItem extends Item {
 
 	@SubscribeEvent
 	public static void holdingExtendoGripIncreasesRange(LivingTickEvent event) {
-		if (!(event.getEntity() instanceof Player))
+		if (!(event.getEntity() instanceof Player player))
 			return;
-
-		Player player = (Player) event.getEntity();
 
 		CompoundTag persistentData = player.getPersistentData();
 		boolean inOff = AllItems.EXTENDO_GRIP.isIn(player.getOffhandItem());
@@ -246,9 +245,9 @@ public class ExtendoGripItem extends Item {
 		if (lastActiveDamageSource == null)
 			return;
 		Entity entity = lastActiveDamageSource.getDirectEntity();
-		if (!(entity instanceof Player))
+		lastActiveDamageSource = null;
+		if (!(entity instanceof Player player))
 			return;
-		Player player = (Player) entity;
 		if (!isHoldingExtendoGrip(player))
 			return;
 		event.setStrength(event.getStrength() + 2);

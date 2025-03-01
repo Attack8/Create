@@ -14,11 +14,11 @@ import javax.annotation.Nullable;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.contraptions.minecart.CouplingHandler;
-import com.simibubi.create.foundation.utility.Iterate;
-import com.simibubi.create.foundation.utility.WorldAttached;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
+import net.createmod.catnip.data.Iterate;
+import net.createmod.catnip.data.WorldAttached;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +28,7 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
@@ -130,7 +131,7 @@ public class CapabilityMinecartController implements ICapabilitySerializable<Com
 		queued.clear();
 
 		List<UUID> toRemove = new ArrayList<>();
-		
+
 		for (Entry<UUID, MinecartController> entry : carts.entrySet()) {
 			MinecartController controller = entry.getValue();
 			if (controller != null) {
@@ -141,7 +142,7 @@ public class CapabilityMinecartController implements ICapabilitySerializable<Com
 			}
 			toRemove.add(entry.getKey());
 		}
-		
+
 		for (UUID uuid : toRemove) {
 			keySet.remove(uuid);
 			cartsWithCoupling.remove(uuid);

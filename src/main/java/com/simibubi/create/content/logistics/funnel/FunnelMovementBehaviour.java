@@ -2,7 +2,7 @@ package com.simibubi.create.content.logistics.funnel;
 
 import java.util.List;
 
-import com.simibubi.create.content.contraptions.behaviour.MovementBehaviour;
+import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import com.simibubi.create.content.logistics.filter.FilterItemStack;
 import com.simibubi.create.foundation.item.ItemHelper;
@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class FunnelMovementBehaviour implements MovementBehaviour {
@@ -76,7 +77,7 @@ public class FunnelMovementBehaviour implements MovementBehaviour {
 		boolean upTo = context.blockEntityData.getBoolean("UpTo");
 		filterAmount = hasFilter ? filterAmount : 1;
 
-		ItemStack extract = ItemHelper.extract(context.contraption.getSharedInventory(),
+		ItemStack extract = ItemHelper.extract(context.contraption.getStorage().getAllItems(),
 			s -> filter.test(world, s),
 			upTo ? ItemHelper.ExtractionCountMode.UPTO : ItemHelper.ExtractionCountMode.EXACTLY, filterAmount, false);
 
@@ -105,7 +106,7 @@ public class FunnelMovementBehaviour implements MovementBehaviour {
 			if (!filter.test(context.world, toInsert))
 				continue;
 			ItemStack remainder =
-				ItemHandlerHelper.insertItemStacked(context.contraption.getSharedInventory(), toInsert, false);
+				ItemHandlerHelper.insertItemStacked(context.contraption.getStorage().getAllItems(), toInsert, false);
 			if (remainder.getCount() == toInsert.getCount())
 				continue;
 			if (remainder.isEmpty()) {

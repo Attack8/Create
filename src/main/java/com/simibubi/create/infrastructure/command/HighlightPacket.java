@@ -1,13 +1,14 @@
 package com.simibubi.create.infrastructure.command;
 
 import com.simibubi.create.AllSpecialTextures;
-import com.simibubi.create.CreateClient;
 import com.simibubi.create.foundation.networking.SimplePacketBase;
 
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.shapes.Shapes;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.DistExecutor;
@@ -43,7 +44,7 @@ public class HighlightPacket extends SimplePacketBase {
 		if (Minecraft.getInstance().level == null || !Minecraft.getInstance().level.isLoaded(pos))
 			return;
 
-		CreateClient.OUTLINER.showAABB("highlightCommand", Shapes.block()
+		Outliner.getInstance().showAABB("highlightCommand", Shapes.block()
 				.bounds()
 				.move(pos), 200)
 				.lineWidth(1 / 32f)

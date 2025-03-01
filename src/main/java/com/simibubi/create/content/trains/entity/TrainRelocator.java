@@ -15,7 +15,6 @@ import org.apache.commons.lang3.mutable.MutableInt;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllPackets;
 import com.simibubi.create.Create;
-import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.contraptions.AbstractContraptionEntity;
 import com.simibubi.create.content.contraptions.ContraptionHandlerClient;
 import com.simibubi.create.content.trains.entity.TravellingPoint.IEdgePointListener;
@@ -32,10 +31,11 @@ import com.simibubi.create.content.trains.track.ITrackBlock;
 import com.simibubi.create.content.trains.track.TrackBlockOutline;
 import com.simibubi.create.content.trains.track.TrackBlockOutline.BezierPointSelection;
 import com.simibubi.create.foundation.item.TooltipHelper;
-import com.simibubi.create.foundation.utility.Couple;
-import com.simibubi.create.foundation.utility.Lang;
-import com.simibubi.create.foundation.utility.Pair;
+import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.createmod.catnip.data.Couple;
+import net.createmod.catnip.data.Pair;
+import net.createmod.catnip.outliner.Outliner;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -50,6 +50,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
@@ -85,7 +86,7 @@ public class TrainRelocator {
 		if (!player.position()
 			.closerThan(relocatingOrigin, 24) || player.isShiftKeyDown()) {
 			relocatingTrain = null;
-			player.displayClientMessage(Lang.translateDirect("train.relocate.abort")
+			player.displayClientMessage(CreateLang.translateDirect("train.relocate.abort")
 				.withStyle(ChatFormatting.RED), true);
 			return;
 		}
@@ -122,7 +123,7 @@ public class TrainRelocator {
 			for (int i = 0; i < toVisualise.size() - 1; i++) {
 				Vec3 vec1 = toVisualise.get(i).add(offset);
 				Vec3 vec2 = toVisualise.get(i + 1).add(offset);
-				CreateClient.OUTLINER.showLine(Pair.of(relocating, i), vec1.add(0, -.925f, 0), vec2.add(0, -.925f, 0))
+				Outliner.getInstance().showLine(Pair.of(relocating, i), vec1.add(0, -.925f, 0), vec2.add(0, -.925f, 0))
 					.colored(lastHoveredResult || i != toVisualise.size() - 2 ? 0x95CD41 : 0xEA5C2B)
 					.disableLineNormals()
 					.lineWidth(i % 2 == 1 ? 1 / 6f : 1 / 4f);
@@ -270,7 +271,7 @@ public class TrainRelocator {
 
 	@OnlyIn(Dist.CLIENT)
 	public static void visualise(Train train, int i, Vec3 v1, Vec3 v2, boolean valid) {
-		CreateClient.OUTLINER.showLine(Pair.of(train, i), v1.add(0, -.825f, 0), v2.add(0, -.825f, 0))
+		Outliner.getInstance().showLine(Pair.of(train, i), v1.add(0, -.825f, 0), v2.add(0, -.825f, 0))
 			.colored(valid ? 0x95CD41 : 0xEA5C2B)
 			.disableLineNormals()
 			.lineWidth(i % 2 == 1 ? 1 / 6f : 1 / 4f);
@@ -299,14 +300,14 @@ public class TrainRelocator {
 			if (entity instanceof AbstractContraptionEntity ce && Math.abs(ce.getPosition(0)
 				.subtract(ce.getPosition(1))
 				.lengthSqr()) > 1 / 1024d) {
-				player.displayClientMessage(Lang.translateDirect("train.cannot_relocate_moving")
+				player.displayClientMessage(CreateLang.translateDirect("train.cannot_relocate_moving")
 					.withStyle(ChatFormatting.RED), true);
 				relocatingTrain = null;
 				return;
 			}
 
 			if (!AllItems.WRENCH.isIn(player.getMainHandItem())) {
-				player.displayClientMessage(Lang.translateDirect("train.relocate.abort")
+				player.displayClientMessage(CreateLang.translateDirect("train.relocate.abort")
 					.withStyle(ChatFormatting.RED), true);
 				relocatingTrain = null;
 				return;
@@ -314,19 +315,19 @@ public class TrainRelocator {
 
 			if (!player.position()
 				.closerThan(relocatingOrigin, 24)) {
-				player.displayClientMessage(Lang.translateDirect("train.relocate.too_far")
+				player.displayClientMessage(CreateLang.translateDirect("train.relocate.too_far")
 					.withStyle(ChatFormatting.RED), true);
 				return;
 			}
 
 			Boolean success = relocateClient(relocating, true);
 			if (success == null)
-				player.displayClientMessage(Lang.translateDirect("train.relocate", relocating.name), true);
+				player.displayClientMessage(CreateLang.translateDirect("train.relocate", relocating.name), true);
 			else if (success.booleanValue())
-				player.displayClientMessage(Lang.translateDirect("train.relocate.valid")
+				player.displayClientMessage(CreateLang.translateDirect("train.relocate.valid")
 					.withStyle(ChatFormatting.GREEN), true);
 			else
-				player.displayClientMessage(Lang.translateDirect("train.relocate.invalid")
+				player.displayClientMessage(CreateLang.translateDirect("train.relocate.invalid")
 					.withStyle(ChatFormatting.RED), true);
 			return;
 		}
