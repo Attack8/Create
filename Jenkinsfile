@@ -23,8 +23,14 @@ pipeline {
         stage('Build') {
 
             steps {
-                echo 'Building project.'
-                sh './gradlew build publish --stacktrace --warn'
+
+                withCredentials([
+                    file(credentialsId: 'build_secrets', variable: 'ORG_GRADLE_PROJECT_secretFile')
+                ]) {
+
+                    echo 'Building project.'
+                    sh './gradlew build publish --stacktrace --warn'
+                }
             }
         }
     }
