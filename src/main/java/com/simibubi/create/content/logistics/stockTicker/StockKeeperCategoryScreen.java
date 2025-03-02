@@ -119,7 +119,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		if (editingItem == null)
 			return;
 
-		playUiSound(SoundEvents.UI_BUTTON_CLICK.get(), 1, 1);
+		playUiSound(SoundEvents.UI_BUTTON_CLICK.value(), 1, 1);
 
 		removeWidget(editorConfirm);
 		removeWidget(editorEditBox);
@@ -127,14 +127,14 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 		ItemStack stackInSlot = menu.proxyInventory.getStackInSlot(0)
 			.copy();
 		boolean empty = stackInSlot.isEmpty();
-		
+
 		if (empty && editingIndex != -1)
 			schedule.remove(editingIndex);
-		
+
 		if (!empty) {
 			String value = editorEditBox.getValue();
 			stackInSlot.setHoverName(value.isBlank() ? null : Component.literal(value));
-			
+
 			if (editingIndex == -1)
 				schedule.add(stackInSlot);
 			else
@@ -348,7 +348,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 			renderActionTooltip(graphics, ImmutableList.of(CreateLang.translate("gui.stock_ticker.new_category")
 				.component()), mx, my);
 			if (click == 0) {
-				playUiSound(SoundEvents.UI_BUTTON_CLICK.get(), 1f, 1f);
+				playUiSound(SoundEvents.UI_BUTTON_CLICK.value(), 1f, 1f);
 				startEditing(-1);
 			}
 		}
@@ -368,7 +368,7 @@ public class StockKeeperCategoryScreen extends AbstractSimiContainerScreen<Stock
 			return true;
 		}
 		if (action(null, pMouseX, pMouseY, pButton)) {
-			playUiSound(SoundEvents.UI_BUTTON_CLICK.get(), 1f, 1f);
+			playUiSound(SoundEvents.UI_BUTTON_CLICK.value(), 1f, 1f);
 			return true;
 		}
 

@@ -149,34 +149,19 @@ repositories {
 }
 
 dependencies {
-    jarJar("com.tterrag.registrate:Registrate:${registrate_version}") {
-        version {
-            strictly "[MC1.20-1.3.3,)"
-        }
-    }
-    jarJar("dev.engine-room.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}") {
-        version {
-            strictly "[1.0,2.0)"
-        }
-    }
+    modImplementation(jarJar("com.tterrag.registrate:Registrate:${registrate_version}"))
+    jarJar("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")
 
-    jarJar("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}") {
-        version {
-            strictly "[${ponder_version},)"
-        }
-    }
-
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}")) {
-        version {
-            strictly "[${mixin_extras_version},)"
-        }
-    }
-
-    modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
 
     modCompileOnly("dev.engine-room.flywheel:flywheel-forge-api-${flywheel_minecraft_version}:${flywheel_version}")
-    modRuntimeOnly("dev.engine-room.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}")
-    modRuntimeOnly("dev.engine-room.vanillin:vanillin-forge-${flywheel_minecraft_version}:${flywheel_version}")
+    modRuntimeOnly(jarJar("dev.engine-room.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}") {
+        version {
+            strictly "[1.0,2.0)"
+            prefer "1.0.1"
+        }
+    })
+    modRuntimeOnly("dev.engine-room.vanillin:vanillin-forge-${flywheel_minecraft_version}:${vanillin_version}")
 
     if (ponderInWorkspace) {
         implementation project(":ponder:Common")
@@ -214,7 +199,7 @@ dependencies {
     modImplementation("dev.ftb.mods:ftb-library-forge:2001.2.4")
 
     modImplementation("curse.maven:journeymap-32274:5457831")
-    // implementation("ignored:journeymap-1.20.1-5.10.1-forge")
+    // modImplementation("ignored:journeymap-1.20.1-5.10.1-forge")
 
     // modRuntimeOnly("curse.maven:framedblocks-441647:5629578")
     // modRuntimeOnly("curse.maven:galosphere-631098:4983871")
@@ -256,7 +241,7 @@ dependencies {
     // modRuntimeOnly("curse.maven:silent-lib-242998:4585754")
     // modRuntimeOnly("curse.maven:silents-gems-220311:5193708")
     // modRuntimeOnly("curse.maven:project-vibrant-journeys-300297:5676296")
-
+    
     // https://discord.com/channels/313125603924639766/725850371834118214/910619168821354497
     // Prevent Mixin annotation processor from getting into IntelliJ's annotation processor settings
     // This allows 'Settings > Build, Execution, and Deployment > Build Tools > Gradle > Build and run using' set to IntelliJ to work correctly
@@ -315,11 +300,24 @@ tasks.named("sourcesJar") {
     ])
 }
 
+final slimJar = tasks.register("slimJar", Jar) {
+    archiveClassifier = "slim"
+    from sourceSets.main.output
+    manifest.attributes([
+        "Git-Hash": gitHash
+    ])
+}
+obfuscation.reobfuscate(slimJar, sourceSets.main)
+
 project.publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId base.archivesName.get()
             from components.java
+
+            artifact(tasks.jar) {
+                classifier = "all"
+            }
         }
     }
 
@@ -343,18 +341,19 @@ project.publishing {
 }
 
 publishMods {
-    file = jar.archiveFile
+    file = reobfJar.archiveFile
     changelog = ChangelogText.getChangelogText(project).toString()
     type = STABLE
-    displayName = "$mod_name $minecraft_version $mod_version"
+    version = "$minecraft_version-$mod_version"
+    displayName = "$mod_name $mod_version for mc$minecraft_version"
     modLoaders.add("forge")
     modLoaders.add("neoforge")
 
-//    curseforge {
-//        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-//        projectId = "328085"
-//        minecraftVersions.add(minecraft_version)
-//    }
+    curseforge {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = "328085"
+        minecraftVersions.add(minecraft_version)
+    }
 
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
