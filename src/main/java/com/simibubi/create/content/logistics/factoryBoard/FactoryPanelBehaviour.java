@@ -47,6 +47,11 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsFormatt
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.utility.CreateLang;
 
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkHooks;
+
 import net.createmod.catnip.animation.LerpedFloat;
 import net.createmod.catnip.animation.LerpedFloat.Chaser;
 import net.createmod.catnip.gui.ScreenOpener;
@@ -72,11 +77,6 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkHooks;
 
 public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuProvider {
 
@@ -730,13 +730,16 @@ public class FactoryPanelBehaviour extends FilteringBehaviour implements MenuPro
 		}
 
 		RequestPromiseQueue promises = Create.LOGISTICS.getQueuedPromises(network);
+		if (promises == null)
+			return 0;
+
 		if (forceClearPromises) {
 			promises.forceClear(item);
 			resetTimerSlightly();
 		}
 		forceClearPromises = false;
 
-		return promises == null ? 0 : promises.getTotalPromisedAndRemoveExpired(item, getPromiseExpiryTimeInTicks());
+		return promises.getTotalPromisedAndRemoveExpired(item, getPromiseExpiryTimeInTicks());
 	}
 
 	public void resetTimer() {
