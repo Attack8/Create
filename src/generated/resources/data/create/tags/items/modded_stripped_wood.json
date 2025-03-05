@@ -425,6 +425,10 @@
       "required": false
     },
     {
+      "id": "autumnity:stripped_maple_wood",
+      "required": false
+    },
+    {
       "id": "infernalexp:stripped_luminous_hyphae",
       "required": false
     },

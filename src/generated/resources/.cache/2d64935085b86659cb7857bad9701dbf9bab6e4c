@@ -1,4 +1,4 @@
-// 1.20.1	2025-03-05T01:23:55.8557258	Registrate Provider for create [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
+// 1.20.1	2025-03-05T02:00:24.1012236	Registrate Provider for create [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
 60bbdf92d2ac9824ea6144955c74043a6005f79d assets/create/blockstates/acacia_window.json
 6a67703c2697d81b7dc83e9d72a66f9c9ff08383 assets/create/blockstates/acacia_window_pane.json
 c3ae87b62e81d8e9476eccd793bb1548d74c66a1 assets/create/blockstates/adjustable_chain_gearshift.json
@@ -4732,8 +4732,8 @@ d371dfd35e49a7bef19f59c03e7f4ae20992f03d data/create/tags/items/create_ingots.js
 35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/create/tags/items/dispense_behavior_wrap_blacklist.json
 ebd7b09daf2f64c0c04d821696b0e145683d8693 data/create/tags/items/dyed_table_cloths.json
 d2bb65d893d71d2d9871f81f430c233a93adb4bb data/create/tags/items/invalid_for_track_paving.json
-4fae30f6b4eb86f44380c3f43b91e1737fd34122 data/create/tags/items/modded_stripped_logs.json
-b5311ce76c4d70ad35f6b2f1d923698deeff9d2c data/create/tags/items/modded_stripped_wood.json
+8cfa7c5ac3e860220ec6092f8d3e6cce35ef478e data/create/tags/items/modded_stripped_logs.json
+2bc0a46a41dce4a50ada99e727251e46e27daf82 data/create/tags/items/modded_stripped_wood.json
 cebf5fd98eddf5c14befdd47052be678eea79542 data/create/tags/items/packages.json
 f400870b8dbcd14238be3ec99c419093073ba3a6 data/create/tags/items/postboxes.json
 695d75b352fd190b303c724d1aaee9bb786a903b data/create/tags/items/pressurized_air_sources.json

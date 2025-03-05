@@ -44,6 +44,12 @@ public class CuttingRecipeGen extends ProcessingRecipeGen {
 		ENDERGETIC_1 = stripAndMakePlanks(Mods.ENDER, "glowing_poise_stem", "stripped_poise_stem", null),
 		ENDERGETIC_2 = stripAndMakePlanks(Mods.ENDER, "glowing_poise_wood", "stripped_poise_wood", null),
 
+		// Gardens of the Dead
+		GOTD = create("compat/gardens_of_the_dead/whistlecane_planks", b -> b.duration(50)
+			.require(Mods.GOTD, "whistlecane_planks")
+			.output(1, Mods.GOTD, "whistlecane_mosaic", 1)
+			.whenModLoaded(Mods.GOTD.getId())),
+
 		// IE
 		IE_WIRES = ieWires("copper", "electrum", "aluminum", "steel", "lead");
 

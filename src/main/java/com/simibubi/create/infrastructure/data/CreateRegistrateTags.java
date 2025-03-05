@@ -302,9 +302,9 @@ public class CreateRegistrateTags {
 			"kapok", "larch", "magnolia", "maple", "mauve", "palm", "pine", "redwood", "socotra", "willow");
 		helper.add(Mods.UG, "smogstem", "wigglewood", "grongle");
 		helper.add(Mods.ARS_E, "yellow_archwood");
+		helper.add(Mods.AUTUM, "maple");
 
 
-		TagGen.addOptional(logAppender, Mods.AUTUM, "maple");
 		TagGen.addOptional(logAppender, Mods.IX, "stripped_luminous_stem");
 		TagGen.addOptional(woodAppender, Mods.IX, "stripped_luminous_hyphae");
 		TagGen.addOptional(logAppender, Mods.BYG, "stripped_bulbis_stem");
