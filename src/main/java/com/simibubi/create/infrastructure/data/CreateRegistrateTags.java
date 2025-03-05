@@ -9,11 +9,14 @@ import com.simibubi.create.AllTags.AllEntityTags;
 import com.simibubi.create.AllTags.AllFluidTags;
 import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.Create;
+import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.data.TagGen;
 import com.simibubi.create.foundation.data.TagGen.CreateTagsProvider;
 import com.simibubi.create.foundation.data.recipe.Mods;
 import com.tterrag.registrate.providers.ProviderType;
 import com.tterrag.registrate.providers.RegistrateTagsProvider;
+
+import net.minecraftforge.common.Tags;
 
 import net.minecraft.data.tags.TagsProvider.TagAppender;
 import net.minecraft.tags.BlockTags;
@@ -26,14 +29,14 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
-import net.minecraftforge.common.Tags;
-
 public class CreateRegistrateTags {
+	private static final CreateRegistrate REGISTRATE = Create.registrate();
+
 	public static void addGenerators() {
-		Create.REGISTRATE.addDataGenerator(ProviderType.BLOCK_TAGS, CreateRegistrateTags::genBlockTags);
-		Create.REGISTRATE.addDataGenerator(ProviderType.ITEM_TAGS, CreateRegistrateTags::genItemTags);
-		Create.REGISTRATE.addDataGenerator(ProviderType.FLUID_TAGS, CreateRegistrateTags::genFluidTags);
-		Create.REGISTRATE.addDataGenerator(ProviderType.ENTITY_TAGS, CreateRegistrateTags::genEntityTags);
+		REGISTRATE.addDataGenerator(ProviderType.BLOCK_TAGS, CreateRegistrateTags::genBlockTags);
+		REGISTRATE.addDataGenerator(ProviderType.ITEM_TAGS, CreateRegistrateTags::genItemTags);
+		REGISTRATE.addDataGenerator(ProviderType.FLUID_TAGS, CreateRegistrateTags::genFluidTags);
+		REGISTRATE.addDataGenerator(ProviderType.ENTITY_TAGS, CreateRegistrateTags::genEntityTags);
 	}
 
 	private static void genBlockTags(RegistrateTagsProvider<Block> provIn) {
@@ -128,7 +131,7 @@ public class CreateRegistrateTags {
 			.add(Blocks.SUGAR_CANE);
 
 		prov.tag(AllBlockTags.NON_HARVESTABLE.tag)
-				.add(Blocks.FIRE);
+			.add(Blocks.FIRE);
 
 		prov.tag(AllBlockTags.CORALS.tag)
 			.add(Blocks.DEAD_TUBE_CORAL, Blocks.DEAD_BRAIN_CORAL, Blocks.DEAD_BUBBLE_CORAL, Blocks.DEAD_FIRE_CORAL,
@@ -152,6 +155,15 @@ public class CreateRegistrateTags {
 
 		TagGen.addOptional(prov.tag(AllBlockTags.ROOTS.tag), Mods.TF,
 			List.of("root", "liveroot_block", "mangrove_root"));
+
+		TagGen.addOptional(prov.tag(AllBlockTags.FAN_TRANSPARENT.tag), Mods.Q,
+				List.of("gold_bars", "grate"));
+
+		TagGen.addOptional(prov.tag(AllBlockTags.FAN_TRANSPARENT.tag), Mods.UG,
+				List.of("cloggrum_bars"));
+
+		TagGen.addOptional(prov.tag(AllBlockTags.TREE_ATTACHMENTS.tag), Mods.UG,
+				List.of("hanging_grongle_leaves", "gronglet"));
 
 		// VALIDATE
 
@@ -188,7 +200,7 @@ public class CreateRegistrateTags {
 
 		prov.tag(AllItemTags.UPRIGHT_ON_BELT.tag)
 			.add(Items.GLASS_BOTTLE, Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION,
-				Items.HONEY_BOTTLE, Items.CAKE);
+				Items.HONEY_BOTTLE, Items.CAKE, Items.BOWL, Items.MUSHROOM_STEW, Items.SUSPICIOUS_STEW);
 
 		prov.tag(AllItemTags.CONTRAPTION_CONTROLLED.tag)
 			.add(Items.BELL, Items.CAMPFIRE, Items.SOUL_CAMPFIRE, Items.DISPENSER, Items.DROPPER);
@@ -227,6 +239,11 @@ public class CreateRegistrateTags {
 		TagGen.addOptional(prov.tag(AllItemTags.UA_CORAL.tag), Mods.UA, List.of("acan_coral",
 			"finger_coral", "star_coral", "moss_coral", "petal_coral", "branch_coral",
 			"rock_coral", "pillow_coral", "chrome_coral", "silk_coral"));
+
+		TagGen.addOptional(prov.tag(AllItemTags.UPRIGHT_ON_BELT.tag), Mods.UG, List.of("virulent_mix_bucket"));
+
+		TagGen.addOptional(prov.tag(AllItemTags.UPRIGHT_ON_BELT.tag), Mods.UUE, List.of(
+				"warped_potion", "warped_infusion", "chorus_juice", "chorus_tea"));
 
 		// VALIDATE
 
@@ -283,9 +300,11 @@ public class CreateRegistrateTags {
 		helper.add(Mods.BMK, "blighted_balsa", "willow", "swamp_cypress", "ancient_oak");
 		helper.add(Mods.RU, "alpha", "ashen", "baobab", "blackwood", "brimwood", "cobalt", "cypress", "dead", "eucalyptus", "joshua",
 			"kapok", "larch", "magnolia", "maple", "mauve", "palm", "pine", "redwood", "socotra", "willow");
+		helper.add(Mods.UG, "smogstem", "wigglewood", "grongle");
+		helper.add(Mods.ARS_E, "yellow_archwood");
+		helper.add(Mods.AUTUM, "maple");
 
 
-		TagGen.addOptional(logAppender, Mods.AUTUM, "maple");
 		TagGen.addOptional(logAppender, Mods.IX, "stripped_luminous_stem");
 		TagGen.addOptional(woodAppender, Mods.IX, "stripped_luminous_hyphae");
 		TagGen.addOptional(logAppender, Mods.BYG, "stripped_bulbis_stem");
@@ -300,6 +319,10 @@ public class CreateRegistrateTags {
 		TagGen.addOptional(logAppender, Mods.RU, "stripped_yellow_bioshroom_stem");
 		TagGen.addOptional(woodAppender, Mods.RU, "stripped_yellow_bioshroom_hyphae");
 		TagGen.addOptional(logAppender, Mods.RU, "brimwood_log_magma");
+
+		TagGen.addOptional(logAppender, Mods.GOTD, "stripped_soulblight_stem");
+		TagGen.addOptional(woodAppender, Mods.GOTD, "stripped_soulblight_hyphae");
+		TagGen.addOptional(logAppender, Mods.UUE, "stripped_chorus_cane_block");
 	}
 
 	private static void genFluidTags(RegistrateTagsProvider<Fluid> provIn) {

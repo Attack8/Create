@@ -1,20 +1,21 @@
 {
-  "type": "create:cutting",
+  "type": "create:milling",
   "conditions": [
     {
       "type": "forge:mod_loaded",
-      "modid": "ars_nouveau"
+      "modid": "unusualend"
     }
   ],
   "ingredients": [
     {
-      "item": "ars_nouveau:blue_archwood_wood"
+      "item": "unusualend:endstone_sprouts"
     }
   ],
   "processingTime": 50,
   "results": [
     {
-      "item": "ars_nouveau:stripped_blue_archwood_wood"
+      "count": 2,
+      "item": "minecraft:pink_dye"
     }
   ]
 }

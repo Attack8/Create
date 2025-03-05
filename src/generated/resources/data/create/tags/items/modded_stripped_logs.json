@@ -409,7 +409,23 @@
       "required": false
     },
     {
-      "id": "autumnity:maple",
+      "id": "undergarden:stripped_smogstem_log",
+      "required": false
+    },
+    {
+      "id": "undergarden:stripped_wigglewood_log",
+      "required": false
+    },
+    {
+      "id": "undergarden:stripped_grongle_log",
+      "required": false
+    },
+    {
+      "id": "ars_elemental:stripped_yellow_archwood_log",
+      "required": false
+    },
+    {
+      "id": "autumnity:stripped_maple_log",
       "required": false
     },
     {
@@ -438,6 +454,14 @@
     },
     {
       "id": "regions_unexplored:brimwood_log_magma",
+      "required": false
+    },
+    {
+      "id": "gardens_of_the_dead:stripped_soulblight_stem",
+      "required": false
+    },
+    {
+      "id": "unusualend:stripped_chorus_cane_block",
       "required": false
     }
   ]

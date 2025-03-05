@@ -409,6 +409,26 @@
       "required": false
     },
     {
+      "id": "undergarden:stripped_smogstem_wood",
+      "required": false
+    },
+    {
+      "id": "undergarden:stripped_wigglewood_wood",
+      "required": false
+    },
+    {
+      "id": "undergarden:stripped_grongle_wood",
+      "required": false
+    },
+    {
+      "id": "ars_elemental:stripped_yellow_archwood",
+      "required": false
+    },
+    {
+      "id": "autumnity:stripped_maple_wood",
+      "required": false
+    },
+    {
       "id": "infernalexp:stripped_luminous_hyphae",
       "required": false
     },
@@ -430,6 +450,10 @@
     },
     {
       "id": "regions_unexplored:stripped_yellow_bioshroom_hyphae",
+      "required": false
+    },
+    {
+      "id": "gardens_of_the_dead:stripped_soulblight_hyphae",
       "required": false
     }
   ]

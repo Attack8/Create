@@ -38,7 +38,12 @@ public class EmptyingRecipeGen extends ProcessingRecipeGen {
 		NEO_MILK = create(Mods.NEA.recipeId("milk_bottle"), b -> b.require(Mods.FD, "milk_bottle")
 				.output(ForgeMod.MILK.get(), 250)
 				.output(Items.GLASS_BOTTLE)
-				.whenModLoaded(Mods.NEA.getId()))
+				.whenModLoaded(Mods.NEA.getId())),
+
+	    UG_VIRULENT_MIX = create(Mods.UG.recipeId("virulent_mix_bucket"), b -> b.require(Mods.UG, "virulent_mix_bucket")
+				.output(Mods.UG, "virulent_mix_source", 1000)
+				.output(Items.BUCKET)
+				.whenModLoaded(Mods.UG.getId()))
 
 	;
 
