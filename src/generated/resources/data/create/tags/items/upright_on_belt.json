@@ -10,6 +10,9 @@
     "minecraft:lingering_potion",
     "minecraft:honey_bottle",
     "minecraft:cake",
+    "minecraft:bowl",
+    "minecraft:mushroom_stew",
+    "minecraft:suspicious_stew",
     {
       "id": "undergarden:virulent_mix_bucket",
       "required": false
